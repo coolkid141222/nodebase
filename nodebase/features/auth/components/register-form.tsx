@@ -81,7 +81,7 @@ export function RegisterForm() { // --- 2. 更改组件名称 ---
 
       <Card className="relative w-full max-w-md overflow-hidden rounded-2xl border-0 bg-white/80 backdrop-blur-xl shadow-2xl">
         <div className="absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-orange-400 via-amber-400 to-blue-400" />
-        <CardHeader className="space-y-3 text-center pt-10 pb-6">
+        <CardHeader className="!flex !flex-col !items-center !justify-center space-y-3 text-center pt-10 pb-6 !px-8">
 
           <CardTitle className="text-3xl font-bold text-slate-900">
             Create your account
@@ -91,7 +91,7 @@ export function RegisterForm() { // --- 2. 更改组件名称 ---
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-6 px-8 pb-8">
-          <div className="grid gap-3 sm:grid-cols-2">
+          <div className="grid grid-cols-2 gap-3">
             <Button
               variant="outline"
               className="group flex w-full items-center justify-center gap-2 rounded-xl border-slate-200 bg-white h-11 text-sm font-medium text-slate-700 transition hover:border-orange-300 hover:bg-orange-50 hover:text-orange-700"
@@ -208,19 +208,19 @@ export function RegisterForm() { // --- 2. 更改组件名称 ---
 
               <Button
                 type="submit"
-                className="group relative w-full h-11 rounded-lg bg-slate-900 text-sm font-medium text-white transition hover:bg-slate-800 disabled:opacity-80"
+                className="w-full h-11 rounded-lg bg-slate-900 text-sm font-medium text-white transition hover:bg-slate-800 disabled:opacity-80"
                 disabled={isPending}
               >
                 {isPending ? (
-                  <>
-                    <Loader2 className="absolute l-4 top-1/2 -translate-x-1/2 -translate-y-1/2 h-4 w-4 animate-spin" />
+                  <span className="flex items-center justify-center">
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                     Creating account...
-                  </>
+                  </span>
                 ) : (
-                  <>
+                  <span className="flex items-center justify-center">
                     Create account
-                    <ArrowRight className="absolute l-4 top-1/2 -translate-x-1/2 -translate-y-1/2 h-4 w-4 transition group-hover:translate-x-1" />
-                  </>
+                    <ArrowRight className="ml-2 h-4 w-4" />
+                  </span>
                 )}
               </Button>
             </form>
