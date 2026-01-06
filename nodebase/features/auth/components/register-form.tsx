@@ -62,6 +62,9 @@ export function RegisterForm() { // --- 2. 更改组件名称 ---
       {
         onSuccess: () => {
           router.push("/");
+        },
+        onError: () => {
+          console.log("error")
         }
       }
     )
