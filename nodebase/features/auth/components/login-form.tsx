@@ -22,7 +22,7 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
-import { ArrowRight, Chrome, Github, Loader2 } from "lucide-react";
+import { ArrowRight, Loader2 } from "lucide-react";
 import { signIn } from "@/lib/auth-client";
 import { useState } from "react";
 
@@ -70,70 +70,78 @@ export function LoginForm() {
   const isPending = form.formState.isSubmitting;
 
   return (
-    <div className="font-sans relative flex min-h-screen items-center justify-center bg-gradient-to-br from-indigo-600 via-blue-700 to-purple-700 px-4 py-12 overflow-hidden">
-      <div className="pointer-events-none absolute inset-x-10 -top-16 h-48 rounded-full bg-gradient-to-r from-blue-300/50 via-white/30 to-purple-300/50 blur-3xl" />
+    <div className="font-sans relative flex min-h-screen items-center justify-center bg-gradient-to-br from-orange-100 via-amber-50 to-blue-100 px-4 py-12 overflow-hidden">
+      <div className="pointer-events-none absolute inset-0 overflow-hidden">
+        <div className="absolute -top-40 -right-40 h-80 w-80 rounded-full bg-gradient-to-br from-orange-300/40 to-amber-200/40 blur-3xl" />
+        <div className="absolute -bottom-40 -left-40 h-80 w-80 rounded-full bg-gradient-to-tr from-blue-300/40 to-indigo-200/40 blur-3xl" />
+      </div>
 
-      <Card className="relative w-full max-w-md overflow-hidden rounded-xl border-0 bg-white shadow-2xl">
-        <div className="absolute inset-x-0 top-0 h-1.5 bg-gradient-to-r from-blue-400 via-purple-500 to-pink-400" />
-        <CardHeader className="space-y-2 text-center pt-8">
+      <Card className="relative w-full max-w-md overflow-hidden rounded-2xl border-0 bg-white/80 backdrop-blur-xl shadow-2xl">
+        <div className="absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-orange-400 via-amber-400 to-blue-400" />
+        <CardHeader className="space-y-3 text-center pt-10 pb-6">
 
-          <CardTitle className="text-3xl font-bold text-slate-900 flex flex-col">
+          <CardTitle className="text-3xl font-bold text-slate-900">
             Welcome back
           </CardTitle>
-          <CardDescription className="text-base text-slate-600 pt-1">
-            Sign in to keep building your workspace.
+          <CardDescription className="text-base text-slate-600">
+            Sign in to keep building your workspace
           </CardDescription>
         </CardHeader>
-        <CardContent className="space-y-6 p-8">
-          <div className="grid gap-4 sm:grid-cols-2">
-
-            {/* -- 社交按钮 (h-12, gap-3) -- */}
+        <CardContent className="space-y-6 px-8 pb-8">
+          <div className="grid gap-3 sm:grid-cols-2">
             <Button
               variant="outline"
-              className="group flex w-full items-center justify-center gap-3 rounded-lg border-slate-300 bg-white h-12 text-base text-slate-800 transition hover:-translate-y-[1px] hover:border-blue-400 hover:bg-blue-50"
+              className="group flex w-full items-center justify-center gap-2 rounded-xl border-slate-200 bg-white h-11 text-sm font-medium text-slate-700 transition hover:border-orange-300 hover:bg-orange-50 hover:text-orange-700"
               type="button"
               disabled={isPending}
             >
-              <Chrome className="h-5 w-5 text-blue-500" />
-              Google
+              <img src="/google.svg" alt="Google" className="h-5 w-5" />
+              Continue with Google
             </Button>
 
-            {/* -- 社交按钮 (h-12, gap-3) -- */}
             <Button
               variant="outline"
-              className="group flex w-full items-center justify-center gap-3 rounded-lg border-slate-800 bg-slate-900 h-12 text-base text-white transition hover:-translate-y-[1px] hover:bg-slate-800"
+              className="group flex w-full items-center justify-center gap-2 rounded-xl border-slate-200 bg-white h-11 text-sm font-medium text-slate-700 transition hover:border-slate-300 hover:bg-slate-50 hover:text-slate-900"
               type="button"
               disabled={isPending}
             >
-              <Github className="h-5 w-5" />
-              GitHub
+              <img src="/github.svg" alt="GitHub" className="h-5 w-5" />
+              Continue with GitHub
             </Button>
           </div>
 
-          <div className="flex items-center gap-3">
-            <div className="h-px flex-1 bg-slate-200" />
-            <span className="text-sm font-medium uppercase tracking-wide text-slate-500">
-              or
-            </span>
-            <div className="h-px flex-1 bg-slate-200" />
+          <div className="relative">
+            <div className="absolute inset-0 flex items-center">
+              <div className="w-full border-t border-slate-200" />
+            </div>
+            <div className="relative flex justify-center text-sm">
+              <span className="bg-white px-3 text-slate-500">
+                or continue with email
+              </span>
+            </div>
           </div>
+
+          {error && (
+            <div className="rounded-lg bg-red-50 px-4 py-3 text-sm text-red-700">
+              {error}
+            </div>
+          )}
 
           <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-5">
+            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
               <FormField
                 control={form.control}
                 name="email"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel className="text-sm font-medium text-slate-800">Email</FormLabel>
+                    <FormLabel className="text-sm font-medium text-slate-700">Email</FormLabel>
                     <FormControl>
                       <Input
                         type="email"
-                        placeholder="m@example.com"
+                        placeholder="name@example.com"
                         autoComplete="email"
                         suppressHydrationWarning
-                        // -- 输入框 (添加 px-4) --
-                        className="h-12 rounded-lg border-slate-300 bg-slate-50 px-4 text-base transition focus:bg-white focus-visible:ring-2 focus-visible:ring-blue-500/80"
+                        className="h-11 rounded-lg border-slate-200 bg-white px-4 text-sm transition focus:border-orange-400 focus:bg-white focus-visible:ring-2 focus-visible:ring-orange-400/20"
                         {...field}
                       />
                     </FormControl>
@@ -147,15 +155,14 @@ export function LoginForm() {
                 name="password"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel className="text-sm font-medium text-slate-800">Password</FormLabel>
+                    <FormLabel className="text-sm font-medium text-slate-700">Password</FormLabel>
                     <FormControl>
                       <Input
                         type="password"
                         placeholder="••••••••"
                         autoComplete="current-password"
                         suppressHydrationWarning
-                        // -- 输入框 (添加 px-4) --
-                        className="h-12 rounded-lg border-slate-300 bg-slate-50 px-4 text-base transition focus:bg-white focus-visible:ring-2 focus-visible:ring-blue-500/80"
+                        className="h-11 rounded-lg border-slate-200 bg-white px-4 text-sm transition focus:border-orange-400 focus:bg-white focus-visible:ring-2 focus-visible:ring-orange-400/20"
                         {...field}
                       />
                     </FormControl>
@@ -164,76 +171,68 @@ export function LoginForm() {
                 )}
               />
 
-              <div className="flex items-center justify-between text-sm text-slate-600">
-                <label className="flex items-center gap-2 font-medium">
+              <div className="flex items-center justify-between text-sm">
+                <label className="flex items-center gap-2 text-slate-600 cursor-pointer">
                   <input
                     type="checkbox"
-                    className="h-4 w-4 rounded border-slate-300 text-blue-600 focus:ring-blue-500"
+                    className="h-4 w-4 rounded border-slate-300 text-orange-500 focus:ring-orange-500"
                   />
                   Remember me
                 </label>
 
                 <Link
                   href="/forgot-password"
-                  className="font-medium text-blue-600 hover:text-blue-700 hover:underline"
+                  className="font-medium text-slate-700 hover:text-orange-600"
                 >
                   Forgot password?
                 </Link>
               </div>
 
-              {/* -- 最终的按钮样式 -- */}
               <Button
                 type="submit"
-                className="group relative w-full h-12 rounded-lg bg-gradient-to-r from-blue-600 via-blue-500 to-indigo-600 text-base text-white shadow-lg transition-all hover:-translate-y-[1px] hover:shadow-xl hover:from-blue-700 hover:to-indigo-700 disabled:opacity-80"
+                className="group relative w-full h-11 rounded-lg bg-slate-900 text-sm font-medium text-white transition hover:bg-slate-800 disabled:opacity-80"
                 disabled={isPending}
               >
                 {isPending ? (
                   <>
-                    <Loader2 className="absolute left-4 top-1/2 -translate-x-1/2 -translate-y-1/2 h-5 w-5 animate-spin" />
+                    <Loader2 className="absolute l-4 top-1/2 -translate-x-1/2 -translate-y-1/2 h-4 w-4 animate-spin" />
                     Signing in...
                   </>
                 ) : (
                   <>
-                    {/* -- 图标在左侧 -- */}
-                    <span className="absolute left-4 top-1/2 -translate-y-1/2 transition group-hover:translate-x-1">
-                      <ArrowRight className="h-5 w-5" />
-                    </span>
-                    {/* -- 文字在中间 -- */}
                     Sign in
+                    <ArrowRight className="absolute l-4 top-1/2 -translate-x-1/2 -translate-y-1/2 h-4 w-4 transition group-hover:translate-x-1" />
                   </>
                 )}
               </Button>
             </form>
           </Form>
 
-          {/* -- 在这里添加跳转到注册页面的链接 -- */}
-          <p className="text-center text-sm text-slate-600">
+          <div className="text-center text-sm text-slate-600">
             Don't have an account?{" "}
             <Link
-              href="/register" // 假设注册页路由为 /register
-              className="font-medium text-blue-600 hover:text-blue-700 hover:underline"
+              href="/register"
+              className="font-medium text-slate-900 hover:text-orange-600"
             >
               Sign up
             </Link>
-          </p>
+          </div>
 
-          <p className="text-center text-sm text-slate-600">
+          <p className="text-center text-xs text-slate-500">
             By continuing, you agree to our{" "}
-
             <Link
               href="/terms"
-              className="font-medium text-blue-600 hover:text-blue-700 hover:underline"
+              className="font-medium text-slate-700 hover:text-orange-600"
             >
               Terms
             </Link>{" "}
             and{" "}
             <Link
               href="/privacy"
-              className="font-medium text-blue-600 hover:text-blue-700 hover:underline"
+              className="font-medium text-slate-700 hover:text-orange-600"
             >
               Privacy Policy
             </Link>
-            .
           </p>
         </CardContent>
       </Card>
