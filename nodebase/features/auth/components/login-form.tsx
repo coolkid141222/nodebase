@@ -70,15 +70,15 @@ export function LoginForm() {
   const isPending = form.formState.isSubmitting;
 
   return (
-    <div className="font-sans relative flex min-h-screen items-center justify-center bg-gradient-to-br from-orange-100 via-amber-50 to-blue-100 px-4 py-12 overflow-hidden">
+    <div className="font-sans relative flex min-h-screen items-center justify-center bg-linear-to-br from-orange-100 via-amber-50 to-blue-100 px-4 py-12 overflow-hidden">
       <div className="pointer-events-none absolute inset-0 overflow-hidden">
-        <div className="absolute -top-40 -right-40 h-80 w-80 rounded-full bg-gradient-to-br from-orange-300/40 to-amber-200/40 blur-3xl" />
-        <div className="absolute -bottom-40 -left-40 h-80 w-80 rounded-full bg-gradient-to-tr from-blue-300/40 to-indigo-200/40 blur-3xl" />
+        <div className="absolute -top-40 -right-40 h-80 w-80 rounded-full bg-linear-to-br from-orange-300/40 to-amber-200/40 blur-3xl" />
+        <div className="absolute -bottom-40 -left-40 h-80 w-80 rounded-full bg-linear-to-tr from-blue-300/40 to-indigo-200/40 blur-3xl" />
       </div>
 
       <Card className="relative w-full max-w-md overflow-hidden rounded-2xl border-0 bg-white/80 backdrop-blur-xl shadow-2xl">
-        <div className="absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-orange-400 via-amber-400 to-blue-400" />
-        <CardHeader className="!flex !flex-col !items-center !justify-center space-y-3 text-center pt-10 pb-6 !px-8">
+        <div className="absolute inset-x-0 top-0 h-1 bg-linear-to-r from-orange-400 via-amber-400 to-blue-400" />
+        <CardHeader className="flex flex-col items-center justify-center space-y-3 text-center pt-10 pb-6 px-8">
 
           <CardTitle className="text-3xl font-bold text-slate-900">
             Welcome back
@@ -209,7 +209,7 @@ export function LoginForm() {
           </Form>
 
           <div className="text-center text-sm text-slate-600">
-            Don't have an account?{" "}
+            Don&apos;t have an account?{" "}
             <Link
               href="/register"
               className="font-medium text-slate-900 hover:text-orange-600"
