@@ -8,7 +8,6 @@ import { getQueryClient } from "@/trpc/server"
 import { trpc } from "@/trpc/server"
 import { Suspense } from "react"
 const Page = async () => {
-  const users = await caller.getWorkflows();
   const queryClient = getQueryClient();
   void queryClient.prefetchQuery(trpc.getWorkflows.queryOptions());
 
