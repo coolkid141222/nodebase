@@ -3,7 +3,15 @@
     "allow": [
       "Bash(git mv:*)",
       "Bash(mv:*)",
-      "Bash(git add:*)"
+      "Bash(git add:*)",
+      "Bash(npx shadcn@latest add:*)",
+      "Bash(npm install:*)",
+      "Bash(npx prisma generate:*)",
+      "Bash(rm:*)",
+      "Bash(ls:*)",
+      "Bash(npx prisma db push:*)",
+      "Bash(npx tsc:*)",
+      "Bash(cat:*)"
     ]
   }
 }

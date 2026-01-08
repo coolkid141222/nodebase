@@ -1,7 +1,3 @@
-// import { useEffect } from "react";
-import prisma from "@/lib/db"
-import { useTRPC } from "@/trpc/client"
-import { caller } from "@/trpc/server"
 import { dehydrate, HydrationBoundary, useQuery } from "@tanstack/react-query"
 import { Client } from "./client"
 import { getQueryClient } from "@/trpc/server"

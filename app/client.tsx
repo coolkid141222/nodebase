@@ -2,13 +2,13 @@
 
 import { useTRPC } from "@/trpc/client";
 import { useMutation, useQueryClient, useSuspenseQuery } from "@tanstack/react-query";
-import { toast } from "sonner";
-import { Toaster } from "@/components/ui/sonner";
+import { toast, Toaster } from "sonner";
 import { authClient } from "@/lib/auth-client";
 import { useState } from "react";
 
 export const Client = () => {
     const trpc = useTRPC();
+    const testAI = useMutation(trpc.testAI.mutationOptions());
     const queryClient = useQueryClient();
     const { data: workflows } = useSuspenseQuery(trpc.getWorkflows.queryOptions());
     const [isSigningOut, setIsSigningOut] = useState(false);
@@ -45,7 +45,9 @@ export const Client = () => {
             <div className="flex flex-col justify-center items-center">
                 This client: {JSON.stringify(workflows)}
             </div>
-
+            <button onClick={() => testAI}>
+                AI
+            </button>
             <button
                 onClick={handleSignOut}
                 disabled={isSigningOut}
