@@ -1,6 +1,8 @@
 import { z } from "zod";
 import { createTRPCRouter, protectedProcedure, baseProcedure } from "../init";
 import prisma from "@/lib/db";
+import { inngest } from "@/inngest/client";
+import { auth } from "@/lib/auth";
 
 export const appRouter = createTRPCRouter({
   session: baseProcedure.query(({ ctx }) => {
@@ -12,14 +14,16 @@ export const appRouter = createTRPCRouter({
   }),
 
   createWorkflow: protectedProcedure
-    .input(z.object({ name: z.string() }))
-    .mutation(({ input }) => {
-      return prisma.workflow.create({
-        data: {
-          id: crypto.randomUUID(),
-          name: input.name,
-        },
-      });
+  .mutation(async () => {
+    console.log("=== Server: Mutation START ===", new Date().toISOString());
+    await inngest.send({
+      name: "test/hello.world",
+      data: {
+        email: "nothing@gmail.com"
+      }
+    });
+    console.log("=== Server: Inngest event SENT ===");
+      return { state: "success" }
     }),
 });
 
