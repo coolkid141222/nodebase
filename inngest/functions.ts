@@ -1,13 +1,15 @@
-import { createGoogleGenerativeAI } from "@ai-sdk/google";
 import { inngest } from "./client";
 import { generateText } from "ai";
+import { google } from "@/lib/ai/proxy";
+import prisma from "@/lib/db";
 import { zhipu } from "ai-sdk-zhipu";
+import { createDeepSeek } from "@ai-sdk/deepseek";
 
-const google = createGoogleGenerativeAI();
+const deepseek = createDeepSeek();
 
-export const helloWorld = inngest.createFunction(
-  { id: "hello-world" },
-  { event: "test/hello.world" },
+export const testAI = inngest.createFunction(
+  { id: "AI-providers" },
+  { event: "test/ai.providers" },
   async ({ event, step }) => {
     await step.sleep("pretend", "5s");
 
@@ -23,6 +25,8 @@ export const helloWorld = inngest.createFunction(
       }
     );
 
+    await step.sleep("gap", "3s");
+
     const zhipuRes = await step.ai.wrap(
       "zhipu-generate-text",
       generateText,
@@ -36,12 +40,48 @@ export const helloWorld = inngest.createFunction(
         ],
       }
     );
+    
+    await step.sleep("gap", "3s");
+
+    const deepseekRes = await step.ai.wrap(
+      "DeepSeek-generate-text",
+      generateText,
+      {
+        model: deepseek('deepseek-chat'),
+        messages: [
+          { role: "system", content: "You are a good student!" },
+          { role: "user", content: "In math, 1 + 1 = ?" },
+        ],
+      }
+    );
 
     return {
       geminiText: gemini.text,
-      geminiUsage: gemini.usage ?? null,
+      geminiUsage: gemini.usage,
       zhipuText: zhipuRes.text,
-      zhipuUsage: zhipuRes.usage ?? null,
+      zhipuUsage: zhipuRes.usage,
+      deepseekText: deepseekRes.text,
+      deepseekUsage: deepseekRes.usage,
     };
   }
+);
+
+
+export const helloWorld = inngest.createFunction(
+  { id: "hello-world" },
+  { event: "test/hello.world" },
+  async ({ event, step }) => {
+    await step.sleep("fetching", "5s");
+    await step.sleep("processing", "5s");
+    
+    await step.run("create-workflow", () => {
+        return prisma.workflow.create({
+            data:{
+                id: crypto.randomUUID(),
+                name: "Workflow-create-from-inngest",
+            }
+        })
+    })
+    return { message: `Hello ${event.data.email}!` };
+  },
 );

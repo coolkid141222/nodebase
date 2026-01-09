@@ -12,6 +12,7 @@
     "dev:all": "mprocs \"npm run dev\" \"npm run inngest:dev\""
   },
   "dependencies": {
+    "@ai-sdk/deepseek": "^2.0.4",
     "@ai-sdk/google": "^3.0.6",
     "@hookform/resolvers": "^5.2.2",
     "@prisma/adapter-pg": "^7.0.0",
@@ -72,6 +73,7 @@
     "server-only": "^0.0.1",
     "sonner": "^2.0.7",
     "tailwind-merge": "^3.4.0",
+    "undici": "^7.18.2",
     "vaul": "^1.1.2",
     "zod": "^4.3.5"
   },

@@ -45,7 +45,11 @@ export const Client = () => {
             <div className="flex flex-col justify-center items-center">
                 This client: {JSON.stringify(workflows)}
             </div>
-            <button onClick={() => testAI}>
+            <button
+                onClick={() => testAI.mutate()}
+                disabled={testAI.isPending}
+                className="rounded bg-red-600 px-4 py-2 text-white disabled:opacity-60"
+            >
                 AI
             </button>
             <button
