@@ -1,9 +1,11 @@
-import { createGoogleGenerativeAI } from "@ai-sdk/google";
 import { inngest } from "./client";
 import { generateText } from "ai";
 import { zhipu } from "ai-sdk-zhipu";
+import { createGoogleGenerativeAI } from "@ai-sdk/google";
+import { createDeepSeek } from '@ai-sdk/deepseek';
 
 const google = createGoogleGenerativeAI();
+const deepseek = createDeepSeek();
 
 export const helloWorld = inngest.createFunction(
   { id: "hello-world" },
@@ -37,11 +39,25 @@ export const helloWorld = inngest.createFunction(
       }
     );
 
+    const deepseekRes = await step.ai.wrap(
+      "DeepSeek-generate-text",
+      generateText,
+      {
+        model: deepseek('deepseek-chat'),
+        messages: [
+          { role: "system", content: "You are a good student!" },
+          { role: "user", content: "In math, 1 + 1 = ?" },
+        ],
+      }
+    );
+
     return {
       geminiText: gemini.text,
-      geminiUsage: gemini.usage ?? null,
+      geminiUsage: gemini.usage,
       zhipuText: zhipuRes.text,
-      zhipuUsage: zhipuRes.usage ?? null,
+      zhipuUsage: zhipuRes.usage,
+      deepseekText: deepseekRes.text,
+      deepseekUsage: deepseekRes.usage,
     };
   }
 );
