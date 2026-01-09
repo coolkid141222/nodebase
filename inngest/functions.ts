@@ -1,4 +1,4 @@
-import { randomUUID } from "node:crypto";
+import { createGoogleGenerativeAI } from "@ai-sdk/google";
 import { inngest } from "./client";
 import { generateText } from "ai";
 import { zhipu } from "ai-sdk-zhipu";
