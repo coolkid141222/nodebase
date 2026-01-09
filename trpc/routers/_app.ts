@@ -1,8 +1,6 @@
 import { createTRPCRouter, protectedProcedure, baseProcedure } from "../init";
 import prisma from "@/lib/db";
 import { inngest } from "@/inngest/client";
-import { google } from '@ai-sdk/google';
-import { generateText } from 'ai';
 
 export const appRouter = createTRPCRouter({
   session: baseProcedure.query(({ ctx }) => {
@@ -10,11 +8,13 @@ export const appRouter = createTRPCRouter({
   }),
   
   testAI: protectedProcedure.mutation(async () => {
-    const { text } = await generateText({
-      model: google('gemini-2.5-flash'),
-      prompt: 'Write a vegetarian lasagna recipe for 4 people.',
+    await inngest.send({
+      name: "test/ai.providers",
+      data: {
+        email: "nothing@gmail.com"
+      }
     });
-    return text;
+    return { state: "success" }
   }),
 
 
@@ -24,14 +24,12 @@ export const appRouter = createTRPCRouter({
 
   createWorkflow: protectedProcedure
   .mutation(async () => {
-    console.log("=== Server: Mutation START ===", new Date().toISOString());
     await inngest.send({
       name: "test/hello.world",
       data: {
         email: "nothing@gmail.com"
       }
     });
-    console.log("=== Server: Inngest event SENT ===");
       return { state: "success" }
     }),
 });
