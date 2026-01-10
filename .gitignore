@@ -49,3 +49,6 @@ components/ui/*
 
 # test
 scripts/test.ts
+
+# Sentry Config File
+.env.sentry-build-plugin
