@@ -5,7 +5,6 @@ import { trpc } from "@/trpc/server"
 import { Suspense } from "react"
 const Page = async () => {
   const queryClient = getQueryClient();
-  void queryClient.prefetchQuery(trpc.getWorkflows.queryOptions());
 
   return (
     <HydrationBoundary state={dehydrate(queryClient)}>
