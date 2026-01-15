@@ -65,23 +65,3 @@ export const testAI = inngest.createFunction(
     };
   }
 );
-
-
-export const helloWorld = inngest.createFunction(
-  { id: "hello-world" },
-  { event: "test/hello.world" },
-  async ({ event, step }) => {
-    await step.sleep("fetching", "5s");
-    await step.sleep("processing", "5s");
-    
-    await step.run("create-workflow", () => {
-        return prisma.workflow.create({
-            data:{
-                id: crypto.randomUUID(),
-                name: "Workflow-create-from-inngest",
-            }
-        })
-    })
-    return { message: `Hello ${event.data.email}!` };
-  },
-);

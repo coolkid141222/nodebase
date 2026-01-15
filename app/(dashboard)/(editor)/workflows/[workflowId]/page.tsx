@@ -7,7 +7,7 @@ interface PageProps {
 const Page = async ({ params }: PageProps) => {
     const { workflowId } = await params;
     return (
-        <p>Credential id: {workflowId}</p>
+        <p>Workflow id: {workflowId}</p>
     )
 }
 
