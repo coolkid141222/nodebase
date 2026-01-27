@@ -1,10 +1,15 @@
 "use client"
 import { ReactNode } from "react";
-import { useCreateWorkflow, useSuspenseWorkflows } from "../hooks/user-workflows"
-import { EntityContainer, EntityHeader, EntityPagination, EntitySearch } from "@/app/components/entity-compoents";
+import { useCreateWorkflow, useSuspenseWorkflows, useDeleteWorkflow } from "../hooks/user-workflows"
+import { EntityContainer, EntityHeader, EntityPagination, EntitySearch, LoadingView, ErrorView, EmptyView, EntityList, EntityItem } from "@/app/components/entity-compoents";
 import { useRouter } from "next/navigation";
 import { useWorkflowsParams } from "../hooks/use-workflows-params";
 import { useEntitySearch } from "../hooks/use-entity-search";
+import * as Sentry from "@sentry/nextjs";
+import { toast } from "sonner";
+import type { workflow } from "@/lib/prisma/client";
+import { WorkflowIcon } from "lucide-react";
+import { formatDistanceToNow } from "date-fns"
 
 export const WorkflowsSearch = () => {
     const [params, setParams] = useWorkflowsParams();
@@ -24,11 +29,13 @@ export const WorkflowsSearch = () => {
 
 export const WorkflowsList = () => {
     const workflows = useSuspenseWorkflows();
-
     return (
-        <p>
-            {JSON.stringify(workflows.data, null, 2)}
-        </p>
+        <EntityList 
+            items={workflows.data.item}
+            getKey={(workflow) => workflow.id}
+            renderItem={(workflow) => <WorkflowsItem data={workflow} />}
+            emptyView={<WorkflowsEmpty />}
+        />
     )
 }
 
@@ -41,7 +48,8 @@ export const WorkflowsHearder = ({ disabled }: { disabled?: boolean }) => {
                 router.push(`/workflows/${data.id}`)
             },
             onError: (error) => {
-                console.log(error)
+                toast.error(`Failed to create workflow: ${error.message}`);
+                Sentry.captureException(error);
             }
         })
     }
@@ -51,9 +59,9 @@ export const WorkflowsHearder = ({ disabled }: { disabled?: boolean }) => {
                 title="Workflows"
                 description="Create and manage your workflows"
                 onNew={handleCreate}
-                newButtonLabel="new Workflows"
+                newButtonLabel="New Workflows"
                 disabled={disabled}
-                isCreating={false}
+                isCreating={createWorkflow.isPending}
             />
         </>
     )
@@ -85,5 +93,74 @@ export const WorkflowsContainer = ({
         >
             {children}
         </EntityContainer>
+    )
+}
+
+export const WorkflowsLoading = () => {
+    return (
+        <LoadingView message="Loading workflows.." />
+    )
+}
+
+export const WorkflowsError = () => {
+    return (
+        <ErrorView message="Loading workflows Error" />
+    )
+}
+
+export const WorkflowsEmpty = () => {
+    const router = useRouter();
+    const createWorkflow = useCreateWorkflow();
+    const handleCreate = () => {
+        createWorkflow.mutate(undefined, {
+            onError: (error) => {
+               toast.error(`Failed to create workflow: ${error.message}`);
+               Sentry.captureException(error);
+            },
+            onSuccess: (data) => {
+                router.push(`/workflows/${data.id}`)
+            }
+        });
+    }
+    return (
+        <>
+             <EmptyView
+                onNew={handleCreate}
+                isPending={createWorkflow.isPending}
+             />
+        </>
+    )
+}
+
+export const WorkflowsItem = ({
+    data,
+}: {
+    data: workflow;
+}) => {
+    const deleteWorkflow = useDeleteWorkflow();
+
+    const handleRemove = () => {
+        deleteWorkflow.mutate({ id: data.id });
+    };
+
+    return (
+        <EntityItem
+            href={`/workflows/${data.id}`}
+            title={data.name}
+            subtitle={
+                <>
+                    updated {formatDistanceToNow(new Date(data.updatedAt), { addSuffix: true })}{" "}
+                    &bull; Created{" "}
+                    {formatDistanceToNow(new Date(data.createdAt), { addSuffix: true })}
+                </>
+            }
+            image={
+                <div className="size-8 flex flex items-center justify-center">
+                    <WorkflowIcon className="size-5 text-muted-foreground" />
+                </div>
+            }
+            onRemove={handleRemove}
+            isRemoving={deleteWorkflow.isPending}
+        />
     )
 }
