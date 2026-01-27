@@ -1,6 +1,6 @@
 import { Button } from "@/components/button"
 import { Input } from "@/components/input"
-import { AlertTriangleIcon, BellIcon, Loader2Icon, MoreVerticalIcon, PlusIcon, RefreshCcwIcon, SearchIcon, TrashIcon } from "lucide-react";
+import { AlertTriangleIcon, BellIcon, Loader2Icon, MoreVerticalIcon, PlusIcon, SearchIcon, TrashIcon } from "lucide-react";
 import Link from "next/link";
 import {
   Empty,
@@ -237,7 +237,7 @@ export const EmptyView = ({
             </EmptyHeader>
             <EmptyContent>
                 <Button variant="outline" onClick={onNew} disabled={isPending}>
-                <RefreshCcwIcon />
+                <PlusIcon />
                     Create
                 </Button>
             </EmptyContent>
