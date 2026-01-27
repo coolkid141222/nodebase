@@ -4,7 +4,7 @@
 // biome-ignore-all lint: generated file
 // @ts-nocheck 
 /*
- * This file exports the `workflow` model and its related types.
+ * This file exports the `Workflow` model and its related types.
  *
  * 🟢 You can import this file directly.
  */
@@ -13,10 +13,10 @@ import type * as $Enums from "../enums"
 import type * as Prisma from "../internal/prismaNamespace"
 
 /**
- * Model workflow
+ * Model Workflow
  * 
  */
-export type workflowModel = runtime.Types.Result.DefaultSelection<Prisma.$workflowPayload>
+export type WorkflowModel = runtime.Types.Result.DefaultSelection<Prisma.$WorkflowPayload>
 
 export type AggregateWorkflow = {
   _count: WorkflowCountAggregateOutputType | null
@@ -77,37 +77,37 @@ export type WorkflowCountAggregateInputType = {
 
 export type WorkflowAggregateArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   /**
-   * Filter which workflow to aggregate.
+   * Filter which Workflow to aggregate.
    */
-  where?: Prisma.workflowWhereInput
+  where?: Prisma.WorkflowWhereInput
   /**
    * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
    * 
-   * Determine the order of workflows to fetch.
+   * Determine the order of Workflows to fetch.
    */
-  orderBy?: Prisma.workflowOrderByWithRelationInput | Prisma.workflowOrderByWithRelationInput[]
+  orderBy?: Prisma.WorkflowOrderByWithRelationInput | Prisma.WorkflowOrderByWithRelationInput[]
   /**
    * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
    * 
    * Sets the start position
    */
-  cursor?: Prisma.workflowWhereUniqueInput
+  cursor?: Prisma.WorkflowWhereUniqueInput
   /**
    * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
    * 
-   * Take `±n` workflows from the position of the cursor.
+   * Take `±n` Workflows from the position of the cursor.
    */
   take?: number
   /**
    * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
    * 
-   * Skip the first `n` workflows.
+   * Skip the first `n` Workflows.
    */
   skip?: number
   /**
    * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
    * 
-   * Count returned workflows
+   * Count returned Workflows
   **/
   _count?: true | WorkflowCountAggregateInputType
   /**
@@ -135,11 +135,11 @@ export type GetWorkflowAggregateType<T extends WorkflowAggregateArgs> = {
 
 
 
-export type workflowGroupByArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  where?: Prisma.workflowWhereInput
-  orderBy?: Prisma.workflowOrderByWithAggregationInput | Prisma.workflowOrderByWithAggregationInput[]
+export type WorkflowGroupByArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.WorkflowWhereInput
+  orderBy?: Prisma.WorkflowOrderByWithAggregationInput | Prisma.WorkflowOrderByWithAggregationInput[]
   by: Prisma.WorkflowScalarFieldEnum[] | Prisma.WorkflowScalarFieldEnum
-  having?: Prisma.workflowScalarWhereWithAggregatesInput
+  having?: Prisma.WorkflowScalarWhereWithAggregatesInput
   take?: number
   skip?: number
   _count?: WorkflowCountAggregateInputType | true
@@ -158,7 +158,7 @@ export type WorkflowGroupByOutputType = {
   _max: WorkflowMaxAggregateOutputType | null
 }
 
-type GetWorkflowGroupByPayload<T extends workflowGroupByArgs> = Prisma.PrismaPromise<
+type GetWorkflowGroupByPayload<T extends WorkflowGroupByArgs> = Prisma.PrismaPromise<
   Array<
     Prisma.PickEnumerable<WorkflowGroupByOutputType, T['by']> &
       {
@@ -173,94 +173,108 @@ type GetWorkflowGroupByPayload<T extends workflowGroupByArgs> = Prisma.PrismaPro
 
 
 
-export type workflowWhereInput = {
-  AND?: Prisma.workflowWhereInput | Prisma.workflowWhereInput[]
-  OR?: Prisma.workflowWhereInput[]
-  NOT?: Prisma.workflowWhereInput | Prisma.workflowWhereInput[]
-  id?: Prisma.StringFilter<"workflow"> | string
-  name?: Prisma.StringFilter<"workflow"> | string
-  createdAt?: Prisma.DateTimeFilter<"workflow"> | Date | string
-  updatedAt?: Prisma.DateTimeFilter<"workflow"> | Date | string
-  userId?: Prisma.StringFilter<"workflow"> | string
+export type WorkflowWhereInput = {
+  AND?: Prisma.WorkflowWhereInput | Prisma.WorkflowWhereInput[]
+  OR?: Prisma.WorkflowWhereInput[]
+  NOT?: Prisma.WorkflowWhereInput | Prisma.WorkflowWhereInput[]
+  id?: Prisma.StringFilter<"Workflow"> | string
+  name?: Prisma.StringFilter<"Workflow"> | string
+  createdAt?: Prisma.DateTimeFilter<"Workflow"> | Date | string
+  updatedAt?: Prisma.DateTimeFilter<"Workflow"> | Date | string
+  userId?: Prisma.StringFilter<"Workflow"> | string
+  nodes?: Prisma.NodeListRelationFilter
+  connections?: Prisma.ConnectionListRelationFilter
   user?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
 }
 
-export type workflowOrderByWithRelationInput = {
+export type WorkflowOrderByWithRelationInput = {
   id?: Prisma.SortOrder
   name?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   userId?: Prisma.SortOrder
+  nodes?: Prisma.NodeOrderByRelationAggregateInput
+  connections?: Prisma.ConnectionOrderByRelationAggregateInput
   user?: Prisma.UserOrderByWithRelationInput
 }
 
-export type workflowWhereUniqueInput = Prisma.AtLeast<{
+export type WorkflowWhereUniqueInput = Prisma.AtLeast<{
   id?: string
-  AND?: Prisma.workflowWhereInput | Prisma.workflowWhereInput[]
-  OR?: Prisma.workflowWhereInput[]
-  NOT?: Prisma.workflowWhereInput | Prisma.workflowWhereInput[]
-  name?: Prisma.StringFilter<"workflow"> | string
-  createdAt?: Prisma.DateTimeFilter<"workflow"> | Date | string
-  updatedAt?: Prisma.DateTimeFilter<"workflow"> | Date | string
-  userId?: Prisma.StringFilter<"workflow"> | string
+  AND?: Prisma.WorkflowWhereInput | Prisma.WorkflowWhereInput[]
+  OR?: Prisma.WorkflowWhereInput[]
+  NOT?: Prisma.WorkflowWhereInput | Prisma.WorkflowWhereInput[]
+  name?: Prisma.StringFilter<"Workflow"> | string
+  createdAt?: Prisma.DateTimeFilter<"Workflow"> | Date | string
+  updatedAt?: Prisma.DateTimeFilter<"Workflow"> | Date | string
+  userId?: Prisma.StringFilter<"Workflow"> | string
+  nodes?: Prisma.NodeListRelationFilter
+  connections?: Prisma.ConnectionListRelationFilter
   user?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
 }, "id">
 
-export type workflowOrderByWithAggregationInput = {
+export type WorkflowOrderByWithAggregationInput = {
   id?: Prisma.SortOrder
   name?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   userId?: Prisma.SortOrder
-  _count?: Prisma.workflowCountOrderByAggregateInput
-  _max?: Prisma.workflowMaxOrderByAggregateInput
-  _min?: Prisma.workflowMinOrderByAggregateInput
+  _count?: Prisma.WorkflowCountOrderByAggregateInput
+  _max?: Prisma.WorkflowMaxOrderByAggregateInput
+  _min?: Prisma.WorkflowMinOrderByAggregateInput
 }
 
-export type workflowScalarWhereWithAggregatesInput = {
-  AND?: Prisma.workflowScalarWhereWithAggregatesInput | Prisma.workflowScalarWhereWithAggregatesInput[]
-  OR?: Prisma.workflowScalarWhereWithAggregatesInput[]
-  NOT?: Prisma.workflowScalarWhereWithAggregatesInput | Prisma.workflowScalarWhereWithAggregatesInput[]
-  id?: Prisma.StringWithAggregatesFilter<"workflow"> | string
-  name?: Prisma.StringWithAggregatesFilter<"workflow"> | string
-  createdAt?: Prisma.DateTimeWithAggregatesFilter<"workflow"> | Date | string
-  updatedAt?: Prisma.DateTimeWithAggregatesFilter<"workflow"> | Date | string
-  userId?: Prisma.StringWithAggregatesFilter<"workflow"> | string
+export type WorkflowScalarWhereWithAggregatesInput = {
+  AND?: Prisma.WorkflowScalarWhereWithAggregatesInput | Prisma.WorkflowScalarWhereWithAggregatesInput[]
+  OR?: Prisma.WorkflowScalarWhereWithAggregatesInput[]
+  NOT?: Prisma.WorkflowScalarWhereWithAggregatesInput | Prisma.WorkflowScalarWhereWithAggregatesInput[]
+  id?: Prisma.StringWithAggregatesFilter<"Workflow"> | string
+  name?: Prisma.StringWithAggregatesFilter<"Workflow"> | string
+  createdAt?: Prisma.DateTimeWithAggregatesFilter<"Workflow"> | Date | string
+  updatedAt?: Prisma.DateTimeWithAggregatesFilter<"Workflow"> | Date | string
+  userId?: Prisma.StringWithAggregatesFilter<"Workflow"> | string
 }
 
-export type workflowCreateInput = {
+export type WorkflowCreateInput = {
   id?: string
   name: string
   createdAt?: Date | string
   updatedAt?: Date | string
+  nodes?: Prisma.NodeCreateNestedManyWithoutWorkflowInput
+  connections?: Prisma.ConnectionCreateNestedManyWithoutWorkflowInput
   user: Prisma.UserCreateNestedOneWithoutWorkflowsInput
 }
 
-export type workflowUncheckedCreateInput = {
+export type WorkflowUncheckedCreateInput = {
   id?: string
   name: string
   createdAt?: Date | string
   updatedAt?: Date | string
   userId: string
+  nodes?: Prisma.NodeUncheckedCreateNestedManyWithoutWorkflowInput
+  connections?: Prisma.ConnectionUncheckedCreateNestedManyWithoutWorkflowInput
 }
 
-export type workflowUpdateInput = {
+export type WorkflowUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  nodes?: Prisma.NodeUpdateManyWithoutWorkflowNestedInput
+  connections?: Prisma.ConnectionUpdateManyWithoutWorkflowNestedInput
   user?: Prisma.UserUpdateOneRequiredWithoutWorkflowsNestedInput
 }
 
-export type workflowUncheckedUpdateInput = {
+export type WorkflowUncheckedUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   userId?: Prisma.StringFieldUpdateOperationsInput | string
+  nodes?: Prisma.NodeUncheckedUpdateManyWithoutWorkflowNestedInput
+  connections?: Prisma.ConnectionUncheckedUpdateManyWithoutWorkflowNestedInput
 }
 
-export type workflowCreateManyInput = {
+export type WorkflowCreateManyInput = {
   id?: string
   name: string
   createdAt?: Date | string
@@ -268,14 +282,14 @@ export type workflowCreateManyInput = {
   userId: string
 }
 
-export type workflowUpdateManyMutationInput = {
+export type WorkflowUpdateManyMutationInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
-export type workflowUncheckedUpdateManyInput = {
+export type WorkflowUncheckedUpdateManyInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -284,16 +298,16 @@ export type workflowUncheckedUpdateManyInput = {
 }
 
 export type WorkflowListRelationFilter = {
-  every?: Prisma.workflowWhereInput
-  some?: Prisma.workflowWhereInput
-  none?: Prisma.workflowWhereInput
+  every?: Prisma.WorkflowWhereInput
+  some?: Prisma.WorkflowWhereInput
+  none?: Prisma.WorkflowWhereInput
 }
 
-export type workflowOrderByRelationAggregateInput = {
+export type WorkflowOrderByRelationAggregateInput = {
   _count?: Prisma.SortOrder
 }
 
-export type workflowCountOrderByAggregateInput = {
+export type WorkflowCountOrderByAggregateInput = {
   id?: Prisma.SortOrder
   name?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
@@ -301,7 +315,7 @@ export type workflowCountOrderByAggregateInput = {
   userId?: Prisma.SortOrder
 }
 
-export type workflowMaxOrderByAggregateInput = {
+export type WorkflowMaxOrderByAggregateInput = {
   id?: Prisma.SortOrder
   name?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
@@ -309,7 +323,7 @@ export type workflowMaxOrderByAggregateInput = {
   userId?: Prisma.SortOrder
 }
 
-export type workflowMinOrderByAggregateInput = {
+export type WorkflowMinOrderByAggregateInput = {
   id?: Prisma.SortOrder
   name?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
@@ -317,130 +331,325 @@ export type workflowMinOrderByAggregateInput = {
   userId?: Prisma.SortOrder
 }
 
-export type workflowCreateNestedManyWithoutUserInput = {
-  create?: Prisma.XOR<Prisma.workflowCreateWithoutUserInput, Prisma.workflowUncheckedCreateWithoutUserInput> | Prisma.workflowCreateWithoutUserInput[] | Prisma.workflowUncheckedCreateWithoutUserInput[]
-  connectOrCreate?: Prisma.workflowCreateOrConnectWithoutUserInput | Prisma.workflowCreateOrConnectWithoutUserInput[]
-  createMany?: Prisma.workflowCreateManyUserInputEnvelope
-  connect?: Prisma.workflowWhereUniqueInput | Prisma.workflowWhereUniqueInput[]
+export type WorkflowScalarRelationFilter = {
+  is?: Prisma.WorkflowWhereInput
+  isNot?: Prisma.WorkflowWhereInput
 }
 
-export type workflowUncheckedCreateNestedManyWithoutUserInput = {
-  create?: Prisma.XOR<Prisma.workflowCreateWithoutUserInput, Prisma.workflowUncheckedCreateWithoutUserInput> | Prisma.workflowCreateWithoutUserInput[] | Prisma.workflowUncheckedCreateWithoutUserInput[]
-  connectOrCreate?: Prisma.workflowCreateOrConnectWithoutUserInput | Prisma.workflowCreateOrConnectWithoutUserInput[]
-  createMany?: Prisma.workflowCreateManyUserInputEnvelope
-  connect?: Prisma.workflowWhereUniqueInput | Prisma.workflowWhereUniqueInput[]
+export type WorkflowCreateNestedManyWithoutUserInput = {
+  create?: Prisma.XOR<Prisma.WorkflowCreateWithoutUserInput, Prisma.WorkflowUncheckedCreateWithoutUserInput> | Prisma.WorkflowCreateWithoutUserInput[] | Prisma.WorkflowUncheckedCreateWithoutUserInput[]
+  connectOrCreate?: Prisma.WorkflowCreateOrConnectWithoutUserInput | Prisma.WorkflowCreateOrConnectWithoutUserInput[]
+  createMany?: Prisma.WorkflowCreateManyUserInputEnvelope
+  connect?: Prisma.WorkflowWhereUniqueInput | Prisma.WorkflowWhereUniqueInput[]
 }
 
-export type workflowUpdateManyWithoutUserNestedInput = {
-  create?: Prisma.XOR<Prisma.workflowCreateWithoutUserInput, Prisma.workflowUncheckedCreateWithoutUserInput> | Prisma.workflowCreateWithoutUserInput[] | Prisma.workflowUncheckedCreateWithoutUserInput[]
-  connectOrCreate?: Prisma.workflowCreateOrConnectWithoutUserInput | Prisma.workflowCreateOrConnectWithoutUserInput[]
-  upsert?: Prisma.workflowUpsertWithWhereUniqueWithoutUserInput | Prisma.workflowUpsertWithWhereUniqueWithoutUserInput[]
-  createMany?: Prisma.workflowCreateManyUserInputEnvelope
-  set?: Prisma.workflowWhereUniqueInput | Prisma.workflowWhereUniqueInput[]
-  disconnect?: Prisma.workflowWhereUniqueInput | Prisma.workflowWhereUniqueInput[]
-  delete?: Prisma.workflowWhereUniqueInput | Prisma.workflowWhereUniqueInput[]
-  connect?: Prisma.workflowWhereUniqueInput | Prisma.workflowWhereUniqueInput[]
-  update?: Prisma.workflowUpdateWithWhereUniqueWithoutUserInput | Prisma.workflowUpdateWithWhereUniqueWithoutUserInput[]
-  updateMany?: Prisma.workflowUpdateManyWithWhereWithoutUserInput | Prisma.workflowUpdateManyWithWhereWithoutUserInput[]
-  deleteMany?: Prisma.workflowScalarWhereInput | Prisma.workflowScalarWhereInput[]
+export type WorkflowUncheckedCreateNestedManyWithoutUserInput = {
+  create?: Prisma.XOR<Prisma.WorkflowCreateWithoutUserInput, Prisma.WorkflowUncheckedCreateWithoutUserInput> | Prisma.WorkflowCreateWithoutUserInput[] | Prisma.WorkflowUncheckedCreateWithoutUserInput[]
+  connectOrCreate?: Prisma.WorkflowCreateOrConnectWithoutUserInput | Prisma.WorkflowCreateOrConnectWithoutUserInput[]
+  createMany?: Prisma.WorkflowCreateManyUserInputEnvelope
+  connect?: Prisma.WorkflowWhereUniqueInput | Prisma.WorkflowWhereUniqueInput[]
 }
 
-export type workflowUncheckedUpdateManyWithoutUserNestedInput = {
-  create?: Prisma.XOR<Prisma.workflowCreateWithoutUserInput, Prisma.workflowUncheckedCreateWithoutUserInput> | Prisma.workflowCreateWithoutUserInput[] | Prisma.workflowUncheckedCreateWithoutUserInput[]
-  connectOrCreate?: Prisma.workflowCreateOrConnectWithoutUserInput | Prisma.workflowCreateOrConnectWithoutUserInput[]
-  upsert?: Prisma.workflowUpsertWithWhereUniqueWithoutUserInput | Prisma.workflowUpsertWithWhereUniqueWithoutUserInput[]
-  createMany?: Prisma.workflowCreateManyUserInputEnvelope
-  set?: Prisma.workflowWhereUniqueInput | Prisma.workflowWhereUniqueInput[]
-  disconnect?: Prisma.workflowWhereUniqueInput | Prisma.workflowWhereUniqueInput[]
-  delete?: Prisma.workflowWhereUniqueInput | Prisma.workflowWhereUniqueInput[]
-  connect?: Prisma.workflowWhereUniqueInput | Prisma.workflowWhereUniqueInput[]
-  update?: Prisma.workflowUpdateWithWhereUniqueWithoutUserInput | Prisma.workflowUpdateWithWhereUniqueWithoutUserInput[]
-  updateMany?: Prisma.workflowUpdateManyWithWhereWithoutUserInput | Prisma.workflowUpdateManyWithWhereWithoutUserInput[]
-  deleteMany?: Prisma.workflowScalarWhereInput | Prisma.workflowScalarWhereInput[]
+export type WorkflowUpdateManyWithoutUserNestedInput = {
+  create?: Prisma.XOR<Prisma.WorkflowCreateWithoutUserInput, Prisma.WorkflowUncheckedCreateWithoutUserInput> | Prisma.WorkflowCreateWithoutUserInput[] | Prisma.WorkflowUncheckedCreateWithoutUserInput[]
+  connectOrCreate?: Prisma.WorkflowCreateOrConnectWithoutUserInput | Prisma.WorkflowCreateOrConnectWithoutUserInput[]
+  upsert?: Prisma.WorkflowUpsertWithWhereUniqueWithoutUserInput | Prisma.WorkflowUpsertWithWhereUniqueWithoutUserInput[]
+  createMany?: Prisma.WorkflowCreateManyUserInputEnvelope
+  set?: Prisma.WorkflowWhereUniqueInput | Prisma.WorkflowWhereUniqueInput[]
+  disconnect?: Prisma.WorkflowWhereUniqueInput | Prisma.WorkflowWhereUniqueInput[]
+  delete?: Prisma.WorkflowWhereUniqueInput | Prisma.WorkflowWhereUniqueInput[]
+  connect?: Prisma.WorkflowWhereUniqueInput | Prisma.WorkflowWhereUniqueInput[]
+  update?: Prisma.WorkflowUpdateWithWhereUniqueWithoutUserInput | Prisma.WorkflowUpdateWithWhereUniqueWithoutUserInput[]
+  updateMany?: Prisma.WorkflowUpdateManyWithWhereWithoutUserInput | Prisma.WorkflowUpdateManyWithWhereWithoutUserInput[]
+  deleteMany?: Prisma.WorkflowScalarWhereInput | Prisma.WorkflowScalarWhereInput[]
 }
 
-export type workflowCreateWithoutUserInput = {
+export type WorkflowUncheckedUpdateManyWithoutUserNestedInput = {
+  create?: Prisma.XOR<Prisma.WorkflowCreateWithoutUserInput, Prisma.WorkflowUncheckedCreateWithoutUserInput> | Prisma.WorkflowCreateWithoutUserInput[] | Prisma.WorkflowUncheckedCreateWithoutUserInput[]
+  connectOrCreate?: Prisma.WorkflowCreateOrConnectWithoutUserInput | Prisma.WorkflowCreateOrConnectWithoutUserInput[]
+  upsert?: Prisma.WorkflowUpsertWithWhereUniqueWithoutUserInput | Prisma.WorkflowUpsertWithWhereUniqueWithoutUserInput[]
+  createMany?: Prisma.WorkflowCreateManyUserInputEnvelope
+  set?: Prisma.WorkflowWhereUniqueInput | Prisma.WorkflowWhereUniqueInput[]
+  disconnect?: Prisma.WorkflowWhereUniqueInput | Prisma.WorkflowWhereUniqueInput[]
+  delete?: Prisma.WorkflowWhereUniqueInput | Prisma.WorkflowWhereUniqueInput[]
+  connect?: Prisma.WorkflowWhereUniqueInput | Prisma.WorkflowWhereUniqueInput[]
+  update?: Prisma.WorkflowUpdateWithWhereUniqueWithoutUserInput | Prisma.WorkflowUpdateWithWhereUniqueWithoutUserInput[]
+  updateMany?: Prisma.WorkflowUpdateManyWithWhereWithoutUserInput | Prisma.WorkflowUpdateManyWithWhereWithoutUserInput[]
+  deleteMany?: Prisma.WorkflowScalarWhereInput | Prisma.WorkflowScalarWhereInput[]
+}
+
+export type WorkflowCreateNestedOneWithoutNodesInput = {
+  create?: Prisma.XOR<Prisma.WorkflowCreateWithoutNodesInput, Prisma.WorkflowUncheckedCreateWithoutNodesInput>
+  connectOrCreate?: Prisma.WorkflowCreateOrConnectWithoutNodesInput
+  connect?: Prisma.WorkflowWhereUniqueInput
+}
+
+export type WorkflowUpdateOneRequiredWithoutNodesNestedInput = {
+  create?: Prisma.XOR<Prisma.WorkflowCreateWithoutNodesInput, Prisma.WorkflowUncheckedCreateWithoutNodesInput>
+  connectOrCreate?: Prisma.WorkflowCreateOrConnectWithoutNodesInput
+  upsert?: Prisma.WorkflowUpsertWithoutNodesInput
+  connect?: Prisma.WorkflowWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.WorkflowUpdateToOneWithWhereWithoutNodesInput, Prisma.WorkflowUpdateWithoutNodesInput>, Prisma.WorkflowUncheckedUpdateWithoutNodesInput>
+}
+
+export type WorkflowCreateNestedOneWithoutConnectionsInput = {
+  create?: Prisma.XOR<Prisma.WorkflowCreateWithoutConnectionsInput, Prisma.WorkflowUncheckedCreateWithoutConnectionsInput>
+  connectOrCreate?: Prisma.WorkflowCreateOrConnectWithoutConnectionsInput
+  connect?: Prisma.WorkflowWhereUniqueInput
+}
+
+export type WorkflowUpdateOneRequiredWithoutConnectionsNestedInput = {
+  create?: Prisma.XOR<Prisma.WorkflowCreateWithoutConnectionsInput, Prisma.WorkflowUncheckedCreateWithoutConnectionsInput>
+  connectOrCreate?: Prisma.WorkflowCreateOrConnectWithoutConnectionsInput
+  upsert?: Prisma.WorkflowUpsertWithoutConnectionsInput
+  connect?: Prisma.WorkflowWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.WorkflowUpdateToOneWithWhereWithoutConnectionsInput, Prisma.WorkflowUpdateWithoutConnectionsInput>, Prisma.WorkflowUncheckedUpdateWithoutConnectionsInput>
+}
+
+export type WorkflowCreateWithoutUserInput = {
   id?: string
   name: string
   createdAt?: Date | string
   updatedAt?: Date | string
+  nodes?: Prisma.NodeCreateNestedManyWithoutWorkflowInput
+  connections?: Prisma.ConnectionCreateNestedManyWithoutWorkflowInput
 }
 
-export type workflowUncheckedCreateWithoutUserInput = {
+export type WorkflowUncheckedCreateWithoutUserInput = {
   id?: string
   name: string
   createdAt?: Date | string
   updatedAt?: Date | string
+  nodes?: Prisma.NodeUncheckedCreateNestedManyWithoutWorkflowInput
+  connections?: Prisma.ConnectionUncheckedCreateNestedManyWithoutWorkflowInput
 }
 
-export type workflowCreateOrConnectWithoutUserInput = {
-  where: Prisma.workflowWhereUniqueInput
-  create: Prisma.XOR<Prisma.workflowCreateWithoutUserInput, Prisma.workflowUncheckedCreateWithoutUserInput>
+export type WorkflowCreateOrConnectWithoutUserInput = {
+  where: Prisma.WorkflowWhereUniqueInput
+  create: Prisma.XOR<Prisma.WorkflowCreateWithoutUserInput, Prisma.WorkflowUncheckedCreateWithoutUserInput>
 }
 
-export type workflowCreateManyUserInputEnvelope = {
-  data: Prisma.workflowCreateManyUserInput | Prisma.workflowCreateManyUserInput[]
+export type WorkflowCreateManyUserInputEnvelope = {
+  data: Prisma.WorkflowCreateManyUserInput | Prisma.WorkflowCreateManyUserInput[]
   skipDuplicates?: boolean
 }
 
-export type workflowUpsertWithWhereUniqueWithoutUserInput = {
-  where: Prisma.workflowWhereUniqueInput
-  update: Prisma.XOR<Prisma.workflowUpdateWithoutUserInput, Prisma.workflowUncheckedUpdateWithoutUserInput>
-  create: Prisma.XOR<Prisma.workflowCreateWithoutUserInput, Prisma.workflowUncheckedCreateWithoutUserInput>
+export type WorkflowUpsertWithWhereUniqueWithoutUserInput = {
+  where: Prisma.WorkflowWhereUniqueInput
+  update: Prisma.XOR<Prisma.WorkflowUpdateWithoutUserInput, Prisma.WorkflowUncheckedUpdateWithoutUserInput>
+  create: Prisma.XOR<Prisma.WorkflowCreateWithoutUserInput, Prisma.WorkflowUncheckedCreateWithoutUserInput>
 }
 
-export type workflowUpdateWithWhereUniqueWithoutUserInput = {
-  where: Prisma.workflowWhereUniqueInput
-  data: Prisma.XOR<Prisma.workflowUpdateWithoutUserInput, Prisma.workflowUncheckedUpdateWithoutUserInput>
+export type WorkflowUpdateWithWhereUniqueWithoutUserInput = {
+  where: Prisma.WorkflowWhereUniqueInput
+  data: Prisma.XOR<Prisma.WorkflowUpdateWithoutUserInput, Prisma.WorkflowUncheckedUpdateWithoutUserInput>
 }
 
-export type workflowUpdateManyWithWhereWithoutUserInput = {
-  where: Prisma.workflowScalarWhereInput
-  data: Prisma.XOR<Prisma.workflowUpdateManyMutationInput, Prisma.workflowUncheckedUpdateManyWithoutUserInput>
+export type WorkflowUpdateManyWithWhereWithoutUserInput = {
+  where: Prisma.WorkflowScalarWhereInput
+  data: Prisma.XOR<Prisma.WorkflowUpdateManyMutationInput, Prisma.WorkflowUncheckedUpdateManyWithoutUserInput>
 }
 
-export type workflowScalarWhereInput = {
-  AND?: Prisma.workflowScalarWhereInput | Prisma.workflowScalarWhereInput[]
-  OR?: Prisma.workflowScalarWhereInput[]
-  NOT?: Prisma.workflowScalarWhereInput | Prisma.workflowScalarWhereInput[]
-  id?: Prisma.StringFilter<"workflow"> | string
-  name?: Prisma.StringFilter<"workflow"> | string
-  createdAt?: Prisma.DateTimeFilter<"workflow"> | Date | string
-  updatedAt?: Prisma.DateTimeFilter<"workflow"> | Date | string
-  userId?: Prisma.StringFilter<"workflow"> | string
+export type WorkflowScalarWhereInput = {
+  AND?: Prisma.WorkflowScalarWhereInput | Prisma.WorkflowScalarWhereInput[]
+  OR?: Prisma.WorkflowScalarWhereInput[]
+  NOT?: Prisma.WorkflowScalarWhereInput | Prisma.WorkflowScalarWhereInput[]
+  id?: Prisma.StringFilter<"Workflow"> | string
+  name?: Prisma.StringFilter<"Workflow"> | string
+  createdAt?: Prisma.DateTimeFilter<"Workflow"> | Date | string
+  updatedAt?: Prisma.DateTimeFilter<"Workflow"> | Date | string
+  userId?: Prisma.StringFilter<"Workflow"> | string
 }
 
-export type workflowCreateManyUserInput = {
+export type WorkflowCreateWithoutNodesInput = {
+  id?: string
+  name: string
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  connections?: Prisma.ConnectionCreateNestedManyWithoutWorkflowInput
+  user: Prisma.UserCreateNestedOneWithoutWorkflowsInput
+}
+
+export type WorkflowUncheckedCreateWithoutNodesInput = {
+  id?: string
+  name: string
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  userId: string
+  connections?: Prisma.ConnectionUncheckedCreateNestedManyWithoutWorkflowInput
+}
+
+export type WorkflowCreateOrConnectWithoutNodesInput = {
+  where: Prisma.WorkflowWhereUniqueInput
+  create: Prisma.XOR<Prisma.WorkflowCreateWithoutNodesInput, Prisma.WorkflowUncheckedCreateWithoutNodesInput>
+}
+
+export type WorkflowUpsertWithoutNodesInput = {
+  update: Prisma.XOR<Prisma.WorkflowUpdateWithoutNodesInput, Prisma.WorkflowUncheckedUpdateWithoutNodesInput>
+  create: Prisma.XOR<Prisma.WorkflowCreateWithoutNodesInput, Prisma.WorkflowUncheckedCreateWithoutNodesInput>
+  where?: Prisma.WorkflowWhereInput
+}
+
+export type WorkflowUpdateToOneWithWhereWithoutNodesInput = {
+  where?: Prisma.WorkflowWhereInput
+  data: Prisma.XOR<Prisma.WorkflowUpdateWithoutNodesInput, Prisma.WorkflowUncheckedUpdateWithoutNodesInput>
+}
+
+export type WorkflowUpdateWithoutNodesInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  connections?: Prisma.ConnectionUpdateManyWithoutWorkflowNestedInput
+  user?: Prisma.UserUpdateOneRequiredWithoutWorkflowsNestedInput
+}
+
+export type WorkflowUncheckedUpdateWithoutNodesInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  userId?: Prisma.StringFieldUpdateOperationsInput | string
+  connections?: Prisma.ConnectionUncheckedUpdateManyWithoutWorkflowNestedInput
+}
+
+export type WorkflowCreateWithoutConnectionsInput = {
+  id?: string
+  name: string
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  nodes?: Prisma.NodeCreateNestedManyWithoutWorkflowInput
+  user: Prisma.UserCreateNestedOneWithoutWorkflowsInput
+}
+
+export type WorkflowUncheckedCreateWithoutConnectionsInput = {
+  id?: string
+  name: string
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  userId: string
+  nodes?: Prisma.NodeUncheckedCreateNestedManyWithoutWorkflowInput
+}
+
+export type WorkflowCreateOrConnectWithoutConnectionsInput = {
+  where: Prisma.WorkflowWhereUniqueInput
+  create: Prisma.XOR<Prisma.WorkflowCreateWithoutConnectionsInput, Prisma.WorkflowUncheckedCreateWithoutConnectionsInput>
+}
+
+export type WorkflowUpsertWithoutConnectionsInput = {
+  update: Prisma.XOR<Prisma.WorkflowUpdateWithoutConnectionsInput, Prisma.WorkflowUncheckedUpdateWithoutConnectionsInput>
+  create: Prisma.XOR<Prisma.WorkflowCreateWithoutConnectionsInput, Prisma.WorkflowUncheckedCreateWithoutConnectionsInput>
+  where?: Prisma.WorkflowWhereInput
+}
+
+export type WorkflowUpdateToOneWithWhereWithoutConnectionsInput = {
+  where?: Prisma.WorkflowWhereInput
+  data: Prisma.XOR<Prisma.WorkflowUpdateWithoutConnectionsInput, Prisma.WorkflowUncheckedUpdateWithoutConnectionsInput>
+}
+
+export type WorkflowUpdateWithoutConnectionsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  nodes?: Prisma.NodeUpdateManyWithoutWorkflowNestedInput
+  user?: Prisma.UserUpdateOneRequiredWithoutWorkflowsNestedInput
+}
+
+export type WorkflowUncheckedUpdateWithoutConnectionsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  userId?: Prisma.StringFieldUpdateOperationsInput | string
+  nodes?: Prisma.NodeUncheckedUpdateManyWithoutWorkflowNestedInput
+}
+
+export type WorkflowCreateManyUserInput = {
   id?: string
   name: string
   createdAt?: Date | string
   updatedAt?: Date | string
 }
 
-export type workflowUpdateWithoutUserInput = {
+export type WorkflowUpdateWithoutUserInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  nodes?: Prisma.NodeUpdateManyWithoutWorkflowNestedInput
+  connections?: Prisma.ConnectionUpdateManyWithoutWorkflowNestedInput
+}
+
+export type WorkflowUncheckedUpdateWithoutUserInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  nodes?: Prisma.NodeUncheckedUpdateManyWithoutWorkflowNestedInput
+  connections?: Prisma.ConnectionUncheckedUpdateManyWithoutWorkflowNestedInput
+}
+
+export type WorkflowUncheckedUpdateManyWithoutUserInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
-export type workflowUncheckedUpdateWithoutUserInput = {
-  id?: Prisma.StringFieldUpdateOperationsInput | string
-  name?: Prisma.StringFieldUpdateOperationsInput | string
-  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+
+/**
+ * Count Type WorkflowCountOutputType
+ */
+
+export type WorkflowCountOutputType = {
+  nodes: number
+  connections: number
 }
 
-export type workflowUncheckedUpdateManyWithoutUserInput = {
-  id?: Prisma.StringFieldUpdateOperationsInput | string
-  name?: Prisma.StringFieldUpdateOperationsInput | string
-  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+export type WorkflowCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  nodes?: boolean | WorkflowCountOutputTypeCountNodesArgs
+  connections?: boolean | WorkflowCountOutputTypeCountConnectionsArgs
+}
+
+/**
+ * WorkflowCountOutputType without action
+ */
+export type WorkflowCountOutputTypeDefaultArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the WorkflowCountOutputType
+   */
+  select?: Prisma.WorkflowCountOutputTypeSelect<ExtArgs> | null
+}
+
+/**
+ * WorkflowCountOutputType without action
+ */
+export type WorkflowCountOutputTypeCountNodesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.NodeWhereInput
+}
+
+/**
+ * WorkflowCountOutputType without action
+ */
+export type WorkflowCountOutputTypeCountConnectionsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.ConnectionWhereInput
 }
 
 
+export type WorkflowSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
+  id?: boolean
+  name?: boolean
+  createdAt?: boolean
+  updatedAt?: boolean
+  userId?: boolean
+  nodes?: boolean | Prisma.Workflow$nodesArgs<ExtArgs>
+  connections?: boolean | Prisma.Workflow$connectionsArgs<ExtArgs>
+  user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
+  _count?: boolean | Prisma.WorkflowCountOutputTypeDefaultArgs<ExtArgs>
+}, ExtArgs["result"]["workflow"]>
 
-export type workflowSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
+export type WorkflowSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
   name?: boolean
   createdAt?: boolean
@@ -449,7 +658,7 @@ export type workflowSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs
   user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["workflow"]>
 
-export type workflowSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
+export type WorkflowSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
   name?: boolean
   createdAt?: boolean
@@ -458,16 +667,7 @@ export type workflowSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Exte
   user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["workflow"]>
 
-export type workflowSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
-  id?: boolean
-  name?: boolean
-  createdAt?: boolean
-  updatedAt?: boolean
-  userId?: boolean
-  user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
-}, ExtArgs["result"]["workflow"]>
-
-export type workflowSelectScalar = {
+export type WorkflowSelectScalar = {
   id?: boolean
   name?: boolean
   createdAt?: boolean
@@ -475,20 +675,25 @@ export type workflowSelectScalar = {
   userId?: boolean
 }
 
-export type workflowOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "name" | "createdAt" | "updatedAt" | "userId", ExtArgs["result"]["workflow"]>
-export type workflowInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+export type WorkflowOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "name" | "createdAt" | "updatedAt" | "userId", ExtArgs["result"]["workflow"]>
+export type WorkflowInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  nodes?: boolean | Prisma.Workflow$nodesArgs<ExtArgs>
+  connections?: boolean | Prisma.Workflow$connectionsArgs<ExtArgs>
+  user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
+  _count?: boolean | Prisma.WorkflowCountOutputTypeDefaultArgs<ExtArgs>
+}
+export type WorkflowIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
 }
-export type workflowIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
-}
-export type workflowIncludeUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+export type WorkflowIncludeUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
 }
 
-export type $workflowPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  name: "workflow"
+export type $WorkflowPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  name: "Workflow"
   objects: {
+    nodes: Prisma.$NodePayload<ExtArgs>[]
+    connections: Prisma.$ConnectionPayload<ExtArgs>[]
     user: Prisma.$UserPayload<ExtArgs>
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
@@ -501,18 +706,18 @@ export type $workflowPayload<ExtArgs extends runtime.Types.Extensions.InternalAr
   composites: {}
 }
 
-export type workflowGetPayload<S extends boolean | null | undefined | workflowDefaultArgs> = runtime.Types.Result.GetResult<Prisma.$workflowPayload, S>
+export type WorkflowGetPayload<S extends boolean | null | undefined | WorkflowDefaultArgs> = runtime.Types.Result.GetResult<Prisma.$WorkflowPayload, S>
 
-export type workflowCountArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> =
-  Omit<workflowFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
+export type WorkflowCountArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> =
+  Omit<WorkflowFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
     select?: WorkflowCountAggregateInputType | true
   }
 
-export interface workflowDelegate<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs, GlobalOmitOptions = {}> {
-  [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['workflow'], meta: { name: 'workflow' } }
+export interface WorkflowDelegate<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs, GlobalOmitOptions = {}> {
+  [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['Workflow'], meta: { name: 'Workflow' } }
   /**
    * Find zero or one Workflow that matches the filter.
-   * @param {workflowFindUniqueArgs} args - Arguments to find a Workflow
+   * @param {WorkflowFindUniqueArgs} args - Arguments to find a Workflow
    * @example
    * // Get one Workflow
    * const workflow = await prisma.workflow.findUnique({
@@ -521,12 +726,12 @@ export interface workflowDelegate<ExtArgs extends runtime.Types.Extensions.Inter
    *   }
    * })
    */
-  findUnique<T extends workflowFindUniqueArgs>(args: Prisma.SelectSubset<T, workflowFindUniqueArgs<ExtArgs>>): Prisma.Prisma__workflowClient<runtime.Types.Result.GetResult<Prisma.$workflowPayload<ExtArgs>, T, "findUnique", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+  findUnique<T extends WorkflowFindUniqueArgs>(args: Prisma.SelectSubset<T, WorkflowFindUniqueArgs<ExtArgs>>): Prisma.Prisma__WorkflowClient<runtime.Types.Result.GetResult<Prisma.$WorkflowPayload<ExtArgs>, T, "findUnique", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
 
   /**
    * Find one Workflow that matches the filter or throw an error with `error.code='P2025'`
    * if no matches were found.
-   * @param {workflowFindUniqueOrThrowArgs} args - Arguments to find a Workflow
+   * @param {WorkflowFindUniqueOrThrowArgs} args - Arguments to find a Workflow
    * @example
    * // Get one Workflow
    * const workflow = await prisma.workflow.findUniqueOrThrow({
@@ -535,13 +740,13 @@ export interface workflowDelegate<ExtArgs extends runtime.Types.Extensions.Inter
    *   }
    * })
    */
-  findUniqueOrThrow<T extends workflowFindUniqueOrThrowArgs>(args: Prisma.SelectSubset<T, workflowFindUniqueOrThrowArgs<ExtArgs>>): Prisma.Prisma__workflowClient<runtime.Types.Result.GetResult<Prisma.$workflowPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+  findUniqueOrThrow<T extends WorkflowFindUniqueOrThrowArgs>(args: Prisma.SelectSubset<T, WorkflowFindUniqueOrThrowArgs<ExtArgs>>): Prisma.Prisma__WorkflowClient<runtime.Types.Result.GetResult<Prisma.$WorkflowPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
 
   /**
    * Find the first Workflow that matches the filter.
    * Note, that providing `undefined` is treated as the value not being there.
    * Read more here: https://pris.ly/d/null-undefined
-   * @param {workflowFindFirstArgs} args - Arguments to find a Workflow
+   * @param {WorkflowFindFirstArgs} args - Arguments to find a Workflow
    * @example
    * // Get one Workflow
    * const workflow = await prisma.workflow.findFirst({
@@ -550,14 +755,14 @@ export interface workflowDelegate<ExtArgs extends runtime.Types.Extensions.Inter
    *   }
    * })
    */
-  findFirst<T extends workflowFindFirstArgs>(args?: Prisma.SelectSubset<T, workflowFindFirstArgs<ExtArgs>>): Prisma.Prisma__workflowClient<runtime.Types.Result.GetResult<Prisma.$workflowPayload<ExtArgs>, T, "findFirst", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+  findFirst<T extends WorkflowFindFirstArgs>(args?: Prisma.SelectSubset<T, WorkflowFindFirstArgs<ExtArgs>>): Prisma.Prisma__WorkflowClient<runtime.Types.Result.GetResult<Prisma.$WorkflowPayload<ExtArgs>, T, "findFirst", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
 
   /**
    * Find the first Workflow that matches the filter or
    * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
    * Note, that providing `undefined` is treated as the value not being there.
    * Read more here: https://pris.ly/d/null-undefined
-   * @param {workflowFindFirstOrThrowArgs} args - Arguments to find a Workflow
+   * @param {WorkflowFindFirstOrThrowArgs} args - Arguments to find a Workflow
    * @example
    * // Get one Workflow
    * const workflow = await prisma.workflow.findFirstOrThrow({
@@ -566,13 +771,13 @@ export interface workflowDelegate<ExtArgs extends runtime.Types.Extensions.Inter
    *   }
    * })
    */
-  findFirstOrThrow<T extends workflowFindFirstOrThrowArgs>(args?: Prisma.SelectSubset<T, workflowFindFirstOrThrowArgs<ExtArgs>>): Prisma.Prisma__workflowClient<runtime.Types.Result.GetResult<Prisma.$workflowPayload<ExtArgs>, T, "findFirstOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+  findFirstOrThrow<T extends WorkflowFindFirstOrThrowArgs>(args?: Prisma.SelectSubset<T, WorkflowFindFirstOrThrowArgs<ExtArgs>>): Prisma.Prisma__WorkflowClient<runtime.Types.Result.GetResult<Prisma.$WorkflowPayload<ExtArgs>, T, "findFirstOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
 
   /**
    * Find zero or more Workflows that matches the filter.
    * Note, that providing `undefined` is treated as the value not being there.
    * Read more here: https://pris.ly/d/null-undefined
-   * @param {workflowFindManyArgs} args - Arguments to filter and select certain fields only.
+   * @param {WorkflowFindManyArgs} args - Arguments to filter and select certain fields only.
    * @example
    * // Get all Workflows
    * const workflows = await prisma.workflow.findMany()
@@ -584,11 +789,11 @@ export interface workflowDelegate<ExtArgs extends runtime.Types.Extensions.Inter
    * const workflowWithIdOnly = await prisma.workflow.findMany({ select: { id: true } })
    * 
    */
-  findMany<T extends workflowFindManyArgs>(args?: Prisma.SelectSubset<T, workflowFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$workflowPayload<ExtArgs>, T, "findMany", GlobalOmitOptions>>
+  findMany<T extends WorkflowFindManyArgs>(args?: Prisma.SelectSubset<T, WorkflowFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$WorkflowPayload<ExtArgs>, T, "findMany", GlobalOmitOptions>>
 
   /**
    * Create a Workflow.
-   * @param {workflowCreateArgs} args - Arguments to create a Workflow.
+   * @param {WorkflowCreateArgs} args - Arguments to create a Workflow.
    * @example
    * // Create one Workflow
    * const Workflow = await prisma.workflow.create({
@@ -598,11 +803,11 @@ export interface workflowDelegate<ExtArgs extends runtime.Types.Extensions.Inter
    * })
    * 
    */
-  create<T extends workflowCreateArgs>(args: Prisma.SelectSubset<T, workflowCreateArgs<ExtArgs>>): Prisma.Prisma__workflowClient<runtime.Types.Result.GetResult<Prisma.$workflowPayload<ExtArgs>, T, "create", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+  create<T extends WorkflowCreateArgs>(args: Prisma.SelectSubset<T, WorkflowCreateArgs<ExtArgs>>): Prisma.Prisma__WorkflowClient<runtime.Types.Result.GetResult<Prisma.$WorkflowPayload<ExtArgs>, T, "create", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
 
   /**
    * Create many Workflows.
-   * @param {workflowCreateManyArgs} args - Arguments to create many Workflows.
+   * @param {WorkflowCreateManyArgs} args - Arguments to create many Workflows.
    * @example
    * // Create many Workflows
    * const workflow = await prisma.workflow.createMany({
@@ -612,11 +817,11 @@ export interface workflowDelegate<ExtArgs extends runtime.Types.Extensions.Inter
    * })
    *     
    */
-  createMany<T extends workflowCreateManyArgs>(args?: Prisma.SelectSubset<T, workflowCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<Prisma.BatchPayload>
+  createMany<T extends WorkflowCreateManyArgs>(args?: Prisma.SelectSubset<T, WorkflowCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<Prisma.BatchPayload>
 
   /**
    * Create many Workflows and returns the data saved in the database.
-   * @param {workflowCreateManyAndReturnArgs} args - Arguments to create many Workflows.
+   * @param {WorkflowCreateManyAndReturnArgs} args - Arguments to create many Workflows.
    * @example
    * // Create many Workflows
    * const workflow = await prisma.workflow.createManyAndReturn({
@@ -636,11 +841,11 @@ export interface workflowDelegate<ExtArgs extends runtime.Types.Extensions.Inter
    * Read more here: https://pris.ly/d/null-undefined
    * 
    */
-  createManyAndReturn<T extends workflowCreateManyAndReturnArgs>(args?: Prisma.SelectSubset<T, workflowCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$workflowPayload<ExtArgs>, T, "createManyAndReturn", GlobalOmitOptions>>
+  createManyAndReturn<T extends WorkflowCreateManyAndReturnArgs>(args?: Prisma.SelectSubset<T, WorkflowCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$WorkflowPayload<ExtArgs>, T, "createManyAndReturn", GlobalOmitOptions>>
 
   /**
    * Delete a Workflow.
-   * @param {workflowDeleteArgs} args - Arguments to delete one Workflow.
+   * @param {WorkflowDeleteArgs} args - Arguments to delete one Workflow.
    * @example
    * // Delete one Workflow
    * const Workflow = await prisma.workflow.delete({
@@ -650,11 +855,11 @@ export interface workflowDelegate<ExtArgs extends runtime.Types.Extensions.Inter
    * })
    * 
    */
-  delete<T extends workflowDeleteArgs>(args: Prisma.SelectSubset<T, workflowDeleteArgs<ExtArgs>>): Prisma.Prisma__workflowClient<runtime.Types.Result.GetResult<Prisma.$workflowPayload<ExtArgs>, T, "delete", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+  delete<T extends WorkflowDeleteArgs>(args: Prisma.SelectSubset<T, WorkflowDeleteArgs<ExtArgs>>): Prisma.Prisma__WorkflowClient<runtime.Types.Result.GetResult<Prisma.$WorkflowPayload<ExtArgs>, T, "delete", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
 
   /**
    * Update one Workflow.
-   * @param {workflowUpdateArgs} args - Arguments to update one Workflow.
+   * @param {WorkflowUpdateArgs} args - Arguments to update one Workflow.
    * @example
    * // Update one Workflow
    * const workflow = await prisma.workflow.update({
@@ -667,11 +872,11 @@ export interface workflowDelegate<ExtArgs extends runtime.Types.Extensions.Inter
    * })
    * 
    */
-  update<T extends workflowUpdateArgs>(args: Prisma.SelectSubset<T, workflowUpdateArgs<ExtArgs>>): Prisma.Prisma__workflowClient<runtime.Types.Result.GetResult<Prisma.$workflowPayload<ExtArgs>, T, "update", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+  update<T extends WorkflowUpdateArgs>(args: Prisma.SelectSubset<T, WorkflowUpdateArgs<ExtArgs>>): Prisma.Prisma__WorkflowClient<runtime.Types.Result.GetResult<Prisma.$WorkflowPayload<ExtArgs>, T, "update", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
 
   /**
    * Delete zero or more Workflows.
-   * @param {workflowDeleteManyArgs} args - Arguments to filter Workflows to delete.
+   * @param {WorkflowDeleteManyArgs} args - Arguments to filter Workflows to delete.
    * @example
    * // Delete a few Workflows
    * const { count } = await prisma.workflow.deleteMany({
@@ -681,13 +886,13 @@ export interface workflowDelegate<ExtArgs extends runtime.Types.Extensions.Inter
    * })
    * 
    */
-  deleteMany<T extends workflowDeleteManyArgs>(args?: Prisma.SelectSubset<T, workflowDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<Prisma.BatchPayload>
+  deleteMany<T extends WorkflowDeleteManyArgs>(args?: Prisma.SelectSubset<T, WorkflowDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<Prisma.BatchPayload>
 
   /**
    * Update zero or more Workflows.
    * Note, that providing `undefined` is treated as the value not being there.
    * Read more here: https://pris.ly/d/null-undefined
-   * @param {workflowUpdateManyArgs} args - Arguments to update one or more rows.
+   * @param {WorkflowUpdateManyArgs} args - Arguments to update one or more rows.
    * @example
    * // Update many Workflows
    * const workflow = await prisma.workflow.updateMany({
@@ -700,11 +905,11 @@ export interface workflowDelegate<ExtArgs extends runtime.Types.Extensions.Inter
    * })
    * 
    */
-  updateMany<T extends workflowUpdateManyArgs>(args: Prisma.SelectSubset<T, workflowUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<Prisma.BatchPayload>
+  updateMany<T extends WorkflowUpdateManyArgs>(args: Prisma.SelectSubset<T, WorkflowUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<Prisma.BatchPayload>
 
   /**
    * Update zero or more Workflows and returns the data updated in the database.
-   * @param {workflowUpdateManyAndReturnArgs} args - Arguments to update many Workflows.
+   * @param {WorkflowUpdateManyAndReturnArgs} args - Arguments to update many Workflows.
    * @example
    * // Update many Workflows
    * const workflow = await prisma.workflow.updateManyAndReturn({
@@ -730,11 +935,11 @@ export interface workflowDelegate<ExtArgs extends runtime.Types.Extensions.Inter
    * Read more here: https://pris.ly/d/null-undefined
    * 
    */
-  updateManyAndReturn<T extends workflowUpdateManyAndReturnArgs>(args: Prisma.SelectSubset<T, workflowUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$workflowPayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
+  updateManyAndReturn<T extends WorkflowUpdateManyAndReturnArgs>(args: Prisma.SelectSubset<T, WorkflowUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$WorkflowPayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
 
   /**
    * Create or update one Workflow.
-   * @param {workflowUpsertArgs} args - Arguments to update or create a Workflow.
+   * @param {WorkflowUpsertArgs} args - Arguments to update or create a Workflow.
    * @example
    * // Update or create a Workflow
    * const workflow = await prisma.workflow.upsert({
@@ -749,14 +954,14 @@ export interface workflowDelegate<ExtArgs extends runtime.Types.Extensions.Inter
    *   }
    * })
    */
-  upsert<T extends workflowUpsertArgs>(args: Prisma.SelectSubset<T, workflowUpsertArgs<ExtArgs>>): Prisma.Prisma__workflowClient<runtime.Types.Result.GetResult<Prisma.$workflowPayload<ExtArgs>, T, "upsert", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+  upsert<T extends WorkflowUpsertArgs>(args: Prisma.SelectSubset<T, WorkflowUpsertArgs<ExtArgs>>): Prisma.Prisma__WorkflowClient<runtime.Types.Result.GetResult<Prisma.$WorkflowPayload<ExtArgs>, T, "upsert", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
 
 
   /**
    * Count the number of Workflows.
    * Note, that providing `undefined` is treated as the value not being there.
    * Read more here: https://pris.ly/d/null-undefined
-   * @param {workflowCountArgs} args - Arguments to filter Workflows to count.
+   * @param {WorkflowCountArgs} args - Arguments to filter Workflows to count.
    * @example
    * // Count the number of Workflows
    * const count = await prisma.workflow.count({
@@ -765,8 +970,8 @@ export interface workflowDelegate<ExtArgs extends runtime.Types.Extensions.Inter
    *   }
    * })
   **/
-  count<T extends workflowCountArgs>(
-    args?: Prisma.Subset<T, workflowCountArgs>,
+  count<T extends WorkflowCountArgs>(
+    args?: Prisma.Subset<T, WorkflowCountArgs>,
   ): Prisma.PrismaPromise<
     T extends runtime.Types.Utils.Record<'select', any>
       ? T['select'] extends true
@@ -805,7 +1010,7 @@ export interface workflowDelegate<ExtArgs extends runtime.Types.Extensions.Inter
    * Group by Workflow.
    * Note, that providing `undefined` is treated as the value not being there.
    * Read more here: https://pris.ly/d/null-undefined
-   * @param {workflowGroupByArgs} args - Group by arguments.
+   * @param {WorkflowGroupByArgs} args - Group by arguments.
    * @example
    * // Group by city, order by createdAt, get count
    * const result = await prisma.user.groupBy({
@@ -820,14 +1025,14 @@ export interface workflowDelegate<ExtArgs extends runtime.Types.Extensions.Inter
    * 
   **/
   groupBy<
-    T extends workflowGroupByArgs,
+    T extends WorkflowGroupByArgs,
     HasSelectOrTake extends Prisma.Or<
       Prisma.Extends<'skip', Prisma.Keys<T>>,
       Prisma.Extends<'take', Prisma.Keys<T>>
     >,
     OrderByArg extends Prisma.True extends HasSelectOrTake
-      ? { orderBy: workflowGroupByArgs['orderBy'] }
-      : { orderBy?: workflowGroupByArgs['orderBy'] },
+      ? { orderBy: WorkflowGroupByArgs['orderBy'] }
+      : { orderBy?: WorkflowGroupByArgs['orderBy'] },
     OrderFields extends Prisma.ExcludeUnderscoreKeys<Prisma.Keys<Prisma.MaybeTupleToUnion<T['orderBy']>>>,
     ByFields extends Prisma.MaybeTupleToUnion<T['by']>,
     ByValid extends Prisma.Has<ByFields, OrderFields>,
@@ -876,21 +1081,23 @@ export interface workflowDelegate<ExtArgs extends runtime.Types.Extensions.Inter
           ? never
           : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
       }[OrderFields]
-  >(args: Prisma.SubsetIntersection<T, workflowGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetWorkflowGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  >(args: Prisma.SubsetIntersection<T, WorkflowGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetWorkflowGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
 /**
- * Fields of the workflow model
+ * Fields of the Workflow model
  */
-readonly fields: workflowFieldRefs;
+readonly fields: WorkflowFieldRefs;
 }
 
 /**
- * The delegate class that acts as a "Promise-like" for workflow.
+ * The delegate class that acts as a "Promise-like" for Workflow.
  * Why is this prefixed with `Prisma__`?
  * Because we want to prevent naming conflicts as mentioned in
  * https://github.com/prisma/prisma-client-js/issues/707
  */
-export interface Prisma__workflowClient<T, Null = never, ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
+export interface Prisma__WorkflowClient<T, Null = never, ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
   readonly [Symbol.toStringTag]: "PrismaPromise"
+  nodes<T extends Prisma.Workflow$nodesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Workflow$nodesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$NodePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  connections<T extends Prisma.Workflow$connectionsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Workflow$connectionsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ConnectionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   user<T extends Prisma.UserDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.UserDefaultArgs<ExtArgs>>): Prisma.Prisma__UserClient<runtime.Types.Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
@@ -918,423 +1125,471 @@ export interface Prisma__workflowClient<T, Null = never, ExtArgs extends runtime
 
 
 /**
- * Fields of the workflow model
+ * Fields of the Workflow model
  */
-export interface workflowFieldRefs {
-  readonly id: Prisma.FieldRef<"workflow", 'String'>
-  readonly name: Prisma.FieldRef<"workflow", 'String'>
-  readonly createdAt: Prisma.FieldRef<"workflow", 'DateTime'>
-  readonly updatedAt: Prisma.FieldRef<"workflow", 'DateTime'>
-  readonly userId: Prisma.FieldRef<"workflow", 'String'>
+export interface WorkflowFieldRefs {
+  readonly id: Prisma.FieldRef<"Workflow", 'String'>
+  readonly name: Prisma.FieldRef<"Workflow", 'String'>
+  readonly createdAt: Prisma.FieldRef<"Workflow", 'DateTime'>
+  readonly updatedAt: Prisma.FieldRef<"Workflow", 'DateTime'>
+  readonly userId: Prisma.FieldRef<"Workflow", 'String'>
 }
     
 
 // Custom InputTypes
 /**
- * workflow findUnique
+ * Workflow findUnique
  */
-export type workflowFindUniqueArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+export type WorkflowFindUniqueArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   /**
-   * Select specific fields to fetch from the workflow
+   * Select specific fields to fetch from the Workflow
    */
-  select?: Prisma.workflowSelect<ExtArgs> | null
+  select?: Prisma.WorkflowSelect<ExtArgs> | null
   /**
-   * Omit specific fields from the workflow
+   * Omit specific fields from the Workflow
    */
-  omit?: Prisma.workflowOmit<ExtArgs> | null
+  omit?: Prisma.WorkflowOmit<ExtArgs> | null
   /**
    * Choose, which related nodes to fetch as well
    */
-  include?: Prisma.workflowInclude<ExtArgs> | null
+  include?: Prisma.WorkflowInclude<ExtArgs> | null
   /**
-   * Filter, which workflow to fetch.
+   * Filter, which Workflow to fetch.
    */
-  where: Prisma.workflowWhereUniqueInput
+  where: Prisma.WorkflowWhereUniqueInput
 }
 
 /**
- * workflow findUniqueOrThrow
+ * Workflow findUniqueOrThrow
  */
-export type workflowFindUniqueOrThrowArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+export type WorkflowFindUniqueOrThrowArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   /**
-   * Select specific fields to fetch from the workflow
+   * Select specific fields to fetch from the Workflow
    */
-  select?: Prisma.workflowSelect<ExtArgs> | null
+  select?: Prisma.WorkflowSelect<ExtArgs> | null
   /**
-   * Omit specific fields from the workflow
+   * Omit specific fields from the Workflow
    */
-  omit?: Prisma.workflowOmit<ExtArgs> | null
+  omit?: Prisma.WorkflowOmit<ExtArgs> | null
   /**
    * Choose, which related nodes to fetch as well
    */
-  include?: Prisma.workflowInclude<ExtArgs> | null
+  include?: Prisma.WorkflowInclude<ExtArgs> | null
   /**
-   * Filter, which workflow to fetch.
+   * Filter, which Workflow to fetch.
    */
-  where: Prisma.workflowWhereUniqueInput
+  where: Prisma.WorkflowWhereUniqueInput
 }
 
 /**
- * workflow findFirst
+ * Workflow findFirst
  */
-export type workflowFindFirstArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+export type WorkflowFindFirstArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   /**
-   * Select specific fields to fetch from the workflow
+   * Select specific fields to fetch from the Workflow
    */
-  select?: Prisma.workflowSelect<ExtArgs> | null
+  select?: Prisma.WorkflowSelect<ExtArgs> | null
   /**
-   * Omit specific fields from the workflow
+   * Omit specific fields from the Workflow
    */
-  omit?: Prisma.workflowOmit<ExtArgs> | null
+  omit?: Prisma.WorkflowOmit<ExtArgs> | null
   /**
    * Choose, which related nodes to fetch as well
    */
-  include?: Prisma.workflowInclude<ExtArgs> | null
+  include?: Prisma.WorkflowInclude<ExtArgs> | null
   /**
-   * Filter, which workflow to fetch.
+   * Filter, which Workflow to fetch.
    */
-  where?: Prisma.workflowWhereInput
+  where?: Prisma.WorkflowWhereInput
   /**
    * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
    * 
-   * Determine the order of workflows to fetch.
+   * Determine the order of Workflows to fetch.
    */
-  orderBy?: Prisma.workflowOrderByWithRelationInput | Prisma.workflowOrderByWithRelationInput[]
+  orderBy?: Prisma.WorkflowOrderByWithRelationInput | Prisma.WorkflowOrderByWithRelationInput[]
   /**
    * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
    * 
-   * Sets the position for searching for workflows.
+   * Sets the position for searching for Workflows.
    */
-  cursor?: Prisma.workflowWhereUniqueInput
+  cursor?: Prisma.WorkflowWhereUniqueInput
   /**
    * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
    * 
-   * Take `±n` workflows from the position of the cursor.
+   * Take `±n` Workflows from the position of the cursor.
    */
   take?: number
   /**
    * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
    * 
-   * Skip the first `n` workflows.
+   * Skip the first `n` Workflows.
    */
   skip?: number
   /**
    * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
    * 
-   * Filter by unique combinations of workflows.
+   * Filter by unique combinations of Workflows.
    */
   distinct?: Prisma.WorkflowScalarFieldEnum | Prisma.WorkflowScalarFieldEnum[]
 }
 
 /**
- * workflow findFirstOrThrow
+ * Workflow findFirstOrThrow
  */
-export type workflowFindFirstOrThrowArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+export type WorkflowFindFirstOrThrowArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   /**
-   * Select specific fields to fetch from the workflow
+   * Select specific fields to fetch from the Workflow
    */
-  select?: Prisma.workflowSelect<ExtArgs> | null
+  select?: Prisma.WorkflowSelect<ExtArgs> | null
   /**
-   * Omit specific fields from the workflow
+   * Omit specific fields from the Workflow
    */
-  omit?: Prisma.workflowOmit<ExtArgs> | null
+  omit?: Prisma.WorkflowOmit<ExtArgs> | null
   /**
    * Choose, which related nodes to fetch as well
    */
-  include?: Prisma.workflowInclude<ExtArgs> | null
+  include?: Prisma.WorkflowInclude<ExtArgs> | null
   /**
-   * Filter, which workflow to fetch.
+   * Filter, which Workflow to fetch.
    */
-  where?: Prisma.workflowWhereInput
+  where?: Prisma.WorkflowWhereInput
   /**
    * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
    * 
-   * Determine the order of workflows to fetch.
+   * Determine the order of Workflows to fetch.
    */
-  orderBy?: Prisma.workflowOrderByWithRelationInput | Prisma.workflowOrderByWithRelationInput[]
+  orderBy?: Prisma.WorkflowOrderByWithRelationInput | Prisma.WorkflowOrderByWithRelationInput[]
   /**
    * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
    * 
-   * Sets the position for searching for workflows.
+   * Sets the position for searching for Workflows.
    */
-  cursor?: Prisma.workflowWhereUniqueInput
+  cursor?: Prisma.WorkflowWhereUniqueInput
   /**
    * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
    * 
-   * Take `±n` workflows from the position of the cursor.
+   * Take `±n` Workflows from the position of the cursor.
    */
   take?: number
   /**
    * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
    * 
-   * Skip the first `n` workflows.
+   * Skip the first `n` Workflows.
    */
   skip?: number
   /**
    * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
    * 
-   * Filter by unique combinations of workflows.
+   * Filter by unique combinations of Workflows.
    */
   distinct?: Prisma.WorkflowScalarFieldEnum | Prisma.WorkflowScalarFieldEnum[]
 }
 
 /**
- * workflow findMany
+ * Workflow findMany
  */
-export type workflowFindManyArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+export type WorkflowFindManyArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   /**
-   * Select specific fields to fetch from the workflow
+   * Select specific fields to fetch from the Workflow
    */
-  select?: Prisma.workflowSelect<ExtArgs> | null
+  select?: Prisma.WorkflowSelect<ExtArgs> | null
   /**
-   * Omit specific fields from the workflow
+   * Omit specific fields from the Workflow
    */
-  omit?: Prisma.workflowOmit<ExtArgs> | null
+  omit?: Prisma.WorkflowOmit<ExtArgs> | null
   /**
    * Choose, which related nodes to fetch as well
    */
-  include?: Prisma.workflowInclude<ExtArgs> | null
+  include?: Prisma.WorkflowInclude<ExtArgs> | null
   /**
-   * Filter, which workflows to fetch.
+   * Filter, which Workflows to fetch.
    */
-  where?: Prisma.workflowWhereInput
+  where?: Prisma.WorkflowWhereInput
   /**
    * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
    * 
-   * Determine the order of workflows to fetch.
+   * Determine the order of Workflows to fetch.
    */
-  orderBy?: Prisma.workflowOrderByWithRelationInput | Prisma.workflowOrderByWithRelationInput[]
+  orderBy?: Prisma.WorkflowOrderByWithRelationInput | Prisma.WorkflowOrderByWithRelationInput[]
   /**
    * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
    * 
-   * Sets the position for listing workflows.
+   * Sets the position for listing Workflows.
    */
-  cursor?: Prisma.workflowWhereUniqueInput
+  cursor?: Prisma.WorkflowWhereUniqueInput
   /**
    * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
    * 
-   * Take `±n` workflows from the position of the cursor.
+   * Take `±n` Workflows from the position of the cursor.
    */
   take?: number
   /**
    * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
    * 
-   * Skip the first `n` workflows.
+   * Skip the first `n` Workflows.
    */
   skip?: number
   distinct?: Prisma.WorkflowScalarFieldEnum | Prisma.WorkflowScalarFieldEnum[]
 }
 
 /**
- * workflow create
+ * Workflow create
  */
-export type workflowCreateArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+export type WorkflowCreateArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   /**
-   * Select specific fields to fetch from the workflow
+   * Select specific fields to fetch from the Workflow
    */
-  select?: Prisma.workflowSelect<ExtArgs> | null
+  select?: Prisma.WorkflowSelect<ExtArgs> | null
   /**
-   * Omit specific fields from the workflow
+   * Omit specific fields from the Workflow
    */
-  omit?: Prisma.workflowOmit<ExtArgs> | null
+  omit?: Prisma.WorkflowOmit<ExtArgs> | null
   /**
    * Choose, which related nodes to fetch as well
    */
-  include?: Prisma.workflowInclude<ExtArgs> | null
+  include?: Prisma.WorkflowInclude<ExtArgs> | null
   /**
-   * The data needed to create a workflow.
+   * The data needed to create a Workflow.
    */
-  data: Prisma.XOR<Prisma.workflowCreateInput, Prisma.workflowUncheckedCreateInput>
+  data: Prisma.XOR<Prisma.WorkflowCreateInput, Prisma.WorkflowUncheckedCreateInput>
 }
 
 /**
- * workflow createMany
+ * Workflow createMany
  */
-export type workflowCreateManyArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+export type WorkflowCreateManyArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   /**
-   * The data used to create many workflows.
+   * The data used to create many Workflows.
    */
-  data: Prisma.workflowCreateManyInput | Prisma.workflowCreateManyInput[]
+  data: Prisma.WorkflowCreateManyInput | Prisma.WorkflowCreateManyInput[]
   skipDuplicates?: boolean
 }
 
 /**
- * workflow createManyAndReturn
+ * Workflow createManyAndReturn
  */
-export type workflowCreateManyAndReturnArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+export type WorkflowCreateManyAndReturnArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   /**
-   * Select specific fields to fetch from the workflow
+   * Select specific fields to fetch from the Workflow
    */
-  select?: Prisma.workflowSelectCreateManyAndReturn<ExtArgs> | null
+  select?: Prisma.WorkflowSelectCreateManyAndReturn<ExtArgs> | null
   /**
-   * Omit specific fields from the workflow
+   * Omit specific fields from the Workflow
    */
-  omit?: Prisma.workflowOmit<ExtArgs> | null
+  omit?: Prisma.WorkflowOmit<ExtArgs> | null
   /**
-   * The data used to create many workflows.
+   * The data used to create many Workflows.
    */
-  data: Prisma.workflowCreateManyInput | Prisma.workflowCreateManyInput[]
+  data: Prisma.WorkflowCreateManyInput | Prisma.WorkflowCreateManyInput[]
   skipDuplicates?: boolean
   /**
    * Choose, which related nodes to fetch as well
    */
-  include?: Prisma.workflowIncludeCreateManyAndReturn<ExtArgs> | null
+  include?: Prisma.WorkflowIncludeCreateManyAndReturn<ExtArgs> | null
 }
 
 /**
- * workflow update
+ * Workflow update
  */
-export type workflowUpdateArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+export type WorkflowUpdateArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   /**
-   * Select specific fields to fetch from the workflow
+   * Select specific fields to fetch from the Workflow
    */
-  select?: Prisma.workflowSelect<ExtArgs> | null
+  select?: Prisma.WorkflowSelect<ExtArgs> | null
   /**
-   * Omit specific fields from the workflow
+   * Omit specific fields from the Workflow
    */
-  omit?: Prisma.workflowOmit<ExtArgs> | null
+  omit?: Prisma.WorkflowOmit<ExtArgs> | null
   /**
    * Choose, which related nodes to fetch as well
    */
-  include?: Prisma.workflowInclude<ExtArgs> | null
+  include?: Prisma.WorkflowInclude<ExtArgs> | null
   /**
-   * The data needed to update a workflow.
+   * The data needed to update a Workflow.
    */
-  data: Prisma.XOR<Prisma.workflowUpdateInput, Prisma.workflowUncheckedUpdateInput>
+  data: Prisma.XOR<Prisma.WorkflowUpdateInput, Prisma.WorkflowUncheckedUpdateInput>
   /**
-   * Choose, which workflow to update.
+   * Choose, which Workflow to update.
    */
-  where: Prisma.workflowWhereUniqueInput
+  where: Prisma.WorkflowWhereUniqueInput
 }
 
 /**
- * workflow updateMany
+ * Workflow updateMany
  */
-export type workflowUpdateManyArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+export type WorkflowUpdateManyArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   /**
-   * The data used to update workflows.
+   * The data used to update Workflows.
    */
-  data: Prisma.XOR<Prisma.workflowUpdateManyMutationInput, Prisma.workflowUncheckedUpdateManyInput>
+  data: Prisma.XOR<Prisma.WorkflowUpdateManyMutationInput, Prisma.WorkflowUncheckedUpdateManyInput>
   /**
-   * Filter which workflows to update
+   * Filter which Workflows to update
    */
-  where?: Prisma.workflowWhereInput
+  where?: Prisma.WorkflowWhereInput
   /**
-   * Limit how many workflows to update.
+   * Limit how many Workflows to update.
    */
   limit?: number
 }
 
 /**
- * workflow updateManyAndReturn
+ * Workflow updateManyAndReturn
  */
-export type workflowUpdateManyAndReturnArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+export type WorkflowUpdateManyAndReturnArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   /**
-   * Select specific fields to fetch from the workflow
+   * Select specific fields to fetch from the Workflow
    */
-  select?: Prisma.workflowSelectUpdateManyAndReturn<ExtArgs> | null
+  select?: Prisma.WorkflowSelectUpdateManyAndReturn<ExtArgs> | null
   /**
-   * Omit specific fields from the workflow
+   * Omit specific fields from the Workflow
    */
-  omit?: Prisma.workflowOmit<ExtArgs> | null
+  omit?: Prisma.WorkflowOmit<ExtArgs> | null
   /**
-   * The data used to update workflows.
+   * The data used to update Workflows.
    */
-  data: Prisma.XOR<Prisma.workflowUpdateManyMutationInput, Prisma.workflowUncheckedUpdateManyInput>
+  data: Prisma.XOR<Prisma.WorkflowUpdateManyMutationInput, Prisma.WorkflowUncheckedUpdateManyInput>
   /**
-   * Filter which workflows to update
+   * Filter which Workflows to update
    */
-  where?: Prisma.workflowWhereInput
+  where?: Prisma.WorkflowWhereInput
   /**
-   * Limit how many workflows to update.
+   * Limit how many Workflows to update.
    */
   limit?: number
   /**
    * Choose, which related nodes to fetch as well
    */
-  include?: Prisma.workflowIncludeUpdateManyAndReturn<ExtArgs> | null
+  include?: Prisma.WorkflowIncludeUpdateManyAndReturn<ExtArgs> | null
 }
 
 /**
- * workflow upsert
+ * Workflow upsert
  */
-export type workflowUpsertArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+export type WorkflowUpsertArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   /**
-   * Select specific fields to fetch from the workflow
+   * Select specific fields to fetch from the Workflow
    */
-  select?: Prisma.workflowSelect<ExtArgs> | null
+  select?: Prisma.WorkflowSelect<ExtArgs> | null
   /**
-   * Omit specific fields from the workflow
+   * Omit specific fields from the Workflow
    */
-  omit?: Prisma.workflowOmit<ExtArgs> | null
+  omit?: Prisma.WorkflowOmit<ExtArgs> | null
   /**
    * Choose, which related nodes to fetch as well
    */
-  include?: Prisma.workflowInclude<ExtArgs> | null
+  include?: Prisma.WorkflowInclude<ExtArgs> | null
   /**
-   * The filter to search for the workflow to update in case it exists.
+   * The filter to search for the Workflow to update in case it exists.
    */
-  where: Prisma.workflowWhereUniqueInput
+  where: Prisma.WorkflowWhereUniqueInput
   /**
-   * In case the workflow found by the `where` argument doesn't exist, create a new workflow with this data.
+   * In case the Workflow found by the `where` argument doesn't exist, create a new Workflow with this data.
    */
-  create: Prisma.XOR<Prisma.workflowCreateInput, Prisma.workflowUncheckedCreateInput>
+  create: Prisma.XOR<Prisma.WorkflowCreateInput, Prisma.WorkflowUncheckedCreateInput>
   /**
-   * In case the workflow was found with the provided `where` argument, update it with this data.
+   * In case the Workflow was found with the provided `where` argument, update it with this data.
    */
-  update: Prisma.XOR<Prisma.workflowUpdateInput, Prisma.workflowUncheckedUpdateInput>
+  update: Prisma.XOR<Prisma.WorkflowUpdateInput, Prisma.WorkflowUncheckedUpdateInput>
 }
 
 /**
- * workflow delete
+ * Workflow delete
  */
-export type workflowDeleteArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+export type WorkflowDeleteArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   /**
-   * Select specific fields to fetch from the workflow
+   * Select specific fields to fetch from the Workflow
    */
-  select?: Prisma.workflowSelect<ExtArgs> | null
+  select?: Prisma.WorkflowSelect<ExtArgs> | null
   /**
-   * Omit specific fields from the workflow
+   * Omit specific fields from the Workflow
    */
-  omit?: Prisma.workflowOmit<ExtArgs> | null
+  omit?: Prisma.WorkflowOmit<ExtArgs> | null
   /**
    * Choose, which related nodes to fetch as well
    */
-  include?: Prisma.workflowInclude<ExtArgs> | null
+  include?: Prisma.WorkflowInclude<ExtArgs> | null
   /**
-   * Filter which workflow to delete.
+   * Filter which Workflow to delete.
    */
-  where: Prisma.workflowWhereUniqueInput
+  where: Prisma.WorkflowWhereUniqueInput
 }
 
 /**
- * workflow deleteMany
+ * Workflow deleteMany
  */
-export type workflowDeleteManyArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+export type WorkflowDeleteManyArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   /**
-   * Filter which workflows to delete
+   * Filter which Workflows to delete
    */
-  where?: Prisma.workflowWhereInput
+  where?: Prisma.WorkflowWhereInput
   /**
-   * Limit how many workflows to delete.
+   * Limit how many Workflows to delete.
    */
   limit?: number
 }
 
 /**
- * workflow without action
+ * Workflow.nodes
  */
-export type workflowDefaultArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+export type Workflow$nodesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   /**
-   * Select specific fields to fetch from the workflow
+   * Select specific fields to fetch from the Node
    */
-  select?: Prisma.workflowSelect<ExtArgs> | null
+  select?: Prisma.NodeSelect<ExtArgs> | null
   /**
-   * Omit specific fields from the workflow
+   * Omit specific fields from the Node
    */
-  omit?: Prisma.workflowOmit<ExtArgs> | null
+  omit?: Prisma.NodeOmit<ExtArgs> | null
   /**
    * Choose, which related nodes to fetch as well
    */
-  include?: Prisma.workflowInclude<ExtArgs> | null
+  include?: Prisma.NodeInclude<ExtArgs> | null
+  where?: Prisma.NodeWhereInput
+  orderBy?: Prisma.NodeOrderByWithRelationInput | Prisma.NodeOrderByWithRelationInput[]
+  cursor?: Prisma.NodeWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.NodeScalarFieldEnum | Prisma.NodeScalarFieldEnum[]
+}
+
+/**
+ * Workflow.connections
+ */
+export type Workflow$connectionsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the Connection
+   */
+  select?: Prisma.ConnectionSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the Connection
+   */
+  omit?: Prisma.ConnectionOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.ConnectionInclude<ExtArgs> | null
+  where?: Prisma.ConnectionWhereInput
+  orderBy?: Prisma.ConnectionOrderByWithRelationInput | Prisma.ConnectionOrderByWithRelationInput[]
+  cursor?: Prisma.ConnectionWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.ConnectionScalarFieldEnum | Prisma.ConnectionScalarFieldEnum[]
+}
+
+/**
+ * Workflow without action
+ */
+export type WorkflowDefaultArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the Workflow
+   */
+  select?: Prisma.WorkflowSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the Workflow
+   */
+  omit?: Prisma.WorkflowOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.WorkflowInclude<ExtArgs> | null
 }

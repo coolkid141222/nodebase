@@ -11,7 +11,8 @@
       "Bash(ls:*)",
       "Bash(npx prisma db push:*)",
       "Bash(npx tsc:*)",
-      "Bash(cat:*)"
+      "Bash(cat:*)",
+      "Bash(powershell.exe:*)"
     ]
   }
 }

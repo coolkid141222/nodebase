@@ -7,7 +7,7 @@ import { useWorkflowsParams } from "../hooks/use-workflows-params";
 import { useEntitySearch } from "../hooks/use-entity-search";
 import * as Sentry from "@sentry/nextjs";
 import { toast } from "sonner";
-import type { workflow } from "@/lib/prisma/client";
+import type { Workflow } from "@/lib/prisma/client";
 import { WorkflowIcon } from "lucide-react";
 import { formatDistanceToNow } from "date-fns"
 
@@ -135,7 +135,7 @@ export const WorkflowsEmpty = () => {
 export const WorkflowsItem = ({
     data,
 }: {
-    data: workflow;
+    data: Workflow;
 }) => {
     const deleteWorkflow = useDeleteWorkflow();
 
