@@ -9,7 +9,11 @@
 * 🟢 You can import this file directly.
 */
 
+export const NodeType = {
+  INITIAL: 'INITIAL',
+  TRIGGER: 'TRIGGER',
+  ACTION: 'ACTION',
+  CONDITION: 'CONDITION'
+} as const
 
-
-// This file is empty because there are no enums in the schema.
-export {}
+export type NodeType = (typeof NodeType)[keyof typeof NodeType]
