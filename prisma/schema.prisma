@@ -97,6 +97,8 @@ enum NodeType {
   TRIGGER
   ACTION
   CONDITION
+  HTTP_REQUEST
+  MANUAL_TRIGGER
 }
 
 model Node {

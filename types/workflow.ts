@@ -8,7 +8,8 @@ export enum NodeType {
   ACTION = "ACTION",
   CONDITION = "CONDITION",
   GEMINI = "GEMINI",
-  
+  MANUAL_TRIGGER = 'MANUAL_TRIGGER',
+  HTTP_REQUEST = 'HTTP_REQUEST'
 }
 
 export type { NodeType as NodeTypeEnum }

@@ -13,7 +13,9 @@ export const NodeType = {
   INITIAL: 'INITIAL',
   TRIGGER: 'TRIGGER',
   ACTION: 'ACTION',
-  CONDITION: 'CONDITION'
+  CONDITION: 'CONDITION',
+  HTTP_REQUEST: 'HTTP_REQUEST',
+  MANUAL_TRIGGER: 'MANUAL_TRIGGER'
 } as const
 
 export type NodeType = (typeof NodeType)[keyof typeof NodeType]

@@ -11,6 +11,7 @@ interface workflowNodeProps {
     onSettings?: () => void;
     name?: string;
     description?: string;
+    nodeClassName?: string;
 }
 
 export function WorkflowNode({
@@ -20,6 +21,7 @@ export function WorkflowNode({
     onSettings,
     name,
     description,
+    nodeClassName,
 }: workflowNodeProps) {
     return (
         <>
@@ -34,12 +36,9 @@ export function WorkflowNode({
                     </Button>
                 </NodeToolbar>
             )}
-            <BaseNode className="relative top-1/2 left-1/2 -translate-x-1/2 size-[56px]">
+            <BaseNode className={`relative top-1/2 left-1/2 -translate-x-1/2 size-[56px] ${nodeClassName || ''}`}>
                 {/* Node Content */}
-                <div className="w-full h-full border-dashed border-gray-50 absolute">
-                    {/* Children content */}
-                    {children}
-                </div>
+                {children}
             </BaseNode>
             {/* Name */}
             {name && (

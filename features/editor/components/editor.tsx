@@ -63,7 +63,7 @@ export const Editor = ({ workflowId }: { workflowId: string }) => {
     );
 
     return (
-        <div style={{ width: '100vw', height: '100vh' }}>
+        <div className="w-full h-full overflow-hidden">
             <ReactFlow
                 nodes={nodes}
                 edges={edges}
