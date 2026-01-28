@@ -1,9 +1,9 @@
 import { NodeToolbar } from "@xyflow/react";
-import { SettingsIcon, TrashIcon } from "lucide-react"
+import { SettingsIcon, TrashIcon, Check, X } from "lucide-react"
 import { Button } from "./button"
 import { ReactNode } from "react";
 import { BaseNode } from "./react-flow/base-node";
-
+import { NodeStatusIndicator, type NodeStatus } from "./react-flow/node-status-indicator";
 interface workflowNodeProps {
     children: ReactNode;
     showToolbar?: boolean;
@@ -12,6 +12,7 @@ interface workflowNodeProps {
     name?: string;
     description?: string;
     nodeClassName?: string;
+    status?: NodeStatus;
 }
 
 export function WorkflowNode({
@@ -22,24 +23,56 @@ export function WorkflowNode({
     name,
     description,
     nodeClassName,
+    status,
 }: workflowNodeProps) {
+    const getStatusColor = (status?: NodeStatus) => {
+        switch (status) {
+            case "loading":
+                return "bg-blue-500";
+            case "success":
+                return "bg-emerald-500";
+            case "error":
+                return "bg-red-500";
+            default:
+                return "bg-gray-400";
+        }
+    };
+
     return (
         <>
             {/* Toolbar */}
             {showToolbar && (
                 <NodeToolbar>
-                    <Button size="sm" variant="ghost" onClick={onSettings}>
+                    <Button size="sm" variant="ghost" onClick={() => onSettings?.()}>
                         <SettingsIcon className="size-4"/>
                     </Button>
-                    <Button size="sm" variant="ghost" onClick={onDelete}>
+                    <Button size="sm" variant="ghost" onClick={() => onDelete?.()}>
                         <TrashIcon className="size-4"/>
                     </Button>
                 </NodeToolbar>
             )}
-            <BaseNode className={`relative top-1/2 left-1/2 -translate-x-1/2 size-[56px] ${nodeClassName || ''}`}>
-                {/* Node Content */}
-                {children}
-            </BaseNode>
+            <div className="flex flex-col items-center">
+                <div className="relative inline-block">
+                    <NodeStatusIndicator status={status} variant="border">
+                        <BaseNode className={`relative top-1/2 left-1/2 -translate-x-1/2 size-[56px] ${nodeClassName || ''}`}>
+                            {/* Node Content */}
+                            {children}
+                        </BaseNode>
+                    </NodeStatusIndicator>
+
+                    {/* Status Badge */}
+                    {status && status !== "loading" && (
+                        <div className={`absolute bottom-0 right-0 size-5 rounded-full border-2 border-background flex items-center justify-center ${getStatusColor(status)}`}>
+                            {status === "success" && (
+                                <Check className="size-3 text-white" strokeWidth={3} />
+                            )}
+                            {status === "error" && (
+                                <X className="size-3 text-white" strokeWidth={3} />
+                            )}
+                        </div>
+                    )}
+                </div>
+            </div>
             {/* Name */}
             {name && (
                 <h3 className="text-xs font-semibold text-gray-900 dark:text-gray-100 flex justify-center">
