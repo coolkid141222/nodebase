@@ -29,7 +29,7 @@ export type NodeTypeOptions = {
 
 const triggerNodes: NodeTypeOptions[] = [
     {
-        type: NodeType.MANUAL_TRIGGER,
+        type: "MANUAL_TRIGGER",
         label: "Trigger Manual",
         decription: "Trigger the Manual",
         icon: MousePointerIcon
@@ -38,7 +38,7 @@ const triggerNodes: NodeTypeOptions[] = [
 
 const executionNodes: NodeTypeOptions[] = [
     {
-        type: NodeType.HTTP_REQUEST,
+        type: "HTTP_REQUEST",
         label: "HTTP REQUEST",
         decription: "Make an HTTP request",
         icon: GlobeIcon
@@ -58,10 +58,10 @@ export function NodeSelector({
 }: NodeSelectorProps) {
     const { setNodes, getNodes, screenToFlowPosition } = useReactFlow();
     const handleNodeSelect = useCallback((selection: NodeTypeOptions) => {
-        if (selection.type === NodeType.MANUAL_TRIGGER) {
+        if (selection.type === "MANUAL_TRIGGER") {
             const nodes = getNodes();
             const hasManualTrigger = nodes.some(
-                (node) => node.type === NodeType.MANUAL_TRIGGER,
+                (node) => node.type === "MANUAL_TRIGGER",
             )
             if (hasManualTrigger) {
                 toast.error("Only one Manual trigger is allowed per workflow")
@@ -70,7 +70,7 @@ export function NodeSelector({
         }
         setNodes((nodes) => {
             const hasInitialTrigger = nodes.some(
-                (node) => node.type === NodeType.INITIAL
+                (node) => node.type === "INITIAL"
             )
             const centerX = window.innerWidth / 2;
             const centerY = window.innerHeight / 2;

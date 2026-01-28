@@ -1,15 +1,10 @@
 /**
  * Workflow node types
- * This file is separate from Prisma to avoid importing Prisma in client components
+ * Re-exports Prisma enum to maintain type consistency
  */
-export enum NodeType {
-  INITIAL = "INITIAL",
-  TRIGGER = "TRIGGER",
-  ACTION = "ACTION",
-  CONDITION = "CONDITION",
-  GEMINI = "GEMINI",
-  MANUAL_TRIGGER = 'MANUAL_TRIGGER',
-  HTTP_REQUEST = 'HTTP_REQUEST'
-}
 
-export type { NodeType as NodeTypeEnum }
+// Re-export Prisma's NodeType
+export type { NodeType } from "@/lib/prisma/client/enums"
+
+// Convenience export for easier imports
+export { NodeType as NodeTypeEnum } from "@/lib/prisma/client/enums"

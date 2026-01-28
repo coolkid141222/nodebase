@@ -25,9 +25,10 @@ const initialNodes: Node[] = [
     { id: 'n2', position: { x: 0, y: 100 }, data: { label: 'Node 2' } },
 ];
 
-import '@xyflow/react/dist/style.css';
 import { nodeComponents } from "@/config/node-components";
 import { AddNodeButton } from "./add-node-button";
+import { useSetAtom } from "jotai";
+import { editorAtom } from "../store/atoms";
 
 const initialEdges: Edge[] = [{ id: 'n1-n2', source: 'n1', target: 'n2' }];
 
@@ -46,8 +47,10 @@ export const EditorError = () => {
 export const Editor = ({ workflowId }: { workflowId: string }) => {
     const { data: workflow } = useSuspenseWorkflow(workflowId);
 
-    const [nodes, setNodes] = useState<Node[]>(workflow.nodes);
-    const [edges, setEdges] = useState<Edge[]>(workflow.edges);
+    const setEditor = useSetAtom(editorAtom);
+
+    const [nodes, setNodes] = useState<Node[]>(workflow.nodes ?? []);
+    const [edges, setEdges] = useState<Edge[]>(workflow.edges ?? []);
 
     const onNodesChange = useCallback(
         (changes: NodeChange[]) => setNodes((eds) => applyNodeChanges(changes, eds)),
@@ -71,6 +74,7 @@ export const Editor = ({ workflowId }: { workflowId: string }) => {
                 onEdgesChange={onEdgesChange}
                 onConnect={onConnect}
                 nodeTypes={nodeComponents}
+                onInit={setEditor}
                 fitView
                 proOptions={{
                     hideAttribution: true
