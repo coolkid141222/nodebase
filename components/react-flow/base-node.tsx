@@ -1,6 +1,7 @@
-import type { ComponentProps } from "react";
+import type { ComponentProps, HTMLAttributes } from "react";
 
 import { cn } from "@/lib/utils";
+import { NodeStatus } from "./node-status-indicator";
 
 export function BaseNode({ className, ...props }: ComponentProps<"div">) {
   return (
