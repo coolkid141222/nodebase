@@ -1,5 +1,7 @@
 import prisma from "@/lib/db";
+import { generateText } from "ai";
 import {
+  CredentialProvider,
   ExecutionStatus,
   ExecutionStepStatus,
   ExecutionTriggerType,
@@ -17,6 +19,8 @@ import type {
   HttpRequestCredentialConfig,
   HttpRequestNodeData,
 } from "../http-request/shared";
+import type { AITextNodeData } from "@/features/ai/text/shared";
+import { createGoogleProvider } from "@/lib/ai/proxy";
 
 type WorkflowForExecution = Prisma.WorkflowGetPayload<{
   include: {
@@ -53,6 +57,15 @@ type ResolvedHttpRequestInput = {
   credential: HttpRequestCredentialConfig | null;
 };
 
+type ResolvedAITextInput = {
+  provider: "GOOGLE";
+  model: "gemini-2.5-flash" | "gemini-2.5-flash-lite";
+  prompt: string;
+  system: string | null;
+  credentialId: string;
+  credentialField: string;
+};
+
 type CompletedStepResult = {
   id: string;
   nodeId: string;
@@ -72,6 +85,7 @@ export class WorkflowExecutionError extends Error {
       | "WORKFLOW_HAS_CYCLE"
       | "UNSUPPORTED_NODE_TYPE"
       | "INVALID_HTTP_REQUEST_CONFIG"
+      | "INVALID_AI_NODE_CONFIG"
       | "CREDENTIAL_NOT_FOUND"
       | "INVALID_CREDENTIAL_CONFIG"
       | "HTTP_REQUEST_FAILED",
@@ -304,6 +318,62 @@ async function resolveHttpRequestCredentialHeader(
   };
 }
 
+async function resolveCredentialStringValue(params: {
+  execution: ExecutionWithWorkflow;
+  credentialId: string;
+  field: string;
+  provider?: CredentialProvider;
+}) {
+  if (!params.execution.triggeredByUserId) {
+    throw new WorkflowExecutionError(
+      "Workflow execution is missing the triggering user for credential resolution.",
+      "CREDENTIAL_NOT_FOUND",
+    );
+  }
+
+  const credential = await prisma.credential.findFirst({
+    where: {
+      id: params.credentialId,
+      userId: params.execution.triggeredByUserId,
+    },
+  });
+
+  if (!credential) {
+    throw new WorkflowExecutionError(
+      `Credential "${params.credentialId}" was not found for this workflow execution.`,
+      "CREDENTIAL_NOT_FOUND",
+    );
+  }
+
+  if (params.provider && credential.provider !== params.provider) {
+    throw new WorkflowExecutionError(
+      `Credential "${credential.name}" must be a ${params.provider} credential.`,
+      "INVALID_CREDENTIAL_CONFIG",
+    );
+  }
+
+  const secret = readCredentialSecret(credential.encryptedData);
+  const secretValue = secret[params.field];
+
+  if (typeof secretValue !== "string" || !secretValue.trim()) {
+    throw new WorkflowExecutionError(
+      `Credential "${credential.name}" does not contain a usable "${params.field}" string.`,
+      "INVALID_CREDENTIAL_CONFIG",
+    );
+  }
+
+  await prisma.credential.update({
+    where: {
+      id: credential.id,
+    },
+    data: {
+      lastUsedAt: new Date(),
+    },
+  });
+
+  return secretValue.trim();
+}
+
 async function executeHttpRequestNode(
   execution: ExecutionWithWorkflow,
   input: ResolvedHttpRequestInput,
@@ -363,6 +433,93 @@ async function executeHttpRequestNode(
   return {
     status: ExecutionStepStatus.SUCCESS,
     output,
+  };
+}
+
+function normalizeAITextNodeData(
+  node: WorkflowForExecution["nodes"][number],
+  context: ExecutionTemplateContext,
+): ResolvedAITextInput {
+  const data = (node.data ?? {}) as AITextNodeData;
+  const provider = data.provider ?? "GOOGLE";
+  const model = data.model ?? "gemini-2.5-flash";
+  const prompt = data.prompt
+    ? resolveTemplateString(data.prompt, context).trim()
+    : "";
+  const system = data.system
+    ? resolveTemplateString(data.system, context).trim()
+    : "";
+  const credentialId = data.credentialId?.trim();
+  const credentialField = data.credentialField?.trim();
+
+  if (!prompt) {
+    throw new WorkflowExecutionError(
+      `AI Text node "${node.name}" is missing a prompt.`,
+      "INVALID_AI_NODE_CONFIG",
+    );
+  }
+
+  if (!credentialId || !credentialField) {
+    throw new WorkflowExecutionError(
+      `AI Text node "${node.name}" requires a bound Google credential.`,
+      "INVALID_AI_NODE_CONFIG",
+    );
+  }
+
+  return {
+    provider,
+    model,
+    prompt,
+    system: system || null,
+    credentialId,
+    credentialField,
+  };
+}
+
+async function executeAITextNode(
+  execution: ExecutionWithWorkflow,
+  input: ResolvedAITextInput,
+): Promise<NodeExecutionResult> {
+  if (input.provider !== "GOOGLE") {
+    throw new WorkflowExecutionError(
+      `AI Text provider "${input.provider}" is not supported yet.`,
+      "INVALID_AI_NODE_CONFIG",
+    );
+  }
+
+  const apiKey = await resolveCredentialStringValue({
+    execution,
+    credentialId: input.credentialId,
+    field: input.credentialField,
+    provider: CredentialProvider.GOOGLE,
+  });
+
+  const googleProvider = createGoogleProvider({ apiKey });
+  const result = await generateText({
+    model: googleProvider(input.model),
+    prompt: input.prompt,
+    system: input.system ?? undefined,
+    temperature: 0.2,
+    maxOutputTokens: 1024,
+    providerOptions: {
+      google: {
+        thinkingConfig: {
+          thinkingBudget: 0,
+        },
+      },
+    },
+  });
+
+  return {
+    status: ExecutionStepStatus.SUCCESS,
+    output: {
+      provider: input.provider,
+      model: input.model,
+      text: result.text,
+      finishReason: result.finishReason,
+      usage: result.usage,
+      warnings: result.warnings,
+    },
   };
 }
 
@@ -494,6 +651,8 @@ async function executeNode(
         execution,
         input as ResolvedHttpRequestInput,
       );
+    case NodeType.AI_TEXT:
+      return executeAITextNode(execution, input as ResolvedAITextInput);
     default:
       throw new WorkflowExecutionError(
         `Node executor for "${node.type}" is not implemented yet.`,
@@ -514,6 +673,8 @@ function resolveNodeInput(
       return execution.triggerPayload as Prisma.InputJsonValue;
     case NodeType.HTTP_REQUEST:
       return normalizeHttpRequestNodeData(node, context);
+    case NodeType.AI_TEXT:
+      return normalizeAITextNodeData(node, context);
     default:
       return {
         triggerType: execution.triggerType,

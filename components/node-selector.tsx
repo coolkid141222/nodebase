@@ -2,6 +2,7 @@
 import { createId } from "@paralleldrive/cuid2"
 import { useReactFlow } from "@xyflow/react"
 import {
+    BotIcon,
     GlobeIcon,
     MousePointerIcon
 } from "lucide-react"
@@ -9,16 +10,13 @@ import { useCallback } from "react"
 import { toast } from "sonner"
 import {
   Sheet,
-  SheetClose,
   SheetContent,
   SheetDescription,
-  SheetFooter,
   SheetHeader,
   SheetTitle,
   SheetTrigger,
 } from "@/components/sheet"
 import { NodeType } from "@/types/workflow"
-import { Separator } from "@radix-ui/react-separator"
 
 export type NodeTypeOptions = {
     type: NodeType;
@@ -42,6 +40,12 @@ const executionNodes: NodeTypeOptions[] = [
         label: "HTTP REQUEST",
         decription: "Make an HTTP request",
         icon: GlobeIcon
+    },
+    {
+        type: "AI_TEXT",
+        label: "AI TEXT",
+        decription: "Generate text with Gemini",
+        icon: BotIcon
     }
 ]
 

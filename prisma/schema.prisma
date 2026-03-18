@@ -102,6 +102,7 @@ enum NodeType {
   CONDITION
   HTTP_REQUEST
   MANUAL_TRIGGER
+  AI_TEXT
 }
 
 model Node {
