@@ -103,6 +103,7 @@ enum NodeType {
   HTTP_REQUEST
   MANUAL_TRIGGER
   AI_TEXT
+  DISCORD_MESSAGE
 }
 
 model Node {

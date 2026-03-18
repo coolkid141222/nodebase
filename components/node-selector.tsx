@@ -4,6 +4,7 @@ import { useReactFlow } from "@xyflow/react"
 import {
     BotIcon,
     GlobeIcon,
+    MessageSquareIcon,
     MousePointerIcon
 } from "lucide-react"
 import { useCallback } from "react"
@@ -44,8 +45,14 @@ const executionNodes: NodeTypeOptions[] = [
     {
         type: "AI_TEXT",
         label: "AI TEXT",
-        decription: "Generate text with Gemini",
+        decription: "Generate text with an AI provider",
         icon: BotIcon
+    },
+    {
+        type: "DISCORD_MESSAGE",
+        label: "DISCORD MESSAGE",
+        decription: "Post a message to Discord",
+        icon: MessageSquareIcon
     }
 ]
 

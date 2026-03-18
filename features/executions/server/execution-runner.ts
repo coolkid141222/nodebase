@@ -24,6 +24,7 @@ import {
   aiTextProviderSchema,
   getDefaultAITextModel,
 } from "@/features/ai/text/shared";
+import type { DiscordMessageNodeData } from "@/features/integrations/discord/shared";
 import {
   createAnthropicProvider,
   createGoogleProvider,
@@ -74,6 +75,12 @@ type ResolvedAITextInput = {
   credentialField: string;
 };
 
+type ResolvedDiscordMessageInput = {
+  credentialId: string;
+  credentialField: string;
+  content: string;
+};
+
 type CompletedStepResult = {
   id: string;
   nodeId: string;
@@ -94,9 +101,11 @@ export class WorkflowExecutionError extends Error {
       | "UNSUPPORTED_NODE_TYPE"
       | "INVALID_HTTP_REQUEST_CONFIG"
       | "INVALID_AI_NODE_CONFIG"
+      | "INVALID_DISCORD_CONFIG"
       | "CREDENTIAL_NOT_FOUND"
       | "INVALID_CREDENTIAL_CONFIG"
-      | "HTTP_REQUEST_FAILED",
+      | "HTTP_REQUEST_FAILED"
+      | "DISCORD_REQUEST_FAILED",
   ) {
     super(message);
     this.name = "WorkflowExecutionError";
@@ -444,6 +453,38 @@ async function executeHttpRequestNode(
   };
 }
 
+function normalizeDiscordMessageNodeData(
+  node: WorkflowForExecution["nodes"][number],
+  context: ExecutionTemplateContext,
+): ResolvedDiscordMessageInput {
+  const data = (node.data ?? {}) as DiscordMessageNodeData;
+  const content = data.content
+    ? resolveTemplateString(data.content, context).trim()
+    : "";
+  const credentialId = data.credentialId?.trim();
+  const credentialField = data.credentialField?.trim() || "webhookUrl";
+
+  if (!content) {
+    throw new WorkflowExecutionError(
+      `Discord Message node "${node.name}" is missing message content.`,
+      "INVALID_DISCORD_CONFIG",
+    );
+  }
+
+  if (!credentialId) {
+    throw new WorkflowExecutionError(
+      `Discord Message node "${node.name}" requires a Discord credential.`,
+      "INVALID_DISCORD_CONFIG",
+    );
+  }
+
+  return {
+    credentialId,
+    credentialField,
+    content,
+  };
+}
+
 function normalizeAITextNodeData(
   node: WorkflowForExecution["nodes"][number],
   context: ExecutionTemplateContext,
@@ -490,6 +531,62 @@ function normalizeAITextNodeData(
     system: system || null,
     credentialId,
     credentialField,
+  };
+}
+
+async function executeDiscordMessageNode(
+  execution: ExecutionWithWorkflow,
+  input: ResolvedDiscordMessageInput,
+): Promise<NodeExecutionResult> {
+  const webhookUrl = await resolveCredentialStringValue({
+    execution,
+    credentialId: input.credentialId,
+    field: input.credentialField,
+    provider: CredentialProvider.DISCORD,
+  });
+
+  let requestUrl: URL;
+  try {
+    requestUrl = new URL(webhookUrl);
+  } catch {
+    throw new WorkflowExecutionError(
+      `Discord credential field "${input.credentialField}" must contain a valid webhook URL.`,
+      "INVALID_CREDENTIAL_CONFIG",
+    );
+  }
+
+  requestUrl.searchParams.set("wait", "true");
+
+  const response = await fetch(requestUrl, {
+    method: "POST",
+    headers: {
+      "content-type": "application/json",
+    },
+    body: JSON.stringify({
+      content: input.content,
+    }),
+    signal: AbortSignal.timeout(15_000),
+  });
+
+  const responseText = await response.text();
+  const responseBody = parseJsonOrReturnText(responseText);
+  const output: Prisma.InputJsonValue = {
+    ok: response.ok,
+    status: response.status,
+    body: responseBody,
+    content: input.content,
+  };
+
+  if (!response.ok) {
+    throw new WorkflowExecutionError(
+      `Discord webhook request failed with status ${response.status}.`,
+      "DISCORD_REQUEST_FAILED",
+    );
+  }
+
+  return {
+    status: ExecutionStepStatus.SUCCESS,
+    output,
   };
 }
 
@@ -704,6 +801,11 @@ async function executeNode(
       );
     case NodeType.AI_TEXT:
       return executeAITextNode(execution, input as ResolvedAITextInput);
+    case NodeType.DISCORD_MESSAGE:
+      return executeDiscordMessageNode(
+        execution,
+        input as ResolvedDiscordMessageInput,
+      );
     default:
       throw new WorkflowExecutionError(
         `Node executor for "${node.type}" is not implemented yet.`,
@@ -726,6 +828,8 @@ function resolveNodeInput(
       return normalizeHttpRequestNodeData(node, context);
     case NodeType.AI_TEXT:
       return normalizeAITextNodeData(node, context);
+    case NodeType.DISCORD_MESSAGE:
+      return normalizeDiscordMessageNodeData(node, context);
     default:
       return {
         triggerType: execution.triggerType,
