@@ -7,19 +7,13 @@ import { useReactFlow } from "@xyflow/react"
 import { BaseExcutionNode } from "@/components/base-execution-node"
 import { HttpRequestDialog } from "./dialog"
 import { FormType } from "./dialog"
-
-type HttpRequestNodeData = {
-    endpoint?: string;
-    method?: "GET" | "POST" | "PATCH" | "DELETE"
-    body: string;
-    [key: string]: unknown;
-}
+import type { HttpRequestNodeData } from "../../http-request/shared"
 
 export const HttpRequestNode = memo((props: NodeProps) => {
     const { setNodes } = useReactFlow()
     const nodeData = props.data as HttpRequestNodeData
     const description = nodeData?.endpoint
-        ? `${nodeData.method || "GET"} : ${nodeData.endpoint}`
+        ? `${nodeData.method || "GET"} : ${nodeData.endpoint}${nodeData.credentialId ? " · credential" : ""}`
         : "Not configured"
 
     const nodeStatus = "success"
@@ -37,6 +31,18 @@ export const HttpRequestNode = memo((props: NodeProps) => {
                               endpoint: values.endpoint,
                               method: values.method,
                               body: values.body || "",
+                              credentialId: values.credentialId && values.credentialId !== "none"
+                                  ? values.credentialId
+                                  : undefined,
+                              credentialField: values.credentialId && values.credentialId !== "none"
+                                  ? values.credentialField?.trim() || undefined
+                                  : undefined,
+                              authType: values.credentialId && values.credentialId !== "none"
+                                  ? values.authType
+                                  : undefined,
+                              headerName: values.credentialId && values.credentialId !== "none" && values.authType === "HEADER"
+                                  ? values.headerName?.trim() || undefined
+                                  : undefined,
                           },
                       }
                     : node
@@ -54,6 +60,10 @@ export const HttpRequestNode = memo((props: NodeProps) => {
                 defaultEndpoint={nodeData.endpoint}
                 defaultMethod={nodeData.method}
                 defaultBody={nodeData.body}
+                defaultCredentialId={nodeData.credentialId}
+                defaultCredentialField={nodeData.credentialField}
+                defaultAuthType={nodeData.authType}
+                defaultHeaderName={nodeData.headerName}
             />
             <BaseExcutionNode
                 {...props}

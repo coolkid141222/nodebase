@@ -11,6 +11,12 @@ import {
   resolveTemplateString,
   resolveTemplateValue,
 } from "./template";
+import { readCredentialSecret } from "@/features/credentials/server/payload";
+import type {
+  HttpRequestAuthType,
+  HttpRequestCredentialConfig,
+  HttpRequestNodeData,
+} from "../http-request/shared";
 
 type WorkflowForExecution = Prisma.WorkflowGetPayload<{
   include: {
@@ -40,16 +46,11 @@ type NodeExecutionResult = {
   output?: Prisma.InputJsonValue;
 };
 
-type HttpRequestNodeData = {
-  endpoint?: string;
-  method?: "GET" | "POST" | "PATCH" | "DELETE";
-  body?: string;
-};
-
 type ResolvedHttpRequestInput = {
   url: string;
   method: "GET" | "POST" | "PATCH" | "DELETE";
   body: Prisma.InputJsonValue | null;
+  credential: HttpRequestCredentialConfig | null;
 };
 
 type CompletedStepResult = {
@@ -71,6 +72,8 @@ export class WorkflowExecutionError extends Error {
       | "WORKFLOW_HAS_CYCLE"
       | "UNSUPPORTED_NODE_TYPE"
       | "INVALID_HTTP_REQUEST_CONFIG"
+      | "CREDENTIAL_NOT_FOUND"
+      | "INVALID_CREDENTIAL_CONFIG"
       | "HTTP_REQUEST_FAILED",
   ) {
     super(message);
@@ -184,6 +187,11 @@ function normalizeHttpRequestNodeData(
       : JSON.stringify(resolvedBody ?? null)) as Prisma.JsonValue,
     context,
   );
+  const credentialId = data.credentialId?.trim();
+  const credentialField = data.credentialField?.trim();
+  const authType = (data.authType ?? "NONE") as HttpRequestAuthType;
+  const headerName = data.headerName?.trim();
+  let credential: HttpRequestCredentialConfig | null = null;
 
   if (!endpoint) {
     throw new WorkflowExecutionError(
@@ -201,17 +209,115 @@ function normalizeHttpRequestNodeData(
     );
   }
 
+  if (credentialId) {
+    if (!credentialField) {
+      throw new WorkflowExecutionError(
+        `HTTP Request node "${node.name}" is missing the credential field name.`,
+        "INVALID_HTTP_REQUEST_CONFIG",
+      );
+    }
+
+    if (authType === "NONE") {
+      throw new WorkflowExecutionError(
+        `HTTP Request node "${node.name}" must choose how to inject the credential.`,
+        "INVALID_HTTP_REQUEST_CONFIG",
+      );
+    }
+
+    if (authType === "HEADER" && !headerName) {
+      throw new WorkflowExecutionError(
+        `HTTP Request node "${node.name}" requires a header name for custom header auth.`,
+        "INVALID_HTTP_REQUEST_CONFIG",
+      );
+    }
+
+    credential = {
+      credentialId,
+      field: credentialField,
+      authType,
+      headerName: authType === "HEADER" ? headerName : undefined,
+    };
+  }
+
   return {
     url: endpoint,
     method,
     body,
+    credential,
+  };
+}
+
+async function resolveHttpRequestCredentialHeader(
+  execution: ExecutionWithWorkflow,
+  credentialConfig: HttpRequestCredentialConfig,
+) {
+  if (!execution.triggeredByUserId) {
+    throw new WorkflowExecutionError(
+      "Workflow execution is missing the triggering user for credential resolution.",
+      "CREDENTIAL_NOT_FOUND",
+    );
+  }
+
+  const credential = await prisma.credential.findFirst({
+    where: {
+      id: credentialConfig.credentialId,
+      userId: execution.triggeredByUserId,
+    },
+  });
+
+  if (!credential) {
+    throw new WorkflowExecutionError(
+      `Credential "${credentialConfig.credentialId}" was not found for this workflow execution.`,
+      "CREDENTIAL_NOT_FOUND",
+    );
+  }
+
+  const secret = readCredentialSecret(credential.encryptedData);
+  const secretValue = secret[credentialConfig.field];
+
+  if (typeof secretValue !== "string" || !secretValue.trim()) {
+    throw new WorkflowExecutionError(
+      `Credential "${credential.name}" does not contain a usable "${credentialConfig.field}" string.`,
+      "INVALID_CREDENTIAL_CONFIG",
+    );
+  }
+
+  await prisma.credential.update({
+    where: {
+      id: credential.id,
+    },
+    data: {
+      lastUsedAt: new Date(),
+    },
+  });
+
+  if (credentialConfig.authType === "BEARER") {
+    return {
+      name: "authorization",
+      value: `Bearer ${secretValue.trim()}`,
+    };
+  }
+
+  return {
+    name: credentialConfig.headerName!,
+    value: secretValue.trim(),
   };
 }
 
 async function executeHttpRequestNode(
+  execution: ExecutionWithWorkflow,
   input: ResolvedHttpRequestInput,
 ): Promise<NodeExecutionResult> {
   const headers = new Headers();
+
+  if (input.credential) {
+    const credentialHeader = await resolveHttpRequestCredentialHeader(
+      execution,
+      input.credential,
+    );
+    headers.set(credentialHeader.name, credentialHeader.value);
+  }
+
   const serializedBody =
     typeof input.body === "string" ? input.body : JSON.stringify(input.body);
   const hasBody = serializedBody.trim().length > 0;
@@ -384,7 +490,10 @@ async function executeNode(
         output: execution.triggerPayload as Prisma.InputJsonValue,
       };
     case NodeType.HTTP_REQUEST:
-      return executeHttpRequestNode(input as ResolvedHttpRequestInput);
+      return executeHttpRequestNode(
+        execution,
+        input as ResolvedHttpRequestInput,
+      );
     default:
       throw new WorkflowExecutionError(
         `Node executor for "${node.type}" is not implemented yet.`,

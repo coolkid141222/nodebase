@@ -113,6 +113,10 @@ function parseStoredCredentialData(encryptedData: string) {
   return parsed as Record<string, unknown>;
 }
 
+export function readCredentialSecret(encryptedData: string) {
+  return parseStoredCredentialData(encryptedData);
+}
+
 export function parseCredentialSecretJson(secretJson: string) {
   const trimmed = secretJson.trim();
 
