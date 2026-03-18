@@ -34,13 +34,21 @@ type NodeExecutionResult = {
   output?: Prisma.InputJsonValue;
 };
 
+type HttpRequestNodeData = {
+  endpoint?: string;
+  method?: "GET" | "POST" | "PATCH" | "DELETE";
+  body?: string;
+};
+
 export class WorkflowExecutionError extends Error {
   constructor(
     message: string,
     public readonly code:
       | "MANUAL_TRIGGER_NOT_FOUND"
       | "WORKFLOW_HAS_CYCLE"
-      | "UNSUPPORTED_NODE_TYPE",
+      | "UNSUPPORTED_NODE_TYPE"
+      | "INVALID_HTTP_REQUEST_CONFIG"
+      | "HTTP_REQUEST_FAILED",
   ) {
     super(message);
     this.name = "WorkflowExecutionError";
@@ -91,6 +99,109 @@ function createWorkflowSnapshot(
       toInput: connection.toInput,
       data: connection.data,
     })),
+  };
+}
+
+function truncateText(value: string, maxLength = 10_000) {
+  if (value.length <= maxLength) {
+    return value;
+  }
+
+  return `${value.slice(0, maxLength)}...<truncated>`;
+}
+
+function parseJsonOrReturnText(value: string) {
+  const trimmed = value.trim();
+  if (!trimmed) {
+    return null;
+  }
+
+  try {
+    return JSON.parse(trimmed) as Prisma.InputJsonValue;
+  } catch {
+    return truncateText(trimmed);
+  }
+}
+
+function normalizeHttpRequestNodeData(
+  node: WorkflowForExecution["nodes"][number],
+): Required<HttpRequestNodeData> {
+  const data = (node.data ?? {}) as HttpRequestNodeData;
+  const endpoint = data.endpoint?.trim();
+  const method = data.method ?? "GET";
+  const body = data.body ?? "";
+
+  if (!endpoint) {
+    throw new WorkflowExecutionError(
+      `HTTP Request node "${node.name}" is missing an endpoint URL.`,
+      "INVALID_HTTP_REQUEST_CONFIG",
+    );
+  }
+
+  try {
+    new URL(endpoint);
+  } catch {
+    throw new WorkflowExecutionError(
+      `HTTP Request node "${node.name}" has an invalid endpoint URL.`,
+      "INVALID_HTTP_REQUEST_CONFIG",
+    );
+  }
+
+  return {
+    endpoint,
+    method,
+    body,
+  };
+}
+
+async function executeHttpRequestNode(
+  node: WorkflowForExecution["nodes"][number],
+): Promise<NodeExecutionResult> {
+  const config = normalizeHttpRequestNodeData(node);
+  const headers = new Headers();
+  const hasBody = config.body.trim().length > 0;
+  let requestBody: BodyInit | undefined;
+
+  if (hasBody && config.method !== "GET" && config.method !== "DELETE") {
+    const parsedBody = parseJsonOrReturnText(config.body);
+
+    if (typeof parsedBody === "string") {
+      requestBody = parsedBody;
+      headers.set("content-type", "text/plain; charset=utf-8");
+    } else {
+      requestBody = JSON.stringify(parsedBody);
+      headers.set("content-type", "application/json");
+    }
+  }
+
+  const response = await fetch(config.endpoint, {
+    method: config.method,
+    headers,
+    body: requestBody,
+    signal: AbortSignal.timeout(15_000),
+  });
+
+  const responseText = await response.text();
+  const responseBody = parseJsonOrReturnText(responseText);
+  const output: Prisma.InputJsonValue = {
+    url: config.endpoint,
+    method: config.method,
+    status: response.status,
+    ok: response.ok,
+    headers: Object.fromEntries(response.headers.entries()),
+    body: responseBody,
+  };
+
+  if (!response.ok) {
+    throw new WorkflowExecutionError(
+      `HTTP request failed with status ${response.status}.`,
+      "HTTP_REQUEST_FAILED",
+    );
+  }
+
+  return {
+    status: ExecutionStepStatus.SUCCESS,
+    output,
   };
 }
 
@@ -216,6 +327,8 @@ async function executeNode(
         status: ExecutionStepStatus.SUCCESS,
         output: execution.triggerPayload as Prisma.InputJsonValue,
       };
+    case NodeType.HTTP_REQUEST:
+      return executeHttpRequestNode(node);
     default:
       throw new WorkflowExecutionError(
         `Node executor for "${node.type}" is not implemented yet.`,
@@ -320,6 +433,7 @@ export async function runExecution(executionId: string) {
     });
 
     for (const [index, node] of plan.orderedNodes.entries()) {
+      const stepStartedAt = Date.now();
       const step = await prisma.executionStep.create({
         data: {
           executionId,
@@ -346,7 +460,7 @@ export async function runExecution(executionId: string) {
             status: result.status,
             output: result.output,
             completedAt: new Date(),
-            durationMs: Date.now() - step.createdAt.getTime(),
+            durationMs: Date.now() - stepStartedAt,
           },
         });
       } catch (error) {
@@ -358,7 +472,7 @@ export async function runExecution(executionId: string) {
             status: ExecutionStepStatus.FAILED,
             error: serializeError(error),
             completedAt: new Date(),
-            durationMs: Date.now() - step.createdAt.getTime(),
+            durationMs: Date.now() - stepStartedAt,
           },
         });
 
