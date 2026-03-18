@@ -10,7 +10,7 @@ import {
     SidebarMenuButton,
     SidebarMenuItem,
 } from "@/components/sidebar"
-import { FolderOpen, HistoryIcon, KeyIcon, StarsIcon, LogOutIcon, CreditCardIcon } from "lucide-react"
+import { FolderOpen, HistoryIcon, KeyIcon, StarsIcon, LogOutIcon, CreditCardIcon, BotIcon } from "lucide-react"
 import Image from "next/image"
 import Link from "next/link"
 import { usePathname, useRouter } from "next/navigation"
@@ -34,6 +34,11 @@ const menuItems = [
                 title: "executions",
                 icon: HistoryIcon,
                 url: "/executions",
+            },
+            {
+                title: "AI Test",
+                icon: BotIcon,
+                url: "/ai-test",
             }
         ]
     },

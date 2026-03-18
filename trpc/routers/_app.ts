@@ -1,8 +1,10 @@
 import { createTRPCRouter, protectedProcedure, baseProcedure } from "../init";
 import { credentialsRouter } from "@/features/credentials/server/router";
-import { inngest } from "@/inngest/client";
 import { workflowsRouter } from "@/features/workflows/server/router";
 import { executionsRouter } from "@/features/executions/server/router";
+import { aiRouter } from "@/features/ai/server/router";
+import { DEFAULT_AI_SMOKE_PROMPT } from "@/features/ai/shared";
+import { runAISmokeTest } from "@/features/ai/server/smoke-test";
 
 export const appRouter = createTRPCRouter({
   session: baseProcedure.query(({ ctx }) => {
@@ -10,18 +12,13 @@ export const appRouter = createTRPCRouter({
   }),
 
   testAI: protectedProcedure.mutation(async () => {
-    await inngest.send({
-      name: "test/ai.providers",
-      data: {
-        email: "nothing@gmail.com"
-      }
-    });
-    return { state: "success" }
+    return runAISmokeTest(DEFAULT_AI_SMOKE_PROMPT);
   }),
 
   workflows: workflowsRouter,
   executions: executionsRouter,
   credentials: credentialsRouter,
+  ai: aiRouter,
 });
 
 // export type definition of API
