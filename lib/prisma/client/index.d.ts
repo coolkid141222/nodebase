@@ -48,6 +48,21 @@ export type Node = $Result.DefaultSelection<Prisma.$NodePayload>
  * 
  */
 export type Connection = $Result.DefaultSelection<Prisma.$ConnectionPayload>
+/**
+ * Model Credential
+ * 
+ */
+export type Credential = $Result.DefaultSelection<Prisma.$CredentialPayload>
+/**
+ * Model Execution
+ * 
+ */
+export type Execution = $Result.DefaultSelection<Prisma.$ExecutionPayload>
+/**
+ * Model ExecutionStep
+ * 
+ */
+export type ExecutionStep = $Result.DefaultSelection<Prisma.$ExecutionStepPayload>
 
 /**
  * Enums
@@ -64,11 +79,72 @@ export namespace $Enums {
 
 export type NodeType = (typeof NodeType)[keyof typeof NodeType]
 
+
+export const CredentialProvider: {
+  OPENAI: 'OPENAI',
+  ANTHROPIC: 'ANTHROPIC',
+  GOOGLE: 'GOOGLE',
+  DISCORD: 'DISCORD',
+  SLACK: 'SLACK',
+  STRIPE: 'STRIPE',
+  POLAR: 'POLAR'
+};
+
+export type CredentialProvider = (typeof CredentialProvider)[keyof typeof CredentialProvider]
+
+
+export const ExecutionTriggerType: {
+  MANUAL: 'MANUAL',
+  WEBHOOK: 'WEBHOOK',
+  GOOGLE_FORM: 'GOOGLE_FORM',
+  STRIPE: 'STRIPE'
+};
+
+export type ExecutionTriggerType = (typeof ExecutionTriggerType)[keyof typeof ExecutionTriggerType]
+
+
+export const ExecutionStatus: {
+  PENDING: 'PENDING',
+  RUNNING: 'RUNNING',
+  SUCCESS: 'SUCCESS',
+  FAILED: 'FAILED',
+  CANCELED: 'CANCELED'
+};
+
+export type ExecutionStatus = (typeof ExecutionStatus)[keyof typeof ExecutionStatus]
+
+
+export const ExecutionStepStatus: {
+  PENDING: 'PENDING',
+  RUNNING: 'RUNNING',
+  SUCCESS: 'SUCCESS',
+  FAILED: 'FAILED',
+  SKIPPED: 'SKIPPED'
+};
+
+export type ExecutionStepStatus = (typeof ExecutionStepStatus)[keyof typeof ExecutionStepStatus]
+
 }
 
 export type NodeType = $Enums.NodeType
 
 export const NodeType: typeof $Enums.NodeType
+
+export type CredentialProvider = $Enums.CredentialProvider
+
+export const CredentialProvider: typeof $Enums.CredentialProvider
+
+export type ExecutionTriggerType = $Enums.ExecutionTriggerType
+
+export const ExecutionTriggerType: typeof $Enums.ExecutionTriggerType
+
+export type ExecutionStatus = $Enums.ExecutionStatus
+
+export const ExecutionStatus: typeof $Enums.ExecutionStatus
+
+export type ExecutionStepStatus = $Enums.ExecutionStepStatus
+
+export const ExecutionStepStatus: typeof $Enums.ExecutionStepStatus
 
 /**
  * ##  Prisma Client ʲˢ
@@ -257,6 +333,36 @@ export class PrismaClient<
     * ```
     */
   get connection(): Prisma.ConnectionDelegate<ExtArgs, ClientOptions>;
+
+  /**
+   * `prisma.credential`: Exposes CRUD operations for the **Credential** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more Credentials
+    * const credentials = await prisma.credential.findMany()
+    * ```
+    */
+  get credential(): Prisma.CredentialDelegate<ExtArgs, ClientOptions>;
+
+  /**
+   * `prisma.execution`: Exposes CRUD operations for the **Execution** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more Executions
+    * const executions = await prisma.execution.findMany()
+    * ```
+    */
+  get execution(): Prisma.ExecutionDelegate<ExtArgs, ClientOptions>;
+
+  /**
+   * `prisma.executionStep`: Exposes CRUD operations for the **ExecutionStep** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more ExecutionSteps
+    * const executionSteps = await prisma.executionStep.findMany()
+    * ```
+    */
+  get executionStep(): Prisma.ExecutionStepDelegate<ExtArgs, ClientOptions>;
 }
 
 export namespace Prisma {
@@ -704,7 +810,10 @@ export namespace Prisma {
     Verification: 'Verification',
     Workflow: 'Workflow',
     Node: 'Node',
-    Connection: 'Connection'
+    Connection: 'Connection',
+    Credential: 'Credential',
+    Execution: 'Execution',
+    ExecutionStep: 'ExecutionStep'
   };
 
   export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -723,7 +832,7 @@ export namespace Prisma {
       omit: GlobalOmitOptions
     }
     meta: {
-      modelProps: "user" | "session" | "account" | "verification" | "workflow" | "node" | "connection"
+      modelProps: "user" | "session" | "account" | "verification" | "workflow" | "node" | "connection" | "credential" | "execution" | "executionStep"
       txIsolationLevel: Prisma.TransactionIsolationLevel
     }
     model: {
@@ -1245,6 +1354,228 @@ export namespace Prisma {
           }
         }
       }
+      Credential: {
+        payload: Prisma.$CredentialPayload<ExtArgs>
+        fields: Prisma.CredentialFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.CredentialFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$CredentialPayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.CredentialFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$CredentialPayload>
+          }
+          findFirst: {
+            args: Prisma.CredentialFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$CredentialPayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.CredentialFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$CredentialPayload>
+          }
+          findMany: {
+            args: Prisma.CredentialFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$CredentialPayload>[]
+          }
+          create: {
+            args: Prisma.CredentialCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$CredentialPayload>
+          }
+          createMany: {
+            args: Prisma.CredentialCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          createManyAndReturn: {
+            args: Prisma.CredentialCreateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$CredentialPayload>[]
+          }
+          delete: {
+            args: Prisma.CredentialDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$CredentialPayload>
+          }
+          update: {
+            args: Prisma.CredentialUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$CredentialPayload>
+          }
+          deleteMany: {
+            args: Prisma.CredentialDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.CredentialUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateManyAndReturn: {
+            args: Prisma.CredentialUpdateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$CredentialPayload>[]
+          }
+          upsert: {
+            args: Prisma.CredentialUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$CredentialPayload>
+          }
+          aggregate: {
+            args: Prisma.CredentialAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregateCredential>
+          }
+          groupBy: {
+            args: Prisma.CredentialGroupByArgs<ExtArgs>
+            result: $Utils.Optional<CredentialGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.CredentialCountArgs<ExtArgs>
+            result: $Utils.Optional<CredentialCountAggregateOutputType> | number
+          }
+        }
+      }
+      Execution: {
+        payload: Prisma.$ExecutionPayload<ExtArgs>
+        fields: Prisma.ExecutionFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.ExecutionFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ExecutionPayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.ExecutionFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ExecutionPayload>
+          }
+          findFirst: {
+            args: Prisma.ExecutionFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ExecutionPayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.ExecutionFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ExecutionPayload>
+          }
+          findMany: {
+            args: Prisma.ExecutionFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ExecutionPayload>[]
+          }
+          create: {
+            args: Prisma.ExecutionCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ExecutionPayload>
+          }
+          createMany: {
+            args: Prisma.ExecutionCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          createManyAndReturn: {
+            args: Prisma.ExecutionCreateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ExecutionPayload>[]
+          }
+          delete: {
+            args: Prisma.ExecutionDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ExecutionPayload>
+          }
+          update: {
+            args: Prisma.ExecutionUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ExecutionPayload>
+          }
+          deleteMany: {
+            args: Prisma.ExecutionDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.ExecutionUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateManyAndReturn: {
+            args: Prisma.ExecutionUpdateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ExecutionPayload>[]
+          }
+          upsert: {
+            args: Prisma.ExecutionUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ExecutionPayload>
+          }
+          aggregate: {
+            args: Prisma.ExecutionAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregateExecution>
+          }
+          groupBy: {
+            args: Prisma.ExecutionGroupByArgs<ExtArgs>
+            result: $Utils.Optional<ExecutionGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.ExecutionCountArgs<ExtArgs>
+            result: $Utils.Optional<ExecutionCountAggregateOutputType> | number
+          }
+        }
+      }
+      ExecutionStep: {
+        payload: Prisma.$ExecutionStepPayload<ExtArgs>
+        fields: Prisma.ExecutionStepFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.ExecutionStepFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ExecutionStepPayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.ExecutionStepFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ExecutionStepPayload>
+          }
+          findFirst: {
+            args: Prisma.ExecutionStepFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ExecutionStepPayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.ExecutionStepFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ExecutionStepPayload>
+          }
+          findMany: {
+            args: Prisma.ExecutionStepFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ExecutionStepPayload>[]
+          }
+          create: {
+            args: Prisma.ExecutionStepCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ExecutionStepPayload>
+          }
+          createMany: {
+            args: Prisma.ExecutionStepCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          createManyAndReturn: {
+            args: Prisma.ExecutionStepCreateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ExecutionStepPayload>[]
+          }
+          delete: {
+            args: Prisma.ExecutionStepDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ExecutionStepPayload>
+          }
+          update: {
+            args: Prisma.ExecutionStepUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ExecutionStepPayload>
+          }
+          deleteMany: {
+            args: Prisma.ExecutionStepDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.ExecutionStepUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateManyAndReturn: {
+            args: Prisma.ExecutionStepUpdateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ExecutionStepPayload>[]
+          }
+          upsert: {
+            args: Prisma.ExecutionStepUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ExecutionStepPayload>
+          }
+          aggregate: {
+            args: Prisma.ExecutionStepAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregateExecutionStep>
+          }
+          groupBy: {
+            args: Prisma.ExecutionStepGroupByArgs<ExtArgs>
+            result: $Utils.Optional<ExecutionStepGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.ExecutionStepCountArgs<ExtArgs>
+            result: $Utils.Optional<ExecutionStepCountAggregateOutputType> | number
+          }
+        }
+      }
     }
   } & {
     other: {
@@ -1348,6 +1679,9 @@ export namespace Prisma {
     workflow?: WorkflowOmit
     node?: NodeOmit
     connection?: ConnectionOmit
+    credential?: CredentialOmit
+    execution?: ExecutionOmit
+    executionStep?: ExecutionStepOmit
   }
 
   /* Types for Logging */
@@ -1431,12 +1765,16 @@ export namespace Prisma {
     sessions: number
     accounts: number
     workflows: number
+    credentials: number
+    executions: number
   }
 
   export type UserCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     sessions?: boolean | UserCountOutputTypeCountSessionsArgs
     accounts?: boolean | UserCountOutputTypeCountAccountsArgs
     workflows?: boolean | UserCountOutputTypeCountWorkflowsArgs
+    credentials?: boolean | UserCountOutputTypeCountCredentialsArgs
+    executions?: boolean | UserCountOutputTypeCountExecutionsArgs
   }
 
   // Custom InputTypes
@@ -1471,6 +1809,20 @@ export namespace Prisma {
     where?: WorkflowWhereInput
   }
 
+  /**
+   * UserCountOutputType without action
+   */
+  export type UserCountOutputTypeCountCredentialsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: CredentialWhereInput
+  }
+
+  /**
+   * UserCountOutputType without action
+   */
+  export type UserCountOutputTypeCountExecutionsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: ExecutionWhereInput
+  }
+
 
   /**
    * Count Type WorkflowCountOutputType
@@ -1479,11 +1831,13 @@ export namespace Prisma {
   export type WorkflowCountOutputType = {
     nodes: number
     connections: number
+    executions: number
   }
 
   export type WorkflowCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     nodes?: boolean | WorkflowCountOutputTypeCountNodesArgs
     connections?: boolean | WorkflowCountOutputTypeCountConnectionsArgs
+    executions?: boolean | WorkflowCountOutputTypeCountExecutionsArgs
   }
 
   // Custom InputTypes
@@ -1511,6 +1865,13 @@ export namespace Prisma {
     where?: ConnectionWhereInput
   }
 
+  /**
+   * WorkflowCountOutputType without action
+   */
+  export type WorkflowCountOutputTypeCountExecutionsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: ExecutionWhereInput
+  }
+
 
   /**
    * Count Type NodeCountOutputType
@@ -1519,11 +1880,13 @@ export namespace Prisma {
   export type NodeCountOutputType = {
     fromConnections: number
     toConnections: number
+    executionSteps: number
   }
 
   export type NodeCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     fromConnections?: boolean | NodeCountOutputTypeCountFromConnectionsArgs
     toConnections?: boolean | NodeCountOutputTypeCountToConnectionsArgs
+    executionSteps?: boolean | NodeCountOutputTypeCountExecutionStepsArgs
   }
 
   // Custom InputTypes
@@ -1549,6 +1912,44 @@ export namespace Prisma {
    */
   export type NodeCountOutputTypeCountToConnectionsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     where?: ConnectionWhereInput
+  }
+
+  /**
+   * NodeCountOutputType without action
+   */
+  export type NodeCountOutputTypeCountExecutionStepsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: ExecutionStepWhereInput
+  }
+
+
+  /**
+   * Count Type ExecutionCountOutputType
+   */
+
+  export type ExecutionCountOutputType = {
+    steps: number
+  }
+
+  export type ExecutionCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    steps?: boolean | ExecutionCountOutputTypeCountStepsArgs
+  }
+
+  // Custom InputTypes
+  /**
+   * ExecutionCountOutputType without action
+   */
+  export type ExecutionCountOutputTypeDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ExecutionCountOutputType
+     */
+    select?: ExecutionCountOutputTypeSelect<ExtArgs> | null
+  }
+
+  /**
+   * ExecutionCountOutputType without action
+   */
+  export type ExecutionCountOutputTypeCountStepsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: ExecutionStepWhereInput
   }
 
 
@@ -1739,6 +2140,8 @@ export namespace Prisma {
     sessions?: boolean | User$sessionsArgs<ExtArgs>
     accounts?: boolean | User$accountsArgs<ExtArgs>
     workflows?: boolean | User$workflowsArgs<ExtArgs>
+    credentials?: boolean | User$credentialsArgs<ExtArgs>
+    executions?: boolean | User$executionsArgs<ExtArgs>
     _count?: boolean | UserCountOutputTypeDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["user"]>
 
@@ -1777,6 +2180,8 @@ export namespace Prisma {
     sessions?: boolean | User$sessionsArgs<ExtArgs>
     accounts?: boolean | User$accountsArgs<ExtArgs>
     workflows?: boolean | User$workflowsArgs<ExtArgs>
+    credentials?: boolean | User$credentialsArgs<ExtArgs>
+    executions?: boolean | User$executionsArgs<ExtArgs>
     _count?: boolean | UserCountOutputTypeDefaultArgs<ExtArgs>
   }
   export type UserIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {}
@@ -1788,6 +2193,8 @@ export namespace Prisma {
       sessions: Prisma.$SessionPayload<ExtArgs>[]
       accounts: Prisma.$AccountPayload<ExtArgs>[]
       workflows: Prisma.$WorkflowPayload<ExtArgs>[]
+      credentials: Prisma.$CredentialPayload<ExtArgs>[]
+      executions: Prisma.$ExecutionPayload<ExtArgs>[]
     }
     scalars: $Extensions.GetPayloadResult<{
       id: string
@@ -2194,6 +2601,8 @@ export namespace Prisma {
     sessions<T extends User$sessionsArgs<ExtArgs> = {}>(args?: Subset<T, User$sessionsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$SessionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     accounts<T extends User$accountsArgs<ExtArgs> = {}>(args?: Subset<T, User$accountsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$AccountPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     workflows<T extends User$workflowsArgs<ExtArgs> = {}>(args?: Subset<T, User$workflowsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$WorkflowPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    credentials<T extends User$credentialsArgs<ExtArgs> = {}>(args?: Subset<T, User$credentialsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$CredentialPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    executions<T extends User$executionsArgs<ExtArgs> = {}>(args?: Subset<T, User$executionsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ExecutionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -2687,6 +3096,54 @@ export namespace Prisma {
     take?: number
     skip?: number
     distinct?: WorkflowScalarFieldEnum | WorkflowScalarFieldEnum[]
+  }
+
+  /**
+   * User.credentials
+   */
+  export type User$credentialsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Credential
+     */
+    select?: CredentialSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Credential
+     */
+    omit?: CredentialOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: CredentialInclude<ExtArgs> | null
+    where?: CredentialWhereInput
+    orderBy?: CredentialOrderByWithRelationInput | CredentialOrderByWithRelationInput[]
+    cursor?: CredentialWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: CredentialScalarFieldEnum | CredentialScalarFieldEnum[]
+  }
+
+  /**
+   * User.executions
+   */
+  export type User$executionsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Execution
+     */
+    select?: ExecutionSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Execution
+     */
+    omit?: ExecutionOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ExecutionInclude<ExtArgs> | null
+    where?: ExecutionWhereInput
+    orderBy?: ExecutionOrderByWithRelationInput | ExecutionOrderByWithRelationInput[]
+    cursor?: ExecutionWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: ExecutionScalarFieldEnum | ExecutionScalarFieldEnum[]
   }
 
   /**
@@ -6141,6 +6598,7 @@ export namespace Prisma {
     userId?: boolean
     nodes?: boolean | Workflow$nodesArgs<ExtArgs>
     connections?: boolean | Workflow$connectionsArgs<ExtArgs>
+    executions?: boolean | Workflow$executionsArgs<ExtArgs>
     user?: boolean | UserDefaultArgs<ExtArgs>
     _count?: boolean | WorkflowCountOutputTypeDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["workflow"]>
@@ -6175,6 +6633,7 @@ export namespace Prisma {
   export type WorkflowInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     nodes?: boolean | Workflow$nodesArgs<ExtArgs>
     connections?: boolean | Workflow$connectionsArgs<ExtArgs>
+    executions?: boolean | Workflow$executionsArgs<ExtArgs>
     user?: boolean | UserDefaultArgs<ExtArgs>
     _count?: boolean | WorkflowCountOutputTypeDefaultArgs<ExtArgs>
   }
@@ -6190,6 +6649,7 @@ export namespace Prisma {
     objects: {
       nodes: Prisma.$NodePayload<ExtArgs>[]
       connections: Prisma.$ConnectionPayload<ExtArgs>[]
+      executions: Prisma.$ExecutionPayload<ExtArgs>[]
       user: Prisma.$UserPayload<ExtArgs>
     }
     scalars: $Extensions.GetPayloadResult<{
@@ -6594,6 +7054,7 @@ export namespace Prisma {
     readonly [Symbol.toStringTag]: "PrismaPromise"
     nodes<T extends Workflow$nodesArgs<ExtArgs> = {}>(args?: Subset<T, Workflow$nodesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$NodePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     connections<T extends Workflow$connectionsArgs<ExtArgs> = {}>(args?: Subset<T, Workflow$connectionsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ConnectionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    executions<T extends Workflow$executionsArgs<ExtArgs> = {}>(args?: Subset<T, Workflow$executionsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ExecutionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     user<T extends UserDefaultArgs<ExtArgs> = {}>(args?: Subset<T, UserDefaultArgs<ExtArgs>>): Prisma__UserClient<$Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
@@ -7073,6 +7534,30 @@ export namespace Prisma {
   }
 
   /**
+   * Workflow.executions
+   */
+  export type Workflow$executionsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Execution
+     */
+    select?: ExecutionSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Execution
+     */
+    omit?: ExecutionOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ExecutionInclude<ExtArgs> | null
+    where?: ExecutionWhereInput
+    orderBy?: ExecutionOrderByWithRelationInput | ExecutionOrderByWithRelationInput[]
+    cursor?: ExecutionWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: ExecutionScalarFieldEnum | ExecutionScalarFieldEnum[]
+  }
+
+  /**
    * Workflow without action
    */
   export type WorkflowDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -7274,6 +7759,7 @@ export namespace Prisma {
     workflow?: boolean | WorkflowDefaultArgs<ExtArgs>
     fromConnections?: boolean | Node$fromConnectionsArgs<ExtArgs>
     toConnections?: boolean | Node$toConnectionsArgs<ExtArgs>
+    executionSteps?: boolean | Node$executionStepsArgs<ExtArgs>
     _count?: boolean | NodeCountOutputTypeDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["node"]>
 
@@ -7317,6 +7803,7 @@ export namespace Prisma {
     workflow?: boolean | WorkflowDefaultArgs<ExtArgs>
     fromConnections?: boolean | Node$fromConnectionsArgs<ExtArgs>
     toConnections?: boolean | Node$toConnectionsArgs<ExtArgs>
+    executionSteps?: boolean | Node$executionStepsArgs<ExtArgs>
     _count?: boolean | NodeCountOutputTypeDefaultArgs<ExtArgs>
   }
   export type NodeIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -7332,6 +7819,7 @@ export namespace Prisma {
       workflow: Prisma.$WorkflowPayload<ExtArgs>
       fromConnections: Prisma.$ConnectionPayload<ExtArgs>[]
       toConnections: Prisma.$ConnectionPayload<ExtArgs>[]
+      executionSteps: Prisma.$ExecutionStepPayload<ExtArgs>[]
     }
     scalars: $Extensions.GetPayloadResult<{
       id: string
@@ -7739,6 +8227,7 @@ export namespace Prisma {
     workflow<T extends WorkflowDefaultArgs<ExtArgs> = {}>(args?: Subset<T, WorkflowDefaultArgs<ExtArgs>>): Prisma__WorkflowClient<$Result.GetResult<Prisma.$WorkflowPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
     fromConnections<T extends Node$fromConnectionsArgs<ExtArgs> = {}>(args?: Subset<T, Node$fromConnectionsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ConnectionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     toConnections<T extends Node$toConnectionsArgs<ExtArgs> = {}>(args?: Subset<T, Node$toConnectionsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ConnectionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    executionSteps<T extends Node$executionStepsArgs<ExtArgs> = {}>(args?: Subset<T, Node$executionStepsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ExecutionStepPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -8217,6 +8706,30 @@ export namespace Prisma {
     take?: number
     skip?: number
     distinct?: ConnectionScalarFieldEnum | ConnectionScalarFieldEnum[]
+  }
+
+  /**
+   * Node.executionSteps
+   */
+  export type Node$executionStepsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ExecutionStep
+     */
+    select?: ExecutionStepSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the ExecutionStep
+     */
+    omit?: ExecutionStepOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ExecutionStepInclude<ExtArgs> | null
+    where?: ExecutionStepWhereInput
+    orderBy?: ExecutionStepOrderByWithRelationInput | ExecutionStepOrderByWithRelationInput[]
+    cursor?: ExecutionStepWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: ExecutionStepScalarFieldEnum | ExecutionStepScalarFieldEnum[]
   }
 
   /**
@@ -9361,6 +9874,3586 @@ export namespace Prisma {
 
 
   /**
+   * Model Credential
+   */
+
+  export type AggregateCredential = {
+    _count: CredentialCountAggregateOutputType | null
+    _min: CredentialMinAggregateOutputType | null
+    _max: CredentialMaxAggregateOutputType | null
+  }
+
+  export type CredentialMinAggregateOutputType = {
+    id: string | null
+    userId: string | null
+    name: string | null
+    provider: $Enums.CredentialProvider | null
+    description: string | null
+    encryptedData: string | null
+    lastUsedAt: Date | null
+    createdAt: Date | null
+    updatedAt: Date | null
+  }
+
+  export type CredentialMaxAggregateOutputType = {
+    id: string | null
+    userId: string | null
+    name: string | null
+    provider: $Enums.CredentialProvider | null
+    description: string | null
+    encryptedData: string | null
+    lastUsedAt: Date | null
+    createdAt: Date | null
+    updatedAt: Date | null
+  }
+
+  export type CredentialCountAggregateOutputType = {
+    id: number
+    userId: number
+    name: number
+    provider: number
+    description: number
+    encryptedData: number
+    metadata: number
+    lastUsedAt: number
+    createdAt: number
+    updatedAt: number
+    _all: number
+  }
+
+
+  export type CredentialMinAggregateInputType = {
+    id?: true
+    userId?: true
+    name?: true
+    provider?: true
+    description?: true
+    encryptedData?: true
+    lastUsedAt?: true
+    createdAt?: true
+    updatedAt?: true
+  }
+
+  export type CredentialMaxAggregateInputType = {
+    id?: true
+    userId?: true
+    name?: true
+    provider?: true
+    description?: true
+    encryptedData?: true
+    lastUsedAt?: true
+    createdAt?: true
+    updatedAt?: true
+  }
+
+  export type CredentialCountAggregateInputType = {
+    id?: true
+    userId?: true
+    name?: true
+    provider?: true
+    description?: true
+    encryptedData?: true
+    metadata?: true
+    lastUsedAt?: true
+    createdAt?: true
+    updatedAt?: true
+    _all?: true
+  }
+
+  export type CredentialAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which Credential to aggregate.
+     */
+    where?: CredentialWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of Credentials to fetch.
+     */
+    orderBy?: CredentialOrderByWithRelationInput | CredentialOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: CredentialWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` Credentials from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` Credentials.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned Credentials
+    **/
+    _count?: true | CredentialCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: CredentialMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: CredentialMaxAggregateInputType
+  }
+
+  export type GetCredentialAggregateType<T extends CredentialAggregateArgs> = {
+        [P in keyof T & keyof AggregateCredential]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateCredential[P]>
+      : GetScalarType<T[P], AggregateCredential[P]>
+  }
+
+
+
+
+  export type CredentialGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: CredentialWhereInput
+    orderBy?: CredentialOrderByWithAggregationInput | CredentialOrderByWithAggregationInput[]
+    by: CredentialScalarFieldEnum[] | CredentialScalarFieldEnum
+    having?: CredentialScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: CredentialCountAggregateInputType | true
+    _min?: CredentialMinAggregateInputType
+    _max?: CredentialMaxAggregateInputType
+  }
+
+  export type CredentialGroupByOutputType = {
+    id: string
+    userId: string
+    name: string
+    provider: $Enums.CredentialProvider
+    description: string | null
+    encryptedData: string
+    metadata: JsonValue
+    lastUsedAt: Date | null
+    createdAt: Date
+    updatedAt: Date
+    _count: CredentialCountAggregateOutputType | null
+    _min: CredentialMinAggregateOutputType | null
+    _max: CredentialMaxAggregateOutputType | null
+  }
+
+  type GetCredentialGroupByPayload<T extends CredentialGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<CredentialGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof CredentialGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], CredentialGroupByOutputType[P]>
+            : GetScalarType<T[P], CredentialGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type CredentialSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    userId?: boolean
+    name?: boolean
+    provider?: boolean
+    description?: boolean
+    encryptedData?: boolean
+    metadata?: boolean
+    lastUsedAt?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+    user?: boolean | UserDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["credential"]>
+
+  export type CredentialSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    userId?: boolean
+    name?: boolean
+    provider?: boolean
+    description?: boolean
+    encryptedData?: boolean
+    metadata?: boolean
+    lastUsedAt?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+    user?: boolean | UserDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["credential"]>
+
+  export type CredentialSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    userId?: boolean
+    name?: boolean
+    provider?: boolean
+    description?: boolean
+    encryptedData?: boolean
+    metadata?: boolean
+    lastUsedAt?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+    user?: boolean | UserDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["credential"]>
+
+  export type CredentialSelectScalar = {
+    id?: boolean
+    userId?: boolean
+    name?: boolean
+    provider?: boolean
+    description?: boolean
+    encryptedData?: boolean
+    metadata?: boolean
+    lastUsedAt?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+  }
+
+  export type CredentialOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "userId" | "name" | "provider" | "description" | "encryptedData" | "metadata" | "lastUsedAt" | "createdAt" | "updatedAt", ExtArgs["result"]["credential"]>
+  export type CredentialInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    user?: boolean | UserDefaultArgs<ExtArgs>
+  }
+  export type CredentialIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    user?: boolean | UserDefaultArgs<ExtArgs>
+  }
+  export type CredentialIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    user?: boolean | UserDefaultArgs<ExtArgs>
+  }
+
+  export type $CredentialPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "Credential"
+    objects: {
+      user: Prisma.$UserPayload<ExtArgs>
+    }
+    scalars: $Extensions.GetPayloadResult<{
+      id: string
+      userId: string
+      name: string
+      provider: $Enums.CredentialProvider
+      description: string | null
+      encryptedData: string
+      metadata: Prisma.JsonValue
+      lastUsedAt: Date | null
+      createdAt: Date
+      updatedAt: Date
+    }, ExtArgs["result"]["credential"]>
+    composites: {}
+  }
+
+  type CredentialGetPayload<S extends boolean | null | undefined | CredentialDefaultArgs> = $Result.GetResult<Prisma.$CredentialPayload, S>
+
+  type CredentialCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> =
+    Omit<CredentialFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
+      select?: CredentialCountAggregateInputType | true
+    }
+
+  export interface CredentialDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['Credential'], meta: { name: 'Credential' } }
+    /**
+     * Find zero or one Credential that matches the filter.
+     * @param {CredentialFindUniqueArgs} args - Arguments to find a Credential
+     * @example
+     * // Get one Credential
+     * const credential = await prisma.credential.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends CredentialFindUniqueArgs>(args: SelectSubset<T, CredentialFindUniqueArgs<ExtArgs>>): Prisma__CredentialClient<$Result.GetResult<Prisma.$CredentialPayload<ExtArgs>, T, "findUnique", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find one Credential that matches the filter or throw an error with `error.code='P2025'`
+     * if no matches were found.
+     * @param {CredentialFindUniqueOrThrowArgs} args - Arguments to find a Credential
+     * @example
+     * // Get one Credential
+     * const credential = await prisma.credential.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends CredentialFindUniqueOrThrowArgs>(args: SelectSubset<T, CredentialFindUniqueOrThrowArgs<ExtArgs>>): Prisma__CredentialClient<$Result.GetResult<Prisma.$CredentialPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first Credential that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {CredentialFindFirstArgs} args - Arguments to find a Credential
+     * @example
+     * // Get one Credential
+     * const credential = await prisma.credential.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends CredentialFindFirstArgs>(args?: SelectSubset<T, CredentialFindFirstArgs<ExtArgs>>): Prisma__CredentialClient<$Result.GetResult<Prisma.$CredentialPayload<ExtArgs>, T, "findFirst", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first Credential that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {CredentialFindFirstOrThrowArgs} args - Arguments to find a Credential
+     * @example
+     * // Get one Credential
+     * const credential = await prisma.credential.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends CredentialFindFirstOrThrowArgs>(args?: SelectSubset<T, CredentialFindFirstOrThrowArgs<ExtArgs>>): Prisma__CredentialClient<$Result.GetResult<Prisma.$CredentialPayload<ExtArgs>, T, "findFirstOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find zero or more Credentials that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {CredentialFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all Credentials
+     * const credentials = await prisma.credential.findMany()
+     * 
+     * // Get first 10 Credentials
+     * const credentials = await prisma.credential.findMany({ take: 10 })
+     * 
+     * // Only select the `id`
+     * const credentialWithIdOnly = await prisma.credential.findMany({ select: { id: true } })
+     * 
+     */
+    findMany<T extends CredentialFindManyArgs>(args?: SelectSubset<T, CredentialFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$CredentialPayload<ExtArgs>, T, "findMany", GlobalOmitOptions>>
+
+    /**
+     * Create a Credential.
+     * @param {CredentialCreateArgs} args - Arguments to create a Credential.
+     * @example
+     * // Create one Credential
+     * const Credential = await prisma.credential.create({
+     *   data: {
+     *     // ... data to create a Credential
+     *   }
+     * })
+     * 
+     */
+    create<T extends CredentialCreateArgs>(args: SelectSubset<T, CredentialCreateArgs<ExtArgs>>): Prisma__CredentialClient<$Result.GetResult<Prisma.$CredentialPayload<ExtArgs>, T, "create", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Create many Credentials.
+     * @param {CredentialCreateManyArgs} args - Arguments to create many Credentials.
+     * @example
+     * // Create many Credentials
+     * const credential = await prisma.credential.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends CredentialCreateManyArgs>(args?: SelectSubset<T, CredentialCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create many Credentials and returns the data saved in the database.
+     * @param {CredentialCreateManyAndReturnArgs} args - Arguments to create many Credentials.
+     * @example
+     * // Create many Credentials
+     * const credential = await prisma.credential.createManyAndReturn({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Create many Credentials and only return the `id`
+     * const credentialWithIdOnly = await prisma.credential.createManyAndReturn({
+     *   select: { id: true },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    createManyAndReturn<T extends CredentialCreateManyAndReturnArgs>(args?: SelectSubset<T, CredentialCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$CredentialPayload<ExtArgs>, T, "createManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Delete a Credential.
+     * @param {CredentialDeleteArgs} args - Arguments to delete one Credential.
+     * @example
+     * // Delete one Credential
+     * const Credential = await prisma.credential.delete({
+     *   where: {
+     *     // ... filter to delete one Credential
+     *   }
+     * })
+     * 
+     */
+    delete<T extends CredentialDeleteArgs>(args: SelectSubset<T, CredentialDeleteArgs<ExtArgs>>): Prisma__CredentialClient<$Result.GetResult<Prisma.$CredentialPayload<ExtArgs>, T, "delete", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Update one Credential.
+     * @param {CredentialUpdateArgs} args - Arguments to update one Credential.
+     * @example
+     * // Update one Credential
+     * const credential = await prisma.credential.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends CredentialUpdateArgs>(args: SelectSubset<T, CredentialUpdateArgs<ExtArgs>>): Prisma__CredentialClient<$Result.GetResult<Prisma.$CredentialPayload<ExtArgs>, T, "update", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Delete zero or more Credentials.
+     * @param {CredentialDeleteManyArgs} args - Arguments to filter Credentials to delete.
+     * @example
+     * // Delete a few Credentials
+     * const { count } = await prisma.credential.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends CredentialDeleteManyArgs>(args?: SelectSubset<T, CredentialDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more Credentials.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {CredentialUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many Credentials
+     * const credential = await prisma.credential.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends CredentialUpdateManyArgs>(args: SelectSubset<T, CredentialUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more Credentials and returns the data updated in the database.
+     * @param {CredentialUpdateManyAndReturnArgs} args - Arguments to update many Credentials.
+     * @example
+     * // Update many Credentials
+     * const credential = await prisma.credential.updateManyAndReturn({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Update zero or more Credentials and only return the `id`
+     * const credentialWithIdOnly = await prisma.credential.updateManyAndReturn({
+     *   select: { id: true },
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    updateManyAndReturn<T extends CredentialUpdateManyAndReturnArgs>(args: SelectSubset<T, CredentialUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$CredentialPayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Create or update one Credential.
+     * @param {CredentialUpsertArgs} args - Arguments to update or create a Credential.
+     * @example
+     * // Update or create a Credential
+     * const credential = await prisma.credential.upsert({
+     *   create: {
+     *     // ... data to create a Credential
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the Credential we want to update
+     *   }
+     * })
+     */
+    upsert<T extends CredentialUpsertArgs>(args: SelectSubset<T, CredentialUpsertArgs<ExtArgs>>): Prisma__CredentialClient<$Result.GetResult<Prisma.$CredentialPayload<ExtArgs>, T, "upsert", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+
+    /**
+     * Count the number of Credentials.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {CredentialCountArgs} args - Arguments to filter Credentials to count.
+     * @example
+     * // Count the number of Credentials
+     * const count = await prisma.credential.count({
+     *   where: {
+     *     // ... the filter for the Credentials we want to count
+     *   }
+     * })
+    **/
+    count<T extends CredentialCountArgs>(
+      args?: Subset<T, CredentialCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], CredentialCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a Credential.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {CredentialAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends CredentialAggregateArgs>(args: Subset<T, CredentialAggregateArgs>): Prisma.PrismaPromise<GetCredentialAggregateType<T>>
+
+    /**
+     * Group by Credential.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {CredentialGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends CredentialGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: CredentialGroupByArgs['orderBy'] }
+        : { orderBy?: CredentialGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, CredentialGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetCredentialGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the Credential model
+   */
+  readonly fields: CredentialFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for Credential.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__CredentialClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    user<T extends UserDefaultArgs<ExtArgs> = {}>(args?: Subset<T, UserDefaultArgs<ExtArgs>>): Prisma__UserClient<$Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the Credential model
+   */
+  interface CredentialFieldRefs {
+    readonly id: FieldRef<"Credential", 'String'>
+    readonly userId: FieldRef<"Credential", 'String'>
+    readonly name: FieldRef<"Credential", 'String'>
+    readonly provider: FieldRef<"Credential", 'CredentialProvider'>
+    readonly description: FieldRef<"Credential", 'String'>
+    readonly encryptedData: FieldRef<"Credential", 'String'>
+    readonly metadata: FieldRef<"Credential", 'Json'>
+    readonly lastUsedAt: FieldRef<"Credential", 'DateTime'>
+    readonly createdAt: FieldRef<"Credential", 'DateTime'>
+    readonly updatedAt: FieldRef<"Credential", 'DateTime'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * Credential findUnique
+   */
+  export type CredentialFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Credential
+     */
+    select?: CredentialSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Credential
+     */
+    omit?: CredentialOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: CredentialInclude<ExtArgs> | null
+    /**
+     * Filter, which Credential to fetch.
+     */
+    where: CredentialWhereUniqueInput
+  }
+
+  /**
+   * Credential findUniqueOrThrow
+   */
+  export type CredentialFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Credential
+     */
+    select?: CredentialSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Credential
+     */
+    omit?: CredentialOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: CredentialInclude<ExtArgs> | null
+    /**
+     * Filter, which Credential to fetch.
+     */
+    where: CredentialWhereUniqueInput
+  }
+
+  /**
+   * Credential findFirst
+   */
+  export type CredentialFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Credential
+     */
+    select?: CredentialSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Credential
+     */
+    omit?: CredentialOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: CredentialInclude<ExtArgs> | null
+    /**
+     * Filter, which Credential to fetch.
+     */
+    where?: CredentialWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of Credentials to fetch.
+     */
+    orderBy?: CredentialOrderByWithRelationInput | CredentialOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for Credentials.
+     */
+    cursor?: CredentialWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` Credentials from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` Credentials.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of Credentials.
+     */
+    distinct?: CredentialScalarFieldEnum | CredentialScalarFieldEnum[]
+  }
+
+  /**
+   * Credential findFirstOrThrow
+   */
+  export type CredentialFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Credential
+     */
+    select?: CredentialSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Credential
+     */
+    omit?: CredentialOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: CredentialInclude<ExtArgs> | null
+    /**
+     * Filter, which Credential to fetch.
+     */
+    where?: CredentialWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of Credentials to fetch.
+     */
+    orderBy?: CredentialOrderByWithRelationInput | CredentialOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for Credentials.
+     */
+    cursor?: CredentialWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` Credentials from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` Credentials.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of Credentials.
+     */
+    distinct?: CredentialScalarFieldEnum | CredentialScalarFieldEnum[]
+  }
+
+  /**
+   * Credential findMany
+   */
+  export type CredentialFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Credential
+     */
+    select?: CredentialSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Credential
+     */
+    omit?: CredentialOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: CredentialInclude<ExtArgs> | null
+    /**
+     * Filter, which Credentials to fetch.
+     */
+    where?: CredentialWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of Credentials to fetch.
+     */
+    orderBy?: CredentialOrderByWithRelationInput | CredentialOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing Credentials.
+     */
+    cursor?: CredentialWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` Credentials from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` Credentials.
+     */
+    skip?: number
+    distinct?: CredentialScalarFieldEnum | CredentialScalarFieldEnum[]
+  }
+
+  /**
+   * Credential create
+   */
+  export type CredentialCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Credential
+     */
+    select?: CredentialSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Credential
+     */
+    omit?: CredentialOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: CredentialInclude<ExtArgs> | null
+    /**
+     * The data needed to create a Credential.
+     */
+    data: XOR<CredentialCreateInput, CredentialUncheckedCreateInput>
+  }
+
+  /**
+   * Credential createMany
+   */
+  export type CredentialCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many Credentials.
+     */
+    data: CredentialCreateManyInput | CredentialCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * Credential createManyAndReturn
+   */
+  export type CredentialCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Credential
+     */
+    select?: CredentialSelectCreateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the Credential
+     */
+    omit?: CredentialOmit<ExtArgs> | null
+    /**
+     * The data used to create many Credentials.
+     */
+    data: CredentialCreateManyInput | CredentialCreateManyInput[]
+    skipDuplicates?: boolean
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: CredentialIncludeCreateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * Credential update
+   */
+  export type CredentialUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Credential
+     */
+    select?: CredentialSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Credential
+     */
+    omit?: CredentialOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: CredentialInclude<ExtArgs> | null
+    /**
+     * The data needed to update a Credential.
+     */
+    data: XOR<CredentialUpdateInput, CredentialUncheckedUpdateInput>
+    /**
+     * Choose, which Credential to update.
+     */
+    where: CredentialWhereUniqueInput
+  }
+
+  /**
+   * Credential updateMany
+   */
+  export type CredentialUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update Credentials.
+     */
+    data: XOR<CredentialUpdateManyMutationInput, CredentialUncheckedUpdateManyInput>
+    /**
+     * Filter which Credentials to update
+     */
+    where?: CredentialWhereInput
+    /**
+     * Limit how many Credentials to update.
+     */
+    limit?: number
+  }
+
+  /**
+   * Credential updateManyAndReturn
+   */
+  export type CredentialUpdateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Credential
+     */
+    select?: CredentialSelectUpdateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the Credential
+     */
+    omit?: CredentialOmit<ExtArgs> | null
+    /**
+     * The data used to update Credentials.
+     */
+    data: XOR<CredentialUpdateManyMutationInput, CredentialUncheckedUpdateManyInput>
+    /**
+     * Filter which Credentials to update
+     */
+    where?: CredentialWhereInput
+    /**
+     * Limit how many Credentials to update.
+     */
+    limit?: number
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: CredentialIncludeUpdateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * Credential upsert
+   */
+  export type CredentialUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Credential
+     */
+    select?: CredentialSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Credential
+     */
+    omit?: CredentialOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: CredentialInclude<ExtArgs> | null
+    /**
+     * The filter to search for the Credential to update in case it exists.
+     */
+    where: CredentialWhereUniqueInput
+    /**
+     * In case the Credential found by the `where` argument doesn't exist, create a new Credential with this data.
+     */
+    create: XOR<CredentialCreateInput, CredentialUncheckedCreateInput>
+    /**
+     * In case the Credential was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<CredentialUpdateInput, CredentialUncheckedUpdateInput>
+  }
+
+  /**
+   * Credential delete
+   */
+  export type CredentialDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Credential
+     */
+    select?: CredentialSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Credential
+     */
+    omit?: CredentialOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: CredentialInclude<ExtArgs> | null
+    /**
+     * Filter which Credential to delete.
+     */
+    where: CredentialWhereUniqueInput
+  }
+
+  /**
+   * Credential deleteMany
+   */
+  export type CredentialDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which Credentials to delete
+     */
+    where?: CredentialWhereInput
+    /**
+     * Limit how many Credentials to delete.
+     */
+    limit?: number
+  }
+
+  /**
+   * Credential without action
+   */
+  export type CredentialDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Credential
+     */
+    select?: CredentialSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Credential
+     */
+    omit?: CredentialOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: CredentialInclude<ExtArgs> | null
+  }
+
+
+  /**
+   * Model Execution
+   */
+
+  export type AggregateExecution = {
+    _count: ExecutionCountAggregateOutputType | null
+    _min: ExecutionMinAggregateOutputType | null
+    _max: ExecutionMaxAggregateOutputType | null
+  }
+
+  export type ExecutionMinAggregateOutputType = {
+    id: string | null
+    workflowId: string | null
+    triggerType: $Enums.ExecutionTriggerType | null
+    status: $Enums.ExecutionStatus | null
+    triggeredByUserId: string | null
+    startedAt: Date | null
+    completedAt: Date | null
+    createdAt: Date | null
+    updatedAt: Date | null
+  }
+
+  export type ExecutionMaxAggregateOutputType = {
+    id: string | null
+    workflowId: string | null
+    triggerType: $Enums.ExecutionTriggerType | null
+    status: $Enums.ExecutionStatus | null
+    triggeredByUserId: string | null
+    startedAt: Date | null
+    completedAt: Date | null
+    createdAt: Date | null
+    updatedAt: Date | null
+  }
+
+  export type ExecutionCountAggregateOutputType = {
+    id: number
+    workflowId: number
+    triggerType: number
+    status: number
+    triggeredByUserId: number
+    triggerPayload: number
+    state: number
+    workflowSnapshot: number
+    startedAt: number
+    completedAt: number
+    error: number
+    createdAt: number
+    updatedAt: number
+    _all: number
+  }
+
+
+  export type ExecutionMinAggregateInputType = {
+    id?: true
+    workflowId?: true
+    triggerType?: true
+    status?: true
+    triggeredByUserId?: true
+    startedAt?: true
+    completedAt?: true
+    createdAt?: true
+    updatedAt?: true
+  }
+
+  export type ExecutionMaxAggregateInputType = {
+    id?: true
+    workflowId?: true
+    triggerType?: true
+    status?: true
+    triggeredByUserId?: true
+    startedAt?: true
+    completedAt?: true
+    createdAt?: true
+    updatedAt?: true
+  }
+
+  export type ExecutionCountAggregateInputType = {
+    id?: true
+    workflowId?: true
+    triggerType?: true
+    status?: true
+    triggeredByUserId?: true
+    triggerPayload?: true
+    state?: true
+    workflowSnapshot?: true
+    startedAt?: true
+    completedAt?: true
+    error?: true
+    createdAt?: true
+    updatedAt?: true
+    _all?: true
+  }
+
+  export type ExecutionAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which Execution to aggregate.
+     */
+    where?: ExecutionWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of Executions to fetch.
+     */
+    orderBy?: ExecutionOrderByWithRelationInput | ExecutionOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: ExecutionWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` Executions from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` Executions.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned Executions
+    **/
+    _count?: true | ExecutionCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: ExecutionMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: ExecutionMaxAggregateInputType
+  }
+
+  export type GetExecutionAggregateType<T extends ExecutionAggregateArgs> = {
+        [P in keyof T & keyof AggregateExecution]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateExecution[P]>
+      : GetScalarType<T[P], AggregateExecution[P]>
+  }
+
+
+
+
+  export type ExecutionGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: ExecutionWhereInput
+    orderBy?: ExecutionOrderByWithAggregationInput | ExecutionOrderByWithAggregationInput[]
+    by: ExecutionScalarFieldEnum[] | ExecutionScalarFieldEnum
+    having?: ExecutionScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: ExecutionCountAggregateInputType | true
+    _min?: ExecutionMinAggregateInputType
+    _max?: ExecutionMaxAggregateInputType
+  }
+
+  export type ExecutionGroupByOutputType = {
+    id: string
+    workflowId: string
+    triggerType: $Enums.ExecutionTriggerType
+    status: $Enums.ExecutionStatus
+    triggeredByUserId: string | null
+    triggerPayload: JsonValue
+    state: JsonValue
+    workflowSnapshot: JsonValue | null
+    startedAt: Date | null
+    completedAt: Date | null
+    error: JsonValue | null
+    createdAt: Date
+    updatedAt: Date
+    _count: ExecutionCountAggregateOutputType | null
+    _min: ExecutionMinAggregateOutputType | null
+    _max: ExecutionMaxAggregateOutputType | null
+  }
+
+  type GetExecutionGroupByPayload<T extends ExecutionGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<ExecutionGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof ExecutionGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], ExecutionGroupByOutputType[P]>
+            : GetScalarType<T[P], ExecutionGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type ExecutionSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    workflowId?: boolean
+    triggerType?: boolean
+    status?: boolean
+    triggeredByUserId?: boolean
+    triggerPayload?: boolean
+    state?: boolean
+    workflowSnapshot?: boolean
+    startedAt?: boolean
+    completedAt?: boolean
+    error?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+    workflow?: boolean | WorkflowDefaultArgs<ExtArgs>
+    triggeredByUser?: boolean | Execution$triggeredByUserArgs<ExtArgs>
+    steps?: boolean | Execution$stepsArgs<ExtArgs>
+    _count?: boolean | ExecutionCountOutputTypeDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["execution"]>
+
+  export type ExecutionSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    workflowId?: boolean
+    triggerType?: boolean
+    status?: boolean
+    triggeredByUserId?: boolean
+    triggerPayload?: boolean
+    state?: boolean
+    workflowSnapshot?: boolean
+    startedAt?: boolean
+    completedAt?: boolean
+    error?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+    workflow?: boolean | WorkflowDefaultArgs<ExtArgs>
+    triggeredByUser?: boolean | Execution$triggeredByUserArgs<ExtArgs>
+  }, ExtArgs["result"]["execution"]>
+
+  export type ExecutionSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    workflowId?: boolean
+    triggerType?: boolean
+    status?: boolean
+    triggeredByUserId?: boolean
+    triggerPayload?: boolean
+    state?: boolean
+    workflowSnapshot?: boolean
+    startedAt?: boolean
+    completedAt?: boolean
+    error?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+    workflow?: boolean | WorkflowDefaultArgs<ExtArgs>
+    triggeredByUser?: boolean | Execution$triggeredByUserArgs<ExtArgs>
+  }, ExtArgs["result"]["execution"]>
+
+  export type ExecutionSelectScalar = {
+    id?: boolean
+    workflowId?: boolean
+    triggerType?: boolean
+    status?: boolean
+    triggeredByUserId?: boolean
+    triggerPayload?: boolean
+    state?: boolean
+    workflowSnapshot?: boolean
+    startedAt?: boolean
+    completedAt?: boolean
+    error?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+  }
+
+  export type ExecutionOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "workflowId" | "triggerType" | "status" | "triggeredByUserId" | "triggerPayload" | "state" | "workflowSnapshot" | "startedAt" | "completedAt" | "error" | "createdAt" | "updatedAt", ExtArgs["result"]["execution"]>
+  export type ExecutionInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    workflow?: boolean | WorkflowDefaultArgs<ExtArgs>
+    triggeredByUser?: boolean | Execution$triggeredByUserArgs<ExtArgs>
+    steps?: boolean | Execution$stepsArgs<ExtArgs>
+    _count?: boolean | ExecutionCountOutputTypeDefaultArgs<ExtArgs>
+  }
+  export type ExecutionIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    workflow?: boolean | WorkflowDefaultArgs<ExtArgs>
+    triggeredByUser?: boolean | Execution$triggeredByUserArgs<ExtArgs>
+  }
+  export type ExecutionIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    workflow?: boolean | WorkflowDefaultArgs<ExtArgs>
+    triggeredByUser?: boolean | Execution$triggeredByUserArgs<ExtArgs>
+  }
+
+  export type $ExecutionPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "Execution"
+    objects: {
+      workflow: Prisma.$WorkflowPayload<ExtArgs>
+      triggeredByUser: Prisma.$UserPayload<ExtArgs> | null
+      steps: Prisma.$ExecutionStepPayload<ExtArgs>[]
+    }
+    scalars: $Extensions.GetPayloadResult<{
+      id: string
+      workflowId: string
+      triggerType: $Enums.ExecutionTriggerType
+      status: $Enums.ExecutionStatus
+      triggeredByUserId: string | null
+      triggerPayload: Prisma.JsonValue
+      state: Prisma.JsonValue
+      workflowSnapshot: Prisma.JsonValue | null
+      startedAt: Date | null
+      completedAt: Date | null
+      error: Prisma.JsonValue | null
+      createdAt: Date
+      updatedAt: Date
+    }, ExtArgs["result"]["execution"]>
+    composites: {}
+  }
+
+  type ExecutionGetPayload<S extends boolean | null | undefined | ExecutionDefaultArgs> = $Result.GetResult<Prisma.$ExecutionPayload, S>
+
+  type ExecutionCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> =
+    Omit<ExecutionFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
+      select?: ExecutionCountAggregateInputType | true
+    }
+
+  export interface ExecutionDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['Execution'], meta: { name: 'Execution' } }
+    /**
+     * Find zero or one Execution that matches the filter.
+     * @param {ExecutionFindUniqueArgs} args - Arguments to find a Execution
+     * @example
+     * // Get one Execution
+     * const execution = await prisma.execution.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends ExecutionFindUniqueArgs>(args: SelectSubset<T, ExecutionFindUniqueArgs<ExtArgs>>): Prisma__ExecutionClient<$Result.GetResult<Prisma.$ExecutionPayload<ExtArgs>, T, "findUnique", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find one Execution that matches the filter or throw an error with `error.code='P2025'`
+     * if no matches were found.
+     * @param {ExecutionFindUniqueOrThrowArgs} args - Arguments to find a Execution
+     * @example
+     * // Get one Execution
+     * const execution = await prisma.execution.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends ExecutionFindUniqueOrThrowArgs>(args: SelectSubset<T, ExecutionFindUniqueOrThrowArgs<ExtArgs>>): Prisma__ExecutionClient<$Result.GetResult<Prisma.$ExecutionPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first Execution that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ExecutionFindFirstArgs} args - Arguments to find a Execution
+     * @example
+     * // Get one Execution
+     * const execution = await prisma.execution.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends ExecutionFindFirstArgs>(args?: SelectSubset<T, ExecutionFindFirstArgs<ExtArgs>>): Prisma__ExecutionClient<$Result.GetResult<Prisma.$ExecutionPayload<ExtArgs>, T, "findFirst", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first Execution that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ExecutionFindFirstOrThrowArgs} args - Arguments to find a Execution
+     * @example
+     * // Get one Execution
+     * const execution = await prisma.execution.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends ExecutionFindFirstOrThrowArgs>(args?: SelectSubset<T, ExecutionFindFirstOrThrowArgs<ExtArgs>>): Prisma__ExecutionClient<$Result.GetResult<Prisma.$ExecutionPayload<ExtArgs>, T, "findFirstOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find zero or more Executions that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ExecutionFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all Executions
+     * const executions = await prisma.execution.findMany()
+     * 
+     * // Get first 10 Executions
+     * const executions = await prisma.execution.findMany({ take: 10 })
+     * 
+     * // Only select the `id`
+     * const executionWithIdOnly = await prisma.execution.findMany({ select: { id: true } })
+     * 
+     */
+    findMany<T extends ExecutionFindManyArgs>(args?: SelectSubset<T, ExecutionFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ExecutionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions>>
+
+    /**
+     * Create a Execution.
+     * @param {ExecutionCreateArgs} args - Arguments to create a Execution.
+     * @example
+     * // Create one Execution
+     * const Execution = await prisma.execution.create({
+     *   data: {
+     *     // ... data to create a Execution
+     *   }
+     * })
+     * 
+     */
+    create<T extends ExecutionCreateArgs>(args: SelectSubset<T, ExecutionCreateArgs<ExtArgs>>): Prisma__ExecutionClient<$Result.GetResult<Prisma.$ExecutionPayload<ExtArgs>, T, "create", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Create many Executions.
+     * @param {ExecutionCreateManyArgs} args - Arguments to create many Executions.
+     * @example
+     * // Create many Executions
+     * const execution = await prisma.execution.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends ExecutionCreateManyArgs>(args?: SelectSubset<T, ExecutionCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create many Executions and returns the data saved in the database.
+     * @param {ExecutionCreateManyAndReturnArgs} args - Arguments to create many Executions.
+     * @example
+     * // Create many Executions
+     * const execution = await prisma.execution.createManyAndReturn({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Create many Executions and only return the `id`
+     * const executionWithIdOnly = await prisma.execution.createManyAndReturn({
+     *   select: { id: true },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    createManyAndReturn<T extends ExecutionCreateManyAndReturnArgs>(args?: SelectSubset<T, ExecutionCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ExecutionPayload<ExtArgs>, T, "createManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Delete a Execution.
+     * @param {ExecutionDeleteArgs} args - Arguments to delete one Execution.
+     * @example
+     * // Delete one Execution
+     * const Execution = await prisma.execution.delete({
+     *   where: {
+     *     // ... filter to delete one Execution
+     *   }
+     * })
+     * 
+     */
+    delete<T extends ExecutionDeleteArgs>(args: SelectSubset<T, ExecutionDeleteArgs<ExtArgs>>): Prisma__ExecutionClient<$Result.GetResult<Prisma.$ExecutionPayload<ExtArgs>, T, "delete", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Update one Execution.
+     * @param {ExecutionUpdateArgs} args - Arguments to update one Execution.
+     * @example
+     * // Update one Execution
+     * const execution = await prisma.execution.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends ExecutionUpdateArgs>(args: SelectSubset<T, ExecutionUpdateArgs<ExtArgs>>): Prisma__ExecutionClient<$Result.GetResult<Prisma.$ExecutionPayload<ExtArgs>, T, "update", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Delete zero or more Executions.
+     * @param {ExecutionDeleteManyArgs} args - Arguments to filter Executions to delete.
+     * @example
+     * // Delete a few Executions
+     * const { count } = await prisma.execution.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends ExecutionDeleteManyArgs>(args?: SelectSubset<T, ExecutionDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more Executions.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ExecutionUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many Executions
+     * const execution = await prisma.execution.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends ExecutionUpdateManyArgs>(args: SelectSubset<T, ExecutionUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more Executions and returns the data updated in the database.
+     * @param {ExecutionUpdateManyAndReturnArgs} args - Arguments to update many Executions.
+     * @example
+     * // Update many Executions
+     * const execution = await prisma.execution.updateManyAndReturn({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Update zero or more Executions and only return the `id`
+     * const executionWithIdOnly = await prisma.execution.updateManyAndReturn({
+     *   select: { id: true },
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    updateManyAndReturn<T extends ExecutionUpdateManyAndReturnArgs>(args: SelectSubset<T, ExecutionUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ExecutionPayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Create or update one Execution.
+     * @param {ExecutionUpsertArgs} args - Arguments to update or create a Execution.
+     * @example
+     * // Update or create a Execution
+     * const execution = await prisma.execution.upsert({
+     *   create: {
+     *     // ... data to create a Execution
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the Execution we want to update
+     *   }
+     * })
+     */
+    upsert<T extends ExecutionUpsertArgs>(args: SelectSubset<T, ExecutionUpsertArgs<ExtArgs>>): Prisma__ExecutionClient<$Result.GetResult<Prisma.$ExecutionPayload<ExtArgs>, T, "upsert", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+
+    /**
+     * Count the number of Executions.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ExecutionCountArgs} args - Arguments to filter Executions to count.
+     * @example
+     * // Count the number of Executions
+     * const count = await prisma.execution.count({
+     *   where: {
+     *     // ... the filter for the Executions we want to count
+     *   }
+     * })
+    **/
+    count<T extends ExecutionCountArgs>(
+      args?: Subset<T, ExecutionCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], ExecutionCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a Execution.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ExecutionAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends ExecutionAggregateArgs>(args: Subset<T, ExecutionAggregateArgs>): Prisma.PrismaPromise<GetExecutionAggregateType<T>>
+
+    /**
+     * Group by Execution.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ExecutionGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends ExecutionGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: ExecutionGroupByArgs['orderBy'] }
+        : { orderBy?: ExecutionGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, ExecutionGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetExecutionGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the Execution model
+   */
+  readonly fields: ExecutionFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for Execution.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__ExecutionClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    workflow<T extends WorkflowDefaultArgs<ExtArgs> = {}>(args?: Subset<T, WorkflowDefaultArgs<ExtArgs>>): Prisma__WorkflowClient<$Result.GetResult<Prisma.$WorkflowPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+    triggeredByUser<T extends Execution$triggeredByUserArgs<ExtArgs> = {}>(args?: Subset<T, Execution$triggeredByUserArgs<ExtArgs>>): Prisma__UserClient<$Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+    steps<T extends Execution$stepsArgs<ExtArgs> = {}>(args?: Subset<T, Execution$stepsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ExecutionStepPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the Execution model
+   */
+  interface ExecutionFieldRefs {
+    readonly id: FieldRef<"Execution", 'String'>
+    readonly workflowId: FieldRef<"Execution", 'String'>
+    readonly triggerType: FieldRef<"Execution", 'ExecutionTriggerType'>
+    readonly status: FieldRef<"Execution", 'ExecutionStatus'>
+    readonly triggeredByUserId: FieldRef<"Execution", 'String'>
+    readonly triggerPayload: FieldRef<"Execution", 'Json'>
+    readonly state: FieldRef<"Execution", 'Json'>
+    readonly workflowSnapshot: FieldRef<"Execution", 'Json'>
+    readonly startedAt: FieldRef<"Execution", 'DateTime'>
+    readonly completedAt: FieldRef<"Execution", 'DateTime'>
+    readonly error: FieldRef<"Execution", 'Json'>
+    readonly createdAt: FieldRef<"Execution", 'DateTime'>
+    readonly updatedAt: FieldRef<"Execution", 'DateTime'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * Execution findUnique
+   */
+  export type ExecutionFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Execution
+     */
+    select?: ExecutionSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Execution
+     */
+    omit?: ExecutionOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ExecutionInclude<ExtArgs> | null
+    /**
+     * Filter, which Execution to fetch.
+     */
+    where: ExecutionWhereUniqueInput
+  }
+
+  /**
+   * Execution findUniqueOrThrow
+   */
+  export type ExecutionFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Execution
+     */
+    select?: ExecutionSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Execution
+     */
+    omit?: ExecutionOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ExecutionInclude<ExtArgs> | null
+    /**
+     * Filter, which Execution to fetch.
+     */
+    where: ExecutionWhereUniqueInput
+  }
+
+  /**
+   * Execution findFirst
+   */
+  export type ExecutionFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Execution
+     */
+    select?: ExecutionSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Execution
+     */
+    omit?: ExecutionOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ExecutionInclude<ExtArgs> | null
+    /**
+     * Filter, which Execution to fetch.
+     */
+    where?: ExecutionWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of Executions to fetch.
+     */
+    orderBy?: ExecutionOrderByWithRelationInput | ExecutionOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for Executions.
+     */
+    cursor?: ExecutionWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` Executions from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` Executions.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of Executions.
+     */
+    distinct?: ExecutionScalarFieldEnum | ExecutionScalarFieldEnum[]
+  }
+
+  /**
+   * Execution findFirstOrThrow
+   */
+  export type ExecutionFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Execution
+     */
+    select?: ExecutionSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Execution
+     */
+    omit?: ExecutionOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ExecutionInclude<ExtArgs> | null
+    /**
+     * Filter, which Execution to fetch.
+     */
+    where?: ExecutionWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of Executions to fetch.
+     */
+    orderBy?: ExecutionOrderByWithRelationInput | ExecutionOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for Executions.
+     */
+    cursor?: ExecutionWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` Executions from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` Executions.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of Executions.
+     */
+    distinct?: ExecutionScalarFieldEnum | ExecutionScalarFieldEnum[]
+  }
+
+  /**
+   * Execution findMany
+   */
+  export type ExecutionFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Execution
+     */
+    select?: ExecutionSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Execution
+     */
+    omit?: ExecutionOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ExecutionInclude<ExtArgs> | null
+    /**
+     * Filter, which Executions to fetch.
+     */
+    where?: ExecutionWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of Executions to fetch.
+     */
+    orderBy?: ExecutionOrderByWithRelationInput | ExecutionOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing Executions.
+     */
+    cursor?: ExecutionWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` Executions from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` Executions.
+     */
+    skip?: number
+    distinct?: ExecutionScalarFieldEnum | ExecutionScalarFieldEnum[]
+  }
+
+  /**
+   * Execution create
+   */
+  export type ExecutionCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Execution
+     */
+    select?: ExecutionSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Execution
+     */
+    omit?: ExecutionOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ExecutionInclude<ExtArgs> | null
+    /**
+     * The data needed to create a Execution.
+     */
+    data: XOR<ExecutionCreateInput, ExecutionUncheckedCreateInput>
+  }
+
+  /**
+   * Execution createMany
+   */
+  export type ExecutionCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many Executions.
+     */
+    data: ExecutionCreateManyInput | ExecutionCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * Execution createManyAndReturn
+   */
+  export type ExecutionCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Execution
+     */
+    select?: ExecutionSelectCreateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the Execution
+     */
+    omit?: ExecutionOmit<ExtArgs> | null
+    /**
+     * The data used to create many Executions.
+     */
+    data: ExecutionCreateManyInput | ExecutionCreateManyInput[]
+    skipDuplicates?: boolean
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ExecutionIncludeCreateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * Execution update
+   */
+  export type ExecutionUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Execution
+     */
+    select?: ExecutionSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Execution
+     */
+    omit?: ExecutionOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ExecutionInclude<ExtArgs> | null
+    /**
+     * The data needed to update a Execution.
+     */
+    data: XOR<ExecutionUpdateInput, ExecutionUncheckedUpdateInput>
+    /**
+     * Choose, which Execution to update.
+     */
+    where: ExecutionWhereUniqueInput
+  }
+
+  /**
+   * Execution updateMany
+   */
+  export type ExecutionUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update Executions.
+     */
+    data: XOR<ExecutionUpdateManyMutationInput, ExecutionUncheckedUpdateManyInput>
+    /**
+     * Filter which Executions to update
+     */
+    where?: ExecutionWhereInput
+    /**
+     * Limit how many Executions to update.
+     */
+    limit?: number
+  }
+
+  /**
+   * Execution updateManyAndReturn
+   */
+  export type ExecutionUpdateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Execution
+     */
+    select?: ExecutionSelectUpdateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the Execution
+     */
+    omit?: ExecutionOmit<ExtArgs> | null
+    /**
+     * The data used to update Executions.
+     */
+    data: XOR<ExecutionUpdateManyMutationInput, ExecutionUncheckedUpdateManyInput>
+    /**
+     * Filter which Executions to update
+     */
+    where?: ExecutionWhereInput
+    /**
+     * Limit how many Executions to update.
+     */
+    limit?: number
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ExecutionIncludeUpdateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * Execution upsert
+   */
+  export type ExecutionUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Execution
+     */
+    select?: ExecutionSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Execution
+     */
+    omit?: ExecutionOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ExecutionInclude<ExtArgs> | null
+    /**
+     * The filter to search for the Execution to update in case it exists.
+     */
+    where: ExecutionWhereUniqueInput
+    /**
+     * In case the Execution found by the `where` argument doesn't exist, create a new Execution with this data.
+     */
+    create: XOR<ExecutionCreateInput, ExecutionUncheckedCreateInput>
+    /**
+     * In case the Execution was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<ExecutionUpdateInput, ExecutionUncheckedUpdateInput>
+  }
+
+  /**
+   * Execution delete
+   */
+  export type ExecutionDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Execution
+     */
+    select?: ExecutionSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Execution
+     */
+    omit?: ExecutionOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ExecutionInclude<ExtArgs> | null
+    /**
+     * Filter which Execution to delete.
+     */
+    where: ExecutionWhereUniqueInput
+  }
+
+  /**
+   * Execution deleteMany
+   */
+  export type ExecutionDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which Executions to delete
+     */
+    where?: ExecutionWhereInput
+    /**
+     * Limit how many Executions to delete.
+     */
+    limit?: number
+  }
+
+  /**
+   * Execution.triggeredByUser
+   */
+  export type Execution$triggeredByUserArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the User
+     */
+    select?: UserSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the User
+     */
+    omit?: UserOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: UserInclude<ExtArgs> | null
+    where?: UserWhereInput
+  }
+
+  /**
+   * Execution.steps
+   */
+  export type Execution$stepsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ExecutionStep
+     */
+    select?: ExecutionStepSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the ExecutionStep
+     */
+    omit?: ExecutionStepOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ExecutionStepInclude<ExtArgs> | null
+    where?: ExecutionStepWhereInput
+    orderBy?: ExecutionStepOrderByWithRelationInput | ExecutionStepOrderByWithRelationInput[]
+    cursor?: ExecutionStepWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: ExecutionStepScalarFieldEnum | ExecutionStepScalarFieldEnum[]
+  }
+
+  /**
+   * Execution without action
+   */
+  export type ExecutionDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Execution
+     */
+    select?: ExecutionSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Execution
+     */
+    omit?: ExecutionOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ExecutionInclude<ExtArgs> | null
+  }
+
+
+  /**
+   * Model ExecutionStep
+   */
+
+  export type AggregateExecutionStep = {
+    _count: ExecutionStepCountAggregateOutputType | null
+    _avg: ExecutionStepAvgAggregateOutputType | null
+    _sum: ExecutionStepSumAggregateOutputType | null
+    _min: ExecutionStepMinAggregateOutputType | null
+    _max: ExecutionStepMaxAggregateOutputType | null
+  }
+
+  export type ExecutionStepAvgAggregateOutputType = {
+    position: number | null
+    attempt: number | null
+    durationMs: number | null
+  }
+
+  export type ExecutionStepSumAggregateOutputType = {
+    position: number | null
+    attempt: number | null
+    durationMs: number | null
+  }
+
+  export type ExecutionStepMinAggregateOutputType = {
+    id: string | null
+    executionId: string | null
+    nodeId: string | null
+    nodeName: string | null
+    nodeType: $Enums.NodeType | null
+    status: $Enums.ExecutionStepStatus | null
+    position: number | null
+    attempt: number | null
+    startedAt: Date | null
+    completedAt: Date | null
+    durationMs: number | null
+    createdAt: Date | null
+    updatedAt: Date | null
+  }
+
+  export type ExecutionStepMaxAggregateOutputType = {
+    id: string | null
+    executionId: string | null
+    nodeId: string | null
+    nodeName: string | null
+    nodeType: $Enums.NodeType | null
+    status: $Enums.ExecutionStepStatus | null
+    position: number | null
+    attempt: number | null
+    startedAt: Date | null
+    completedAt: Date | null
+    durationMs: number | null
+    createdAt: Date | null
+    updatedAt: Date | null
+  }
+
+  export type ExecutionStepCountAggregateOutputType = {
+    id: number
+    executionId: number
+    nodeId: number
+    nodeName: number
+    nodeType: number
+    status: number
+    position: number
+    attempt: number
+    input: number
+    output: number
+    error: number
+    startedAt: number
+    completedAt: number
+    durationMs: number
+    createdAt: number
+    updatedAt: number
+    _all: number
+  }
+
+
+  export type ExecutionStepAvgAggregateInputType = {
+    position?: true
+    attempt?: true
+    durationMs?: true
+  }
+
+  export type ExecutionStepSumAggregateInputType = {
+    position?: true
+    attempt?: true
+    durationMs?: true
+  }
+
+  export type ExecutionStepMinAggregateInputType = {
+    id?: true
+    executionId?: true
+    nodeId?: true
+    nodeName?: true
+    nodeType?: true
+    status?: true
+    position?: true
+    attempt?: true
+    startedAt?: true
+    completedAt?: true
+    durationMs?: true
+    createdAt?: true
+    updatedAt?: true
+  }
+
+  export type ExecutionStepMaxAggregateInputType = {
+    id?: true
+    executionId?: true
+    nodeId?: true
+    nodeName?: true
+    nodeType?: true
+    status?: true
+    position?: true
+    attempt?: true
+    startedAt?: true
+    completedAt?: true
+    durationMs?: true
+    createdAt?: true
+    updatedAt?: true
+  }
+
+  export type ExecutionStepCountAggregateInputType = {
+    id?: true
+    executionId?: true
+    nodeId?: true
+    nodeName?: true
+    nodeType?: true
+    status?: true
+    position?: true
+    attempt?: true
+    input?: true
+    output?: true
+    error?: true
+    startedAt?: true
+    completedAt?: true
+    durationMs?: true
+    createdAt?: true
+    updatedAt?: true
+    _all?: true
+  }
+
+  export type ExecutionStepAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which ExecutionStep to aggregate.
+     */
+    where?: ExecutionStepWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of ExecutionSteps to fetch.
+     */
+    orderBy?: ExecutionStepOrderByWithRelationInput | ExecutionStepOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: ExecutionStepWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` ExecutionSteps from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` ExecutionSteps.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned ExecutionSteps
+    **/
+    _count?: true | ExecutionStepCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to average
+    **/
+    _avg?: ExecutionStepAvgAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to sum
+    **/
+    _sum?: ExecutionStepSumAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: ExecutionStepMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: ExecutionStepMaxAggregateInputType
+  }
+
+  export type GetExecutionStepAggregateType<T extends ExecutionStepAggregateArgs> = {
+        [P in keyof T & keyof AggregateExecutionStep]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateExecutionStep[P]>
+      : GetScalarType<T[P], AggregateExecutionStep[P]>
+  }
+
+
+
+
+  export type ExecutionStepGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: ExecutionStepWhereInput
+    orderBy?: ExecutionStepOrderByWithAggregationInput | ExecutionStepOrderByWithAggregationInput[]
+    by: ExecutionStepScalarFieldEnum[] | ExecutionStepScalarFieldEnum
+    having?: ExecutionStepScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: ExecutionStepCountAggregateInputType | true
+    _avg?: ExecutionStepAvgAggregateInputType
+    _sum?: ExecutionStepSumAggregateInputType
+    _min?: ExecutionStepMinAggregateInputType
+    _max?: ExecutionStepMaxAggregateInputType
+  }
+
+  export type ExecutionStepGroupByOutputType = {
+    id: string
+    executionId: string
+    nodeId: string | null
+    nodeName: string
+    nodeType: $Enums.NodeType
+    status: $Enums.ExecutionStepStatus
+    position: number
+    attempt: number
+    input: JsonValue
+    output: JsonValue | null
+    error: JsonValue | null
+    startedAt: Date | null
+    completedAt: Date | null
+    durationMs: number | null
+    createdAt: Date
+    updatedAt: Date
+    _count: ExecutionStepCountAggregateOutputType | null
+    _avg: ExecutionStepAvgAggregateOutputType | null
+    _sum: ExecutionStepSumAggregateOutputType | null
+    _min: ExecutionStepMinAggregateOutputType | null
+    _max: ExecutionStepMaxAggregateOutputType | null
+  }
+
+  type GetExecutionStepGroupByPayload<T extends ExecutionStepGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<ExecutionStepGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof ExecutionStepGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], ExecutionStepGroupByOutputType[P]>
+            : GetScalarType<T[P], ExecutionStepGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type ExecutionStepSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    executionId?: boolean
+    nodeId?: boolean
+    nodeName?: boolean
+    nodeType?: boolean
+    status?: boolean
+    position?: boolean
+    attempt?: boolean
+    input?: boolean
+    output?: boolean
+    error?: boolean
+    startedAt?: boolean
+    completedAt?: boolean
+    durationMs?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+    execution?: boolean | ExecutionDefaultArgs<ExtArgs>
+    node?: boolean | ExecutionStep$nodeArgs<ExtArgs>
+  }, ExtArgs["result"]["executionStep"]>
+
+  export type ExecutionStepSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    executionId?: boolean
+    nodeId?: boolean
+    nodeName?: boolean
+    nodeType?: boolean
+    status?: boolean
+    position?: boolean
+    attempt?: boolean
+    input?: boolean
+    output?: boolean
+    error?: boolean
+    startedAt?: boolean
+    completedAt?: boolean
+    durationMs?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+    execution?: boolean | ExecutionDefaultArgs<ExtArgs>
+    node?: boolean | ExecutionStep$nodeArgs<ExtArgs>
+  }, ExtArgs["result"]["executionStep"]>
+
+  export type ExecutionStepSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    executionId?: boolean
+    nodeId?: boolean
+    nodeName?: boolean
+    nodeType?: boolean
+    status?: boolean
+    position?: boolean
+    attempt?: boolean
+    input?: boolean
+    output?: boolean
+    error?: boolean
+    startedAt?: boolean
+    completedAt?: boolean
+    durationMs?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+    execution?: boolean | ExecutionDefaultArgs<ExtArgs>
+    node?: boolean | ExecutionStep$nodeArgs<ExtArgs>
+  }, ExtArgs["result"]["executionStep"]>
+
+  export type ExecutionStepSelectScalar = {
+    id?: boolean
+    executionId?: boolean
+    nodeId?: boolean
+    nodeName?: boolean
+    nodeType?: boolean
+    status?: boolean
+    position?: boolean
+    attempt?: boolean
+    input?: boolean
+    output?: boolean
+    error?: boolean
+    startedAt?: boolean
+    completedAt?: boolean
+    durationMs?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+  }
+
+  export type ExecutionStepOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "executionId" | "nodeId" | "nodeName" | "nodeType" | "status" | "position" | "attempt" | "input" | "output" | "error" | "startedAt" | "completedAt" | "durationMs" | "createdAt" | "updatedAt", ExtArgs["result"]["executionStep"]>
+  export type ExecutionStepInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    execution?: boolean | ExecutionDefaultArgs<ExtArgs>
+    node?: boolean | ExecutionStep$nodeArgs<ExtArgs>
+  }
+  export type ExecutionStepIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    execution?: boolean | ExecutionDefaultArgs<ExtArgs>
+    node?: boolean | ExecutionStep$nodeArgs<ExtArgs>
+  }
+  export type ExecutionStepIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    execution?: boolean | ExecutionDefaultArgs<ExtArgs>
+    node?: boolean | ExecutionStep$nodeArgs<ExtArgs>
+  }
+
+  export type $ExecutionStepPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "ExecutionStep"
+    objects: {
+      execution: Prisma.$ExecutionPayload<ExtArgs>
+      node: Prisma.$NodePayload<ExtArgs> | null
+    }
+    scalars: $Extensions.GetPayloadResult<{
+      id: string
+      executionId: string
+      nodeId: string | null
+      nodeName: string
+      nodeType: $Enums.NodeType
+      status: $Enums.ExecutionStepStatus
+      position: number
+      attempt: number
+      input: Prisma.JsonValue
+      output: Prisma.JsonValue | null
+      error: Prisma.JsonValue | null
+      startedAt: Date | null
+      completedAt: Date | null
+      durationMs: number | null
+      createdAt: Date
+      updatedAt: Date
+    }, ExtArgs["result"]["executionStep"]>
+    composites: {}
+  }
+
+  type ExecutionStepGetPayload<S extends boolean | null | undefined | ExecutionStepDefaultArgs> = $Result.GetResult<Prisma.$ExecutionStepPayload, S>
+
+  type ExecutionStepCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> =
+    Omit<ExecutionStepFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
+      select?: ExecutionStepCountAggregateInputType | true
+    }
+
+  export interface ExecutionStepDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['ExecutionStep'], meta: { name: 'ExecutionStep' } }
+    /**
+     * Find zero or one ExecutionStep that matches the filter.
+     * @param {ExecutionStepFindUniqueArgs} args - Arguments to find a ExecutionStep
+     * @example
+     * // Get one ExecutionStep
+     * const executionStep = await prisma.executionStep.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends ExecutionStepFindUniqueArgs>(args: SelectSubset<T, ExecutionStepFindUniqueArgs<ExtArgs>>): Prisma__ExecutionStepClient<$Result.GetResult<Prisma.$ExecutionStepPayload<ExtArgs>, T, "findUnique", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find one ExecutionStep that matches the filter or throw an error with `error.code='P2025'`
+     * if no matches were found.
+     * @param {ExecutionStepFindUniqueOrThrowArgs} args - Arguments to find a ExecutionStep
+     * @example
+     * // Get one ExecutionStep
+     * const executionStep = await prisma.executionStep.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends ExecutionStepFindUniqueOrThrowArgs>(args: SelectSubset<T, ExecutionStepFindUniqueOrThrowArgs<ExtArgs>>): Prisma__ExecutionStepClient<$Result.GetResult<Prisma.$ExecutionStepPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first ExecutionStep that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ExecutionStepFindFirstArgs} args - Arguments to find a ExecutionStep
+     * @example
+     * // Get one ExecutionStep
+     * const executionStep = await prisma.executionStep.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends ExecutionStepFindFirstArgs>(args?: SelectSubset<T, ExecutionStepFindFirstArgs<ExtArgs>>): Prisma__ExecutionStepClient<$Result.GetResult<Prisma.$ExecutionStepPayload<ExtArgs>, T, "findFirst", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first ExecutionStep that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ExecutionStepFindFirstOrThrowArgs} args - Arguments to find a ExecutionStep
+     * @example
+     * // Get one ExecutionStep
+     * const executionStep = await prisma.executionStep.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends ExecutionStepFindFirstOrThrowArgs>(args?: SelectSubset<T, ExecutionStepFindFirstOrThrowArgs<ExtArgs>>): Prisma__ExecutionStepClient<$Result.GetResult<Prisma.$ExecutionStepPayload<ExtArgs>, T, "findFirstOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find zero or more ExecutionSteps that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ExecutionStepFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all ExecutionSteps
+     * const executionSteps = await prisma.executionStep.findMany()
+     * 
+     * // Get first 10 ExecutionSteps
+     * const executionSteps = await prisma.executionStep.findMany({ take: 10 })
+     * 
+     * // Only select the `id`
+     * const executionStepWithIdOnly = await prisma.executionStep.findMany({ select: { id: true } })
+     * 
+     */
+    findMany<T extends ExecutionStepFindManyArgs>(args?: SelectSubset<T, ExecutionStepFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ExecutionStepPayload<ExtArgs>, T, "findMany", GlobalOmitOptions>>
+
+    /**
+     * Create a ExecutionStep.
+     * @param {ExecutionStepCreateArgs} args - Arguments to create a ExecutionStep.
+     * @example
+     * // Create one ExecutionStep
+     * const ExecutionStep = await prisma.executionStep.create({
+     *   data: {
+     *     // ... data to create a ExecutionStep
+     *   }
+     * })
+     * 
+     */
+    create<T extends ExecutionStepCreateArgs>(args: SelectSubset<T, ExecutionStepCreateArgs<ExtArgs>>): Prisma__ExecutionStepClient<$Result.GetResult<Prisma.$ExecutionStepPayload<ExtArgs>, T, "create", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Create many ExecutionSteps.
+     * @param {ExecutionStepCreateManyArgs} args - Arguments to create many ExecutionSteps.
+     * @example
+     * // Create many ExecutionSteps
+     * const executionStep = await prisma.executionStep.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends ExecutionStepCreateManyArgs>(args?: SelectSubset<T, ExecutionStepCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create many ExecutionSteps and returns the data saved in the database.
+     * @param {ExecutionStepCreateManyAndReturnArgs} args - Arguments to create many ExecutionSteps.
+     * @example
+     * // Create many ExecutionSteps
+     * const executionStep = await prisma.executionStep.createManyAndReturn({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Create many ExecutionSteps and only return the `id`
+     * const executionStepWithIdOnly = await prisma.executionStep.createManyAndReturn({
+     *   select: { id: true },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    createManyAndReturn<T extends ExecutionStepCreateManyAndReturnArgs>(args?: SelectSubset<T, ExecutionStepCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ExecutionStepPayload<ExtArgs>, T, "createManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Delete a ExecutionStep.
+     * @param {ExecutionStepDeleteArgs} args - Arguments to delete one ExecutionStep.
+     * @example
+     * // Delete one ExecutionStep
+     * const ExecutionStep = await prisma.executionStep.delete({
+     *   where: {
+     *     // ... filter to delete one ExecutionStep
+     *   }
+     * })
+     * 
+     */
+    delete<T extends ExecutionStepDeleteArgs>(args: SelectSubset<T, ExecutionStepDeleteArgs<ExtArgs>>): Prisma__ExecutionStepClient<$Result.GetResult<Prisma.$ExecutionStepPayload<ExtArgs>, T, "delete", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Update one ExecutionStep.
+     * @param {ExecutionStepUpdateArgs} args - Arguments to update one ExecutionStep.
+     * @example
+     * // Update one ExecutionStep
+     * const executionStep = await prisma.executionStep.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends ExecutionStepUpdateArgs>(args: SelectSubset<T, ExecutionStepUpdateArgs<ExtArgs>>): Prisma__ExecutionStepClient<$Result.GetResult<Prisma.$ExecutionStepPayload<ExtArgs>, T, "update", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Delete zero or more ExecutionSteps.
+     * @param {ExecutionStepDeleteManyArgs} args - Arguments to filter ExecutionSteps to delete.
+     * @example
+     * // Delete a few ExecutionSteps
+     * const { count } = await prisma.executionStep.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends ExecutionStepDeleteManyArgs>(args?: SelectSubset<T, ExecutionStepDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more ExecutionSteps.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ExecutionStepUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many ExecutionSteps
+     * const executionStep = await prisma.executionStep.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends ExecutionStepUpdateManyArgs>(args: SelectSubset<T, ExecutionStepUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more ExecutionSteps and returns the data updated in the database.
+     * @param {ExecutionStepUpdateManyAndReturnArgs} args - Arguments to update many ExecutionSteps.
+     * @example
+     * // Update many ExecutionSteps
+     * const executionStep = await prisma.executionStep.updateManyAndReturn({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Update zero or more ExecutionSteps and only return the `id`
+     * const executionStepWithIdOnly = await prisma.executionStep.updateManyAndReturn({
+     *   select: { id: true },
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    updateManyAndReturn<T extends ExecutionStepUpdateManyAndReturnArgs>(args: SelectSubset<T, ExecutionStepUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ExecutionStepPayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Create or update one ExecutionStep.
+     * @param {ExecutionStepUpsertArgs} args - Arguments to update or create a ExecutionStep.
+     * @example
+     * // Update or create a ExecutionStep
+     * const executionStep = await prisma.executionStep.upsert({
+     *   create: {
+     *     // ... data to create a ExecutionStep
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the ExecutionStep we want to update
+     *   }
+     * })
+     */
+    upsert<T extends ExecutionStepUpsertArgs>(args: SelectSubset<T, ExecutionStepUpsertArgs<ExtArgs>>): Prisma__ExecutionStepClient<$Result.GetResult<Prisma.$ExecutionStepPayload<ExtArgs>, T, "upsert", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+
+    /**
+     * Count the number of ExecutionSteps.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ExecutionStepCountArgs} args - Arguments to filter ExecutionSteps to count.
+     * @example
+     * // Count the number of ExecutionSteps
+     * const count = await prisma.executionStep.count({
+     *   where: {
+     *     // ... the filter for the ExecutionSteps we want to count
+     *   }
+     * })
+    **/
+    count<T extends ExecutionStepCountArgs>(
+      args?: Subset<T, ExecutionStepCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], ExecutionStepCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a ExecutionStep.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ExecutionStepAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends ExecutionStepAggregateArgs>(args: Subset<T, ExecutionStepAggregateArgs>): Prisma.PrismaPromise<GetExecutionStepAggregateType<T>>
+
+    /**
+     * Group by ExecutionStep.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ExecutionStepGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends ExecutionStepGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: ExecutionStepGroupByArgs['orderBy'] }
+        : { orderBy?: ExecutionStepGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, ExecutionStepGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetExecutionStepGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the ExecutionStep model
+   */
+  readonly fields: ExecutionStepFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for ExecutionStep.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__ExecutionStepClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    execution<T extends ExecutionDefaultArgs<ExtArgs> = {}>(args?: Subset<T, ExecutionDefaultArgs<ExtArgs>>): Prisma__ExecutionClient<$Result.GetResult<Prisma.$ExecutionPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+    node<T extends ExecutionStep$nodeArgs<ExtArgs> = {}>(args?: Subset<T, ExecutionStep$nodeArgs<ExtArgs>>): Prisma__NodeClient<$Result.GetResult<Prisma.$NodePayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the ExecutionStep model
+   */
+  interface ExecutionStepFieldRefs {
+    readonly id: FieldRef<"ExecutionStep", 'String'>
+    readonly executionId: FieldRef<"ExecutionStep", 'String'>
+    readonly nodeId: FieldRef<"ExecutionStep", 'String'>
+    readonly nodeName: FieldRef<"ExecutionStep", 'String'>
+    readonly nodeType: FieldRef<"ExecutionStep", 'NodeType'>
+    readonly status: FieldRef<"ExecutionStep", 'ExecutionStepStatus'>
+    readonly position: FieldRef<"ExecutionStep", 'Int'>
+    readonly attempt: FieldRef<"ExecutionStep", 'Int'>
+    readonly input: FieldRef<"ExecutionStep", 'Json'>
+    readonly output: FieldRef<"ExecutionStep", 'Json'>
+    readonly error: FieldRef<"ExecutionStep", 'Json'>
+    readonly startedAt: FieldRef<"ExecutionStep", 'DateTime'>
+    readonly completedAt: FieldRef<"ExecutionStep", 'DateTime'>
+    readonly durationMs: FieldRef<"ExecutionStep", 'Int'>
+    readonly createdAt: FieldRef<"ExecutionStep", 'DateTime'>
+    readonly updatedAt: FieldRef<"ExecutionStep", 'DateTime'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * ExecutionStep findUnique
+   */
+  export type ExecutionStepFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ExecutionStep
+     */
+    select?: ExecutionStepSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the ExecutionStep
+     */
+    omit?: ExecutionStepOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ExecutionStepInclude<ExtArgs> | null
+    /**
+     * Filter, which ExecutionStep to fetch.
+     */
+    where: ExecutionStepWhereUniqueInput
+  }
+
+  /**
+   * ExecutionStep findUniqueOrThrow
+   */
+  export type ExecutionStepFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ExecutionStep
+     */
+    select?: ExecutionStepSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the ExecutionStep
+     */
+    omit?: ExecutionStepOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ExecutionStepInclude<ExtArgs> | null
+    /**
+     * Filter, which ExecutionStep to fetch.
+     */
+    where: ExecutionStepWhereUniqueInput
+  }
+
+  /**
+   * ExecutionStep findFirst
+   */
+  export type ExecutionStepFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ExecutionStep
+     */
+    select?: ExecutionStepSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the ExecutionStep
+     */
+    omit?: ExecutionStepOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ExecutionStepInclude<ExtArgs> | null
+    /**
+     * Filter, which ExecutionStep to fetch.
+     */
+    where?: ExecutionStepWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of ExecutionSteps to fetch.
+     */
+    orderBy?: ExecutionStepOrderByWithRelationInput | ExecutionStepOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for ExecutionSteps.
+     */
+    cursor?: ExecutionStepWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` ExecutionSteps from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` ExecutionSteps.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of ExecutionSteps.
+     */
+    distinct?: ExecutionStepScalarFieldEnum | ExecutionStepScalarFieldEnum[]
+  }
+
+  /**
+   * ExecutionStep findFirstOrThrow
+   */
+  export type ExecutionStepFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ExecutionStep
+     */
+    select?: ExecutionStepSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the ExecutionStep
+     */
+    omit?: ExecutionStepOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ExecutionStepInclude<ExtArgs> | null
+    /**
+     * Filter, which ExecutionStep to fetch.
+     */
+    where?: ExecutionStepWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of ExecutionSteps to fetch.
+     */
+    orderBy?: ExecutionStepOrderByWithRelationInput | ExecutionStepOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for ExecutionSteps.
+     */
+    cursor?: ExecutionStepWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` ExecutionSteps from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` ExecutionSteps.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of ExecutionSteps.
+     */
+    distinct?: ExecutionStepScalarFieldEnum | ExecutionStepScalarFieldEnum[]
+  }
+
+  /**
+   * ExecutionStep findMany
+   */
+  export type ExecutionStepFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ExecutionStep
+     */
+    select?: ExecutionStepSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the ExecutionStep
+     */
+    omit?: ExecutionStepOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ExecutionStepInclude<ExtArgs> | null
+    /**
+     * Filter, which ExecutionSteps to fetch.
+     */
+    where?: ExecutionStepWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of ExecutionSteps to fetch.
+     */
+    orderBy?: ExecutionStepOrderByWithRelationInput | ExecutionStepOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing ExecutionSteps.
+     */
+    cursor?: ExecutionStepWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` ExecutionSteps from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` ExecutionSteps.
+     */
+    skip?: number
+    distinct?: ExecutionStepScalarFieldEnum | ExecutionStepScalarFieldEnum[]
+  }
+
+  /**
+   * ExecutionStep create
+   */
+  export type ExecutionStepCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ExecutionStep
+     */
+    select?: ExecutionStepSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the ExecutionStep
+     */
+    omit?: ExecutionStepOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ExecutionStepInclude<ExtArgs> | null
+    /**
+     * The data needed to create a ExecutionStep.
+     */
+    data: XOR<ExecutionStepCreateInput, ExecutionStepUncheckedCreateInput>
+  }
+
+  /**
+   * ExecutionStep createMany
+   */
+  export type ExecutionStepCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many ExecutionSteps.
+     */
+    data: ExecutionStepCreateManyInput | ExecutionStepCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * ExecutionStep createManyAndReturn
+   */
+  export type ExecutionStepCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ExecutionStep
+     */
+    select?: ExecutionStepSelectCreateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the ExecutionStep
+     */
+    omit?: ExecutionStepOmit<ExtArgs> | null
+    /**
+     * The data used to create many ExecutionSteps.
+     */
+    data: ExecutionStepCreateManyInput | ExecutionStepCreateManyInput[]
+    skipDuplicates?: boolean
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ExecutionStepIncludeCreateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * ExecutionStep update
+   */
+  export type ExecutionStepUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ExecutionStep
+     */
+    select?: ExecutionStepSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the ExecutionStep
+     */
+    omit?: ExecutionStepOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ExecutionStepInclude<ExtArgs> | null
+    /**
+     * The data needed to update a ExecutionStep.
+     */
+    data: XOR<ExecutionStepUpdateInput, ExecutionStepUncheckedUpdateInput>
+    /**
+     * Choose, which ExecutionStep to update.
+     */
+    where: ExecutionStepWhereUniqueInput
+  }
+
+  /**
+   * ExecutionStep updateMany
+   */
+  export type ExecutionStepUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update ExecutionSteps.
+     */
+    data: XOR<ExecutionStepUpdateManyMutationInput, ExecutionStepUncheckedUpdateManyInput>
+    /**
+     * Filter which ExecutionSteps to update
+     */
+    where?: ExecutionStepWhereInput
+    /**
+     * Limit how many ExecutionSteps to update.
+     */
+    limit?: number
+  }
+
+  /**
+   * ExecutionStep updateManyAndReturn
+   */
+  export type ExecutionStepUpdateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ExecutionStep
+     */
+    select?: ExecutionStepSelectUpdateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the ExecutionStep
+     */
+    omit?: ExecutionStepOmit<ExtArgs> | null
+    /**
+     * The data used to update ExecutionSteps.
+     */
+    data: XOR<ExecutionStepUpdateManyMutationInput, ExecutionStepUncheckedUpdateManyInput>
+    /**
+     * Filter which ExecutionSteps to update
+     */
+    where?: ExecutionStepWhereInput
+    /**
+     * Limit how many ExecutionSteps to update.
+     */
+    limit?: number
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ExecutionStepIncludeUpdateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * ExecutionStep upsert
+   */
+  export type ExecutionStepUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ExecutionStep
+     */
+    select?: ExecutionStepSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the ExecutionStep
+     */
+    omit?: ExecutionStepOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ExecutionStepInclude<ExtArgs> | null
+    /**
+     * The filter to search for the ExecutionStep to update in case it exists.
+     */
+    where: ExecutionStepWhereUniqueInput
+    /**
+     * In case the ExecutionStep found by the `where` argument doesn't exist, create a new ExecutionStep with this data.
+     */
+    create: XOR<ExecutionStepCreateInput, ExecutionStepUncheckedCreateInput>
+    /**
+     * In case the ExecutionStep was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<ExecutionStepUpdateInput, ExecutionStepUncheckedUpdateInput>
+  }
+
+  /**
+   * ExecutionStep delete
+   */
+  export type ExecutionStepDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ExecutionStep
+     */
+    select?: ExecutionStepSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the ExecutionStep
+     */
+    omit?: ExecutionStepOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ExecutionStepInclude<ExtArgs> | null
+    /**
+     * Filter which ExecutionStep to delete.
+     */
+    where: ExecutionStepWhereUniqueInput
+  }
+
+  /**
+   * ExecutionStep deleteMany
+   */
+  export type ExecutionStepDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which ExecutionSteps to delete
+     */
+    where?: ExecutionStepWhereInput
+    /**
+     * Limit how many ExecutionSteps to delete.
+     */
+    limit?: number
+  }
+
+  /**
+   * ExecutionStep.node
+   */
+  export type ExecutionStep$nodeArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Node
+     */
+    select?: NodeSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Node
+     */
+    omit?: NodeOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: NodeInclude<ExtArgs> | null
+    where?: NodeWhereInput
+  }
+
+  /**
+   * ExecutionStep without action
+   */
+  export type ExecutionStepDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ExecutionStep
+     */
+    select?: ExecutionStepSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the ExecutionStep
+     */
+    omit?: ExecutionStepOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ExecutionStepInclude<ExtArgs> | null
+  }
+
+
+  /**
    * Enums
    */
 
@@ -9472,6 +13565,63 @@ export namespace Prisma {
   export type ConnectionScalarFieldEnum = (typeof ConnectionScalarFieldEnum)[keyof typeof ConnectionScalarFieldEnum]
 
 
+  export const CredentialScalarFieldEnum: {
+    id: 'id',
+    userId: 'userId',
+    name: 'name',
+    provider: 'provider',
+    description: 'description',
+    encryptedData: 'encryptedData',
+    metadata: 'metadata',
+    lastUsedAt: 'lastUsedAt',
+    createdAt: 'createdAt',
+    updatedAt: 'updatedAt'
+  };
+
+  export type CredentialScalarFieldEnum = (typeof CredentialScalarFieldEnum)[keyof typeof CredentialScalarFieldEnum]
+
+
+  export const ExecutionScalarFieldEnum: {
+    id: 'id',
+    workflowId: 'workflowId',
+    triggerType: 'triggerType',
+    status: 'status',
+    triggeredByUserId: 'triggeredByUserId',
+    triggerPayload: 'triggerPayload',
+    state: 'state',
+    workflowSnapshot: 'workflowSnapshot',
+    startedAt: 'startedAt',
+    completedAt: 'completedAt',
+    error: 'error',
+    createdAt: 'createdAt',
+    updatedAt: 'updatedAt'
+  };
+
+  export type ExecutionScalarFieldEnum = (typeof ExecutionScalarFieldEnum)[keyof typeof ExecutionScalarFieldEnum]
+
+
+  export const ExecutionStepScalarFieldEnum: {
+    id: 'id',
+    executionId: 'executionId',
+    nodeId: 'nodeId',
+    nodeName: 'nodeName',
+    nodeType: 'nodeType',
+    status: 'status',
+    position: 'position',
+    attempt: 'attempt',
+    input: 'input',
+    output: 'output',
+    error: 'error',
+    startedAt: 'startedAt',
+    completedAt: 'completedAt',
+    durationMs: 'durationMs',
+    createdAt: 'createdAt',
+    updatedAt: 'updatedAt'
+  };
+
+  export type ExecutionStepScalarFieldEnum = (typeof ExecutionStepScalarFieldEnum)[keyof typeof ExecutionStepScalarFieldEnum]
+
+
   export const SortOrder: {
     asc: 'asc',
     desc: 'desc'
@@ -9485,6 +13635,14 @@ export namespace Prisma {
   };
 
   export type JsonNullValueInput = (typeof JsonNullValueInput)[keyof typeof JsonNullValueInput]
+
+
+  export const NullableJsonNullValueInput: {
+    DbNull: typeof DbNull,
+    JsonNull: typeof JsonNull
+  };
+
+  export type NullableJsonNullValueInput = (typeof NullableJsonNullValueInput)[keyof typeof NullableJsonNullValueInput]
 
 
   export const QueryMode: {
@@ -9581,6 +13739,62 @@ export namespace Prisma {
 
 
   /**
+   * Reference to a field of type 'CredentialProvider'
+   */
+  export type EnumCredentialProviderFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'CredentialProvider'>
+    
+
+
+  /**
+   * Reference to a field of type 'CredentialProvider[]'
+   */
+  export type ListEnumCredentialProviderFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'CredentialProvider[]'>
+    
+
+
+  /**
+   * Reference to a field of type 'ExecutionTriggerType'
+   */
+  export type EnumExecutionTriggerTypeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'ExecutionTriggerType'>
+    
+
+
+  /**
+   * Reference to a field of type 'ExecutionTriggerType[]'
+   */
+  export type ListEnumExecutionTriggerTypeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'ExecutionTriggerType[]'>
+    
+
+
+  /**
+   * Reference to a field of type 'ExecutionStatus'
+   */
+  export type EnumExecutionStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'ExecutionStatus'>
+    
+
+
+  /**
+   * Reference to a field of type 'ExecutionStatus[]'
+   */
+  export type ListEnumExecutionStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'ExecutionStatus[]'>
+    
+
+
+  /**
+   * Reference to a field of type 'ExecutionStepStatus'
+   */
+  export type EnumExecutionStepStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'ExecutionStepStatus'>
+    
+
+
+  /**
+   * Reference to a field of type 'ExecutionStepStatus[]'
+   */
+  export type ListEnumExecutionStepStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'ExecutionStepStatus[]'>
+    
+
+
+  /**
    * Reference to a field of type 'Int'
    */
   export type IntFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Int'>
@@ -9591,6 +13805,20 @@ export namespace Prisma {
    * Reference to a field of type 'Int[]'
    */
   export type ListIntFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Int[]'>
+    
+
+
+  /**
+   * Reference to a field of type 'Float'
+   */
+  export type FloatFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Float'>
+    
+
+
+  /**
+   * Reference to a field of type 'Float[]'
+   */
+  export type ListFloatFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Float[]'>
     
   /**
    * Deep Input Types
@@ -9611,6 +13839,8 @@ export namespace Prisma {
     sessions?: SessionListRelationFilter
     accounts?: AccountListRelationFilter
     workflows?: WorkflowListRelationFilter
+    credentials?: CredentialListRelationFilter
+    executions?: ExecutionListRelationFilter
   }
 
   export type UserOrderByWithRelationInput = {
@@ -9624,6 +13854,8 @@ export namespace Prisma {
     sessions?: SessionOrderByRelationAggregateInput
     accounts?: AccountOrderByRelationAggregateInput
     workflows?: WorkflowOrderByRelationAggregateInput
+    credentials?: CredentialOrderByRelationAggregateInput
+    executions?: ExecutionOrderByRelationAggregateInput
   }
 
   export type UserWhereUniqueInput = Prisma.AtLeast<{
@@ -9640,6 +13872,8 @@ export namespace Prisma {
     sessions?: SessionListRelationFilter
     accounts?: AccountListRelationFilter
     workflows?: WorkflowListRelationFilter
+    credentials?: CredentialListRelationFilter
+    executions?: ExecutionListRelationFilter
   }, "id" | "email">
 
   export type UserOrderByWithAggregationInput = {
@@ -9901,6 +14135,7 @@ export namespace Prisma {
     userId?: StringFilter<"Workflow"> | string
     nodes?: NodeListRelationFilter
     connections?: ConnectionListRelationFilter
+    executions?: ExecutionListRelationFilter
     user?: XOR<UserScalarRelationFilter, UserWhereInput>
   }
 
@@ -9912,6 +14147,7 @@ export namespace Prisma {
     userId?: SortOrder
     nodes?: NodeOrderByRelationAggregateInput
     connections?: ConnectionOrderByRelationAggregateInput
+    executions?: ExecutionOrderByRelationAggregateInput
     user?: UserOrderByWithRelationInput
   }
 
@@ -9926,6 +14162,7 @@ export namespace Prisma {
     userId?: StringFilter<"Workflow"> | string
     nodes?: NodeListRelationFilter
     connections?: ConnectionListRelationFilter
+    executions?: ExecutionListRelationFilter
     user?: XOR<UserScalarRelationFilter, UserWhereInput>
   }, "id">
 
@@ -9966,6 +14203,7 @@ export namespace Prisma {
     workflow?: XOR<WorkflowScalarRelationFilter, WorkflowWhereInput>
     fromConnections?: ConnectionListRelationFilter
     toConnections?: ConnectionListRelationFilter
+    executionSteps?: ExecutionStepListRelationFilter
   }
 
   export type NodeOrderByWithRelationInput = {
@@ -9980,6 +14218,7 @@ export namespace Prisma {
     workflow?: WorkflowOrderByWithRelationInput
     fromConnections?: ConnectionOrderByRelationAggregateInput
     toConnections?: ConnectionOrderByRelationAggregateInput
+    executionSteps?: ExecutionStepOrderByRelationAggregateInput
   }
 
   export type NodeWhereUniqueInput = Prisma.AtLeast<{
@@ -9997,6 +14236,7 @@ export namespace Prisma {
     workflow?: XOR<WorkflowScalarRelationFilter, WorkflowWhereInput>
     fromConnections?: ConnectionListRelationFilter
     toConnections?: ConnectionListRelationFilter
+    executionSteps?: ExecutionStepListRelationFilter
   }, "id">
 
   export type NodeOrderByWithAggregationInput = {
@@ -10109,6 +14349,303 @@ export namespace Prisma {
     updatedAt?: DateTimeWithAggregatesFilter<"Connection"> | Date | string
   }
 
+  export type CredentialWhereInput = {
+    AND?: CredentialWhereInput | CredentialWhereInput[]
+    OR?: CredentialWhereInput[]
+    NOT?: CredentialWhereInput | CredentialWhereInput[]
+    id?: StringFilter<"Credential"> | string
+    userId?: StringFilter<"Credential"> | string
+    name?: StringFilter<"Credential"> | string
+    provider?: EnumCredentialProviderFilter<"Credential"> | $Enums.CredentialProvider
+    description?: StringNullableFilter<"Credential"> | string | null
+    encryptedData?: StringFilter<"Credential"> | string
+    metadata?: JsonFilter<"Credential">
+    lastUsedAt?: DateTimeNullableFilter<"Credential"> | Date | string | null
+    createdAt?: DateTimeFilter<"Credential"> | Date | string
+    updatedAt?: DateTimeFilter<"Credential"> | Date | string
+    user?: XOR<UserScalarRelationFilter, UserWhereInput>
+  }
+
+  export type CredentialOrderByWithRelationInput = {
+    id?: SortOrder
+    userId?: SortOrder
+    name?: SortOrder
+    provider?: SortOrder
+    description?: SortOrderInput | SortOrder
+    encryptedData?: SortOrder
+    metadata?: SortOrder
+    lastUsedAt?: SortOrderInput | SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    user?: UserOrderByWithRelationInput
+  }
+
+  export type CredentialWhereUniqueInput = Prisma.AtLeast<{
+    id?: string
+    userId_name?: CredentialUserIdNameCompoundUniqueInput
+    AND?: CredentialWhereInput | CredentialWhereInput[]
+    OR?: CredentialWhereInput[]
+    NOT?: CredentialWhereInput | CredentialWhereInput[]
+    userId?: StringFilter<"Credential"> | string
+    name?: StringFilter<"Credential"> | string
+    provider?: EnumCredentialProviderFilter<"Credential"> | $Enums.CredentialProvider
+    description?: StringNullableFilter<"Credential"> | string | null
+    encryptedData?: StringFilter<"Credential"> | string
+    metadata?: JsonFilter<"Credential">
+    lastUsedAt?: DateTimeNullableFilter<"Credential"> | Date | string | null
+    createdAt?: DateTimeFilter<"Credential"> | Date | string
+    updatedAt?: DateTimeFilter<"Credential"> | Date | string
+    user?: XOR<UserScalarRelationFilter, UserWhereInput>
+  }, "id" | "userId_name">
+
+  export type CredentialOrderByWithAggregationInput = {
+    id?: SortOrder
+    userId?: SortOrder
+    name?: SortOrder
+    provider?: SortOrder
+    description?: SortOrderInput | SortOrder
+    encryptedData?: SortOrder
+    metadata?: SortOrder
+    lastUsedAt?: SortOrderInput | SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    _count?: CredentialCountOrderByAggregateInput
+    _max?: CredentialMaxOrderByAggregateInput
+    _min?: CredentialMinOrderByAggregateInput
+  }
+
+  export type CredentialScalarWhereWithAggregatesInput = {
+    AND?: CredentialScalarWhereWithAggregatesInput | CredentialScalarWhereWithAggregatesInput[]
+    OR?: CredentialScalarWhereWithAggregatesInput[]
+    NOT?: CredentialScalarWhereWithAggregatesInput | CredentialScalarWhereWithAggregatesInput[]
+    id?: StringWithAggregatesFilter<"Credential"> | string
+    userId?: StringWithAggregatesFilter<"Credential"> | string
+    name?: StringWithAggregatesFilter<"Credential"> | string
+    provider?: EnumCredentialProviderWithAggregatesFilter<"Credential"> | $Enums.CredentialProvider
+    description?: StringNullableWithAggregatesFilter<"Credential"> | string | null
+    encryptedData?: StringWithAggregatesFilter<"Credential"> | string
+    metadata?: JsonWithAggregatesFilter<"Credential">
+    lastUsedAt?: DateTimeNullableWithAggregatesFilter<"Credential"> | Date | string | null
+    createdAt?: DateTimeWithAggregatesFilter<"Credential"> | Date | string
+    updatedAt?: DateTimeWithAggregatesFilter<"Credential"> | Date | string
+  }
+
+  export type ExecutionWhereInput = {
+    AND?: ExecutionWhereInput | ExecutionWhereInput[]
+    OR?: ExecutionWhereInput[]
+    NOT?: ExecutionWhereInput | ExecutionWhereInput[]
+    id?: StringFilter<"Execution"> | string
+    workflowId?: StringFilter<"Execution"> | string
+    triggerType?: EnumExecutionTriggerTypeFilter<"Execution"> | $Enums.ExecutionTriggerType
+    status?: EnumExecutionStatusFilter<"Execution"> | $Enums.ExecutionStatus
+    triggeredByUserId?: StringNullableFilter<"Execution"> | string | null
+    triggerPayload?: JsonFilter<"Execution">
+    state?: JsonFilter<"Execution">
+    workflowSnapshot?: JsonNullableFilter<"Execution">
+    startedAt?: DateTimeNullableFilter<"Execution"> | Date | string | null
+    completedAt?: DateTimeNullableFilter<"Execution"> | Date | string | null
+    error?: JsonNullableFilter<"Execution">
+    createdAt?: DateTimeFilter<"Execution"> | Date | string
+    updatedAt?: DateTimeFilter<"Execution"> | Date | string
+    workflow?: XOR<WorkflowScalarRelationFilter, WorkflowWhereInput>
+    triggeredByUser?: XOR<UserNullableScalarRelationFilter, UserWhereInput> | null
+    steps?: ExecutionStepListRelationFilter
+  }
+
+  export type ExecutionOrderByWithRelationInput = {
+    id?: SortOrder
+    workflowId?: SortOrder
+    triggerType?: SortOrder
+    status?: SortOrder
+    triggeredByUserId?: SortOrderInput | SortOrder
+    triggerPayload?: SortOrder
+    state?: SortOrder
+    workflowSnapshot?: SortOrderInput | SortOrder
+    startedAt?: SortOrderInput | SortOrder
+    completedAt?: SortOrderInput | SortOrder
+    error?: SortOrderInput | SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    workflow?: WorkflowOrderByWithRelationInput
+    triggeredByUser?: UserOrderByWithRelationInput
+    steps?: ExecutionStepOrderByRelationAggregateInput
+  }
+
+  export type ExecutionWhereUniqueInput = Prisma.AtLeast<{
+    id?: string
+    AND?: ExecutionWhereInput | ExecutionWhereInput[]
+    OR?: ExecutionWhereInput[]
+    NOT?: ExecutionWhereInput | ExecutionWhereInput[]
+    workflowId?: StringFilter<"Execution"> | string
+    triggerType?: EnumExecutionTriggerTypeFilter<"Execution"> | $Enums.ExecutionTriggerType
+    status?: EnumExecutionStatusFilter<"Execution"> | $Enums.ExecutionStatus
+    triggeredByUserId?: StringNullableFilter<"Execution"> | string | null
+    triggerPayload?: JsonFilter<"Execution">
+    state?: JsonFilter<"Execution">
+    workflowSnapshot?: JsonNullableFilter<"Execution">
+    startedAt?: DateTimeNullableFilter<"Execution"> | Date | string | null
+    completedAt?: DateTimeNullableFilter<"Execution"> | Date | string | null
+    error?: JsonNullableFilter<"Execution">
+    createdAt?: DateTimeFilter<"Execution"> | Date | string
+    updatedAt?: DateTimeFilter<"Execution"> | Date | string
+    workflow?: XOR<WorkflowScalarRelationFilter, WorkflowWhereInput>
+    triggeredByUser?: XOR<UserNullableScalarRelationFilter, UserWhereInput> | null
+    steps?: ExecutionStepListRelationFilter
+  }, "id">
+
+  export type ExecutionOrderByWithAggregationInput = {
+    id?: SortOrder
+    workflowId?: SortOrder
+    triggerType?: SortOrder
+    status?: SortOrder
+    triggeredByUserId?: SortOrderInput | SortOrder
+    triggerPayload?: SortOrder
+    state?: SortOrder
+    workflowSnapshot?: SortOrderInput | SortOrder
+    startedAt?: SortOrderInput | SortOrder
+    completedAt?: SortOrderInput | SortOrder
+    error?: SortOrderInput | SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    _count?: ExecutionCountOrderByAggregateInput
+    _max?: ExecutionMaxOrderByAggregateInput
+    _min?: ExecutionMinOrderByAggregateInput
+  }
+
+  export type ExecutionScalarWhereWithAggregatesInput = {
+    AND?: ExecutionScalarWhereWithAggregatesInput | ExecutionScalarWhereWithAggregatesInput[]
+    OR?: ExecutionScalarWhereWithAggregatesInput[]
+    NOT?: ExecutionScalarWhereWithAggregatesInput | ExecutionScalarWhereWithAggregatesInput[]
+    id?: StringWithAggregatesFilter<"Execution"> | string
+    workflowId?: StringWithAggregatesFilter<"Execution"> | string
+    triggerType?: EnumExecutionTriggerTypeWithAggregatesFilter<"Execution"> | $Enums.ExecutionTriggerType
+    status?: EnumExecutionStatusWithAggregatesFilter<"Execution"> | $Enums.ExecutionStatus
+    triggeredByUserId?: StringNullableWithAggregatesFilter<"Execution"> | string | null
+    triggerPayload?: JsonWithAggregatesFilter<"Execution">
+    state?: JsonWithAggregatesFilter<"Execution">
+    workflowSnapshot?: JsonNullableWithAggregatesFilter<"Execution">
+    startedAt?: DateTimeNullableWithAggregatesFilter<"Execution"> | Date | string | null
+    completedAt?: DateTimeNullableWithAggregatesFilter<"Execution"> | Date | string | null
+    error?: JsonNullableWithAggregatesFilter<"Execution">
+    createdAt?: DateTimeWithAggregatesFilter<"Execution"> | Date | string
+    updatedAt?: DateTimeWithAggregatesFilter<"Execution"> | Date | string
+  }
+
+  export type ExecutionStepWhereInput = {
+    AND?: ExecutionStepWhereInput | ExecutionStepWhereInput[]
+    OR?: ExecutionStepWhereInput[]
+    NOT?: ExecutionStepWhereInput | ExecutionStepWhereInput[]
+    id?: StringFilter<"ExecutionStep"> | string
+    executionId?: StringFilter<"ExecutionStep"> | string
+    nodeId?: StringNullableFilter<"ExecutionStep"> | string | null
+    nodeName?: StringFilter<"ExecutionStep"> | string
+    nodeType?: EnumNodeTypeFilter<"ExecutionStep"> | $Enums.NodeType
+    status?: EnumExecutionStepStatusFilter<"ExecutionStep"> | $Enums.ExecutionStepStatus
+    position?: IntFilter<"ExecutionStep"> | number
+    attempt?: IntFilter<"ExecutionStep"> | number
+    input?: JsonFilter<"ExecutionStep">
+    output?: JsonNullableFilter<"ExecutionStep">
+    error?: JsonNullableFilter<"ExecutionStep">
+    startedAt?: DateTimeNullableFilter<"ExecutionStep"> | Date | string | null
+    completedAt?: DateTimeNullableFilter<"ExecutionStep"> | Date | string | null
+    durationMs?: IntNullableFilter<"ExecutionStep"> | number | null
+    createdAt?: DateTimeFilter<"ExecutionStep"> | Date | string
+    updatedAt?: DateTimeFilter<"ExecutionStep"> | Date | string
+    execution?: XOR<ExecutionScalarRelationFilter, ExecutionWhereInput>
+    node?: XOR<NodeNullableScalarRelationFilter, NodeWhereInput> | null
+  }
+
+  export type ExecutionStepOrderByWithRelationInput = {
+    id?: SortOrder
+    executionId?: SortOrder
+    nodeId?: SortOrderInput | SortOrder
+    nodeName?: SortOrder
+    nodeType?: SortOrder
+    status?: SortOrder
+    position?: SortOrder
+    attempt?: SortOrder
+    input?: SortOrder
+    output?: SortOrderInput | SortOrder
+    error?: SortOrderInput | SortOrder
+    startedAt?: SortOrderInput | SortOrder
+    completedAt?: SortOrderInput | SortOrder
+    durationMs?: SortOrderInput | SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    execution?: ExecutionOrderByWithRelationInput
+    node?: NodeOrderByWithRelationInput
+  }
+
+  export type ExecutionStepWhereUniqueInput = Prisma.AtLeast<{
+    id?: string
+    AND?: ExecutionStepWhereInput | ExecutionStepWhereInput[]
+    OR?: ExecutionStepWhereInput[]
+    NOT?: ExecutionStepWhereInput | ExecutionStepWhereInput[]
+    executionId?: StringFilter<"ExecutionStep"> | string
+    nodeId?: StringNullableFilter<"ExecutionStep"> | string | null
+    nodeName?: StringFilter<"ExecutionStep"> | string
+    nodeType?: EnumNodeTypeFilter<"ExecutionStep"> | $Enums.NodeType
+    status?: EnumExecutionStepStatusFilter<"ExecutionStep"> | $Enums.ExecutionStepStatus
+    position?: IntFilter<"ExecutionStep"> | number
+    attempt?: IntFilter<"ExecutionStep"> | number
+    input?: JsonFilter<"ExecutionStep">
+    output?: JsonNullableFilter<"ExecutionStep">
+    error?: JsonNullableFilter<"ExecutionStep">
+    startedAt?: DateTimeNullableFilter<"ExecutionStep"> | Date | string | null
+    completedAt?: DateTimeNullableFilter<"ExecutionStep"> | Date | string | null
+    durationMs?: IntNullableFilter<"ExecutionStep"> | number | null
+    createdAt?: DateTimeFilter<"ExecutionStep"> | Date | string
+    updatedAt?: DateTimeFilter<"ExecutionStep"> | Date | string
+    execution?: XOR<ExecutionScalarRelationFilter, ExecutionWhereInput>
+    node?: XOR<NodeNullableScalarRelationFilter, NodeWhereInput> | null
+  }, "id">
+
+  export type ExecutionStepOrderByWithAggregationInput = {
+    id?: SortOrder
+    executionId?: SortOrder
+    nodeId?: SortOrderInput | SortOrder
+    nodeName?: SortOrder
+    nodeType?: SortOrder
+    status?: SortOrder
+    position?: SortOrder
+    attempt?: SortOrder
+    input?: SortOrder
+    output?: SortOrderInput | SortOrder
+    error?: SortOrderInput | SortOrder
+    startedAt?: SortOrderInput | SortOrder
+    completedAt?: SortOrderInput | SortOrder
+    durationMs?: SortOrderInput | SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    _count?: ExecutionStepCountOrderByAggregateInput
+    _avg?: ExecutionStepAvgOrderByAggregateInput
+    _max?: ExecutionStepMaxOrderByAggregateInput
+    _min?: ExecutionStepMinOrderByAggregateInput
+    _sum?: ExecutionStepSumOrderByAggregateInput
+  }
+
+  export type ExecutionStepScalarWhereWithAggregatesInput = {
+    AND?: ExecutionStepScalarWhereWithAggregatesInput | ExecutionStepScalarWhereWithAggregatesInput[]
+    OR?: ExecutionStepScalarWhereWithAggregatesInput[]
+    NOT?: ExecutionStepScalarWhereWithAggregatesInput | ExecutionStepScalarWhereWithAggregatesInput[]
+    id?: StringWithAggregatesFilter<"ExecutionStep"> | string
+    executionId?: StringWithAggregatesFilter<"ExecutionStep"> | string
+    nodeId?: StringNullableWithAggregatesFilter<"ExecutionStep"> | string | null
+    nodeName?: StringWithAggregatesFilter<"ExecutionStep"> | string
+    nodeType?: EnumNodeTypeWithAggregatesFilter<"ExecutionStep"> | $Enums.NodeType
+    status?: EnumExecutionStepStatusWithAggregatesFilter<"ExecutionStep"> | $Enums.ExecutionStepStatus
+    position?: IntWithAggregatesFilter<"ExecutionStep"> | number
+    attempt?: IntWithAggregatesFilter<"ExecutionStep"> | number
+    input?: JsonWithAggregatesFilter<"ExecutionStep">
+    output?: JsonNullableWithAggregatesFilter<"ExecutionStep">
+    error?: JsonNullableWithAggregatesFilter<"ExecutionStep">
+    startedAt?: DateTimeNullableWithAggregatesFilter<"ExecutionStep"> | Date | string | null
+    completedAt?: DateTimeNullableWithAggregatesFilter<"ExecutionStep"> | Date | string | null
+    durationMs?: IntNullableWithAggregatesFilter<"ExecutionStep"> | number | null
+    createdAt?: DateTimeWithAggregatesFilter<"ExecutionStep"> | Date | string
+    updatedAt?: DateTimeWithAggregatesFilter<"ExecutionStep"> | Date | string
+  }
+
   export type UserCreateInput = {
     id: string
     name: string
@@ -10120,6 +14657,8 @@ export namespace Prisma {
     sessions?: SessionCreateNestedManyWithoutUserInput
     accounts?: AccountCreateNestedManyWithoutUserInput
     workflows?: WorkflowCreateNestedManyWithoutUserInput
+    credentials?: CredentialCreateNestedManyWithoutUserInput
+    executions?: ExecutionCreateNestedManyWithoutTriggeredByUserInput
   }
 
   export type UserUncheckedCreateInput = {
@@ -10133,6 +14672,8 @@ export namespace Prisma {
     sessions?: SessionUncheckedCreateNestedManyWithoutUserInput
     accounts?: AccountUncheckedCreateNestedManyWithoutUserInput
     workflows?: WorkflowUncheckedCreateNestedManyWithoutUserInput
+    credentials?: CredentialUncheckedCreateNestedManyWithoutUserInput
+    executions?: ExecutionUncheckedCreateNestedManyWithoutTriggeredByUserInput
   }
 
   export type UserUpdateInput = {
@@ -10146,6 +14687,8 @@ export namespace Prisma {
     sessions?: SessionUpdateManyWithoutUserNestedInput
     accounts?: AccountUpdateManyWithoutUserNestedInput
     workflows?: WorkflowUpdateManyWithoutUserNestedInput
+    credentials?: CredentialUpdateManyWithoutUserNestedInput
+    executions?: ExecutionUpdateManyWithoutTriggeredByUserNestedInput
   }
 
   export type UserUncheckedUpdateInput = {
@@ -10159,6 +14702,8 @@ export namespace Prisma {
     sessions?: SessionUncheckedUpdateManyWithoutUserNestedInput
     accounts?: AccountUncheckedUpdateManyWithoutUserNestedInput
     workflows?: WorkflowUncheckedUpdateManyWithoutUserNestedInput
+    credentials?: CredentialUncheckedUpdateManyWithoutUserNestedInput
+    executions?: ExecutionUncheckedUpdateManyWithoutTriggeredByUserNestedInput
   }
 
   export type UserCreateManyInput = {
@@ -10448,6 +14993,7 @@ export namespace Prisma {
     updatedAt?: Date | string
     nodes?: NodeCreateNestedManyWithoutWorkflowInput
     connections?: ConnectionCreateNestedManyWithoutWorkflowInput
+    executions?: ExecutionCreateNestedManyWithoutWorkflowInput
     user: UserCreateNestedOneWithoutWorkflowsInput
   }
 
@@ -10459,6 +15005,7 @@ export namespace Prisma {
     userId: string
     nodes?: NodeUncheckedCreateNestedManyWithoutWorkflowInput
     connections?: ConnectionUncheckedCreateNestedManyWithoutWorkflowInput
+    executions?: ExecutionUncheckedCreateNestedManyWithoutWorkflowInput
   }
 
   export type WorkflowUpdateInput = {
@@ -10468,6 +15015,7 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     nodes?: NodeUpdateManyWithoutWorkflowNestedInput
     connections?: ConnectionUpdateManyWithoutWorkflowNestedInput
+    executions?: ExecutionUpdateManyWithoutWorkflowNestedInput
     user?: UserUpdateOneRequiredWithoutWorkflowsNestedInput
   }
 
@@ -10479,6 +15027,7 @@ export namespace Prisma {
     userId?: StringFieldUpdateOperationsInput | string
     nodes?: NodeUncheckedUpdateManyWithoutWorkflowNestedInput
     connections?: ConnectionUncheckedUpdateManyWithoutWorkflowNestedInput
+    executions?: ExecutionUncheckedUpdateManyWithoutWorkflowNestedInput
   }
 
   export type WorkflowCreateManyInput = {
@@ -10515,6 +15064,7 @@ export namespace Prisma {
     workflow: WorkflowCreateNestedOneWithoutNodesInput
     fromConnections?: ConnectionCreateNestedManyWithoutFromNodeInput
     toConnections?: ConnectionCreateNestedManyWithoutToNodeInput
+    executionSteps?: ExecutionStepCreateNestedManyWithoutNodeInput
   }
 
   export type NodeUncheckedCreateInput = {
@@ -10528,6 +15078,7 @@ export namespace Prisma {
     updatedAt?: Date | string
     fromConnections?: ConnectionUncheckedCreateNestedManyWithoutFromNodeInput
     toConnections?: ConnectionUncheckedCreateNestedManyWithoutToNodeInput
+    executionSteps?: ExecutionStepUncheckedCreateNestedManyWithoutNodeInput
   }
 
   export type NodeUpdateInput = {
@@ -10541,6 +15092,7 @@ export namespace Prisma {
     workflow?: WorkflowUpdateOneRequiredWithoutNodesNestedInput
     fromConnections?: ConnectionUpdateManyWithoutFromNodeNestedInput
     toConnections?: ConnectionUpdateManyWithoutToNodeNestedInput
+    executionSteps?: ExecutionStepUpdateManyWithoutNodeNestedInput
   }
 
   export type NodeUncheckedUpdateInput = {
@@ -10554,6 +15106,7 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     fromConnections?: ConnectionUncheckedUpdateManyWithoutFromNodeNestedInput
     toConnections?: ConnectionUncheckedUpdateManyWithoutToNodeNestedInput
+    executionSteps?: ExecutionStepUncheckedUpdateManyWithoutNodeNestedInput
   }
 
   export type NodeCreateManyInput = {
@@ -10669,6 +15222,341 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
+  export type CredentialCreateInput = {
+    id?: string
+    name: string
+    provider: $Enums.CredentialProvider
+    description?: string | null
+    encryptedData: string
+    metadata?: JsonNullValueInput | InputJsonValue
+    lastUsedAt?: Date | string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    user: UserCreateNestedOneWithoutCredentialsInput
+  }
+
+  export type CredentialUncheckedCreateInput = {
+    id?: string
+    userId: string
+    name: string
+    provider: $Enums.CredentialProvider
+    description?: string | null
+    encryptedData: string
+    metadata?: JsonNullValueInput | InputJsonValue
+    lastUsedAt?: Date | string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type CredentialUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    provider?: EnumCredentialProviderFieldUpdateOperationsInput | $Enums.CredentialProvider
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    encryptedData?: StringFieldUpdateOperationsInput | string
+    metadata?: JsonNullValueInput | InputJsonValue
+    lastUsedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    user?: UserUpdateOneRequiredWithoutCredentialsNestedInput
+  }
+
+  export type CredentialUncheckedUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    userId?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    provider?: EnumCredentialProviderFieldUpdateOperationsInput | $Enums.CredentialProvider
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    encryptedData?: StringFieldUpdateOperationsInput | string
+    metadata?: JsonNullValueInput | InputJsonValue
+    lastUsedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type CredentialCreateManyInput = {
+    id?: string
+    userId: string
+    name: string
+    provider: $Enums.CredentialProvider
+    description?: string | null
+    encryptedData: string
+    metadata?: JsonNullValueInput | InputJsonValue
+    lastUsedAt?: Date | string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type CredentialUpdateManyMutationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    provider?: EnumCredentialProviderFieldUpdateOperationsInput | $Enums.CredentialProvider
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    encryptedData?: StringFieldUpdateOperationsInput | string
+    metadata?: JsonNullValueInput | InputJsonValue
+    lastUsedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type CredentialUncheckedUpdateManyInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    userId?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    provider?: EnumCredentialProviderFieldUpdateOperationsInput | $Enums.CredentialProvider
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    encryptedData?: StringFieldUpdateOperationsInput | string
+    metadata?: JsonNullValueInput | InputJsonValue
+    lastUsedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type ExecutionCreateInput = {
+    id?: string
+    triggerType: $Enums.ExecutionTriggerType
+    status?: $Enums.ExecutionStatus
+    triggerPayload?: JsonNullValueInput | InputJsonValue
+    state?: JsonNullValueInput | InputJsonValue
+    workflowSnapshot?: NullableJsonNullValueInput | InputJsonValue
+    startedAt?: Date | string | null
+    completedAt?: Date | string | null
+    error?: NullableJsonNullValueInput | InputJsonValue
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    workflow: WorkflowCreateNestedOneWithoutExecutionsInput
+    triggeredByUser?: UserCreateNestedOneWithoutExecutionsInput
+    steps?: ExecutionStepCreateNestedManyWithoutExecutionInput
+  }
+
+  export type ExecutionUncheckedCreateInput = {
+    id?: string
+    workflowId: string
+    triggerType: $Enums.ExecutionTriggerType
+    status?: $Enums.ExecutionStatus
+    triggeredByUserId?: string | null
+    triggerPayload?: JsonNullValueInput | InputJsonValue
+    state?: JsonNullValueInput | InputJsonValue
+    workflowSnapshot?: NullableJsonNullValueInput | InputJsonValue
+    startedAt?: Date | string | null
+    completedAt?: Date | string | null
+    error?: NullableJsonNullValueInput | InputJsonValue
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    steps?: ExecutionStepUncheckedCreateNestedManyWithoutExecutionInput
+  }
+
+  export type ExecutionUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    triggerType?: EnumExecutionTriggerTypeFieldUpdateOperationsInput | $Enums.ExecutionTriggerType
+    status?: EnumExecutionStatusFieldUpdateOperationsInput | $Enums.ExecutionStatus
+    triggerPayload?: JsonNullValueInput | InputJsonValue
+    state?: JsonNullValueInput | InputJsonValue
+    workflowSnapshot?: NullableJsonNullValueInput | InputJsonValue
+    startedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    completedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    error?: NullableJsonNullValueInput | InputJsonValue
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    workflow?: WorkflowUpdateOneRequiredWithoutExecutionsNestedInput
+    triggeredByUser?: UserUpdateOneWithoutExecutionsNestedInput
+    steps?: ExecutionStepUpdateManyWithoutExecutionNestedInput
+  }
+
+  export type ExecutionUncheckedUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    workflowId?: StringFieldUpdateOperationsInput | string
+    triggerType?: EnumExecutionTriggerTypeFieldUpdateOperationsInput | $Enums.ExecutionTriggerType
+    status?: EnumExecutionStatusFieldUpdateOperationsInput | $Enums.ExecutionStatus
+    triggeredByUserId?: NullableStringFieldUpdateOperationsInput | string | null
+    triggerPayload?: JsonNullValueInput | InputJsonValue
+    state?: JsonNullValueInput | InputJsonValue
+    workflowSnapshot?: NullableJsonNullValueInput | InputJsonValue
+    startedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    completedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    error?: NullableJsonNullValueInput | InputJsonValue
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    steps?: ExecutionStepUncheckedUpdateManyWithoutExecutionNestedInput
+  }
+
+  export type ExecutionCreateManyInput = {
+    id?: string
+    workflowId: string
+    triggerType: $Enums.ExecutionTriggerType
+    status?: $Enums.ExecutionStatus
+    triggeredByUserId?: string | null
+    triggerPayload?: JsonNullValueInput | InputJsonValue
+    state?: JsonNullValueInput | InputJsonValue
+    workflowSnapshot?: NullableJsonNullValueInput | InputJsonValue
+    startedAt?: Date | string | null
+    completedAt?: Date | string | null
+    error?: NullableJsonNullValueInput | InputJsonValue
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type ExecutionUpdateManyMutationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    triggerType?: EnumExecutionTriggerTypeFieldUpdateOperationsInput | $Enums.ExecutionTriggerType
+    status?: EnumExecutionStatusFieldUpdateOperationsInput | $Enums.ExecutionStatus
+    triggerPayload?: JsonNullValueInput | InputJsonValue
+    state?: JsonNullValueInput | InputJsonValue
+    workflowSnapshot?: NullableJsonNullValueInput | InputJsonValue
+    startedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    completedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    error?: NullableJsonNullValueInput | InputJsonValue
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type ExecutionUncheckedUpdateManyInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    workflowId?: StringFieldUpdateOperationsInput | string
+    triggerType?: EnumExecutionTriggerTypeFieldUpdateOperationsInput | $Enums.ExecutionTriggerType
+    status?: EnumExecutionStatusFieldUpdateOperationsInput | $Enums.ExecutionStatus
+    triggeredByUserId?: NullableStringFieldUpdateOperationsInput | string | null
+    triggerPayload?: JsonNullValueInput | InputJsonValue
+    state?: JsonNullValueInput | InputJsonValue
+    workflowSnapshot?: NullableJsonNullValueInput | InputJsonValue
+    startedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    completedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    error?: NullableJsonNullValueInput | InputJsonValue
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type ExecutionStepCreateInput = {
+    id?: string
+    nodeName: string
+    nodeType: $Enums.NodeType
+    status?: $Enums.ExecutionStepStatus
+    position: number
+    attempt?: number
+    input?: JsonNullValueInput | InputJsonValue
+    output?: NullableJsonNullValueInput | InputJsonValue
+    error?: NullableJsonNullValueInput | InputJsonValue
+    startedAt?: Date | string | null
+    completedAt?: Date | string | null
+    durationMs?: number | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    execution: ExecutionCreateNestedOneWithoutStepsInput
+    node?: NodeCreateNestedOneWithoutExecutionStepsInput
+  }
+
+  export type ExecutionStepUncheckedCreateInput = {
+    id?: string
+    executionId: string
+    nodeId?: string | null
+    nodeName: string
+    nodeType: $Enums.NodeType
+    status?: $Enums.ExecutionStepStatus
+    position: number
+    attempt?: number
+    input?: JsonNullValueInput | InputJsonValue
+    output?: NullableJsonNullValueInput | InputJsonValue
+    error?: NullableJsonNullValueInput | InputJsonValue
+    startedAt?: Date | string | null
+    completedAt?: Date | string | null
+    durationMs?: number | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type ExecutionStepUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    nodeName?: StringFieldUpdateOperationsInput | string
+    nodeType?: EnumNodeTypeFieldUpdateOperationsInput | $Enums.NodeType
+    status?: EnumExecutionStepStatusFieldUpdateOperationsInput | $Enums.ExecutionStepStatus
+    position?: IntFieldUpdateOperationsInput | number
+    attempt?: IntFieldUpdateOperationsInput | number
+    input?: JsonNullValueInput | InputJsonValue
+    output?: NullableJsonNullValueInput | InputJsonValue
+    error?: NullableJsonNullValueInput | InputJsonValue
+    startedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    completedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    durationMs?: NullableIntFieldUpdateOperationsInput | number | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    execution?: ExecutionUpdateOneRequiredWithoutStepsNestedInput
+    node?: NodeUpdateOneWithoutExecutionStepsNestedInput
+  }
+
+  export type ExecutionStepUncheckedUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    executionId?: StringFieldUpdateOperationsInput | string
+    nodeId?: NullableStringFieldUpdateOperationsInput | string | null
+    nodeName?: StringFieldUpdateOperationsInput | string
+    nodeType?: EnumNodeTypeFieldUpdateOperationsInput | $Enums.NodeType
+    status?: EnumExecutionStepStatusFieldUpdateOperationsInput | $Enums.ExecutionStepStatus
+    position?: IntFieldUpdateOperationsInput | number
+    attempt?: IntFieldUpdateOperationsInput | number
+    input?: JsonNullValueInput | InputJsonValue
+    output?: NullableJsonNullValueInput | InputJsonValue
+    error?: NullableJsonNullValueInput | InputJsonValue
+    startedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    completedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    durationMs?: NullableIntFieldUpdateOperationsInput | number | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type ExecutionStepCreateManyInput = {
+    id?: string
+    executionId: string
+    nodeId?: string | null
+    nodeName: string
+    nodeType: $Enums.NodeType
+    status?: $Enums.ExecutionStepStatus
+    position: number
+    attempt?: number
+    input?: JsonNullValueInput | InputJsonValue
+    output?: NullableJsonNullValueInput | InputJsonValue
+    error?: NullableJsonNullValueInput | InputJsonValue
+    startedAt?: Date | string | null
+    completedAt?: Date | string | null
+    durationMs?: number | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type ExecutionStepUpdateManyMutationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    nodeName?: StringFieldUpdateOperationsInput | string
+    nodeType?: EnumNodeTypeFieldUpdateOperationsInput | $Enums.NodeType
+    status?: EnumExecutionStepStatusFieldUpdateOperationsInput | $Enums.ExecutionStepStatus
+    position?: IntFieldUpdateOperationsInput | number
+    attempt?: IntFieldUpdateOperationsInput | number
+    input?: JsonNullValueInput | InputJsonValue
+    output?: NullableJsonNullValueInput | InputJsonValue
+    error?: NullableJsonNullValueInput | InputJsonValue
+    startedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    completedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    durationMs?: NullableIntFieldUpdateOperationsInput | number | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type ExecutionStepUncheckedUpdateManyInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    executionId?: StringFieldUpdateOperationsInput | string
+    nodeId?: NullableStringFieldUpdateOperationsInput | string | null
+    nodeName?: StringFieldUpdateOperationsInput | string
+    nodeType?: EnumNodeTypeFieldUpdateOperationsInput | $Enums.NodeType
+    status?: EnumExecutionStepStatusFieldUpdateOperationsInput | $Enums.ExecutionStepStatus
+    position?: IntFieldUpdateOperationsInput | number
+    attempt?: IntFieldUpdateOperationsInput | number
+    input?: JsonNullValueInput | InputJsonValue
+    output?: NullableJsonNullValueInput | InputJsonValue
+    error?: NullableJsonNullValueInput | InputJsonValue
+    startedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    completedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    durationMs?: NullableIntFieldUpdateOperationsInput | number | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
   export type StringFilter<$PrismaModel = never> = {
     equals?: string | StringFieldRefInput<$PrismaModel>
     in?: string[] | ListStringFieldRefInput<$PrismaModel>
@@ -10733,6 +15621,18 @@ export namespace Prisma {
     none?: WorkflowWhereInput
   }
 
+  export type CredentialListRelationFilter = {
+    every?: CredentialWhereInput
+    some?: CredentialWhereInput
+    none?: CredentialWhereInput
+  }
+
+  export type ExecutionListRelationFilter = {
+    every?: ExecutionWhereInput
+    some?: ExecutionWhereInput
+    none?: ExecutionWhereInput
+  }
+
   export type SortOrderInput = {
     sort: SortOrder
     nulls?: NullsOrder
@@ -10747,6 +15647,14 @@ export namespace Prisma {
   }
 
   export type WorkflowOrderByRelationAggregateInput = {
+    _count?: SortOrder
+  }
+
+  export type CredentialOrderByRelationAggregateInput = {
+    _count?: SortOrder
+  }
+
+  export type ExecutionOrderByRelationAggregateInput = {
     _count?: SortOrder
   }
 
@@ -11055,6 +15963,16 @@ export namespace Prisma {
     isNot?: WorkflowWhereInput
   }
 
+  export type ExecutionStepListRelationFilter = {
+    every?: ExecutionStepWhereInput
+    some?: ExecutionStepWhereInput
+    none?: ExecutionStepWhereInput
+  }
+
+  export type ExecutionStepOrderByRelationAggregateInput = {
+    _count?: SortOrder
+  }
+
   export type NodeCountOrderByAggregateInput = {
     id?: SortOrder
     workflowId?: SortOrder
@@ -11166,6 +16084,337 @@ export namespace Prisma {
     updatedAt?: SortOrder
   }
 
+  export type EnumCredentialProviderFilter<$PrismaModel = never> = {
+    equals?: $Enums.CredentialProvider | EnumCredentialProviderFieldRefInput<$PrismaModel>
+    in?: $Enums.CredentialProvider[] | ListEnumCredentialProviderFieldRefInput<$PrismaModel>
+    notIn?: $Enums.CredentialProvider[] | ListEnumCredentialProviderFieldRefInput<$PrismaModel>
+    not?: NestedEnumCredentialProviderFilter<$PrismaModel> | $Enums.CredentialProvider
+  }
+
+  export type CredentialUserIdNameCompoundUniqueInput = {
+    userId: string
+    name: string
+  }
+
+  export type CredentialCountOrderByAggregateInput = {
+    id?: SortOrder
+    userId?: SortOrder
+    name?: SortOrder
+    provider?: SortOrder
+    description?: SortOrder
+    encryptedData?: SortOrder
+    metadata?: SortOrder
+    lastUsedAt?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type CredentialMaxOrderByAggregateInput = {
+    id?: SortOrder
+    userId?: SortOrder
+    name?: SortOrder
+    provider?: SortOrder
+    description?: SortOrder
+    encryptedData?: SortOrder
+    lastUsedAt?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type CredentialMinOrderByAggregateInput = {
+    id?: SortOrder
+    userId?: SortOrder
+    name?: SortOrder
+    provider?: SortOrder
+    description?: SortOrder
+    encryptedData?: SortOrder
+    lastUsedAt?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type EnumCredentialProviderWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: $Enums.CredentialProvider | EnumCredentialProviderFieldRefInput<$PrismaModel>
+    in?: $Enums.CredentialProvider[] | ListEnumCredentialProviderFieldRefInput<$PrismaModel>
+    notIn?: $Enums.CredentialProvider[] | ListEnumCredentialProviderFieldRefInput<$PrismaModel>
+    not?: NestedEnumCredentialProviderWithAggregatesFilter<$PrismaModel> | $Enums.CredentialProvider
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedEnumCredentialProviderFilter<$PrismaModel>
+    _max?: NestedEnumCredentialProviderFilter<$PrismaModel>
+  }
+
+  export type EnumExecutionTriggerTypeFilter<$PrismaModel = never> = {
+    equals?: $Enums.ExecutionTriggerType | EnumExecutionTriggerTypeFieldRefInput<$PrismaModel>
+    in?: $Enums.ExecutionTriggerType[] | ListEnumExecutionTriggerTypeFieldRefInput<$PrismaModel>
+    notIn?: $Enums.ExecutionTriggerType[] | ListEnumExecutionTriggerTypeFieldRefInput<$PrismaModel>
+    not?: NestedEnumExecutionTriggerTypeFilter<$PrismaModel> | $Enums.ExecutionTriggerType
+  }
+
+  export type EnumExecutionStatusFilter<$PrismaModel = never> = {
+    equals?: $Enums.ExecutionStatus | EnumExecutionStatusFieldRefInput<$PrismaModel>
+    in?: $Enums.ExecutionStatus[] | ListEnumExecutionStatusFieldRefInput<$PrismaModel>
+    notIn?: $Enums.ExecutionStatus[] | ListEnumExecutionStatusFieldRefInput<$PrismaModel>
+    not?: NestedEnumExecutionStatusFilter<$PrismaModel> | $Enums.ExecutionStatus
+  }
+  export type JsonNullableFilter<$PrismaModel = never> =
+    | PatchUndefined<
+        Either<Required<JsonNullableFilterBase<$PrismaModel>>, Exclude<keyof Required<JsonNullableFilterBase<$PrismaModel>>, 'path'>>,
+        Required<JsonNullableFilterBase<$PrismaModel>>
+      >
+    | OptionalFlat<Omit<Required<JsonNullableFilterBase<$PrismaModel>>, 'path'>>
+
+  export type JsonNullableFilterBase<$PrismaModel = never> = {
+    equals?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | JsonNullValueFilter
+    path?: string[]
+    mode?: QueryMode | EnumQueryModeFieldRefInput<$PrismaModel>
+    string_contains?: string | StringFieldRefInput<$PrismaModel>
+    string_starts_with?: string | StringFieldRefInput<$PrismaModel>
+    string_ends_with?: string | StringFieldRefInput<$PrismaModel>
+    array_starts_with?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | null
+    array_ends_with?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | null
+    array_contains?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | null
+    lt?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
+    lte?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
+    gt?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
+    gte?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
+    not?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | JsonNullValueFilter
+  }
+
+  export type UserNullableScalarRelationFilter = {
+    is?: UserWhereInput | null
+    isNot?: UserWhereInput | null
+  }
+
+  export type ExecutionCountOrderByAggregateInput = {
+    id?: SortOrder
+    workflowId?: SortOrder
+    triggerType?: SortOrder
+    status?: SortOrder
+    triggeredByUserId?: SortOrder
+    triggerPayload?: SortOrder
+    state?: SortOrder
+    workflowSnapshot?: SortOrder
+    startedAt?: SortOrder
+    completedAt?: SortOrder
+    error?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type ExecutionMaxOrderByAggregateInput = {
+    id?: SortOrder
+    workflowId?: SortOrder
+    triggerType?: SortOrder
+    status?: SortOrder
+    triggeredByUserId?: SortOrder
+    startedAt?: SortOrder
+    completedAt?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type ExecutionMinOrderByAggregateInput = {
+    id?: SortOrder
+    workflowId?: SortOrder
+    triggerType?: SortOrder
+    status?: SortOrder
+    triggeredByUserId?: SortOrder
+    startedAt?: SortOrder
+    completedAt?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type EnumExecutionTriggerTypeWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: $Enums.ExecutionTriggerType | EnumExecutionTriggerTypeFieldRefInput<$PrismaModel>
+    in?: $Enums.ExecutionTriggerType[] | ListEnumExecutionTriggerTypeFieldRefInput<$PrismaModel>
+    notIn?: $Enums.ExecutionTriggerType[] | ListEnumExecutionTriggerTypeFieldRefInput<$PrismaModel>
+    not?: NestedEnumExecutionTriggerTypeWithAggregatesFilter<$PrismaModel> | $Enums.ExecutionTriggerType
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedEnumExecutionTriggerTypeFilter<$PrismaModel>
+    _max?: NestedEnumExecutionTriggerTypeFilter<$PrismaModel>
+  }
+
+  export type EnumExecutionStatusWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: $Enums.ExecutionStatus | EnumExecutionStatusFieldRefInput<$PrismaModel>
+    in?: $Enums.ExecutionStatus[] | ListEnumExecutionStatusFieldRefInput<$PrismaModel>
+    notIn?: $Enums.ExecutionStatus[] | ListEnumExecutionStatusFieldRefInput<$PrismaModel>
+    not?: NestedEnumExecutionStatusWithAggregatesFilter<$PrismaModel> | $Enums.ExecutionStatus
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedEnumExecutionStatusFilter<$PrismaModel>
+    _max?: NestedEnumExecutionStatusFilter<$PrismaModel>
+  }
+  export type JsonNullableWithAggregatesFilter<$PrismaModel = never> =
+    | PatchUndefined<
+        Either<Required<JsonNullableWithAggregatesFilterBase<$PrismaModel>>, Exclude<keyof Required<JsonNullableWithAggregatesFilterBase<$PrismaModel>>, 'path'>>,
+        Required<JsonNullableWithAggregatesFilterBase<$PrismaModel>>
+      >
+    | OptionalFlat<Omit<Required<JsonNullableWithAggregatesFilterBase<$PrismaModel>>, 'path'>>
+
+  export type JsonNullableWithAggregatesFilterBase<$PrismaModel = never> = {
+    equals?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | JsonNullValueFilter
+    path?: string[]
+    mode?: QueryMode | EnumQueryModeFieldRefInput<$PrismaModel>
+    string_contains?: string | StringFieldRefInput<$PrismaModel>
+    string_starts_with?: string | StringFieldRefInput<$PrismaModel>
+    string_ends_with?: string | StringFieldRefInput<$PrismaModel>
+    array_starts_with?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | null
+    array_ends_with?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | null
+    array_contains?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | null
+    lt?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
+    lte?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
+    gt?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
+    gte?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
+    not?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | JsonNullValueFilter
+    _count?: NestedIntNullableFilter<$PrismaModel>
+    _min?: NestedJsonNullableFilter<$PrismaModel>
+    _max?: NestedJsonNullableFilter<$PrismaModel>
+  }
+
+  export type EnumExecutionStepStatusFilter<$PrismaModel = never> = {
+    equals?: $Enums.ExecutionStepStatus | EnumExecutionStepStatusFieldRefInput<$PrismaModel>
+    in?: $Enums.ExecutionStepStatus[] | ListEnumExecutionStepStatusFieldRefInput<$PrismaModel>
+    notIn?: $Enums.ExecutionStepStatus[] | ListEnumExecutionStepStatusFieldRefInput<$PrismaModel>
+    not?: NestedEnumExecutionStepStatusFilter<$PrismaModel> | $Enums.ExecutionStepStatus
+  }
+
+  export type IntFilter<$PrismaModel = never> = {
+    equals?: number | IntFieldRefInput<$PrismaModel>
+    in?: number[] | ListIntFieldRefInput<$PrismaModel>
+    notIn?: number[] | ListIntFieldRefInput<$PrismaModel>
+    lt?: number | IntFieldRefInput<$PrismaModel>
+    lte?: number | IntFieldRefInput<$PrismaModel>
+    gt?: number | IntFieldRefInput<$PrismaModel>
+    gte?: number | IntFieldRefInput<$PrismaModel>
+    not?: NestedIntFilter<$PrismaModel> | number
+  }
+
+  export type IntNullableFilter<$PrismaModel = never> = {
+    equals?: number | IntFieldRefInput<$PrismaModel> | null
+    in?: number[] | ListIntFieldRefInput<$PrismaModel> | null
+    notIn?: number[] | ListIntFieldRefInput<$PrismaModel> | null
+    lt?: number | IntFieldRefInput<$PrismaModel>
+    lte?: number | IntFieldRefInput<$PrismaModel>
+    gt?: number | IntFieldRefInput<$PrismaModel>
+    gte?: number | IntFieldRefInput<$PrismaModel>
+    not?: NestedIntNullableFilter<$PrismaModel> | number | null
+  }
+
+  export type ExecutionScalarRelationFilter = {
+    is?: ExecutionWhereInput
+    isNot?: ExecutionWhereInput
+  }
+
+  export type NodeNullableScalarRelationFilter = {
+    is?: NodeWhereInput | null
+    isNot?: NodeWhereInput | null
+  }
+
+  export type ExecutionStepCountOrderByAggregateInput = {
+    id?: SortOrder
+    executionId?: SortOrder
+    nodeId?: SortOrder
+    nodeName?: SortOrder
+    nodeType?: SortOrder
+    status?: SortOrder
+    position?: SortOrder
+    attempt?: SortOrder
+    input?: SortOrder
+    output?: SortOrder
+    error?: SortOrder
+    startedAt?: SortOrder
+    completedAt?: SortOrder
+    durationMs?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type ExecutionStepAvgOrderByAggregateInput = {
+    position?: SortOrder
+    attempt?: SortOrder
+    durationMs?: SortOrder
+  }
+
+  export type ExecutionStepMaxOrderByAggregateInput = {
+    id?: SortOrder
+    executionId?: SortOrder
+    nodeId?: SortOrder
+    nodeName?: SortOrder
+    nodeType?: SortOrder
+    status?: SortOrder
+    position?: SortOrder
+    attempt?: SortOrder
+    startedAt?: SortOrder
+    completedAt?: SortOrder
+    durationMs?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type ExecutionStepMinOrderByAggregateInput = {
+    id?: SortOrder
+    executionId?: SortOrder
+    nodeId?: SortOrder
+    nodeName?: SortOrder
+    nodeType?: SortOrder
+    status?: SortOrder
+    position?: SortOrder
+    attempt?: SortOrder
+    startedAt?: SortOrder
+    completedAt?: SortOrder
+    durationMs?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type ExecutionStepSumOrderByAggregateInput = {
+    position?: SortOrder
+    attempt?: SortOrder
+    durationMs?: SortOrder
+  }
+
+  export type EnumExecutionStepStatusWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: $Enums.ExecutionStepStatus | EnumExecutionStepStatusFieldRefInput<$PrismaModel>
+    in?: $Enums.ExecutionStepStatus[] | ListEnumExecutionStepStatusFieldRefInput<$PrismaModel>
+    notIn?: $Enums.ExecutionStepStatus[] | ListEnumExecutionStepStatusFieldRefInput<$PrismaModel>
+    not?: NestedEnumExecutionStepStatusWithAggregatesFilter<$PrismaModel> | $Enums.ExecutionStepStatus
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedEnumExecutionStepStatusFilter<$PrismaModel>
+    _max?: NestedEnumExecutionStepStatusFilter<$PrismaModel>
+  }
+
+  export type IntWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: number | IntFieldRefInput<$PrismaModel>
+    in?: number[] | ListIntFieldRefInput<$PrismaModel>
+    notIn?: number[] | ListIntFieldRefInput<$PrismaModel>
+    lt?: number | IntFieldRefInput<$PrismaModel>
+    lte?: number | IntFieldRefInput<$PrismaModel>
+    gt?: number | IntFieldRefInput<$PrismaModel>
+    gte?: number | IntFieldRefInput<$PrismaModel>
+    not?: NestedIntWithAggregatesFilter<$PrismaModel> | number
+    _count?: NestedIntFilter<$PrismaModel>
+    _avg?: NestedFloatFilter<$PrismaModel>
+    _sum?: NestedIntFilter<$PrismaModel>
+    _min?: NestedIntFilter<$PrismaModel>
+    _max?: NestedIntFilter<$PrismaModel>
+  }
+
+  export type IntNullableWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: number | IntFieldRefInput<$PrismaModel> | null
+    in?: number[] | ListIntFieldRefInput<$PrismaModel> | null
+    notIn?: number[] | ListIntFieldRefInput<$PrismaModel> | null
+    lt?: number | IntFieldRefInput<$PrismaModel>
+    lte?: number | IntFieldRefInput<$PrismaModel>
+    gt?: number | IntFieldRefInput<$PrismaModel>
+    gte?: number | IntFieldRefInput<$PrismaModel>
+    not?: NestedIntNullableWithAggregatesFilter<$PrismaModel> | number | null
+    _count?: NestedIntNullableFilter<$PrismaModel>
+    _avg?: NestedFloatNullableFilter<$PrismaModel>
+    _sum?: NestedIntNullableFilter<$PrismaModel>
+    _min?: NestedIntNullableFilter<$PrismaModel>
+    _max?: NestedIntNullableFilter<$PrismaModel>
+  }
+
   export type SessionCreateNestedManyWithoutUserInput = {
     create?: XOR<SessionCreateWithoutUserInput, SessionUncheckedCreateWithoutUserInput> | SessionCreateWithoutUserInput[] | SessionUncheckedCreateWithoutUserInput[]
     connectOrCreate?: SessionCreateOrConnectWithoutUserInput | SessionCreateOrConnectWithoutUserInput[]
@@ -11187,6 +16436,20 @@ export namespace Prisma {
     connect?: WorkflowWhereUniqueInput | WorkflowWhereUniqueInput[]
   }
 
+  export type CredentialCreateNestedManyWithoutUserInput = {
+    create?: XOR<CredentialCreateWithoutUserInput, CredentialUncheckedCreateWithoutUserInput> | CredentialCreateWithoutUserInput[] | CredentialUncheckedCreateWithoutUserInput[]
+    connectOrCreate?: CredentialCreateOrConnectWithoutUserInput | CredentialCreateOrConnectWithoutUserInput[]
+    createMany?: CredentialCreateManyUserInputEnvelope
+    connect?: CredentialWhereUniqueInput | CredentialWhereUniqueInput[]
+  }
+
+  export type ExecutionCreateNestedManyWithoutTriggeredByUserInput = {
+    create?: XOR<ExecutionCreateWithoutTriggeredByUserInput, ExecutionUncheckedCreateWithoutTriggeredByUserInput> | ExecutionCreateWithoutTriggeredByUserInput[] | ExecutionUncheckedCreateWithoutTriggeredByUserInput[]
+    connectOrCreate?: ExecutionCreateOrConnectWithoutTriggeredByUserInput | ExecutionCreateOrConnectWithoutTriggeredByUserInput[]
+    createMany?: ExecutionCreateManyTriggeredByUserInputEnvelope
+    connect?: ExecutionWhereUniqueInput | ExecutionWhereUniqueInput[]
+  }
+
   export type SessionUncheckedCreateNestedManyWithoutUserInput = {
     create?: XOR<SessionCreateWithoutUserInput, SessionUncheckedCreateWithoutUserInput> | SessionCreateWithoutUserInput[] | SessionUncheckedCreateWithoutUserInput[]
     connectOrCreate?: SessionCreateOrConnectWithoutUserInput | SessionCreateOrConnectWithoutUserInput[]
@@ -11206,6 +16469,20 @@ export namespace Prisma {
     connectOrCreate?: WorkflowCreateOrConnectWithoutUserInput | WorkflowCreateOrConnectWithoutUserInput[]
     createMany?: WorkflowCreateManyUserInputEnvelope
     connect?: WorkflowWhereUniqueInput | WorkflowWhereUniqueInput[]
+  }
+
+  export type CredentialUncheckedCreateNestedManyWithoutUserInput = {
+    create?: XOR<CredentialCreateWithoutUserInput, CredentialUncheckedCreateWithoutUserInput> | CredentialCreateWithoutUserInput[] | CredentialUncheckedCreateWithoutUserInput[]
+    connectOrCreate?: CredentialCreateOrConnectWithoutUserInput | CredentialCreateOrConnectWithoutUserInput[]
+    createMany?: CredentialCreateManyUserInputEnvelope
+    connect?: CredentialWhereUniqueInput | CredentialWhereUniqueInput[]
+  }
+
+  export type ExecutionUncheckedCreateNestedManyWithoutTriggeredByUserInput = {
+    create?: XOR<ExecutionCreateWithoutTriggeredByUserInput, ExecutionUncheckedCreateWithoutTriggeredByUserInput> | ExecutionCreateWithoutTriggeredByUserInput[] | ExecutionUncheckedCreateWithoutTriggeredByUserInput[]
+    connectOrCreate?: ExecutionCreateOrConnectWithoutTriggeredByUserInput | ExecutionCreateOrConnectWithoutTriggeredByUserInput[]
+    createMany?: ExecutionCreateManyTriggeredByUserInputEnvelope
+    connect?: ExecutionWhereUniqueInput | ExecutionWhereUniqueInput[]
   }
 
   export type StringFieldUpdateOperationsInput = {
@@ -11266,6 +16543,34 @@ export namespace Prisma {
     deleteMany?: WorkflowScalarWhereInput | WorkflowScalarWhereInput[]
   }
 
+  export type CredentialUpdateManyWithoutUserNestedInput = {
+    create?: XOR<CredentialCreateWithoutUserInput, CredentialUncheckedCreateWithoutUserInput> | CredentialCreateWithoutUserInput[] | CredentialUncheckedCreateWithoutUserInput[]
+    connectOrCreate?: CredentialCreateOrConnectWithoutUserInput | CredentialCreateOrConnectWithoutUserInput[]
+    upsert?: CredentialUpsertWithWhereUniqueWithoutUserInput | CredentialUpsertWithWhereUniqueWithoutUserInput[]
+    createMany?: CredentialCreateManyUserInputEnvelope
+    set?: CredentialWhereUniqueInput | CredentialWhereUniqueInput[]
+    disconnect?: CredentialWhereUniqueInput | CredentialWhereUniqueInput[]
+    delete?: CredentialWhereUniqueInput | CredentialWhereUniqueInput[]
+    connect?: CredentialWhereUniqueInput | CredentialWhereUniqueInput[]
+    update?: CredentialUpdateWithWhereUniqueWithoutUserInput | CredentialUpdateWithWhereUniqueWithoutUserInput[]
+    updateMany?: CredentialUpdateManyWithWhereWithoutUserInput | CredentialUpdateManyWithWhereWithoutUserInput[]
+    deleteMany?: CredentialScalarWhereInput | CredentialScalarWhereInput[]
+  }
+
+  export type ExecutionUpdateManyWithoutTriggeredByUserNestedInput = {
+    create?: XOR<ExecutionCreateWithoutTriggeredByUserInput, ExecutionUncheckedCreateWithoutTriggeredByUserInput> | ExecutionCreateWithoutTriggeredByUserInput[] | ExecutionUncheckedCreateWithoutTriggeredByUserInput[]
+    connectOrCreate?: ExecutionCreateOrConnectWithoutTriggeredByUserInput | ExecutionCreateOrConnectWithoutTriggeredByUserInput[]
+    upsert?: ExecutionUpsertWithWhereUniqueWithoutTriggeredByUserInput | ExecutionUpsertWithWhereUniqueWithoutTriggeredByUserInput[]
+    createMany?: ExecutionCreateManyTriggeredByUserInputEnvelope
+    set?: ExecutionWhereUniqueInput | ExecutionWhereUniqueInput[]
+    disconnect?: ExecutionWhereUniqueInput | ExecutionWhereUniqueInput[]
+    delete?: ExecutionWhereUniqueInput | ExecutionWhereUniqueInput[]
+    connect?: ExecutionWhereUniqueInput | ExecutionWhereUniqueInput[]
+    update?: ExecutionUpdateWithWhereUniqueWithoutTriggeredByUserInput | ExecutionUpdateWithWhereUniqueWithoutTriggeredByUserInput[]
+    updateMany?: ExecutionUpdateManyWithWhereWithoutTriggeredByUserInput | ExecutionUpdateManyWithWhereWithoutTriggeredByUserInput[]
+    deleteMany?: ExecutionScalarWhereInput | ExecutionScalarWhereInput[]
+  }
+
   export type SessionUncheckedUpdateManyWithoutUserNestedInput = {
     create?: XOR<SessionCreateWithoutUserInput, SessionUncheckedCreateWithoutUserInput> | SessionCreateWithoutUserInput[] | SessionUncheckedCreateWithoutUserInput[]
     connectOrCreate?: SessionCreateOrConnectWithoutUserInput | SessionCreateOrConnectWithoutUserInput[]
@@ -11306,6 +16611,34 @@ export namespace Prisma {
     update?: WorkflowUpdateWithWhereUniqueWithoutUserInput | WorkflowUpdateWithWhereUniqueWithoutUserInput[]
     updateMany?: WorkflowUpdateManyWithWhereWithoutUserInput | WorkflowUpdateManyWithWhereWithoutUserInput[]
     deleteMany?: WorkflowScalarWhereInput | WorkflowScalarWhereInput[]
+  }
+
+  export type CredentialUncheckedUpdateManyWithoutUserNestedInput = {
+    create?: XOR<CredentialCreateWithoutUserInput, CredentialUncheckedCreateWithoutUserInput> | CredentialCreateWithoutUserInput[] | CredentialUncheckedCreateWithoutUserInput[]
+    connectOrCreate?: CredentialCreateOrConnectWithoutUserInput | CredentialCreateOrConnectWithoutUserInput[]
+    upsert?: CredentialUpsertWithWhereUniqueWithoutUserInput | CredentialUpsertWithWhereUniqueWithoutUserInput[]
+    createMany?: CredentialCreateManyUserInputEnvelope
+    set?: CredentialWhereUniqueInput | CredentialWhereUniqueInput[]
+    disconnect?: CredentialWhereUniqueInput | CredentialWhereUniqueInput[]
+    delete?: CredentialWhereUniqueInput | CredentialWhereUniqueInput[]
+    connect?: CredentialWhereUniqueInput | CredentialWhereUniqueInput[]
+    update?: CredentialUpdateWithWhereUniqueWithoutUserInput | CredentialUpdateWithWhereUniqueWithoutUserInput[]
+    updateMany?: CredentialUpdateManyWithWhereWithoutUserInput | CredentialUpdateManyWithWhereWithoutUserInput[]
+    deleteMany?: CredentialScalarWhereInput | CredentialScalarWhereInput[]
+  }
+
+  export type ExecutionUncheckedUpdateManyWithoutTriggeredByUserNestedInput = {
+    create?: XOR<ExecutionCreateWithoutTriggeredByUserInput, ExecutionUncheckedCreateWithoutTriggeredByUserInput> | ExecutionCreateWithoutTriggeredByUserInput[] | ExecutionUncheckedCreateWithoutTriggeredByUserInput[]
+    connectOrCreate?: ExecutionCreateOrConnectWithoutTriggeredByUserInput | ExecutionCreateOrConnectWithoutTriggeredByUserInput[]
+    upsert?: ExecutionUpsertWithWhereUniqueWithoutTriggeredByUserInput | ExecutionUpsertWithWhereUniqueWithoutTriggeredByUserInput[]
+    createMany?: ExecutionCreateManyTriggeredByUserInputEnvelope
+    set?: ExecutionWhereUniqueInput | ExecutionWhereUniqueInput[]
+    disconnect?: ExecutionWhereUniqueInput | ExecutionWhereUniqueInput[]
+    delete?: ExecutionWhereUniqueInput | ExecutionWhereUniqueInput[]
+    connect?: ExecutionWhereUniqueInput | ExecutionWhereUniqueInput[]
+    update?: ExecutionUpdateWithWhereUniqueWithoutTriggeredByUserInput | ExecutionUpdateWithWhereUniqueWithoutTriggeredByUserInput[]
+    updateMany?: ExecutionUpdateManyWithWhereWithoutTriggeredByUserInput | ExecutionUpdateManyWithWhereWithoutTriggeredByUserInput[]
+    deleteMany?: ExecutionScalarWhereInput | ExecutionScalarWhereInput[]
   }
 
   export type UserCreateNestedOneWithoutSessionsInput = {
@@ -11354,6 +16687,13 @@ export namespace Prisma {
     connect?: ConnectionWhereUniqueInput | ConnectionWhereUniqueInput[]
   }
 
+  export type ExecutionCreateNestedManyWithoutWorkflowInput = {
+    create?: XOR<ExecutionCreateWithoutWorkflowInput, ExecutionUncheckedCreateWithoutWorkflowInput> | ExecutionCreateWithoutWorkflowInput[] | ExecutionUncheckedCreateWithoutWorkflowInput[]
+    connectOrCreate?: ExecutionCreateOrConnectWithoutWorkflowInput | ExecutionCreateOrConnectWithoutWorkflowInput[]
+    createMany?: ExecutionCreateManyWorkflowInputEnvelope
+    connect?: ExecutionWhereUniqueInput | ExecutionWhereUniqueInput[]
+  }
+
   export type UserCreateNestedOneWithoutWorkflowsInput = {
     create?: XOR<UserCreateWithoutWorkflowsInput, UserUncheckedCreateWithoutWorkflowsInput>
     connectOrCreate?: UserCreateOrConnectWithoutWorkflowsInput
@@ -11372,6 +16712,13 @@ export namespace Prisma {
     connectOrCreate?: ConnectionCreateOrConnectWithoutWorkflowInput | ConnectionCreateOrConnectWithoutWorkflowInput[]
     createMany?: ConnectionCreateManyWorkflowInputEnvelope
     connect?: ConnectionWhereUniqueInput | ConnectionWhereUniqueInput[]
+  }
+
+  export type ExecutionUncheckedCreateNestedManyWithoutWorkflowInput = {
+    create?: XOR<ExecutionCreateWithoutWorkflowInput, ExecutionUncheckedCreateWithoutWorkflowInput> | ExecutionCreateWithoutWorkflowInput[] | ExecutionUncheckedCreateWithoutWorkflowInput[]
+    connectOrCreate?: ExecutionCreateOrConnectWithoutWorkflowInput | ExecutionCreateOrConnectWithoutWorkflowInput[]
+    createMany?: ExecutionCreateManyWorkflowInputEnvelope
+    connect?: ExecutionWhereUniqueInput | ExecutionWhereUniqueInput[]
   }
 
   export type NodeUpdateManyWithoutWorkflowNestedInput = {
@@ -11400,6 +16747,20 @@ export namespace Prisma {
     update?: ConnectionUpdateWithWhereUniqueWithoutWorkflowInput | ConnectionUpdateWithWhereUniqueWithoutWorkflowInput[]
     updateMany?: ConnectionUpdateManyWithWhereWithoutWorkflowInput | ConnectionUpdateManyWithWhereWithoutWorkflowInput[]
     deleteMany?: ConnectionScalarWhereInput | ConnectionScalarWhereInput[]
+  }
+
+  export type ExecutionUpdateManyWithoutWorkflowNestedInput = {
+    create?: XOR<ExecutionCreateWithoutWorkflowInput, ExecutionUncheckedCreateWithoutWorkflowInput> | ExecutionCreateWithoutWorkflowInput[] | ExecutionUncheckedCreateWithoutWorkflowInput[]
+    connectOrCreate?: ExecutionCreateOrConnectWithoutWorkflowInput | ExecutionCreateOrConnectWithoutWorkflowInput[]
+    upsert?: ExecutionUpsertWithWhereUniqueWithoutWorkflowInput | ExecutionUpsertWithWhereUniqueWithoutWorkflowInput[]
+    createMany?: ExecutionCreateManyWorkflowInputEnvelope
+    set?: ExecutionWhereUniqueInput | ExecutionWhereUniqueInput[]
+    disconnect?: ExecutionWhereUniqueInput | ExecutionWhereUniqueInput[]
+    delete?: ExecutionWhereUniqueInput | ExecutionWhereUniqueInput[]
+    connect?: ExecutionWhereUniqueInput | ExecutionWhereUniqueInput[]
+    update?: ExecutionUpdateWithWhereUniqueWithoutWorkflowInput | ExecutionUpdateWithWhereUniqueWithoutWorkflowInput[]
+    updateMany?: ExecutionUpdateManyWithWhereWithoutWorkflowInput | ExecutionUpdateManyWithWhereWithoutWorkflowInput[]
+    deleteMany?: ExecutionScalarWhereInput | ExecutionScalarWhereInput[]
   }
 
   export type UserUpdateOneRequiredWithoutWorkflowsNestedInput = {
@@ -11438,6 +16799,20 @@ export namespace Prisma {
     deleteMany?: ConnectionScalarWhereInput | ConnectionScalarWhereInput[]
   }
 
+  export type ExecutionUncheckedUpdateManyWithoutWorkflowNestedInput = {
+    create?: XOR<ExecutionCreateWithoutWorkflowInput, ExecutionUncheckedCreateWithoutWorkflowInput> | ExecutionCreateWithoutWorkflowInput[] | ExecutionUncheckedCreateWithoutWorkflowInput[]
+    connectOrCreate?: ExecutionCreateOrConnectWithoutWorkflowInput | ExecutionCreateOrConnectWithoutWorkflowInput[]
+    upsert?: ExecutionUpsertWithWhereUniqueWithoutWorkflowInput | ExecutionUpsertWithWhereUniqueWithoutWorkflowInput[]
+    createMany?: ExecutionCreateManyWorkflowInputEnvelope
+    set?: ExecutionWhereUniqueInput | ExecutionWhereUniqueInput[]
+    disconnect?: ExecutionWhereUniqueInput | ExecutionWhereUniqueInput[]
+    delete?: ExecutionWhereUniqueInput | ExecutionWhereUniqueInput[]
+    connect?: ExecutionWhereUniqueInput | ExecutionWhereUniqueInput[]
+    update?: ExecutionUpdateWithWhereUniqueWithoutWorkflowInput | ExecutionUpdateWithWhereUniqueWithoutWorkflowInput[]
+    updateMany?: ExecutionUpdateManyWithWhereWithoutWorkflowInput | ExecutionUpdateManyWithWhereWithoutWorkflowInput[]
+    deleteMany?: ExecutionScalarWhereInput | ExecutionScalarWhereInput[]
+  }
+
   export type WorkflowCreateNestedOneWithoutNodesInput = {
     create?: XOR<WorkflowCreateWithoutNodesInput, WorkflowUncheckedCreateWithoutNodesInput>
     connectOrCreate?: WorkflowCreateOrConnectWithoutNodesInput
@@ -11458,6 +16833,13 @@ export namespace Prisma {
     connect?: ConnectionWhereUniqueInput | ConnectionWhereUniqueInput[]
   }
 
+  export type ExecutionStepCreateNestedManyWithoutNodeInput = {
+    create?: XOR<ExecutionStepCreateWithoutNodeInput, ExecutionStepUncheckedCreateWithoutNodeInput> | ExecutionStepCreateWithoutNodeInput[] | ExecutionStepUncheckedCreateWithoutNodeInput[]
+    connectOrCreate?: ExecutionStepCreateOrConnectWithoutNodeInput | ExecutionStepCreateOrConnectWithoutNodeInput[]
+    createMany?: ExecutionStepCreateManyNodeInputEnvelope
+    connect?: ExecutionStepWhereUniqueInput | ExecutionStepWhereUniqueInput[]
+  }
+
   export type ConnectionUncheckedCreateNestedManyWithoutFromNodeInput = {
     create?: XOR<ConnectionCreateWithoutFromNodeInput, ConnectionUncheckedCreateWithoutFromNodeInput> | ConnectionCreateWithoutFromNodeInput[] | ConnectionUncheckedCreateWithoutFromNodeInput[]
     connectOrCreate?: ConnectionCreateOrConnectWithoutFromNodeInput | ConnectionCreateOrConnectWithoutFromNodeInput[]
@@ -11470,6 +16852,13 @@ export namespace Prisma {
     connectOrCreate?: ConnectionCreateOrConnectWithoutToNodeInput | ConnectionCreateOrConnectWithoutToNodeInput[]
     createMany?: ConnectionCreateManyToNodeInputEnvelope
     connect?: ConnectionWhereUniqueInput | ConnectionWhereUniqueInput[]
+  }
+
+  export type ExecutionStepUncheckedCreateNestedManyWithoutNodeInput = {
+    create?: XOR<ExecutionStepCreateWithoutNodeInput, ExecutionStepUncheckedCreateWithoutNodeInput> | ExecutionStepCreateWithoutNodeInput[] | ExecutionStepUncheckedCreateWithoutNodeInput[]
+    connectOrCreate?: ExecutionStepCreateOrConnectWithoutNodeInput | ExecutionStepCreateOrConnectWithoutNodeInput[]
+    createMany?: ExecutionStepCreateManyNodeInputEnvelope
+    connect?: ExecutionStepWhereUniqueInput | ExecutionStepWhereUniqueInput[]
   }
 
   export type EnumNodeTypeFieldUpdateOperationsInput = {
@@ -11512,6 +16901,20 @@ export namespace Prisma {
     deleteMany?: ConnectionScalarWhereInput | ConnectionScalarWhereInput[]
   }
 
+  export type ExecutionStepUpdateManyWithoutNodeNestedInput = {
+    create?: XOR<ExecutionStepCreateWithoutNodeInput, ExecutionStepUncheckedCreateWithoutNodeInput> | ExecutionStepCreateWithoutNodeInput[] | ExecutionStepUncheckedCreateWithoutNodeInput[]
+    connectOrCreate?: ExecutionStepCreateOrConnectWithoutNodeInput | ExecutionStepCreateOrConnectWithoutNodeInput[]
+    upsert?: ExecutionStepUpsertWithWhereUniqueWithoutNodeInput | ExecutionStepUpsertWithWhereUniqueWithoutNodeInput[]
+    createMany?: ExecutionStepCreateManyNodeInputEnvelope
+    set?: ExecutionStepWhereUniqueInput | ExecutionStepWhereUniqueInput[]
+    disconnect?: ExecutionStepWhereUniqueInput | ExecutionStepWhereUniqueInput[]
+    delete?: ExecutionStepWhereUniqueInput | ExecutionStepWhereUniqueInput[]
+    connect?: ExecutionStepWhereUniqueInput | ExecutionStepWhereUniqueInput[]
+    update?: ExecutionStepUpdateWithWhereUniqueWithoutNodeInput | ExecutionStepUpdateWithWhereUniqueWithoutNodeInput[]
+    updateMany?: ExecutionStepUpdateManyWithWhereWithoutNodeInput | ExecutionStepUpdateManyWithWhereWithoutNodeInput[]
+    deleteMany?: ExecutionStepScalarWhereInput | ExecutionStepScalarWhereInput[]
+  }
+
   export type ConnectionUncheckedUpdateManyWithoutFromNodeNestedInput = {
     create?: XOR<ConnectionCreateWithoutFromNodeInput, ConnectionUncheckedCreateWithoutFromNodeInput> | ConnectionCreateWithoutFromNodeInput[] | ConnectionUncheckedCreateWithoutFromNodeInput[]
     connectOrCreate?: ConnectionCreateOrConnectWithoutFromNodeInput | ConnectionCreateOrConnectWithoutFromNodeInput[]
@@ -11538,6 +16941,20 @@ export namespace Prisma {
     update?: ConnectionUpdateWithWhereUniqueWithoutToNodeInput | ConnectionUpdateWithWhereUniqueWithoutToNodeInput[]
     updateMany?: ConnectionUpdateManyWithWhereWithoutToNodeInput | ConnectionUpdateManyWithWhereWithoutToNodeInput[]
     deleteMany?: ConnectionScalarWhereInput | ConnectionScalarWhereInput[]
+  }
+
+  export type ExecutionStepUncheckedUpdateManyWithoutNodeNestedInput = {
+    create?: XOR<ExecutionStepCreateWithoutNodeInput, ExecutionStepUncheckedCreateWithoutNodeInput> | ExecutionStepCreateWithoutNodeInput[] | ExecutionStepUncheckedCreateWithoutNodeInput[]
+    connectOrCreate?: ExecutionStepCreateOrConnectWithoutNodeInput | ExecutionStepCreateOrConnectWithoutNodeInput[]
+    upsert?: ExecutionStepUpsertWithWhereUniqueWithoutNodeInput | ExecutionStepUpsertWithWhereUniqueWithoutNodeInput[]
+    createMany?: ExecutionStepCreateManyNodeInputEnvelope
+    set?: ExecutionStepWhereUniqueInput | ExecutionStepWhereUniqueInput[]
+    disconnect?: ExecutionStepWhereUniqueInput | ExecutionStepWhereUniqueInput[]
+    delete?: ExecutionStepWhereUniqueInput | ExecutionStepWhereUniqueInput[]
+    connect?: ExecutionStepWhereUniqueInput | ExecutionStepWhereUniqueInput[]
+    update?: ExecutionStepUpdateWithWhereUniqueWithoutNodeInput | ExecutionStepUpdateWithWhereUniqueWithoutNodeInput[]
+    updateMany?: ExecutionStepUpdateManyWithWhereWithoutNodeInput | ExecutionStepUpdateManyWithWhereWithoutNodeInput[]
+    deleteMany?: ExecutionStepScalarWhereInput | ExecutionStepScalarWhereInput[]
   }
 
   export type WorkflowCreateNestedOneWithoutConnectionsInput = {
@@ -11580,6 +16997,154 @@ export namespace Prisma {
     upsert?: NodeUpsertWithoutToConnectionsInput
     connect?: NodeWhereUniqueInput
     update?: XOR<XOR<NodeUpdateToOneWithWhereWithoutToConnectionsInput, NodeUpdateWithoutToConnectionsInput>, NodeUncheckedUpdateWithoutToConnectionsInput>
+  }
+
+  export type UserCreateNestedOneWithoutCredentialsInput = {
+    create?: XOR<UserCreateWithoutCredentialsInput, UserUncheckedCreateWithoutCredentialsInput>
+    connectOrCreate?: UserCreateOrConnectWithoutCredentialsInput
+    connect?: UserWhereUniqueInput
+  }
+
+  export type EnumCredentialProviderFieldUpdateOperationsInput = {
+    set?: $Enums.CredentialProvider
+  }
+
+  export type UserUpdateOneRequiredWithoutCredentialsNestedInput = {
+    create?: XOR<UserCreateWithoutCredentialsInput, UserUncheckedCreateWithoutCredentialsInput>
+    connectOrCreate?: UserCreateOrConnectWithoutCredentialsInput
+    upsert?: UserUpsertWithoutCredentialsInput
+    connect?: UserWhereUniqueInput
+    update?: XOR<XOR<UserUpdateToOneWithWhereWithoutCredentialsInput, UserUpdateWithoutCredentialsInput>, UserUncheckedUpdateWithoutCredentialsInput>
+  }
+
+  export type WorkflowCreateNestedOneWithoutExecutionsInput = {
+    create?: XOR<WorkflowCreateWithoutExecutionsInput, WorkflowUncheckedCreateWithoutExecutionsInput>
+    connectOrCreate?: WorkflowCreateOrConnectWithoutExecutionsInput
+    connect?: WorkflowWhereUniqueInput
+  }
+
+  export type UserCreateNestedOneWithoutExecutionsInput = {
+    create?: XOR<UserCreateWithoutExecutionsInput, UserUncheckedCreateWithoutExecutionsInput>
+    connectOrCreate?: UserCreateOrConnectWithoutExecutionsInput
+    connect?: UserWhereUniqueInput
+  }
+
+  export type ExecutionStepCreateNestedManyWithoutExecutionInput = {
+    create?: XOR<ExecutionStepCreateWithoutExecutionInput, ExecutionStepUncheckedCreateWithoutExecutionInput> | ExecutionStepCreateWithoutExecutionInput[] | ExecutionStepUncheckedCreateWithoutExecutionInput[]
+    connectOrCreate?: ExecutionStepCreateOrConnectWithoutExecutionInput | ExecutionStepCreateOrConnectWithoutExecutionInput[]
+    createMany?: ExecutionStepCreateManyExecutionInputEnvelope
+    connect?: ExecutionStepWhereUniqueInput | ExecutionStepWhereUniqueInput[]
+  }
+
+  export type ExecutionStepUncheckedCreateNestedManyWithoutExecutionInput = {
+    create?: XOR<ExecutionStepCreateWithoutExecutionInput, ExecutionStepUncheckedCreateWithoutExecutionInput> | ExecutionStepCreateWithoutExecutionInput[] | ExecutionStepUncheckedCreateWithoutExecutionInput[]
+    connectOrCreate?: ExecutionStepCreateOrConnectWithoutExecutionInput | ExecutionStepCreateOrConnectWithoutExecutionInput[]
+    createMany?: ExecutionStepCreateManyExecutionInputEnvelope
+    connect?: ExecutionStepWhereUniqueInput | ExecutionStepWhereUniqueInput[]
+  }
+
+  export type EnumExecutionTriggerTypeFieldUpdateOperationsInput = {
+    set?: $Enums.ExecutionTriggerType
+  }
+
+  export type EnumExecutionStatusFieldUpdateOperationsInput = {
+    set?: $Enums.ExecutionStatus
+  }
+
+  export type WorkflowUpdateOneRequiredWithoutExecutionsNestedInput = {
+    create?: XOR<WorkflowCreateWithoutExecutionsInput, WorkflowUncheckedCreateWithoutExecutionsInput>
+    connectOrCreate?: WorkflowCreateOrConnectWithoutExecutionsInput
+    upsert?: WorkflowUpsertWithoutExecutionsInput
+    connect?: WorkflowWhereUniqueInput
+    update?: XOR<XOR<WorkflowUpdateToOneWithWhereWithoutExecutionsInput, WorkflowUpdateWithoutExecutionsInput>, WorkflowUncheckedUpdateWithoutExecutionsInput>
+  }
+
+  export type UserUpdateOneWithoutExecutionsNestedInput = {
+    create?: XOR<UserCreateWithoutExecutionsInput, UserUncheckedCreateWithoutExecutionsInput>
+    connectOrCreate?: UserCreateOrConnectWithoutExecutionsInput
+    upsert?: UserUpsertWithoutExecutionsInput
+    disconnect?: UserWhereInput | boolean
+    delete?: UserWhereInput | boolean
+    connect?: UserWhereUniqueInput
+    update?: XOR<XOR<UserUpdateToOneWithWhereWithoutExecutionsInput, UserUpdateWithoutExecutionsInput>, UserUncheckedUpdateWithoutExecutionsInput>
+  }
+
+  export type ExecutionStepUpdateManyWithoutExecutionNestedInput = {
+    create?: XOR<ExecutionStepCreateWithoutExecutionInput, ExecutionStepUncheckedCreateWithoutExecutionInput> | ExecutionStepCreateWithoutExecutionInput[] | ExecutionStepUncheckedCreateWithoutExecutionInput[]
+    connectOrCreate?: ExecutionStepCreateOrConnectWithoutExecutionInput | ExecutionStepCreateOrConnectWithoutExecutionInput[]
+    upsert?: ExecutionStepUpsertWithWhereUniqueWithoutExecutionInput | ExecutionStepUpsertWithWhereUniqueWithoutExecutionInput[]
+    createMany?: ExecutionStepCreateManyExecutionInputEnvelope
+    set?: ExecutionStepWhereUniqueInput | ExecutionStepWhereUniqueInput[]
+    disconnect?: ExecutionStepWhereUniqueInput | ExecutionStepWhereUniqueInput[]
+    delete?: ExecutionStepWhereUniqueInput | ExecutionStepWhereUniqueInput[]
+    connect?: ExecutionStepWhereUniqueInput | ExecutionStepWhereUniqueInput[]
+    update?: ExecutionStepUpdateWithWhereUniqueWithoutExecutionInput | ExecutionStepUpdateWithWhereUniqueWithoutExecutionInput[]
+    updateMany?: ExecutionStepUpdateManyWithWhereWithoutExecutionInput | ExecutionStepUpdateManyWithWhereWithoutExecutionInput[]
+    deleteMany?: ExecutionStepScalarWhereInput | ExecutionStepScalarWhereInput[]
+  }
+
+  export type ExecutionStepUncheckedUpdateManyWithoutExecutionNestedInput = {
+    create?: XOR<ExecutionStepCreateWithoutExecutionInput, ExecutionStepUncheckedCreateWithoutExecutionInput> | ExecutionStepCreateWithoutExecutionInput[] | ExecutionStepUncheckedCreateWithoutExecutionInput[]
+    connectOrCreate?: ExecutionStepCreateOrConnectWithoutExecutionInput | ExecutionStepCreateOrConnectWithoutExecutionInput[]
+    upsert?: ExecutionStepUpsertWithWhereUniqueWithoutExecutionInput | ExecutionStepUpsertWithWhereUniqueWithoutExecutionInput[]
+    createMany?: ExecutionStepCreateManyExecutionInputEnvelope
+    set?: ExecutionStepWhereUniqueInput | ExecutionStepWhereUniqueInput[]
+    disconnect?: ExecutionStepWhereUniqueInput | ExecutionStepWhereUniqueInput[]
+    delete?: ExecutionStepWhereUniqueInput | ExecutionStepWhereUniqueInput[]
+    connect?: ExecutionStepWhereUniqueInput | ExecutionStepWhereUniqueInput[]
+    update?: ExecutionStepUpdateWithWhereUniqueWithoutExecutionInput | ExecutionStepUpdateWithWhereUniqueWithoutExecutionInput[]
+    updateMany?: ExecutionStepUpdateManyWithWhereWithoutExecutionInput | ExecutionStepUpdateManyWithWhereWithoutExecutionInput[]
+    deleteMany?: ExecutionStepScalarWhereInput | ExecutionStepScalarWhereInput[]
+  }
+
+  export type ExecutionCreateNestedOneWithoutStepsInput = {
+    create?: XOR<ExecutionCreateWithoutStepsInput, ExecutionUncheckedCreateWithoutStepsInput>
+    connectOrCreate?: ExecutionCreateOrConnectWithoutStepsInput
+    connect?: ExecutionWhereUniqueInput
+  }
+
+  export type NodeCreateNestedOneWithoutExecutionStepsInput = {
+    create?: XOR<NodeCreateWithoutExecutionStepsInput, NodeUncheckedCreateWithoutExecutionStepsInput>
+    connectOrCreate?: NodeCreateOrConnectWithoutExecutionStepsInput
+    connect?: NodeWhereUniqueInput
+  }
+
+  export type EnumExecutionStepStatusFieldUpdateOperationsInput = {
+    set?: $Enums.ExecutionStepStatus
+  }
+
+  export type IntFieldUpdateOperationsInput = {
+    set?: number
+    increment?: number
+    decrement?: number
+    multiply?: number
+    divide?: number
+  }
+
+  export type NullableIntFieldUpdateOperationsInput = {
+    set?: number | null
+    increment?: number
+    decrement?: number
+    multiply?: number
+    divide?: number
+  }
+
+  export type ExecutionUpdateOneRequiredWithoutStepsNestedInput = {
+    create?: XOR<ExecutionCreateWithoutStepsInput, ExecutionUncheckedCreateWithoutStepsInput>
+    connectOrCreate?: ExecutionCreateOrConnectWithoutStepsInput
+    upsert?: ExecutionUpsertWithoutStepsInput
+    connect?: ExecutionWhereUniqueInput
+    update?: XOR<XOR<ExecutionUpdateToOneWithWhereWithoutStepsInput, ExecutionUpdateWithoutStepsInput>, ExecutionUncheckedUpdateWithoutStepsInput>
+  }
+
+  export type NodeUpdateOneWithoutExecutionStepsNestedInput = {
+    create?: XOR<NodeCreateWithoutExecutionStepsInput, NodeUncheckedCreateWithoutExecutionStepsInput>
+    connectOrCreate?: NodeCreateOrConnectWithoutExecutionStepsInput
+    upsert?: NodeUpsertWithoutExecutionStepsInput
+    disconnect?: NodeWhereInput | boolean
+    delete?: NodeWhereInput | boolean
+    connect?: NodeWhereUniqueInput
+    update?: XOR<XOR<NodeUpdateToOneWithWhereWithoutExecutionStepsInput, NodeUpdateWithoutExecutionStepsInput>, NodeUncheckedUpdateWithoutExecutionStepsInput>
   }
 
   export type NestedStringFilter<$PrismaModel = never> = {
@@ -11769,6 +17334,151 @@ export namespace Prisma {
     not?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | JsonNullValueFilter
   }
 
+  export type NestedEnumCredentialProviderFilter<$PrismaModel = never> = {
+    equals?: $Enums.CredentialProvider | EnumCredentialProviderFieldRefInput<$PrismaModel>
+    in?: $Enums.CredentialProvider[] | ListEnumCredentialProviderFieldRefInput<$PrismaModel>
+    notIn?: $Enums.CredentialProvider[] | ListEnumCredentialProviderFieldRefInput<$PrismaModel>
+    not?: NestedEnumCredentialProviderFilter<$PrismaModel> | $Enums.CredentialProvider
+  }
+
+  export type NestedEnumCredentialProviderWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: $Enums.CredentialProvider | EnumCredentialProviderFieldRefInput<$PrismaModel>
+    in?: $Enums.CredentialProvider[] | ListEnumCredentialProviderFieldRefInput<$PrismaModel>
+    notIn?: $Enums.CredentialProvider[] | ListEnumCredentialProviderFieldRefInput<$PrismaModel>
+    not?: NestedEnumCredentialProviderWithAggregatesFilter<$PrismaModel> | $Enums.CredentialProvider
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedEnumCredentialProviderFilter<$PrismaModel>
+    _max?: NestedEnumCredentialProviderFilter<$PrismaModel>
+  }
+
+  export type NestedEnumExecutionTriggerTypeFilter<$PrismaModel = never> = {
+    equals?: $Enums.ExecutionTriggerType | EnumExecutionTriggerTypeFieldRefInput<$PrismaModel>
+    in?: $Enums.ExecutionTriggerType[] | ListEnumExecutionTriggerTypeFieldRefInput<$PrismaModel>
+    notIn?: $Enums.ExecutionTriggerType[] | ListEnumExecutionTriggerTypeFieldRefInput<$PrismaModel>
+    not?: NestedEnumExecutionTriggerTypeFilter<$PrismaModel> | $Enums.ExecutionTriggerType
+  }
+
+  export type NestedEnumExecutionStatusFilter<$PrismaModel = never> = {
+    equals?: $Enums.ExecutionStatus | EnumExecutionStatusFieldRefInput<$PrismaModel>
+    in?: $Enums.ExecutionStatus[] | ListEnumExecutionStatusFieldRefInput<$PrismaModel>
+    notIn?: $Enums.ExecutionStatus[] | ListEnumExecutionStatusFieldRefInput<$PrismaModel>
+    not?: NestedEnumExecutionStatusFilter<$PrismaModel> | $Enums.ExecutionStatus
+  }
+
+  export type NestedEnumExecutionTriggerTypeWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: $Enums.ExecutionTriggerType | EnumExecutionTriggerTypeFieldRefInput<$PrismaModel>
+    in?: $Enums.ExecutionTriggerType[] | ListEnumExecutionTriggerTypeFieldRefInput<$PrismaModel>
+    notIn?: $Enums.ExecutionTriggerType[] | ListEnumExecutionTriggerTypeFieldRefInput<$PrismaModel>
+    not?: NestedEnumExecutionTriggerTypeWithAggregatesFilter<$PrismaModel> | $Enums.ExecutionTriggerType
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedEnumExecutionTriggerTypeFilter<$PrismaModel>
+    _max?: NestedEnumExecutionTriggerTypeFilter<$PrismaModel>
+  }
+
+  export type NestedEnumExecutionStatusWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: $Enums.ExecutionStatus | EnumExecutionStatusFieldRefInput<$PrismaModel>
+    in?: $Enums.ExecutionStatus[] | ListEnumExecutionStatusFieldRefInput<$PrismaModel>
+    notIn?: $Enums.ExecutionStatus[] | ListEnumExecutionStatusFieldRefInput<$PrismaModel>
+    not?: NestedEnumExecutionStatusWithAggregatesFilter<$PrismaModel> | $Enums.ExecutionStatus
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedEnumExecutionStatusFilter<$PrismaModel>
+    _max?: NestedEnumExecutionStatusFilter<$PrismaModel>
+  }
+  export type NestedJsonNullableFilter<$PrismaModel = never> =
+    | PatchUndefined<
+        Either<Required<NestedJsonNullableFilterBase<$PrismaModel>>, Exclude<keyof Required<NestedJsonNullableFilterBase<$PrismaModel>>, 'path'>>,
+        Required<NestedJsonNullableFilterBase<$PrismaModel>>
+      >
+    | OptionalFlat<Omit<Required<NestedJsonNullableFilterBase<$PrismaModel>>, 'path'>>
+
+  export type NestedJsonNullableFilterBase<$PrismaModel = never> = {
+    equals?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | JsonNullValueFilter
+    path?: string[]
+    mode?: QueryMode | EnumQueryModeFieldRefInput<$PrismaModel>
+    string_contains?: string | StringFieldRefInput<$PrismaModel>
+    string_starts_with?: string | StringFieldRefInput<$PrismaModel>
+    string_ends_with?: string | StringFieldRefInput<$PrismaModel>
+    array_starts_with?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | null
+    array_ends_with?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | null
+    array_contains?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | null
+    lt?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
+    lte?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
+    gt?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
+    gte?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
+    not?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | JsonNullValueFilter
+  }
+
+  export type NestedEnumExecutionStepStatusFilter<$PrismaModel = never> = {
+    equals?: $Enums.ExecutionStepStatus | EnumExecutionStepStatusFieldRefInput<$PrismaModel>
+    in?: $Enums.ExecutionStepStatus[] | ListEnumExecutionStepStatusFieldRefInput<$PrismaModel>
+    notIn?: $Enums.ExecutionStepStatus[] | ListEnumExecutionStepStatusFieldRefInput<$PrismaModel>
+    not?: NestedEnumExecutionStepStatusFilter<$PrismaModel> | $Enums.ExecutionStepStatus
+  }
+
+  export type NestedEnumExecutionStepStatusWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: $Enums.ExecutionStepStatus | EnumExecutionStepStatusFieldRefInput<$PrismaModel>
+    in?: $Enums.ExecutionStepStatus[] | ListEnumExecutionStepStatusFieldRefInput<$PrismaModel>
+    notIn?: $Enums.ExecutionStepStatus[] | ListEnumExecutionStepStatusFieldRefInput<$PrismaModel>
+    not?: NestedEnumExecutionStepStatusWithAggregatesFilter<$PrismaModel> | $Enums.ExecutionStepStatus
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedEnumExecutionStepStatusFilter<$PrismaModel>
+    _max?: NestedEnumExecutionStepStatusFilter<$PrismaModel>
+  }
+
+  export type NestedIntWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: number | IntFieldRefInput<$PrismaModel>
+    in?: number[] | ListIntFieldRefInput<$PrismaModel>
+    notIn?: number[] | ListIntFieldRefInput<$PrismaModel>
+    lt?: number | IntFieldRefInput<$PrismaModel>
+    lte?: number | IntFieldRefInput<$PrismaModel>
+    gt?: number | IntFieldRefInput<$PrismaModel>
+    gte?: number | IntFieldRefInput<$PrismaModel>
+    not?: NestedIntWithAggregatesFilter<$PrismaModel> | number
+    _count?: NestedIntFilter<$PrismaModel>
+    _avg?: NestedFloatFilter<$PrismaModel>
+    _sum?: NestedIntFilter<$PrismaModel>
+    _min?: NestedIntFilter<$PrismaModel>
+    _max?: NestedIntFilter<$PrismaModel>
+  }
+
+  export type NestedFloatFilter<$PrismaModel = never> = {
+    equals?: number | FloatFieldRefInput<$PrismaModel>
+    in?: number[] | ListFloatFieldRefInput<$PrismaModel>
+    notIn?: number[] | ListFloatFieldRefInput<$PrismaModel>
+    lt?: number | FloatFieldRefInput<$PrismaModel>
+    lte?: number | FloatFieldRefInput<$PrismaModel>
+    gt?: number | FloatFieldRefInput<$PrismaModel>
+    gte?: number | FloatFieldRefInput<$PrismaModel>
+    not?: NestedFloatFilter<$PrismaModel> | number
+  }
+
+  export type NestedIntNullableWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: number | IntFieldRefInput<$PrismaModel> | null
+    in?: number[] | ListIntFieldRefInput<$PrismaModel> | null
+    notIn?: number[] | ListIntFieldRefInput<$PrismaModel> | null
+    lt?: number | IntFieldRefInput<$PrismaModel>
+    lte?: number | IntFieldRefInput<$PrismaModel>
+    gt?: number | IntFieldRefInput<$PrismaModel>
+    gte?: number | IntFieldRefInput<$PrismaModel>
+    not?: NestedIntNullableWithAggregatesFilter<$PrismaModel> | number | null
+    _count?: NestedIntNullableFilter<$PrismaModel>
+    _avg?: NestedFloatNullableFilter<$PrismaModel>
+    _sum?: NestedIntNullableFilter<$PrismaModel>
+    _min?: NestedIntNullableFilter<$PrismaModel>
+    _max?: NestedIntNullableFilter<$PrismaModel>
+  }
+
+  export type NestedFloatNullableFilter<$PrismaModel = never> = {
+    equals?: number | FloatFieldRefInput<$PrismaModel> | null
+    in?: number[] | ListFloatFieldRefInput<$PrismaModel> | null
+    notIn?: number[] | ListFloatFieldRefInput<$PrismaModel> | null
+    lt?: number | FloatFieldRefInput<$PrismaModel>
+    lte?: number | FloatFieldRefInput<$PrismaModel>
+    gt?: number | FloatFieldRefInput<$PrismaModel>
+    gte?: number | FloatFieldRefInput<$PrismaModel>
+    not?: NestedFloatNullableFilter<$PrismaModel> | number | null
+  }
+
   export type SessionCreateWithoutUserInput = {
     id: string
     expiresAt: Date | string
@@ -11846,6 +17556,7 @@ export namespace Prisma {
     updatedAt?: Date | string
     nodes?: NodeCreateNestedManyWithoutWorkflowInput
     connections?: ConnectionCreateNestedManyWithoutWorkflowInput
+    executions?: ExecutionCreateNestedManyWithoutWorkflowInput
   }
 
   export type WorkflowUncheckedCreateWithoutUserInput = {
@@ -11855,6 +17566,7 @@ export namespace Prisma {
     updatedAt?: Date | string
     nodes?: NodeUncheckedCreateNestedManyWithoutWorkflowInput
     connections?: ConnectionUncheckedCreateNestedManyWithoutWorkflowInput
+    executions?: ExecutionUncheckedCreateNestedManyWithoutWorkflowInput
   }
 
   export type WorkflowCreateOrConnectWithoutUserInput = {
@@ -11864,6 +17576,82 @@ export namespace Prisma {
 
   export type WorkflowCreateManyUserInputEnvelope = {
     data: WorkflowCreateManyUserInput | WorkflowCreateManyUserInput[]
+    skipDuplicates?: boolean
+  }
+
+  export type CredentialCreateWithoutUserInput = {
+    id?: string
+    name: string
+    provider: $Enums.CredentialProvider
+    description?: string | null
+    encryptedData: string
+    metadata?: JsonNullValueInput | InputJsonValue
+    lastUsedAt?: Date | string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type CredentialUncheckedCreateWithoutUserInput = {
+    id?: string
+    name: string
+    provider: $Enums.CredentialProvider
+    description?: string | null
+    encryptedData: string
+    metadata?: JsonNullValueInput | InputJsonValue
+    lastUsedAt?: Date | string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type CredentialCreateOrConnectWithoutUserInput = {
+    where: CredentialWhereUniqueInput
+    create: XOR<CredentialCreateWithoutUserInput, CredentialUncheckedCreateWithoutUserInput>
+  }
+
+  export type CredentialCreateManyUserInputEnvelope = {
+    data: CredentialCreateManyUserInput | CredentialCreateManyUserInput[]
+    skipDuplicates?: boolean
+  }
+
+  export type ExecutionCreateWithoutTriggeredByUserInput = {
+    id?: string
+    triggerType: $Enums.ExecutionTriggerType
+    status?: $Enums.ExecutionStatus
+    triggerPayload?: JsonNullValueInput | InputJsonValue
+    state?: JsonNullValueInput | InputJsonValue
+    workflowSnapshot?: NullableJsonNullValueInput | InputJsonValue
+    startedAt?: Date | string | null
+    completedAt?: Date | string | null
+    error?: NullableJsonNullValueInput | InputJsonValue
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    workflow: WorkflowCreateNestedOneWithoutExecutionsInput
+    steps?: ExecutionStepCreateNestedManyWithoutExecutionInput
+  }
+
+  export type ExecutionUncheckedCreateWithoutTriggeredByUserInput = {
+    id?: string
+    workflowId: string
+    triggerType: $Enums.ExecutionTriggerType
+    status?: $Enums.ExecutionStatus
+    triggerPayload?: JsonNullValueInput | InputJsonValue
+    state?: JsonNullValueInput | InputJsonValue
+    workflowSnapshot?: NullableJsonNullValueInput | InputJsonValue
+    startedAt?: Date | string | null
+    completedAt?: Date | string | null
+    error?: NullableJsonNullValueInput | InputJsonValue
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    steps?: ExecutionStepUncheckedCreateNestedManyWithoutExecutionInput
+  }
+
+  export type ExecutionCreateOrConnectWithoutTriggeredByUserInput = {
+    where: ExecutionWhereUniqueInput
+    create: XOR<ExecutionCreateWithoutTriggeredByUserInput, ExecutionUncheckedCreateWithoutTriggeredByUserInput>
+  }
+
+  export type ExecutionCreateManyTriggeredByUserInputEnvelope = {
+    data: ExecutionCreateManyTriggeredByUserInput | ExecutionCreateManyTriggeredByUserInput[]
     skipDuplicates?: boolean
   }
 
@@ -11959,6 +17747,73 @@ export namespace Prisma {
     userId?: StringFilter<"Workflow"> | string
   }
 
+  export type CredentialUpsertWithWhereUniqueWithoutUserInput = {
+    where: CredentialWhereUniqueInput
+    update: XOR<CredentialUpdateWithoutUserInput, CredentialUncheckedUpdateWithoutUserInput>
+    create: XOR<CredentialCreateWithoutUserInput, CredentialUncheckedCreateWithoutUserInput>
+  }
+
+  export type CredentialUpdateWithWhereUniqueWithoutUserInput = {
+    where: CredentialWhereUniqueInput
+    data: XOR<CredentialUpdateWithoutUserInput, CredentialUncheckedUpdateWithoutUserInput>
+  }
+
+  export type CredentialUpdateManyWithWhereWithoutUserInput = {
+    where: CredentialScalarWhereInput
+    data: XOR<CredentialUpdateManyMutationInput, CredentialUncheckedUpdateManyWithoutUserInput>
+  }
+
+  export type CredentialScalarWhereInput = {
+    AND?: CredentialScalarWhereInput | CredentialScalarWhereInput[]
+    OR?: CredentialScalarWhereInput[]
+    NOT?: CredentialScalarWhereInput | CredentialScalarWhereInput[]
+    id?: StringFilter<"Credential"> | string
+    userId?: StringFilter<"Credential"> | string
+    name?: StringFilter<"Credential"> | string
+    provider?: EnumCredentialProviderFilter<"Credential"> | $Enums.CredentialProvider
+    description?: StringNullableFilter<"Credential"> | string | null
+    encryptedData?: StringFilter<"Credential"> | string
+    metadata?: JsonFilter<"Credential">
+    lastUsedAt?: DateTimeNullableFilter<"Credential"> | Date | string | null
+    createdAt?: DateTimeFilter<"Credential"> | Date | string
+    updatedAt?: DateTimeFilter<"Credential"> | Date | string
+  }
+
+  export type ExecutionUpsertWithWhereUniqueWithoutTriggeredByUserInput = {
+    where: ExecutionWhereUniqueInput
+    update: XOR<ExecutionUpdateWithoutTriggeredByUserInput, ExecutionUncheckedUpdateWithoutTriggeredByUserInput>
+    create: XOR<ExecutionCreateWithoutTriggeredByUserInput, ExecutionUncheckedCreateWithoutTriggeredByUserInput>
+  }
+
+  export type ExecutionUpdateWithWhereUniqueWithoutTriggeredByUserInput = {
+    where: ExecutionWhereUniqueInput
+    data: XOR<ExecutionUpdateWithoutTriggeredByUserInput, ExecutionUncheckedUpdateWithoutTriggeredByUserInput>
+  }
+
+  export type ExecutionUpdateManyWithWhereWithoutTriggeredByUserInput = {
+    where: ExecutionScalarWhereInput
+    data: XOR<ExecutionUpdateManyMutationInput, ExecutionUncheckedUpdateManyWithoutTriggeredByUserInput>
+  }
+
+  export type ExecutionScalarWhereInput = {
+    AND?: ExecutionScalarWhereInput | ExecutionScalarWhereInput[]
+    OR?: ExecutionScalarWhereInput[]
+    NOT?: ExecutionScalarWhereInput | ExecutionScalarWhereInput[]
+    id?: StringFilter<"Execution"> | string
+    workflowId?: StringFilter<"Execution"> | string
+    triggerType?: EnumExecutionTriggerTypeFilter<"Execution"> | $Enums.ExecutionTriggerType
+    status?: EnumExecutionStatusFilter<"Execution"> | $Enums.ExecutionStatus
+    triggeredByUserId?: StringNullableFilter<"Execution"> | string | null
+    triggerPayload?: JsonFilter<"Execution">
+    state?: JsonFilter<"Execution">
+    workflowSnapshot?: JsonNullableFilter<"Execution">
+    startedAt?: DateTimeNullableFilter<"Execution"> | Date | string | null
+    completedAt?: DateTimeNullableFilter<"Execution"> | Date | string | null
+    error?: JsonNullableFilter<"Execution">
+    createdAt?: DateTimeFilter<"Execution"> | Date | string
+    updatedAt?: DateTimeFilter<"Execution"> | Date | string
+  }
+
   export type UserCreateWithoutSessionsInput = {
     id: string
     name: string
@@ -11969,6 +17824,8 @@ export namespace Prisma {
     updatedAt?: Date | string
     accounts?: AccountCreateNestedManyWithoutUserInput
     workflows?: WorkflowCreateNestedManyWithoutUserInput
+    credentials?: CredentialCreateNestedManyWithoutUserInput
+    executions?: ExecutionCreateNestedManyWithoutTriggeredByUserInput
   }
 
   export type UserUncheckedCreateWithoutSessionsInput = {
@@ -11981,6 +17838,8 @@ export namespace Prisma {
     updatedAt?: Date | string
     accounts?: AccountUncheckedCreateNestedManyWithoutUserInput
     workflows?: WorkflowUncheckedCreateNestedManyWithoutUserInput
+    credentials?: CredentialUncheckedCreateNestedManyWithoutUserInput
+    executions?: ExecutionUncheckedCreateNestedManyWithoutTriggeredByUserInput
   }
 
   export type UserCreateOrConnectWithoutSessionsInput = {
@@ -12009,6 +17868,8 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     accounts?: AccountUpdateManyWithoutUserNestedInput
     workflows?: WorkflowUpdateManyWithoutUserNestedInput
+    credentials?: CredentialUpdateManyWithoutUserNestedInput
+    executions?: ExecutionUpdateManyWithoutTriggeredByUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutSessionsInput = {
@@ -12021,6 +17882,8 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     accounts?: AccountUncheckedUpdateManyWithoutUserNestedInput
     workflows?: WorkflowUncheckedUpdateManyWithoutUserNestedInput
+    credentials?: CredentialUncheckedUpdateManyWithoutUserNestedInput
+    executions?: ExecutionUncheckedUpdateManyWithoutTriggeredByUserNestedInput
   }
 
   export type UserCreateWithoutAccountsInput = {
@@ -12033,6 +17896,8 @@ export namespace Prisma {
     updatedAt?: Date | string
     sessions?: SessionCreateNestedManyWithoutUserInput
     workflows?: WorkflowCreateNestedManyWithoutUserInput
+    credentials?: CredentialCreateNestedManyWithoutUserInput
+    executions?: ExecutionCreateNestedManyWithoutTriggeredByUserInput
   }
 
   export type UserUncheckedCreateWithoutAccountsInput = {
@@ -12045,6 +17910,8 @@ export namespace Prisma {
     updatedAt?: Date | string
     sessions?: SessionUncheckedCreateNestedManyWithoutUserInput
     workflows?: WorkflowUncheckedCreateNestedManyWithoutUserInput
+    credentials?: CredentialUncheckedCreateNestedManyWithoutUserInput
+    executions?: ExecutionUncheckedCreateNestedManyWithoutTriggeredByUserInput
   }
 
   export type UserCreateOrConnectWithoutAccountsInput = {
@@ -12073,6 +17940,8 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     sessions?: SessionUpdateManyWithoutUserNestedInput
     workflows?: WorkflowUpdateManyWithoutUserNestedInput
+    credentials?: CredentialUpdateManyWithoutUserNestedInput
+    executions?: ExecutionUpdateManyWithoutTriggeredByUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutAccountsInput = {
@@ -12085,6 +17954,8 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     sessions?: SessionUncheckedUpdateManyWithoutUserNestedInput
     workflows?: WorkflowUncheckedUpdateManyWithoutUserNestedInput
+    credentials?: CredentialUncheckedUpdateManyWithoutUserNestedInput
+    executions?: ExecutionUncheckedUpdateManyWithoutTriggeredByUserNestedInput
   }
 
   export type NodeCreateWithoutWorkflowInput = {
@@ -12097,6 +17968,7 @@ export namespace Prisma {
     updatedAt?: Date | string
     fromConnections?: ConnectionCreateNestedManyWithoutFromNodeInput
     toConnections?: ConnectionCreateNestedManyWithoutToNodeInput
+    executionSteps?: ExecutionStepCreateNestedManyWithoutNodeInput
   }
 
   export type NodeUncheckedCreateWithoutWorkflowInput = {
@@ -12109,6 +17981,7 @@ export namespace Prisma {
     updatedAt?: Date | string
     fromConnections?: ConnectionUncheckedCreateNestedManyWithoutFromNodeInput
     toConnections?: ConnectionUncheckedCreateNestedManyWithoutToNodeInput
+    executionSteps?: ExecutionStepUncheckedCreateNestedManyWithoutNodeInput
   }
 
   export type NodeCreateOrConnectWithoutWorkflowInput = {
@@ -12153,6 +18026,48 @@ export namespace Prisma {
     skipDuplicates?: boolean
   }
 
+  export type ExecutionCreateWithoutWorkflowInput = {
+    id?: string
+    triggerType: $Enums.ExecutionTriggerType
+    status?: $Enums.ExecutionStatus
+    triggerPayload?: JsonNullValueInput | InputJsonValue
+    state?: JsonNullValueInput | InputJsonValue
+    workflowSnapshot?: NullableJsonNullValueInput | InputJsonValue
+    startedAt?: Date | string | null
+    completedAt?: Date | string | null
+    error?: NullableJsonNullValueInput | InputJsonValue
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    triggeredByUser?: UserCreateNestedOneWithoutExecutionsInput
+    steps?: ExecutionStepCreateNestedManyWithoutExecutionInput
+  }
+
+  export type ExecutionUncheckedCreateWithoutWorkflowInput = {
+    id?: string
+    triggerType: $Enums.ExecutionTriggerType
+    status?: $Enums.ExecutionStatus
+    triggeredByUserId?: string | null
+    triggerPayload?: JsonNullValueInput | InputJsonValue
+    state?: JsonNullValueInput | InputJsonValue
+    workflowSnapshot?: NullableJsonNullValueInput | InputJsonValue
+    startedAt?: Date | string | null
+    completedAt?: Date | string | null
+    error?: NullableJsonNullValueInput | InputJsonValue
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    steps?: ExecutionStepUncheckedCreateNestedManyWithoutExecutionInput
+  }
+
+  export type ExecutionCreateOrConnectWithoutWorkflowInput = {
+    where: ExecutionWhereUniqueInput
+    create: XOR<ExecutionCreateWithoutWorkflowInput, ExecutionUncheckedCreateWithoutWorkflowInput>
+  }
+
+  export type ExecutionCreateManyWorkflowInputEnvelope = {
+    data: ExecutionCreateManyWorkflowInput | ExecutionCreateManyWorkflowInput[]
+    skipDuplicates?: boolean
+  }
+
   export type UserCreateWithoutWorkflowsInput = {
     id: string
     name: string
@@ -12163,6 +18078,8 @@ export namespace Prisma {
     updatedAt?: Date | string
     sessions?: SessionCreateNestedManyWithoutUserInput
     accounts?: AccountCreateNestedManyWithoutUserInput
+    credentials?: CredentialCreateNestedManyWithoutUserInput
+    executions?: ExecutionCreateNestedManyWithoutTriggeredByUserInput
   }
 
   export type UserUncheckedCreateWithoutWorkflowsInput = {
@@ -12175,6 +18092,8 @@ export namespace Prisma {
     updatedAt?: Date | string
     sessions?: SessionUncheckedCreateNestedManyWithoutUserInput
     accounts?: AccountUncheckedCreateNestedManyWithoutUserInput
+    credentials?: CredentialUncheckedCreateNestedManyWithoutUserInput
+    executions?: ExecutionUncheckedCreateNestedManyWithoutTriggeredByUserInput
   }
 
   export type UserCreateOrConnectWithoutWorkflowsInput = {
@@ -12243,6 +18162,22 @@ export namespace Prisma {
     updatedAt?: DateTimeFilter<"Connection"> | Date | string
   }
 
+  export type ExecutionUpsertWithWhereUniqueWithoutWorkflowInput = {
+    where: ExecutionWhereUniqueInput
+    update: XOR<ExecutionUpdateWithoutWorkflowInput, ExecutionUncheckedUpdateWithoutWorkflowInput>
+    create: XOR<ExecutionCreateWithoutWorkflowInput, ExecutionUncheckedCreateWithoutWorkflowInput>
+  }
+
+  export type ExecutionUpdateWithWhereUniqueWithoutWorkflowInput = {
+    where: ExecutionWhereUniqueInput
+    data: XOR<ExecutionUpdateWithoutWorkflowInput, ExecutionUncheckedUpdateWithoutWorkflowInput>
+  }
+
+  export type ExecutionUpdateManyWithWhereWithoutWorkflowInput = {
+    where: ExecutionScalarWhereInput
+    data: XOR<ExecutionUpdateManyMutationInput, ExecutionUncheckedUpdateManyWithoutWorkflowInput>
+  }
+
   export type UserUpsertWithoutWorkflowsInput = {
     update: XOR<UserUpdateWithoutWorkflowsInput, UserUncheckedUpdateWithoutWorkflowsInput>
     create: XOR<UserCreateWithoutWorkflowsInput, UserUncheckedCreateWithoutWorkflowsInput>
@@ -12264,6 +18199,8 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     sessions?: SessionUpdateManyWithoutUserNestedInput
     accounts?: AccountUpdateManyWithoutUserNestedInput
+    credentials?: CredentialUpdateManyWithoutUserNestedInput
+    executions?: ExecutionUpdateManyWithoutTriggeredByUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutWorkflowsInput = {
@@ -12276,6 +18213,8 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     sessions?: SessionUncheckedUpdateManyWithoutUserNestedInput
     accounts?: AccountUncheckedUpdateManyWithoutUserNestedInput
+    credentials?: CredentialUncheckedUpdateManyWithoutUserNestedInput
+    executions?: ExecutionUncheckedUpdateManyWithoutTriggeredByUserNestedInput
   }
 
   export type WorkflowCreateWithoutNodesInput = {
@@ -12284,6 +18223,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     connections?: ConnectionCreateNestedManyWithoutWorkflowInput
+    executions?: ExecutionCreateNestedManyWithoutWorkflowInput
     user: UserCreateNestedOneWithoutWorkflowsInput
   }
 
@@ -12294,6 +18234,7 @@ export namespace Prisma {
     updatedAt?: Date | string
     userId: string
     connections?: ConnectionUncheckedCreateNestedManyWithoutWorkflowInput
+    executions?: ExecutionUncheckedCreateNestedManyWithoutWorkflowInput
   }
 
   export type WorkflowCreateOrConnectWithoutNodesInput = {
@@ -12365,6 +18306,52 @@ export namespace Prisma {
     skipDuplicates?: boolean
   }
 
+  export type ExecutionStepCreateWithoutNodeInput = {
+    id?: string
+    nodeName: string
+    nodeType: $Enums.NodeType
+    status?: $Enums.ExecutionStepStatus
+    position: number
+    attempt?: number
+    input?: JsonNullValueInput | InputJsonValue
+    output?: NullableJsonNullValueInput | InputJsonValue
+    error?: NullableJsonNullValueInput | InputJsonValue
+    startedAt?: Date | string | null
+    completedAt?: Date | string | null
+    durationMs?: number | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    execution: ExecutionCreateNestedOneWithoutStepsInput
+  }
+
+  export type ExecutionStepUncheckedCreateWithoutNodeInput = {
+    id?: string
+    executionId: string
+    nodeName: string
+    nodeType: $Enums.NodeType
+    status?: $Enums.ExecutionStepStatus
+    position: number
+    attempt?: number
+    input?: JsonNullValueInput | InputJsonValue
+    output?: NullableJsonNullValueInput | InputJsonValue
+    error?: NullableJsonNullValueInput | InputJsonValue
+    startedAt?: Date | string | null
+    completedAt?: Date | string | null
+    durationMs?: number | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type ExecutionStepCreateOrConnectWithoutNodeInput = {
+    where: ExecutionStepWhereUniqueInput
+    create: XOR<ExecutionStepCreateWithoutNodeInput, ExecutionStepUncheckedCreateWithoutNodeInput>
+  }
+
+  export type ExecutionStepCreateManyNodeInputEnvelope = {
+    data: ExecutionStepCreateManyNodeInput | ExecutionStepCreateManyNodeInput[]
+    skipDuplicates?: boolean
+  }
+
   export type WorkflowUpsertWithoutNodesInput = {
     update: XOR<WorkflowUpdateWithoutNodesInput, WorkflowUncheckedUpdateWithoutNodesInput>
     create: XOR<WorkflowCreateWithoutNodesInput, WorkflowUncheckedCreateWithoutNodesInput>
@@ -12382,6 +18369,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     connections?: ConnectionUpdateManyWithoutWorkflowNestedInput
+    executions?: ExecutionUpdateManyWithoutWorkflowNestedInput
     user?: UserUpdateOneRequiredWithoutWorkflowsNestedInput
   }
 
@@ -12392,6 +18380,7 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     userId?: StringFieldUpdateOperationsInput | string
     connections?: ConnectionUncheckedUpdateManyWithoutWorkflowNestedInput
+    executions?: ExecutionUncheckedUpdateManyWithoutWorkflowNestedInput
   }
 
   export type ConnectionUpsertWithWhereUniqueWithoutFromNodeInput = {
@@ -12426,12 +18415,51 @@ export namespace Prisma {
     data: XOR<ConnectionUpdateManyMutationInput, ConnectionUncheckedUpdateManyWithoutToNodeInput>
   }
 
+  export type ExecutionStepUpsertWithWhereUniqueWithoutNodeInput = {
+    where: ExecutionStepWhereUniqueInput
+    update: XOR<ExecutionStepUpdateWithoutNodeInput, ExecutionStepUncheckedUpdateWithoutNodeInput>
+    create: XOR<ExecutionStepCreateWithoutNodeInput, ExecutionStepUncheckedCreateWithoutNodeInput>
+  }
+
+  export type ExecutionStepUpdateWithWhereUniqueWithoutNodeInput = {
+    where: ExecutionStepWhereUniqueInput
+    data: XOR<ExecutionStepUpdateWithoutNodeInput, ExecutionStepUncheckedUpdateWithoutNodeInput>
+  }
+
+  export type ExecutionStepUpdateManyWithWhereWithoutNodeInput = {
+    where: ExecutionStepScalarWhereInput
+    data: XOR<ExecutionStepUpdateManyMutationInput, ExecutionStepUncheckedUpdateManyWithoutNodeInput>
+  }
+
+  export type ExecutionStepScalarWhereInput = {
+    AND?: ExecutionStepScalarWhereInput | ExecutionStepScalarWhereInput[]
+    OR?: ExecutionStepScalarWhereInput[]
+    NOT?: ExecutionStepScalarWhereInput | ExecutionStepScalarWhereInput[]
+    id?: StringFilter<"ExecutionStep"> | string
+    executionId?: StringFilter<"ExecutionStep"> | string
+    nodeId?: StringNullableFilter<"ExecutionStep"> | string | null
+    nodeName?: StringFilter<"ExecutionStep"> | string
+    nodeType?: EnumNodeTypeFilter<"ExecutionStep"> | $Enums.NodeType
+    status?: EnumExecutionStepStatusFilter<"ExecutionStep"> | $Enums.ExecutionStepStatus
+    position?: IntFilter<"ExecutionStep"> | number
+    attempt?: IntFilter<"ExecutionStep"> | number
+    input?: JsonFilter<"ExecutionStep">
+    output?: JsonNullableFilter<"ExecutionStep">
+    error?: JsonNullableFilter<"ExecutionStep">
+    startedAt?: DateTimeNullableFilter<"ExecutionStep"> | Date | string | null
+    completedAt?: DateTimeNullableFilter<"ExecutionStep"> | Date | string | null
+    durationMs?: IntNullableFilter<"ExecutionStep"> | number | null
+    createdAt?: DateTimeFilter<"ExecutionStep"> | Date | string
+    updatedAt?: DateTimeFilter<"ExecutionStep"> | Date | string
+  }
+
   export type WorkflowCreateWithoutConnectionsInput = {
     id?: string
     name: string
     createdAt?: Date | string
     updatedAt?: Date | string
     nodes?: NodeCreateNestedManyWithoutWorkflowInput
+    executions?: ExecutionCreateNestedManyWithoutWorkflowInput
     user: UserCreateNestedOneWithoutWorkflowsInput
   }
 
@@ -12442,6 +18470,7 @@ export namespace Prisma {
     updatedAt?: Date | string
     userId: string
     nodes?: NodeUncheckedCreateNestedManyWithoutWorkflowInput
+    executions?: ExecutionUncheckedCreateNestedManyWithoutWorkflowInput
   }
 
   export type WorkflowCreateOrConnectWithoutConnectionsInput = {
@@ -12459,6 +18488,7 @@ export namespace Prisma {
     updatedAt?: Date | string
     workflow: WorkflowCreateNestedOneWithoutNodesInput
     toConnections?: ConnectionCreateNestedManyWithoutToNodeInput
+    executionSteps?: ExecutionStepCreateNestedManyWithoutNodeInput
   }
 
   export type NodeUncheckedCreateWithoutFromConnectionsInput = {
@@ -12471,6 +18501,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     toConnections?: ConnectionUncheckedCreateNestedManyWithoutToNodeInput
+    executionSteps?: ExecutionStepUncheckedCreateNestedManyWithoutNodeInput
   }
 
   export type NodeCreateOrConnectWithoutFromConnectionsInput = {
@@ -12488,6 +18519,7 @@ export namespace Prisma {
     updatedAt?: Date | string
     workflow: WorkflowCreateNestedOneWithoutNodesInput
     fromConnections?: ConnectionCreateNestedManyWithoutFromNodeInput
+    executionSteps?: ExecutionStepCreateNestedManyWithoutNodeInput
   }
 
   export type NodeUncheckedCreateWithoutToConnectionsInput = {
@@ -12500,6 +18532,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     fromConnections?: ConnectionUncheckedCreateNestedManyWithoutFromNodeInput
+    executionSteps?: ExecutionStepUncheckedCreateNestedManyWithoutNodeInput
   }
 
   export type NodeCreateOrConnectWithoutToConnectionsInput = {
@@ -12524,6 +18557,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     nodes?: NodeUpdateManyWithoutWorkflowNestedInput
+    executions?: ExecutionUpdateManyWithoutWorkflowNestedInput
     user?: UserUpdateOneRequiredWithoutWorkflowsNestedInput
   }
 
@@ -12534,6 +18568,7 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     userId?: StringFieldUpdateOperationsInput | string
     nodes?: NodeUncheckedUpdateManyWithoutWorkflowNestedInput
+    executions?: ExecutionUncheckedUpdateManyWithoutWorkflowNestedInput
   }
 
   export type NodeUpsertWithoutFromConnectionsInput = {
@@ -12557,6 +18592,7 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     workflow?: WorkflowUpdateOneRequiredWithoutNodesNestedInput
     toConnections?: ConnectionUpdateManyWithoutToNodeNestedInput
+    executionSteps?: ExecutionStepUpdateManyWithoutNodeNestedInput
   }
 
   export type NodeUncheckedUpdateWithoutFromConnectionsInput = {
@@ -12569,6 +18605,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     toConnections?: ConnectionUncheckedUpdateManyWithoutToNodeNestedInput
+    executionSteps?: ExecutionStepUncheckedUpdateManyWithoutNodeNestedInput
   }
 
   export type NodeUpsertWithoutToConnectionsInput = {
@@ -12592,6 +18629,7 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     workflow?: WorkflowUpdateOneRequiredWithoutNodesNestedInput
     fromConnections?: ConnectionUpdateManyWithoutFromNodeNestedInput
+    executionSteps?: ExecutionStepUpdateManyWithoutNodeNestedInput
   }
 
   export type NodeUncheckedUpdateWithoutToConnectionsInput = {
@@ -12604,6 +18642,417 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     fromConnections?: ConnectionUncheckedUpdateManyWithoutFromNodeNestedInput
+    executionSteps?: ExecutionStepUncheckedUpdateManyWithoutNodeNestedInput
+  }
+
+  export type UserCreateWithoutCredentialsInput = {
+    id: string
+    name: string
+    email: string
+    emailVerified?: boolean
+    image?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    sessions?: SessionCreateNestedManyWithoutUserInput
+    accounts?: AccountCreateNestedManyWithoutUserInput
+    workflows?: WorkflowCreateNestedManyWithoutUserInput
+    executions?: ExecutionCreateNestedManyWithoutTriggeredByUserInput
+  }
+
+  export type UserUncheckedCreateWithoutCredentialsInput = {
+    id: string
+    name: string
+    email: string
+    emailVerified?: boolean
+    image?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    sessions?: SessionUncheckedCreateNestedManyWithoutUserInput
+    accounts?: AccountUncheckedCreateNestedManyWithoutUserInput
+    workflows?: WorkflowUncheckedCreateNestedManyWithoutUserInput
+    executions?: ExecutionUncheckedCreateNestedManyWithoutTriggeredByUserInput
+  }
+
+  export type UserCreateOrConnectWithoutCredentialsInput = {
+    where: UserWhereUniqueInput
+    create: XOR<UserCreateWithoutCredentialsInput, UserUncheckedCreateWithoutCredentialsInput>
+  }
+
+  export type UserUpsertWithoutCredentialsInput = {
+    update: XOR<UserUpdateWithoutCredentialsInput, UserUncheckedUpdateWithoutCredentialsInput>
+    create: XOR<UserCreateWithoutCredentialsInput, UserUncheckedCreateWithoutCredentialsInput>
+    where?: UserWhereInput
+  }
+
+  export type UserUpdateToOneWithWhereWithoutCredentialsInput = {
+    where?: UserWhereInput
+    data: XOR<UserUpdateWithoutCredentialsInput, UserUncheckedUpdateWithoutCredentialsInput>
+  }
+
+  export type UserUpdateWithoutCredentialsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    email?: StringFieldUpdateOperationsInput | string
+    emailVerified?: BoolFieldUpdateOperationsInput | boolean
+    image?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    sessions?: SessionUpdateManyWithoutUserNestedInput
+    accounts?: AccountUpdateManyWithoutUserNestedInput
+    workflows?: WorkflowUpdateManyWithoutUserNestedInput
+    executions?: ExecutionUpdateManyWithoutTriggeredByUserNestedInput
+  }
+
+  export type UserUncheckedUpdateWithoutCredentialsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    email?: StringFieldUpdateOperationsInput | string
+    emailVerified?: BoolFieldUpdateOperationsInput | boolean
+    image?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    sessions?: SessionUncheckedUpdateManyWithoutUserNestedInput
+    accounts?: AccountUncheckedUpdateManyWithoutUserNestedInput
+    workflows?: WorkflowUncheckedUpdateManyWithoutUserNestedInput
+    executions?: ExecutionUncheckedUpdateManyWithoutTriggeredByUserNestedInput
+  }
+
+  export type WorkflowCreateWithoutExecutionsInput = {
+    id?: string
+    name: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    nodes?: NodeCreateNestedManyWithoutWorkflowInput
+    connections?: ConnectionCreateNestedManyWithoutWorkflowInput
+    user: UserCreateNestedOneWithoutWorkflowsInput
+  }
+
+  export type WorkflowUncheckedCreateWithoutExecutionsInput = {
+    id?: string
+    name: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    userId: string
+    nodes?: NodeUncheckedCreateNestedManyWithoutWorkflowInput
+    connections?: ConnectionUncheckedCreateNestedManyWithoutWorkflowInput
+  }
+
+  export type WorkflowCreateOrConnectWithoutExecutionsInput = {
+    where: WorkflowWhereUniqueInput
+    create: XOR<WorkflowCreateWithoutExecutionsInput, WorkflowUncheckedCreateWithoutExecutionsInput>
+  }
+
+  export type UserCreateWithoutExecutionsInput = {
+    id: string
+    name: string
+    email: string
+    emailVerified?: boolean
+    image?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    sessions?: SessionCreateNestedManyWithoutUserInput
+    accounts?: AccountCreateNestedManyWithoutUserInput
+    workflows?: WorkflowCreateNestedManyWithoutUserInput
+    credentials?: CredentialCreateNestedManyWithoutUserInput
+  }
+
+  export type UserUncheckedCreateWithoutExecutionsInput = {
+    id: string
+    name: string
+    email: string
+    emailVerified?: boolean
+    image?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    sessions?: SessionUncheckedCreateNestedManyWithoutUserInput
+    accounts?: AccountUncheckedCreateNestedManyWithoutUserInput
+    workflows?: WorkflowUncheckedCreateNestedManyWithoutUserInput
+    credentials?: CredentialUncheckedCreateNestedManyWithoutUserInput
+  }
+
+  export type UserCreateOrConnectWithoutExecutionsInput = {
+    where: UserWhereUniqueInput
+    create: XOR<UserCreateWithoutExecutionsInput, UserUncheckedCreateWithoutExecutionsInput>
+  }
+
+  export type ExecutionStepCreateWithoutExecutionInput = {
+    id?: string
+    nodeName: string
+    nodeType: $Enums.NodeType
+    status?: $Enums.ExecutionStepStatus
+    position: number
+    attempt?: number
+    input?: JsonNullValueInput | InputJsonValue
+    output?: NullableJsonNullValueInput | InputJsonValue
+    error?: NullableJsonNullValueInput | InputJsonValue
+    startedAt?: Date | string | null
+    completedAt?: Date | string | null
+    durationMs?: number | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    node?: NodeCreateNestedOneWithoutExecutionStepsInput
+  }
+
+  export type ExecutionStepUncheckedCreateWithoutExecutionInput = {
+    id?: string
+    nodeId?: string | null
+    nodeName: string
+    nodeType: $Enums.NodeType
+    status?: $Enums.ExecutionStepStatus
+    position: number
+    attempt?: number
+    input?: JsonNullValueInput | InputJsonValue
+    output?: NullableJsonNullValueInput | InputJsonValue
+    error?: NullableJsonNullValueInput | InputJsonValue
+    startedAt?: Date | string | null
+    completedAt?: Date | string | null
+    durationMs?: number | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type ExecutionStepCreateOrConnectWithoutExecutionInput = {
+    where: ExecutionStepWhereUniqueInput
+    create: XOR<ExecutionStepCreateWithoutExecutionInput, ExecutionStepUncheckedCreateWithoutExecutionInput>
+  }
+
+  export type ExecutionStepCreateManyExecutionInputEnvelope = {
+    data: ExecutionStepCreateManyExecutionInput | ExecutionStepCreateManyExecutionInput[]
+    skipDuplicates?: boolean
+  }
+
+  export type WorkflowUpsertWithoutExecutionsInput = {
+    update: XOR<WorkflowUpdateWithoutExecutionsInput, WorkflowUncheckedUpdateWithoutExecutionsInput>
+    create: XOR<WorkflowCreateWithoutExecutionsInput, WorkflowUncheckedCreateWithoutExecutionsInput>
+    where?: WorkflowWhereInput
+  }
+
+  export type WorkflowUpdateToOneWithWhereWithoutExecutionsInput = {
+    where?: WorkflowWhereInput
+    data: XOR<WorkflowUpdateWithoutExecutionsInput, WorkflowUncheckedUpdateWithoutExecutionsInput>
+  }
+
+  export type WorkflowUpdateWithoutExecutionsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    nodes?: NodeUpdateManyWithoutWorkflowNestedInput
+    connections?: ConnectionUpdateManyWithoutWorkflowNestedInput
+    user?: UserUpdateOneRequiredWithoutWorkflowsNestedInput
+  }
+
+  export type WorkflowUncheckedUpdateWithoutExecutionsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    userId?: StringFieldUpdateOperationsInput | string
+    nodes?: NodeUncheckedUpdateManyWithoutWorkflowNestedInput
+    connections?: ConnectionUncheckedUpdateManyWithoutWorkflowNestedInput
+  }
+
+  export type UserUpsertWithoutExecutionsInput = {
+    update: XOR<UserUpdateWithoutExecutionsInput, UserUncheckedUpdateWithoutExecutionsInput>
+    create: XOR<UserCreateWithoutExecutionsInput, UserUncheckedCreateWithoutExecutionsInput>
+    where?: UserWhereInput
+  }
+
+  export type UserUpdateToOneWithWhereWithoutExecutionsInput = {
+    where?: UserWhereInput
+    data: XOR<UserUpdateWithoutExecutionsInput, UserUncheckedUpdateWithoutExecutionsInput>
+  }
+
+  export type UserUpdateWithoutExecutionsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    email?: StringFieldUpdateOperationsInput | string
+    emailVerified?: BoolFieldUpdateOperationsInput | boolean
+    image?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    sessions?: SessionUpdateManyWithoutUserNestedInput
+    accounts?: AccountUpdateManyWithoutUserNestedInput
+    workflows?: WorkflowUpdateManyWithoutUserNestedInput
+    credentials?: CredentialUpdateManyWithoutUserNestedInput
+  }
+
+  export type UserUncheckedUpdateWithoutExecutionsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    email?: StringFieldUpdateOperationsInput | string
+    emailVerified?: BoolFieldUpdateOperationsInput | boolean
+    image?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    sessions?: SessionUncheckedUpdateManyWithoutUserNestedInput
+    accounts?: AccountUncheckedUpdateManyWithoutUserNestedInput
+    workflows?: WorkflowUncheckedUpdateManyWithoutUserNestedInput
+    credentials?: CredentialUncheckedUpdateManyWithoutUserNestedInput
+  }
+
+  export type ExecutionStepUpsertWithWhereUniqueWithoutExecutionInput = {
+    where: ExecutionStepWhereUniqueInput
+    update: XOR<ExecutionStepUpdateWithoutExecutionInput, ExecutionStepUncheckedUpdateWithoutExecutionInput>
+    create: XOR<ExecutionStepCreateWithoutExecutionInput, ExecutionStepUncheckedCreateWithoutExecutionInput>
+  }
+
+  export type ExecutionStepUpdateWithWhereUniqueWithoutExecutionInput = {
+    where: ExecutionStepWhereUniqueInput
+    data: XOR<ExecutionStepUpdateWithoutExecutionInput, ExecutionStepUncheckedUpdateWithoutExecutionInput>
+  }
+
+  export type ExecutionStepUpdateManyWithWhereWithoutExecutionInput = {
+    where: ExecutionStepScalarWhereInput
+    data: XOR<ExecutionStepUpdateManyMutationInput, ExecutionStepUncheckedUpdateManyWithoutExecutionInput>
+  }
+
+  export type ExecutionCreateWithoutStepsInput = {
+    id?: string
+    triggerType: $Enums.ExecutionTriggerType
+    status?: $Enums.ExecutionStatus
+    triggerPayload?: JsonNullValueInput | InputJsonValue
+    state?: JsonNullValueInput | InputJsonValue
+    workflowSnapshot?: NullableJsonNullValueInput | InputJsonValue
+    startedAt?: Date | string | null
+    completedAt?: Date | string | null
+    error?: NullableJsonNullValueInput | InputJsonValue
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    workflow: WorkflowCreateNestedOneWithoutExecutionsInput
+    triggeredByUser?: UserCreateNestedOneWithoutExecutionsInput
+  }
+
+  export type ExecutionUncheckedCreateWithoutStepsInput = {
+    id?: string
+    workflowId: string
+    triggerType: $Enums.ExecutionTriggerType
+    status?: $Enums.ExecutionStatus
+    triggeredByUserId?: string | null
+    triggerPayload?: JsonNullValueInput | InputJsonValue
+    state?: JsonNullValueInput | InputJsonValue
+    workflowSnapshot?: NullableJsonNullValueInput | InputJsonValue
+    startedAt?: Date | string | null
+    completedAt?: Date | string | null
+    error?: NullableJsonNullValueInput | InputJsonValue
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type ExecutionCreateOrConnectWithoutStepsInput = {
+    where: ExecutionWhereUniqueInput
+    create: XOR<ExecutionCreateWithoutStepsInput, ExecutionUncheckedCreateWithoutStepsInput>
+  }
+
+  export type NodeCreateWithoutExecutionStepsInput = {
+    id?: string
+    name: string
+    type: $Enums.NodeType
+    position?: JsonNullValueInput | InputJsonValue
+    data?: JsonNullValueInput | InputJsonValue
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    workflow: WorkflowCreateNestedOneWithoutNodesInput
+    fromConnections?: ConnectionCreateNestedManyWithoutFromNodeInput
+    toConnections?: ConnectionCreateNestedManyWithoutToNodeInput
+  }
+
+  export type NodeUncheckedCreateWithoutExecutionStepsInput = {
+    id?: string
+    workflowId: string
+    name: string
+    type: $Enums.NodeType
+    position?: JsonNullValueInput | InputJsonValue
+    data?: JsonNullValueInput | InputJsonValue
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    fromConnections?: ConnectionUncheckedCreateNestedManyWithoutFromNodeInput
+    toConnections?: ConnectionUncheckedCreateNestedManyWithoutToNodeInput
+  }
+
+  export type NodeCreateOrConnectWithoutExecutionStepsInput = {
+    where: NodeWhereUniqueInput
+    create: XOR<NodeCreateWithoutExecutionStepsInput, NodeUncheckedCreateWithoutExecutionStepsInput>
+  }
+
+  export type ExecutionUpsertWithoutStepsInput = {
+    update: XOR<ExecutionUpdateWithoutStepsInput, ExecutionUncheckedUpdateWithoutStepsInput>
+    create: XOR<ExecutionCreateWithoutStepsInput, ExecutionUncheckedCreateWithoutStepsInput>
+    where?: ExecutionWhereInput
+  }
+
+  export type ExecutionUpdateToOneWithWhereWithoutStepsInput = {
+    where?: ExecutionWhereInput
+    data: XOR<ExecutionUpdateWithoutStepsInput, ExecutionUncheckedUpdateWithoutStepsInput>
+  }
+
+  export type ExecutionUpdateWithoutStepsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    triggerType?: EnumExecutionTriggerTypeFieldUpdateOperationsInput | $Enums.ExecutionTriggerType
+    status?: EnumExecutionStatusFieldUpdateOperationsInput | $Enums.ExecutionStatus
+    triggerPayload?: JsonNullValueInput | InputJsonValue
+    state?: JsonNullValueInput | InputJsonValue
+    workflowSnapshot?: NullableJsonNullValueInput | InputJsonValue
+    startedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    completedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    error?: NullableJsonNullValueInput | InputJsonValue
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    workflow?: WorkflowUpdateOneRequiredWithoutExecutionsNestedInput
+    triggeredByUser?: UserUpdateOneWithoutExecutionsNestedInput
+  }
+
+  export type ExecutionUncheckedUpdateWithoutStepsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    workflowId?: StringFieldUpdateOperationsInput | string
+    triggerType?: EnumExecutionTriggerTypeFieldUpdateOperationsInput | $Enums.ExecutionTriggerType
+    status?: EnumExecutionStatusFieldUpdateOperationsInput | $Enums.ExecutionStatus
+    triggeredByUserId?: NullableStringFieldUpdateOperationsInput | string | null
+    triggerPayload?: JsonNullValueInput | InputJsonValue
+    state?: JsonNullValueInput | InputJsonValue
+    workflowSnapshot?: NullableJsonNullValueInput | InputJsonValue
+    startedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    completedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    error?: NullableJsonNullValueInput | InputJsonValue
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type NodeUpsertWithoutExecutionStepsInput = {
+    update: XOR<NodeUpdateWithoutExecutionStepsInput, NodeUncheckedUpdateWithoutExecutionStepsInput>
+    create: XOR<NodeCreateWithoutExecutionStepsInput, NodeUncheckedCreateWithoutExecutionStepsInput>
+    where?: NodeWhereInput
+  }
+
+  export type NodeUpdateToOneWithWhereWithoutExecutionStepsInput = {
+    where?: NodeWhereInput
+    data: XOR<NodeUpdateWithoutExecutionStepsInput, NodeUncheckedUpdateWithoutExecutionStepsInput>
+  }
+
+  export type NodeUpdateWithoutExecutionStepsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    type?: EnumNodeTypeFieldUpdateOperationsInput | $Enums.NodeType
+    position?: JsonNullValueInput | InputJsonValue
+    data?: JsonNullValueInput | InputJsonValue
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    workflow?: WorkflowUpdateOneRequiredWithoutNodesNestedInput
+    fromConnections?: ConnectionUpdateManyWithoutFromNodeNestedInput
+    toConnections?: ConnectionUpdateManyWithoutToNodeNestedInput
+  }
+
+  export type NodeUncheckedUpdateWithoutExecutionStepsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    workflowId?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    type?: EnumNodeTypeFieldUpdateOperationsInput | $Enums.NodeType
+    position?: JsonNullValueInput | InputJsonValue
+    data?: JsonNullValueInput | InputJsonValue
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    fromConnections?: ConnectionUncheckedUpdateManyWithoutFromNodeNestedInput
+    toConnections?: ConnectionUncheckedUpdateManyWithoutToNodeNestedInput
   }
 
   export type SessionCreateManyUserInput = {
@@ -12634,6 +19083,33 @@ export namespace Prisma {
   export type WorkflowCreateManyUserInput = {
     id?: string
     name: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type CredentialCreateManyUserInput = {
+    id?: string
+    name: string
+    provider: $Enums.CredentialProvider
+    description?: string | null
+    encryptedData: string
+    metadata?: JsonNullValueInput | InputJsonValue
+    lastUsedAt?: Date | string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type ExecutionCreateManyTriggeredByUserInput = {
+    id?: string
+    workflowId: string
+    triggerType: $Enums.ExecutionTriggerType
+    status?: $Enums.ExecutionStatus
+    triggerPayload?: JsonNullValueInput | InputJsonValue
+    state?: JsonNullValueInput | InputJsonValue
+    workflowSnapshot?: NullableJsonNullValueInput | InputJsonValue
+    startedAt?: Date | string | null
+    completedAt?: Date | string | null
+    error?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: Date | string
     updatedAt?: Date | string
   }
@@ -12720,6 +19196,7 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     nodes?: NodeUpdateManyWithoutWorkflowNestedInput
     connections?: ConnectionUpdateManyWithoutWorkflowNestedInput
+    executions?: ExecutionUpdateManyWithoutWorkflowNestedInput
   }
 
   export type WorkflowUncheckedUpdateWithoutUserInput = {
@@ -12729,11 +19206,95 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     nodes?: NodeUncheckedUpdateManyWithoutWorkflowNestedInput
     connections?: ConnectionUncheckedUpdateManyWithoutWorkflowNestedInput
+    executions?: ExecutionUncheckedUpdateManyWithoutWorkflowNestedInput
   }
 
   export type WorkflowUncheckedUpdateManyWithoutUserInput = {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type CredentialUpdateWithoutUserInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    provider?: EnumCredentialProviderFieldUpdateOperationsInput | $Enums.CredentialProvider
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    encryptedData?: StringFieldUpdateOperationsInput | string
+    metadata?: JsonNullValueInput | InputJsonValue
+    lastUsedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type CredentialUncheckedUpdateWithoutUserInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    provider?: EnumCredentialProviderFieldUpdateOperationsInput | $Enums.CredentialProvider
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    encryptedData?: StringFieldUpdateOperationsInput | string
+    metadata?: JsonNullValueInput | InputJsonValue
+    lastUsedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type CredentialUncheckedUpdateManyWithoutUserInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    provider?: EnumCredentialProviderFieldUpdateOperationsInput | $Enums.CredentialProvider
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    encryptedData?: StringFieldUpdateOperationsInput | string
+    metadata?: JsonNullValueInput | InputJsonValue
+    lastUsedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type ExecutionUpdateWithoutTriggeredByUserInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    triggerType?: EnumExecutionTriggerTypeFieldUpdateOperationsInput | $Enums.ExecutionTriggerType
+    status?: EnumExecutionStatusFieldUpdateOperationsInput | $Enums.ExecutionStatus
+    triggerPayload?: JsonNullValueInput | InputJsonValue
+    state?: JsonNullValueInput | InputJsonValue
+    workflowSnapshot?: NullableJsonNullValueInput | InputJsonValue
+    startedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    completedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    error?: NullableJsonNullValueInput | InputJsonValue
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    workflow?: WorkflowUpdateOneRequiredWithoutExecutionsNestedInput
+    steps?: ExecutionStepUpdateManyWithoutExecutionNestedInput
+  }
+
+  export type ExecutionUncheckedUpdateWithoutTriggeredByUserInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    workflowId?: StringFieldUpdateOperationsInput | string
+    triggerType?: EnumExecutionTriggerTypeFieldUpdateOperationsInput | $Enums.ExecutionTriggerType
+    status?: EnumExecutionStatusFieldUpdateOperationsInput | $Enums.ExecutionStatus
+    triggerPayload?: JsonNullValueInput | InputJsonValue
+    state?: JsonNullValueInput | InputJsonValue
+    workflowSnapshot?: NullableJsonNullValueInput | InputJsonValue
+    startedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    completedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    error?: NullableJsonNullValueInput | InputJsonValue
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    steps?: ExecutionStepUncheckedUpdateManyWithoutExecutionNestedInput
+  }
+
+  export type ExecutionUncheckedUpdateManyWithoutTriggeredByUserInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    workflowId?: StringFieldUpdateOperationsInput | string
+    triggerType?: EnumExecutionTriggerTypeFieldUpdateOperationsInput | $Enums.ExecutionTriggerType
+    status?: EnumExecutionStatusFieldUpdateOperationsInput | $Enums.ExecutionStatus
+    triggerPayload?: JsonNullValueInput | InputJsonValue
+    state?: JsonNullValueInput | InputJsonValue
+    workflowSnapshot?: NullableJsonNullValueInput | InputJsonValue
+    startedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    completedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    error?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -12759,6 +19320,21 @@ export namespace Prisma {
     updatedAt?: Date | string
   }
 
+  export type ExecutionCreateManyWorkflowInput = {
+    id?: string
+    triggerType: $Enums.ExecutionTriggerType
+    status?: $Enums.ExecutionStatus
+    triggeredByUserId?: string | null
+    triggerPayload?: JsonNullValueInput | InputJsonValue
+    state?: JsonNullValueInput | InputJsonValue
+    workflowSnapshot?: NullableJsonNullValueInput | InputJsonValue
+    startedAt?: Date | string | null
+    completedAt?: Date | string | null
+    error?: NullableJsonNullValueInput | InputJsonValue
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
   export type NodeUpdateWithoutWorkflowInput = {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
@@ -12769,6 +19345,7 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     fromConnections?: ConnectionUpdateManyWithoutFromNodeNestedInput
     toConnections?: ConnectionUpdateManyWithoutToNodeNestedInput
+    executionSteps?: ExecutionStepUpdateManyWithoutNodeNestedInput
   }
 
   export type NodeUncheckedUpdateWithoutWorkflowInput = {
@@ -12781,6 +19358,7 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     fromConnections?: ConnectionUncheckedUpdateManyWithoutFromNodeNestedInput
     toConnections?: ConnectionUncheckedUpdateManyWithoutToNodeNestedInput
+    executionSteps?: ExecutionStepUncheckedUpdateManyWithoutNodeNestedInput
   }
 
   export type NodeUncheckedUpdateManyWithoutWorkflowInput = {
@@ -12826,6 +19404,53 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
+  export type ExecutionUpdateWithoutWorkflowInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    triggerType?: EnumExecutionTriggerTypeFieldUpdateOperationsInput | $Enums.ExecutionTriggerType
+    status?: EnumExecutionStatusFieldUpdateOperationsInput | $Enums.ExecutionStatus
+    triggerPayload?: JsonNullValueInput | InputJsonValue
+    state?: JsonNullValueInput | InputJsonValue
+    workflowSnapshot?: NullableJsonNullValueInput | InputJsonValue
+    startedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    completedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    error?: NullableJsonNullValueInput | InputJsonValue
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    triggeredByUser?: UserUpdateOneWithoutExecutionsNestedInput
+    steps?: ExecutionStepUpdateManyWithoutExecutionNestedInput
+  }
+
+  export type ExecutionUncheckedUpdateWithoutWorkflowInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    triggerType?: EnumExecutionTriggerTypeFieldUpdateOperationsInput | $Enums.ExecutionTriggerType
+    status?: EnumExecutionStatusFieldUpdateOperationsInput | $Enums.ExecutionStatus
+    triggeredByUserId?: NullableStringFieldUpdateOperationsInput | string | null
+    triggerPayload?: JsonNullValueInput | InputJsonValue
+    state?: JsonNullValueInput | InputJsonValue
+    workflowSnapshot?: NullableJsonNullValueInput | InputJsonValue
+    startedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    completedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    error?: NullableJsonNullValueInput | InputJsonValue
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    steps?: ExecutionStepUncheckedUpdateManyWithoutExecutionNestedInput
+  }
+
+  export type ExecutionUncheckedUpdateManyWithoutWorkflowInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    triggerType?: EnumExecutionTriggerTypeFieldUpdateOperationsInput | $Enums.ExecutionTriggerType
+    status?: EnumExecutionStatusFieldUpdateOperationsInput | $Enums.ExecutionStatus
+    triggeredByUserId?: NullableStringFieldUpdateOperationsInput | string | null
+    triggerPayload?: JsonNullValueInput | InputJsonValue
+    state?: JsonNullValueInput | InputJsonValue
+    workflowSnapshot?: NullableJsonNullValueInput | InputJsonValue
+    startedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    completedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    error?: NullableJsonNullValueInput | InputJsonValue
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
   export type ConnectionCreateManyFromNodeInput = {
     id?: string
     workflowId: string
@@ -12844,6 +19469,24 @@ export namespace Prisma {
     fromOutput?: string
     toInput?: string
     data?: JsonNullValueInput | InputJsonValue
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type ExecutionStepCreateManyNodeInput = {
+    id?: string
+    executionId: string
+    nodeName: string
+    nodeType: $Enums.NodeType
+    status?: $Enums.ExecutionStepStatus
+    position: number
+    attempt?: number
+    input?: JsonNullValueInput | InputJsonValue
+    output?: NullableJsonNullValueInput | InputJsonValue
+    error?: NullableJsonNullValueInput | InputJsonValue
+    startedAt?: Date | string | null
+    completedAt?: Date | string | null
+    durationMs?: number | null
     createdAt?: Date | string
     updatedAt?: Date | string
   }
@@ -12910,6 +19553,132 @@ export namespace Prisma {
     fromOutput?: StringFieldUpdateOperationsInput | string
     toInput?: StringFieldUpdateOperationsInput | string
     data?: JsonNullValueInput | InputJsonValue
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type ExecutionStepUpdateWithoutNodeInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    nodeName?: StringFieldUpdateOperationsInput | string
+    nodeType?: EnumNodeTypeFieldUpdateOperationsInput | $Enums.NodeType
+    status?: EnumExecutionStepStatusFieldUpdateOperationsInput | $Enums.ExecutionStepStatus
+    position?: IntFieldUpdateOperationsInput | number
+    attempt?: IntFieldUpdateOperationsInput | number
+    input?: JsonNullValueInput | InputJsonValue
+    output?: NullableJsonNullValueInput | InputJsonValue
+    error?: NullableJsonNullValueInput | InputJsonValue
+    startedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    completedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    durationMs?: NullableIntFieldUpdateOperationsInput | number | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    execution?: ExecutionUpdateOneRequiredWithoutStepsNestedInput
+  }
+
+  export type ExecutionStepUncheckedUpdateWithoutNodeInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    executionId?: StringFieldUpdateOperationsInput | string
+    nodeName?: StringFieldUpdateOperationsInput | string
+    nodeType?: EnumNodeTypeFieldUpdateOperationsInput | $Enums.NodeType
+    status?: EnumExecutionStepStatusFieldUpdateOperationsInput | $Enums.ExecutionStepStatus
+    position?: IntFieldUpdateOperationsInput | number
+    attempt?: IntFieldUpdateOperationsInput | number
+    input?: JsonNullValueInput | InputJsonValue
+    output?: NullableJsonNullValueInput | InputJsonValue
+    error?: NullableJsonNullValueInput | InputJsonValue
+    startedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    completedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    durationMs?: NullableIntFieldUpdateOperationsInput | number | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type ExecutionStepUncheckedUpdateManyWithoutNodeInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    executionId?: StringFieldUpdateOperationsInput | string
+    nodeName?: StringFieldUpdateOperationsInput | string
+    nodeType?: EnumNodeTypeFieldUpdateOperationsInput | $Enums.NodeType
+    status?: EnumExecutionStepStatusFieldUpdateOperationsInput | $Enums.ExecutionStepStatus
+    position?: IntFieldUpdateOperationsInput | number
+    attempt?: IntFieldUpdateOperationsInput | number
+    input?: JsonNullValueInput | InputJsonValue
+    output?: NullableJsonNullValueInput | InputJsonValue
+    error?: NullableJsonNullValueInput | InputJsonValue
+    startedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    completedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    durationMs?: NullableIntFieldUpdateOperationsInput | number | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type ExecutionStepCreateManyExecutionInput = {
+    id?: string
+    nodeId?: string | null
+    nodeName: string
+    nodeType: $Enums.NodeType
+    status?: $Enums.ExecutionStepStatus
+    position: number
+    attempt?: number
+    input?: JsonNullValueInput | InputJsonValue
+    output?: NullableJsonNullValueInput | InputJsonValue
+    error?: NullableJsonNullValueInput | InputJsonValue
+    startedAt?: Date | string | null
+    completedAt?: Date | string | null
+    durationMs?: number | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type ExecutionStepUpdateWithoutExecutionInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    nodeName?: StringFieldUpdateOperationsInput | string
+    nodeType?: EnumNodeTypeFieldUpdateOperationsInput | $Enums.NodeType
+    status?: EnumExecutionStepStatusFieldUpdateOperationsInput | $Enums.ExecutionStepStatus
+    position?: IntFieldUpdateOperationsInput | number
+    attempt?: IntFieldUpdateOperationsInput | number
+    input?: JsonNullValueInput | InputJsonValue
+    output?: NullableJsonNullValueInput | InputJsonValue
+    error?: NullableJsonNullValueInput | InputJsonValue
+    startedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    completedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    durationMs?: NullableIntFieldUpdateOperationsInput | number | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    node?: NodeUpdateOneWithoutExecutionStepsNestedInput
+  }
+
+  export type ExecutionStepUncheckedUpdateWithoutExecutionInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    nodeId?: NullableStringFieldUpdateOperationsInput | string | null
+    nodeName?: StringFieldUpdateOperationsInput | string
+    nodeType?: EnumNodeTypeFieldUpdateOperationsInput | $Enums.NodeType
+    status?: EnumExecutionStepStatusFieldUpdateOperationsInput | $Enums.ExecutionStepStatus
+    position?: IntFieldUpdateOperationsInput | number
+    attempt?: IntFieldUpdateOperationsInput | number
+    input?: JsonNullValueInput | InputJsonValue
+    output?: NullableJsonNullValueInput | InputJsonValue
+    error?: NullableJsonNullValueInput | InputJsonValue
+    startedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    completedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    durationMs?: NullableIntFieldUpdateOperationsInput | number | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type ExecutionStepUncheckedUpdateManyWithoutExecutionInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    nodeId?: NullableStringFieldUpdateOperationsInput | string | null
+    nodeName?: StringFieldUpdateOperationsInput | string
+    nodeType?: EnumNodeTypeFieldUpdateOperationsInput | $Enums.NodeType
+    status?: EnumExecutionStepStatusFieldUpdateOperationsInput | $Enums.ExecutionStepStatus
+    position?: IntFieldUpdateOperationsInput | number
+    attempt?: IntFieldUpdateOperationsInput | number
+    input?: JsonNullValueInput | InputJsonValue
+    output?: NullableJsonNullValueInput | InputJsonValue
+    error?: NullableJsonNullValueInput | InputJsonValue
+    startedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    completedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    durationMs?: NullableIntFieldUpdateOperationsInput | number | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
