@@ -66,7 +66,7 @@ export const BaseTriggerNode = memo((props: BaseTriggerProps) => {
             <div className="flex flex-col items-center">
                 <div className="relative inline-block">
                     <NodeStatusIndicator status={status} variant="border" className="rounded-l-2xl">
-                        <BaseNode className={`relative top-1/2 left-1/2 -translate-x-1/2 size-[56px] rounded-l-2xl`}>
+                        <BaseNode className={`relative block mx-auto size-[56px] rounded-l-2xl`}>
                             <div onClick={onDoubleClick} className="w-full h-full flex items-center justify-center">
                                 {typeof Icon === "string" ? (
                                     <Image src={Icon} alt={name} width={16} height={16}/>

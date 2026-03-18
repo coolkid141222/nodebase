@@ -54,7 +54,7 @@ export function WorkflowNode({
             <div className="flex flex-col items-center">
                 <div className="relative inline-block">
                     <NodeStatusIndicator status={status} variant="border">
-                        <BaseNode className={`relative top-1/2 left-1/2 -translate-x-1/2 size-[56px] ${nodeClassName || ''}`}>
+                        <BaseNode className={`relative block mx-auto size-[56px] ${nodeClassName || ''}`}>
                             {/* Node Content */}
                             {children}
                         </BaseNode>
