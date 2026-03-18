@@ -15,7 +15,14 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/dialog";
-import { Field, FieldError, FieldGroup, FieldLabel } from "@/components/field";
+import {
+  Field,
+  FieldDescription,
+  FieldError,
+  FieldGroup,
+  FieldLabel,
+} from "@/components/field";
+import { Input } from "@/components/input";
 import { Textarea } from "@/components/textarea";
 import {
   Select,
@@ -24,9 +31,12 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/select";
-import { CredentialProvider } from "@/lib/prisma/client";
 import { useTRPC } from "@/trpc/client";
-import { aiTextModelSchema, aiTextNodeSchema } from "../../text/shared";
+import {
+  aiTextNodeSchema,
+  aiTextProviderSchema,
+  getDefaultAITextModel,
+} from "../../text/shared";
 
 const formSchema = aiTextNodeSchema.extend({
   system: z.string().optional(),
@@ -38,8 +48,8 @@ type Props = {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   onSubmit: (values: AITextFormValues) => void;
-  defaultProvider?: "GOOGLE";
-  defaultModel?: z.infer<typeof aiTextModelSchema>;
+  defaultProvider?: z.infer<typeof aiTextProviderSchema>;
+  defaultModel?: string;
   defaultPrompt?: string;
   defaultSystem?: string;
   defaultCredentialId?: string;
@@ -51,7 +61,7 @@ export const AITextDialog = ({
   onOpenChange,
   onSubmit,
   defaultProvider = "GOOGLE",
-  defaultModel = "gemini-2.5-flash",
+  defaultModel = getDefaultAITextModel(defaultProvider),
   defaultPrompt = "",
   defaultSystem = "",
   defaultCredentialId = "",
@@ -59,9 +69,6 @@ export const AITextDialog = ({
 }: Props) => {
   const trpc = useTRPC();
   const credentialsQuery = useQuery(trpc.credentials.getMany.queryOptions());
-  const googleCredentials = (credentialsQuery.data ?? []).filter(
-    (credential) => credential.provider === CredentialProvider.GOOGLE,
-  );
 
   const form = useForm<AITextFormValues>({
     resolver: zodResolver(formSchema),
@@ -77,15 +84,16 @@ export const AITextDialog = ({
   const provider = useWatch({
     control: form.control,
     name: "provider",
-  });
-  const model = useWatch({
-    control: form.control,
-    name: "model",
+    defaultValue: defaultProvider,
   });
   const credentialId = useWatch({
     control: form.control,
     name: "credentialId",
+    defaultValue: defaultCredentialId,
   });
+  const credentials = (credentialsQuery.data ?? []).filter(
+    (credential) => credential.provider === provider,
+  );
 
   useEffect(() => {
     form.reset({
@@ -117,8 +125,9 @@ export const AITextDialog = ({
             <div>
               <DialogTitle>Configure AI Text</DialogTitle>
               <DialogDescription className="pt-2">
-                Generate text with Gemini. Prompt and system fields support
-                workflow templates like <code>{"{{steps.NODE_ID.output.body}}"}</code>.
+                Generate text with Gemini, OpenAI, or Anthropic. Prompt and
+                system fields support workflow templates like{" "}
+                <code>{"{{steps.NODE_ID.output.body}}"}</code>.
               </DialogDescription>
             </div>
           </div>
@@ -129,37 +138,45 @@ export const AITextDialog = ({
             <FieldLabel htmlFor="provider">Provider</FieldLabel>
             <Select
               value={provider}
-              onValueChange={(value: "GOOGLE") =>
-                form.setValue("provider", value, { shouldValidate: true })
-              }
+              onValueChange={(value: z.infer<typeof aiTextProviderSchema>) => {
+                form.setValue("provider", value, {
+                  shouldDirty: true,
+                  shouldValidate: true,
+                });
+                form.setValue("credentialId", "", {
+                  shouldDirty: true,
+                  shouldValidate: true,
+                });
+                form.setValue("model", getDefaultAITextModel(value), {
+                  shouldDirty: true,
+                  shouldValidate: true,
+                });
+              }}
             >
               <SelectTrigger className="w-full">
                 <SelectValue placeholder="Select provider" />
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="GOOGLE">Google Gemini</SelectItem>
+                <SelectItem value="OPENAI">OpenAI</SelectItem>
+                <SelectItem value="ANTHROPIC">Anthropic</SelectItem>
               </SelectContent>
             </Select>
           </FieldGroup>
 
           <FieldGroup>
             <FieldLabel htmlFor="model">Model</FieldLabel>
-            <Select
-              value={model}
-              onValueChange={(value: z.infer<typeof aiTextModelSchema>) =>
-                form.setValue("model", value, { shouldValidate: true })
-              }
-            >
-              <SelectTrigger className="w-full">
-                <SelectValue placeholder="Select model" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="gemini-2.5-flash">gemini-2.5-flash</SelectItem>
-                <SelectItem value="gemini-2.5-flash-lite">
-                  gemini-2.5-flash-lite
-                </SelectItem>
-              </SelectContent>
-            </Select>
+            <Field>
+              <Input
+                id="model"
+                {...form.register("model")}
+                placeholder={getDefaultAITextModel(provider)}
+              />
+            </Field>
+            <FieldDescription>
+              Suggested default: <code>{getDefaultAITextModel(provider)}</code>
+            </FieldDescription>
+            <FieldError errors={[form.formState.errors.model]} />
           </FieldGroup>
 
           <FieldGroup>
@@ -171,10 +188,10 @@ export const AITextDialog = ({
               }
             >
               <SelectTrigger className="w-full">
-                <SelectValue placeholder="Select Google credential" />
+                <SelectValue placeholder={`Select ${provider} credential`} />
               </SelectTrigger>
               <SelectContent>
-                {googleCredentials.map((credential) => (
+                {credentials.map((credential) => (
                   <SelectItem key={credential.id} value={credential.id}>
                     {credential.name}
                   </SelectItem>
@@ -187,11 +204,10 @@ export const AITextDialog = ({
           <FieldGroup>
             <FieldLabel htmlFor="credentialField">Secret JSON field</FieldLabel>
             <Field>
-              <input
+              <Input
                 id="credentialField"
                 {...form.register("credentialField")}
                 placeholder="apiKey"
-                className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
               />
             </Field>
             <FieldError errors={[form.formState.errors.credentialField]} />

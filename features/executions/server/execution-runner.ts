@@ -19,8 +19,16 @@ import type {
   HttpRequestCredentialConfig,
   HttpRequestNodeData,
 } from "../http-request/shared";
-import type { AITextNodeData } from "@/features/ai/text/shared";
-import { createGoogleProvider } from "@/lib/ai/proxy";
+import {
+  type AITextNodeData,
+  aiTextProviderSchema,
+  getDefaultAITextModel,
+} from "@/features/ai/text/shared";
+import {
+  createAnthropicProvider,
+  createGoogleProvider,
+  createOpenAIProvider,
+} from "@/lib/ai/proxy";
 
 type WorkflowForExecution = Prisma.WorkflowGetPayload<{
   include: {
@@ -58,8 +66,8 @@ type ResolvedHttpRequestInput = {
 };
 
 type ResolvedAITextInput = {
-  provider: "GOOGLE";
-  model: "gemini-2.5-flash" | "gemini-2.5-flash-lite";
+  provider: "GOOGLE" | "OPENAI" | "ANTHROPIC";
+  model: string;
   prompt: string;
   system: string | null;
   credentialId: string;
@@ -441,8 +449,17 @@ function normalizeAITextNodeData(
   context: ExecutionTemplateContext,
 ): ResolvedAITextInput {
   const data = (node.data ?? {}) as AITextNodeData;
-  const provider = data.provider ?? "GOOGLE";
-  const model = data.model ?? "gemini-2.5-flash";
+  const parsedProvider = aiTextProviderSchema.safeParse(data.provider ?? "GOOGLE");
+
+  if (!parsedProvider.success) {
+    throw new WorkflowExecutionError(
+      `AI Text node "${node.name}" has an invalid provider configuration.`,
+      "INVALID_AI_NODE_CONFIG",
+    );
+  }
+
+  const provider = parsedProvider.data;
+  const model = data.model?.trim() || getDefaultAITextModel(provider);
   const prompt = data.prompt
     ? resolveTemplateString(data.prompt, context).trim()
     : "";
@@ -461,7 +478,7 @@ function normalizeAITextNodeData(
 
   if (!credentialId || !credentialField) {
     throw new WorkflowExecutionError(
-      `AI Text node "${node.name}" requires a bound Google credential.`,
+      `AI Text node "${node.name}" requires a bound credential and secret field.`,
       "INVALID_AI_NODE_CONFIG",
     );
   }
@@ -480,34 +497,68 @@ async function executeAITextNode(
   execution: ExecutionWithWorkflow,
   input: ResolvedAITextInput,
 ): Promise<NodeExecutionResult> {
-  if (input.provider !== "GOOGLE") {
-    throw new WorkflowExecutionError(
-      `AI Text provider "${input.provider}" is not supported yet.`,
-      "INVALID_AI_NODE_CONFIG",
-    );
+  let model: Parameters<typeof generateText>[0]["model"];
+
+  switch (input.provider) {
+    case "GOOGLE": {
+      const apiKey = await resolveCredentialStringValue({
+        execution,
+        credentialId: input.credentialId,
+        field: input.credentialField,
+        provider: CredentialProvider.GOOGLE,
+      });
+
+      const googleProvider = createGoogleProvider({ apiKey });
+      model = googleProvider(input.model);
+      break;
+    }
+    case "OPENAI": {
+      const apiKey = await resolveCredentialStringValue({
+        execution,
+        credentialId: input.credentialId,
+        field: input.credentialField,
+        provider: CredentialProvider.OPENAI,
+      });
+
+      const openai = createOpenAIProvider({ apiKey });
+      model = openai(input.model);
+      break;
+    }
+    case "ANTHROPIC": {
+      const apiKey = await resolveCredentialStringValue({
+        execution,
+        credentialId: input.credentialId,
+        field: input.credentialField,
+        provider: CredentialProvider.ANTHROPIC,
+      });
+
+      const anthropic = createAnthropicProvider({ apiKey });
+      model = anthropic(input.model);
+      break;
+    }
+    default:
+      throw new WorkflowExecutionError(
+        `AI Text provider "${input.provider}" is not supported yet.`,
+        "INVALID_AI_NODE_CONFIG",
+      );
   }
 
-  const apiKey = await resolveCredentialStringValue({
-    execution,
-    credentialId: input.credentialId,
-    field: input.credentialField,
-    provider: CredentialProvider.GOOGLE,
-  });
-
-  const googleProvider = createGoogleProvider({ apiKey });
   const result = await generateText({
-    model: googleProvider(input.model),
+    model,
     prompt: input.prompt,
     system: input.system ?? undefined,
     temperature: 0.2,
     maxOutputTokens: 1024,
-    providerOptions: {
-      google: {
-        thinkingConfig: {
-          thinkingBudget: 0,
-        },
-      },
-    },
+    providerOptions:
+      input.provider === "GOOGLE"
+        ? {
+            google: {
+              thinkingConfig: {
+                thinkingBudget: 0,
+              },
+            },
+          }
+        : undefined,
   });
 
   return {
