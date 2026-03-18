@@ -6,6 +6,11 @@ import {
   NodeType,
   Prisma,
 } from "@/lib/prisma/client";
+import {
+  type ExecutionTemplateContext,
+  resolveTemplateString,
+  resolveTemplateValue,
+} from "./template";
 
 type WorkflowForExecution = Prisma.WorkflowGetPayload<{
   include: {
@@ -31,6 +36,7 @@ type ExecutionPlan = {
 
 type NodeExecutionResult = {
   status: ExecutionStepStatus;
+  input?: Prisma.InputJsonValue;
   output?: Prisma.InputJsonValue;
 };
 
@@ -38,6 +44,23 @@ type HttpRequestNodeData = {
   endpoint?: string;
   method?: "GET" | "POST" | "PATCH" | "DELETE";
   body?: string;
+};
+
+type ResolvedHttpRequestInput = {
+  url: string;
+  method: "GET" | "POST" | "PATCH" | "DELETE";
+  body: Prisma.InputJsonValue | null;
+};
+
+type CompletedStepResult = {
+  id: string;
+  nodeId: string;
+  nodeName: string;
+  nodeType: string;
+  status: string;
+  input: Prisma.JsonValue | null;
+  output: Prisma.JsonValue | null;
+  error: Prisma.JsonValue | null;
 };
 
 export class WorkflowExecutionError extends Error {
@@ -123,13 +146,44 @@ function parseJsonOrReturnText(value: string) {
   }
 }
 
+function createExecutionTemplateContext(
+  execution: ExecutionWithWorkflow,
+  completedSteps: Map<string, CompletedStepResult>,
+): ExecutionTemplateContext {
+  return {
+    execution: {
+      id: execution.id,
+      triggerType: execution.triggerType,
+    },
+    workflow: {
+      id: execution.workflow.id,
+      name: execution.workflow.name,
+    },
+    trigger: execution.triggerPayload as Prisma.JsonValue,
+    steps: Object.fromEntries(completedSteps.entries()),
+  };
+}
+
 function normalizeHttpRequestNodeData(
   node: WorkflowForExecution["nodes"][number],
-): Required<HttpRequestNodeData> {
+  context: ExecutionTemplateContext,
+): ResolvedHttpRequestInput {
   const data = (node.data ?? {}) as HttpRequestNodeData;
-  const endpoint = data.endpoint?.trim();
+  const resolvedEndpoint = data.endpoint
+    ? resolveTemplateString(data.endpoint, context)
+    : undefined;
+  const resolvedBody = data.body
+    ? resolveTemplateString(data.body, context)
+    : "";
+  const endpoint =
+    typeof resolvedEndpoint === "string" ? resolvedEndpoint.trim() : undefined;
   const method = data.method ?? "GET";
-  const body = data.body ?? "";
+  const body = resolveTemplateValue(
+    (typeof resolvedBody === "string"
+      ? resolvedBody
+      : JSON.stringify(resolvedBody ?? null)) as Prisma.JsonValue,
+    context,
+  );
 
   if (!endpoint) {
     throw new WorkflowExecutionError(
@@ -148,22 +202,23 @@ function normalizeHttpRequestNodeData(
   }
 
   return {
-    endpoint,
+    url: endpoint,
     method,
     body,
   };
 }
 
 async function executeHttpRequestNode(
-  node: WorkflowForExecution["nodes"][number],
+  input: ResolvedHttpRequestInput,
 ): Promise<NodeExecutionResult> {
-  const config = normalizeHttpRequestNodeData(node);
   const headers = new Headers();
-  const hasBody = config.body.trim().length > 0;
+  const serializedBody =
+    typeof input.body === "string" ? input.body : JSON.stringify(input.body);
+  const hasBody = serializedBody.trim().length > 0;
   let requestBody: BodyInit | undefined;
 
-  if (hasBody && config.method !== "GET" && config.method !== "DELETE") {
-    const parsedBody = parseJsonOrReturnText(config.body);
+  if (hasBody && input.method !== "GET" && input.method !== "DELETE") {
+    const parsedBody = parseJsonOrReturnText(serializedBody);
 
     if (typeof parsedBody === "string") {
       requestBody = parsedBody;
@@ -174,8 +229,8 @@ async function executeHttpRequestNode(
     }
   }
 
-  const response = await fetch(config.endpoint, {
-    method: config.method,
+  const response = await fetch(input.url, {
+    method: input.method,
     headers,
     body: requestBody,
     signal: AbortSignal.timeout(15_000),
@@ -184,8 +239,8 @@ async function executeHttpRequestNode(
   const responseText = await response.text();
   const responseBody = parseJsonOrReturnText(responseText);
   const output: Prisma.InputJsonValue = {
-    url: config.endpoint,
-    method: config.method,
+    url: input.url,
+    method: input.method,
     status: response.status,
     ok: response.ok,
     headers: Object.fromEntries(response.headers.entries()),
@@ -313,6 +368,7 @@ function buildManualExecutionPlan(workflow: WorkflowForExecution): ExecutionPlan
 async function executeNode(
   execution: ExecutionWithWorkflow,
   node: WorkflowForExecution["nodes"][number],
+  input: Prisma.InputJsonValue | null,
 ): Promise<NodeExecutionResult> {
   switch (node.type) {
     case NodeType.INITIAL:
@@ -328,12 +384,31 @@ async function executeNode(
         output: execution.triggerPayload as Prisma.InputJsonValue,
       };
     case NodeType.HTTP_REQUEST:
-      return executeHttpRequestNode(node);
+      return executeHttpRequestNode(input as ResolvedHttpRequestInput);
     default:
       throw new WorkflowExecutionError(
         `Node executor for "${node.type}" is not implemented yet.`,
         "UNSUPPORTED_NODE_TYPE",
       );
+  }
+}
+
+function resolveNodeInput(
+  execution: ExecutionWithWorkflow,
+  node: WorkflowForExecution["nodes"][number],
+  context: ExecutionTemplateContext,
+): Prisma.InputJsonValue | null {
+  switch (node.type) {
+    case NodeType.INITIAL:
+      return null;
+    case NodeType.MANUAL_TRIGGER:
+      return execution.triggerPayload as Prisma.InputJsonValue;
+    case NodeType.HTTP_REQUEST:
+      return normalizeHttpRequestNodeData(node, context);
+    default:
+      return {
+        triggerType: execution.triggerType,
+      };
   }
 }
 
@@ -419,6 +494,7 @@ export async function runExecution(executionId: string) {
 
   try {
     const plan = buildManualExecutionPlan(execution.workflow);
+    const completedSteps = new Map<string, CompletedStepResult>();
 
     await prisma.execution.update({
       where: {
@@ -433,6 +509,11 @@ export async function runExecution(executionId: string) {
     });
 
     for (const [index, node] of plan.orderedNodes.entries()) {
+      const templateContext = createExecutionTemplateContext(
+        execution,
+        completedSteps,
+      );
+      const input = resolveNodeInput(execution, node, templateContext);
       const stepStartedAt = Date.now();
       const step = await prisma.executionStep.create({
         data: {
@@ -443,15 +524,14 @@ export async function runExecution(executionId: string) {
           position: index,
           status: ExecutionStepStatus.RUNNING,
           startedAt: new Date(),
-          input: {
+          input: input ?? {
             triggerType: execution.triggerType,
           },
         },
       });
 
       try {
-        const result = await executeNode(execution, node);
-
+        const result = await executeNode(execution, node, input);
         await prisma.executionStep.update({
           where: {
             id: step.id,
@@ -462,6 +542,17 @@ export async function runExecution(executionId: string) {
             completedAt: new Date(),
             durationMs: Date.now() - stepStartedAt,
           },
+        });
+
+        completedSteps.set(node.id, {
+          id: step.id,
+          nodeId: node.id,
+          nodeName: node.name,
+          nodeType: node.type,
+          status: result.status,
+          input: (input ?? null) as Prisma.JsonValue | null,
+          output: (result.output ?? null) as Prisma.JsonValue | null,
+          error: null,
         });
       } catch (error) {
         await prisma.executionStep.update({
@@ -474,6 +565,17 @@ export async function runExecution(executionId: string) {
             completedAt: new Date(),
             durationMs: Date.now() - stepStartedAt,
           },
+        });
+
+        completedSteps.set(node.id, {
+          id: step.id,
+          nodeId: node.id,
+          nodeName: node.name,
+          nodeType: node.type,
+          status: ExecutionStepStatus.FAILED,
+          input: (input ?? null) as Prisma.JsonValue | null,
+          output: null,
+          error: serializeError(error) as Prisma.JsonValue,
         });
 
         await prisma.execution.update({

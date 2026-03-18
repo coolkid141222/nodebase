@@ -27,7 +27,7 @@ import {
 } from "@/components/select"
 import { Textarea } from "@/components/textarea";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useForm } from "react-hook-form";
+import { useForm, useWatch } from "react-hook-form";
 import { useEffect } from "react";
 
 const formSchema = z.object({
@@ -65,6 +65,10 @@ export const HttpRequestDialog = ({
             body: defaultBody,
         },
     })
+    const method = useWatch({
+        control: form.control,
+        name: "method",
+    });
 
     useEffect(() => {
         if (defaultEndpoint || defaultMethod || defaultBody) {
@@ -74,7 +78,7 @@ export const HttpRequestDialog = ({
                 body: defaultBody,
             })
         }
-    }, [defaultEndpoint, defaultMethod, defaultBody, form.reset])
+    }, [defaultEndpoint, defaultMethod, defaultBody, form])
 
     return (
         <Dialog open={open} onOpenChange={onOpenChange}>
@@ -87,7 +91,13 @@ export const HttpRequestDialog = ({
                         <div>
                             <DialogTitle>配置 HTTP 请求</DialogTitle>
                             <DialogDescription className="pt-2">
-                                配置请求的端点、方法和请求体
+                                配置请求的端点、方法和请求体。支持模板变量，例如
+                                {" "}
+                                <code>{"{{execution.id}}"}</code>
+                                {" "}、
+                                <code>{"{{trigger.source}}"}</code>
+                                {" "}、
+                                <code>{"{{steps.NODE_ID.output.body}}"}</code>
                             </DialogDescription>
                         </div>
                     </div>
@@ -112,7 +122,7 @@ export const HttpRequestDialog = ({
                         <FieldGroup>
                             <FieldLabel htmlFor="method">请求方法</FieldLabel>
                             <Select
-                                value={form.watch("method")}
+                                value={method}
                                 onValueChange={(value: "GET" | "POST" | "PATCH" | "DELETE") => form.setValue("method", value)}
                             >
                                 <SelectTrigger className="w-full">
