@@ -4,7 +4,7 @@
  */
 
 // Re-export Prisma's NodeType
-export type { NodeType } from "@/lib/prisma/client/enums"
+export type { NodeType } from "@/lib/prisma/client"
 
 // Convenience export for easier imports
-export { NodeType as NodeTypeEnum } from "@/lib/prisma/client/enums"
+export { NodeType as NodeTypeEnum } from "@/lib/prisma/client"

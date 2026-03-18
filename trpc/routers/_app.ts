@@ -1,6 +1,7 @@
 import { createTRPCRouter, protectedProcedure, baseProcedure } from "../init";
 import { inngest } from "@/inngest/client";
 import { workflowsRouter } from "@/features/workflows/server/router";
+import { executionsRouter } from "@/features/executions/server/router";
 
 export const appRouter = createTRPCRouter({
   session: baseProcedure.query(({ ctx }) => {
@@ -18,6 +19,7 @@ export const appRouter = createTRPCRouter({
   }),
 
   workflows: workflowsRouter,
+  executions: executionsRouter,
 });
 
 // export type definition of API

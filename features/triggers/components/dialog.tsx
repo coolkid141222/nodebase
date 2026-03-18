@@ -15,12 +15,14 @@ interface Props {
     open: boolean;
     onOpenChange: (open: boolean) => void;
     onTrigger?: () => void;
+    disabled?: boolean;
 }
 
 export const ManualTriggerDialog = ({
     open,
     onOpenChange,
     onTrigger,
+    disabled,
 }: Props) => {
     const handleTrigger = () => {
         onTrigger?.();
@@ -47,6 +49,7 @@ export const ManualTriggerDialog = ({
                     <Button
                         variant="default"
                         onClick={handleTrigger}
+                        disabled={disabled}
                     >
                         <PlayIcon className="mr-2 h-4 w-4" />
                         立即触发

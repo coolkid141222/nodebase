@@ -1,16 +1,16 @@
 import { inngest } from "./client";
 import { generateText } from "ai";
 import { google } from "@/lib/ai/proxy";
-import prisma from "@/lib/db";
 import { zhipu } from "ai-sdk-zhipu";
 import { createDeepSeek } from "@ai-sdk/deepseek";
+import { runExecution } from "@/features/executions/server/execution-runner";
 
 const deepseek = createDeepSeek();
 
 export const testAI = inngest.createFunction(
   { id: "AI-providers" },
   { event: "test/ai.providers" },
-  async ({ event, step }) => {
+  async ({ step }) => {
     await step.sleep("pretend", "5s");
 
     const gemini = await step.ai.wrap(
@@ -64,4 +64,19 @@ export const testAI = inngest.createFunction(
       deepseekUsage: deepseekRes.usage,
     };
   }
+);
+
+export const runManualWorkflow = inngest.createFunction(
+  { id: "workflow-manual-execution" },
+  { event: "workflow/manual.triggered" },
+  async ({ event, step }) => {
+    const execution = await step.run("run-manual-workflow", async () => {
+      return runExecution(event.data.executionId);
+    });
+
+    return {
+      executionId: event.data.executionId,
+      status: execution?.status ?? "UNKNOWN",
+    };
+  },
 );
