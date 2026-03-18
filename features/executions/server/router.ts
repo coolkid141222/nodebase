@@ -10,6 +10,70 @@ import {
 } from "./execution-runner";
 
 export const executionsRouter = createTRPCRouter({
+  getMany: protectedProcedure.query(async ({ ctx }) => {
+    return prisma.execution.findMany({
+      where: {
+        workflow: {
+          userId: ctx.user.id,
+        },
+      },
+      include: {
+        workflow: {
+          select: {
+            id: true,
+            name: true,
+          },
+        },
+        steps: {
+          select: {
+            status: true,
+          },
+        },
+      },
+      orderBy: {
+        createdAt: "desc",
+      },
+      take: 50,
+    });
+  }),
+  getOne: protectedProcedure
+    .input(
+      z.object({
+        id: z.string(),
+      }),
+    )
+    .query(async ({ ctx, input }) => {
+      const execution = await prisma.execution.findFirst({
+        where: {
+          id: input.id,
+          workflow: {
+            userId: ctx.user.id,
+          },
+        },
+        include: {
+          workflow: {
+            select: {
+              id: true,
+              name: true,
+            },
+          },
+          steps: {
+            orderBy: {
+              position: "asc",
+            },
+          },
+        },
+      });
+
+      if (!execution) {
+        throw new TRPCError({
+          code: "NOT_FOUND",
+          message: "Execution not found.",
+        });
+      }
+
+      return execution;
+    }),
   triggerManual: protectedProcedure
     .input(
       z.object({
