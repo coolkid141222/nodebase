@@ -1,4 +1,5 @@
 import { createTRPCRouter, protectedProcedure, baseProcedure } from "../init";
+import { credentialsRouter } from "@/features/credentials/server/router";
 import { inngest } from "@/inngest/client";
 import { workflowsRouter } from "@/features/workflows/server/router";
 import { executionsRouter } from "@/features/executions/server/router";
@@ -20,6 +21,7 @@ export const appRouter = createTRPCRouter({
 
   workflows: workflowsRouter,
   executions: executionsRouter,
+  credentials: credentialsRouter,
 });
 
 // export type definition of API
