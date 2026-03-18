@@ -47,9 +47,22 @@ export const credentialsRouter = createTRPCRouter({
         });
       }
 
+      let secretJson: string;
+      try {
+        secretJson = formatCredentialSecretForForm(credential.encryptedData);
+      } catch (error) {
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message:
+            error instanceof Error
+              ? error.message
+              : "Failed to decrypt credential.",
+        });
+      }
+
       return {
         ...credential,
-        secretJson: formatCredentialSecretForForm(credential.encryptedData),
+        secretJson,
       };
     }),
   create: protectedProcedure

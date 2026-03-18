@@ -161,7 +161,10 @@ function CredentialFormCard({
 
           <div className="flex items-center justify-between gap-3">
             <div className="text-sm text-muted-foreground">
-              Scaffold mode: secrets are serialized as JSON now. Encryption comes next.
+              Secrets are encrypted at rest with AES-256-GCM. Set
+              {" "}
+              <code>CREDENTIAL_ENCRYPTION_KEY</code>
+              {" "}to avoid relying on the auth secret fallback.
             </div>
             <div className="flex items-center gap-2">
               {onDelete && (
