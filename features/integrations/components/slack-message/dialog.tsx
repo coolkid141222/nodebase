@@ -5,6 +5,7 @@ import { useQuery } from "@tanstack/react-query";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { MessageSquareIcon } from "lucide-react";
 import { useForm, useWatch } from "react-hook-form";
+import z from "zod";
 import { Button } from "@/components/button";
 import {
   Dialog,
@@ -25,16 +26,9 @@ import {
 } from "@/components/select";
 import { Textarea } from "@/components/textarea";
 import { useTRPC } from "@/trpc/client";
-import {
-  slackMessageNodeSchema,
-  type SlackMessageNodeData,
-} from "../../slack/shared";
+import { slackMessageNodeSchema } from "../../slack/shared";
 
-export type SlackMessageFormValues = SlackMessageNodeData & {
-  credentialId: string;
-  credentialField: string;
-  content: string;
-};
+export type SlackMessageFormValues = z.output<typeof slackMessageNodeSchema>;
 
 type Props = {
   open: boolean;
@@ -59,7 +53,11 @@ export const SlackMessageDialog = ({
     (credential) => credential.provider === "SLACK",
   );
 
-  const form = useForm<SlackMessageFormValues>({
+  const form = useForm<
+    z.input<typeof slackMessageNodeSchema>,
+    unknown,
+    SlackMessageFormValues
+  >({
     resolver: zodResolver(slackMessageNodeSchema),
     defaultValues: {
       credentialId: defaultCredentialId,
@@ -100,7 +98,10 @@ export const SlackMessageDialog = ({
           </div>
         </DialogHeader>
 
-        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+        <form
+          onSubmit={form.handleSubmit((values) => onSubmit(values))}
+          className="space-y-4"
+        >
           <FieldGroup>
             <FieldLabel htmlFor="credentialId">Slack credential</FieldLabel>
             <Select

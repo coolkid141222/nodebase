@@ -54,7 +54,7 @@ type ExecutionPlan = {
   orderedNodes: WorkflowForExecution["nodes"];
 };
 
-type TriggerNodeType = NodeType.MANUAL_TRIGGER | NodeType.WEBHOOK_TRIGGER;
+type TriggerNodeType = "MANUAL_TRIGGER" | "WEBHOOK_TRIGGER";
 
 type NodeExecutionResult = {
   status: ExecutionStepStatus;
@@ -470,9 +470,11 @@ function normalizeDiscordMessageNodeData(
   context: ExecutionTemplateContext,
 ): ResolvedDiscordMessageInput {
   const data = (node.data ?? {}) as DiscordMessageNodeData;
-  const content = data.content
-    ? resolveTemplateString(data.content, context).trim()
+  const resolvedContent = data.content
+    ? resolveTemplateString(data.content, context)
     : "";
+  const content =
+    typeof resolvedContent === "string" ? resolvedContent.trim() : "";
   const credentialId = data.credentialId?.trim();
   const credentialField = data.credentialField?.trim() || "webhookUrl";
 
@@ -502,9 +504,11 @@ function normalizeSlackMessageNodeData(
   context: ExecutionTemplateContext,
 ): ResolvedSlackMessageInput {
   const data = (node.data ?? {}) as SlackMessageNodeData;
-  const content = data.content
-    ? resolveTemplateString(data.content, context).trim()
+  const resolvedContent = data.content
+    ? resolveTemplateString(data.content, context)
     : "";
+  const content =
+    typeof resolvedContent === "string" ? resolvedContent.trim() : "";
   const credentialId = data.credentialId?.trim();
   const credentialField = data.credentialField?.trim() || "webhookUrl";
 
@@ -545,12 +549,14 @@ function normalizeAITextNodeData(
 
   const provider = parsedProvider.data;
   const model = data.model?.trim() || getDefaultAITextModel(provider);
-  const prompt = data.prompt
-    ? resolveTemplateString(data.prompt, context).trim()
+  const resolvedPrompt = data.prompt
+    ? resolveTemplateString(data.prompt, context)
     : "";
-  const system = data.system
-    ? resolveTemplateString(data.system, context).trim()
+  const resolvedSystem = data.system
+    ? resolveTemplateString(data.system, context)
     : "";
+  const prompt = typeof resolvedPrompt === "string" ? resolvedPrompt.trim() : "";
+  const system = typeof resolvedSystem === "string" ? resolvedSystem.trim() : "";
   const credentialId = data.credentialId?.trim();
   const credentialField = data.credentialField?.trim();
 

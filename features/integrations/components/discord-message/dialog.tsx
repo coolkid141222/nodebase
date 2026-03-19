@@ -5,6 +5,7 @@ import { useQuery } from "@tanstack/react-query";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { MessageSquareIcon } from "lucide-react";
 import { useForm, useWatch } from "react-hook-form";
+import z from "zod";
 import { Button } from "@/components/button";
 import {
   Dialog,
@@ -25,16 +26,9 @@ import {
 } from "@/components/select";
 import { Textarea } from "@/components/textarea";
 import { useTRPC } from "@/trpc/client";
-import {
-  discordMessageNodeSchema,
-  type DiscordMessageNodeData,
-} from "../../discord/shared";
+import { discordMessageNodeSchema } from "../../discord/shared";
 
-export type DiscordMessageFormValues = DiscordMessageNodeData & {
-  credentialId: string;
-  credentialField: string;
-  content: string;
-};
+export type DiscordMessageFormValues = z.output<typeof discordMessageNodeSchema>;
 
 type Props = {
   open: boolean;
@@ -59,7 +53,11 @@ export const DiscordMessageDialog = ({
     (credential) => credential.provider === "DISCORD",
   );
 
-  const form = useForm<DiscordMessageFormValues>({
+  const form = useForm<
+    z.input<typeof discordMessageNodeSchema>,
+    unknown,
+    DiscordMessageFormValues
+  >({
     resolver: zodResolver(discordMessageNodeSchema),
     defaultValues: {
       credentialId: defaultCredentialId,
@@ -105,7 +103,10 @@ export const DiscordMessageDialog = ({
           </div>
         </DialogHeader>
 
-        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+        <form
+          onSubmit={form.handleSubmit((values) => onSubmit(values))}
+          className="space-y-4"
+        >
           <FieldGroup>
             <FieldLabel htmlFor="credentialId">Discord credential</FieldLabel>
             <Select

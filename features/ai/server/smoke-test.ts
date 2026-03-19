@@ -1,4 +1,4 @@
-import { generateText } from "ai";
+import { generateText, type LanguageModelUsage } from "ai";
 import { createDeepSeek } from "@ai-sdk/deepseek";
 import { google } from "@/lib/ai/proxy";
 import { DEFAULT_AI_SMOKE_PROMPT } from "../shared";
@@ -39,7 +39,7 @@ type ProviderDefinition = {
   run: (prompt: string) => Promise<{
     text: string;
     finishReason: string;
-    usage?: Record<string, number | undefined> | undefined;
+    usage?: LanguageModelUsage | undefined;
   }>;
 };
 
@@ -94,7 +94,7 @@ const providerDefinitions: ProviderDefinition[] = [
 ];
 
 function summarizeUsage(
-  usage?: Record<string, number | undefined> | undefined,
+  usage?: LanguageModelUsage | undefined,
 ): UsageSummary {
   return {
     inputTokens: usage?.inputTokens ?? null,

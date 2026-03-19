@@ -42,7 +42,7 @@ const formSchema = aiTextNodeSchema.extend({
   system: z.string().optional(),
 });
 
-export type AITextFormValues = z.infer<typeof formSchema>;
+export type AITextFormValues = z.output<typeof formSchema>;
 
 type Props = {
   open: boolean;
@@ -70,7 +70,7 @@ export const AITextDialog = ({
   const trpc = useTRPC();
   const credentialsQuery = useQuery(trpc.credentials.getMany.queryOptions());
 
-  const form = useForm<AITextFormValues>({
+  const form = useForm<z.input<typeof formSchema>, unknown, AITextFormValues>({
     resolver: zodResolver(formSchema),
     defaultValues: {
       provider: defaultProvider,
@@ -86,13 +86,14 @@ export const AITextDialog = ({
     name: "provider",
     defaultValue: defaultProvider,
   });
+  const selectedProvider = provider ?? defaultProvider;
   const credentialId = useWatch({
     control: form.control,
     name: "credentialId",
     defaultValue: defaultCredentialId,
   });
   const credentials = (credentialsQuery.data ?? []).filter(
-    (credential) => credential.provider === provider,
+    (credential) => credential.provider === selectedProvider,
   );
 
   useEffect(() => {
@@ -133,7 +134,10 @@ export const AITextDialog = ({
           </div>
         </DialogHeader>
 
-        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+        <form
+          onSubmit={form.handleSubmit((values) => onSubmit(values))}
+          className="space-y-4"
+        >
           <FieldGroup>
             <FieldLabel htmlFor="provider">Provider</FieldLabel>
             <Select
@@ -170,12 +174,12 @@ export const AITextDialog = ({
               <Input
                 id="model"
                 {...form.register("model")}
-                placeholder={getDefaultAITextModel(provider)}
-              />
-            </Field>
-            <FieldDescription>
-              Suggested default: <code>{getDefaultAITextModel(provider)}</code>
-            </FieldDescription>
+                 placeholder={getDefaultAITextModel(selectedProvider)}
+               />
+             </Field>
+             <FieldDescription>
+               Suggested default: <code>{getDefaultAITextModel(selectedProvider)}</code>
+             </FieldDescription>
             <FieldError errors={[form.formState.errors.model]} />
           </FieldGroup>
 
@@ -188,7 +192,7 @@ export const AITextDialog = ({
               }
             >
               <SelectTrigger className="w-full">
-                <SelectValue placeholder={`Select ${provider} credential`} />
+                <SelectValue placeholder={`Select ${selectedProvider} credential`} />
               </SelectTrigger>
               <SelectContent>
                 {credentials.map((credential) => (

@@ -78,7 +78,7 @@ const formSchema = z.object({
     }
 });
 
-export type FormType = z.infer<typeof formSchema>
+export type FormType = z.output<typeof formSchema>
 
 interface Props {
     open: boolean;
@@ -107,7 +107,7 @@ export const HttpRequestDialog = ({
 }: Props) => {
     const trpc = useTRPC();
     const credentialsQuery = useQuery(trpc.credentials.getMany.queryOptions());
-    const form = useForm<z.infer<typeof formSchema>>({
+    const form = useForm<z.input<typeof formSchema>, unknown, FormType>({
         resolver: zodResolver(formSchema),
         defaultValues: {
             endpoint: defaultEndpoint,
@@ -191,7 +191,10 @@ export const HttpRequestDialog = ({
                     </div>
                 </DialogHeader>
 
-                <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+                <form
+                    onSubmit={form.handleSubmit((values) => onSubmit(values))}
+                    className="space-y-4"
+                >
                     <div className="space-y-4">
                         {/* Endpoint */}
                         <FieldGroup>

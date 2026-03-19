@@ -1,5 +1,4 @@
 import { useEffect, useState } from "react";
-import { PAGINATION } from "@/config/constants";
 
 interface UseEntitySearchOptions<T extends {
     search: string,
@@ -31,9 +30,15 @@ export function useEntitySearch<T extends {
     }, [localSearch, params, setParams, debounceMs]);
 
     useEffect(() => {
-        if (params.search !== localSearch) {
-            localSetSearch(params.search);
+        if (params.search === localSearch) {
+            return;
         }
-    }, [params.search]);
+
+        const timer = setTimeout(() => {
+            localSetSearch(params.search);
+        }, 0);
+
+        return () => clearTimeout(timer);
+    }, [localSearch, params.search]);
     return { searchValue: localSearch, setSearchValue: localSetSearch };
 }
