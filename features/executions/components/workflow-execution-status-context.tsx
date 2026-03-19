@@ -1,6 +1,6 @@
 "use client";
 
-import { createContext, useContext, useEffect, useMemo, type ReactNode } from "react";
+import { createContext, useContext, useMemo, type ReactNode } from "react";
 import { keepPreviousData, useQuery } from "@tanstack/react-query";
 import { usePathname } from "next/navigation";
 
@@ -82,26 +82,17 @@ export function WorkflowExecutionStatusProvider({
     ...trpc.executions.getLatestForWorkflow.queryOptions({ workflowId }),
     placeholderData: keepPreviousData,
     staleTime: 0,
+    refetchInterval: (query) => {
+      const status = query.state.data?.status;
+
+      return status === ExecutionStatus.PENDING || status === ExecutionStatus.RUNNING
+        ? 1000
+        : 5000;
+    },
+    refetchIntervalInBackground: true,
     refetchOnWindowFocus: true,
     refetchOnReconnect: true,
   });
-  const { refetch } = executionQuery;
-
-  useEffect(() => {
-    const status = executionQuery.data?.status;
-
-    if (status !== ExecutionStatus.PENDING && status !== ExecutionStatus.RUNNING) {
-      return;
-    }
-
-    const intervalId = window.setInterval(() => {
-      void refetch();
-    }, 1000);
-
-    return () => {
-      window.clearInterval(intervalId);
-    };
-  }, [executionQuery.data?.status, refetch]);
 
   const value = useMemo<WorkflowExecutionStatusContextValue>(() => {
     const execution = executionQuery.data;

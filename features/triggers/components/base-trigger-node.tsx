@@ -8,7 +8,7 @@ import { BaseHandle } from "@/components/react-flow/base-handle"
 import { BaseNode } from "@/components/react-flow/base-node"
 import { NodeStatusIndicator, type NodeStatus } from "@/components/react-flow/node-status-indicator"
 import { NodeToolbar } from "@xyflow/react"
-import { SettingsIcon, TrashIcon, Check, X, LoaderCircle } from "lucide-react"
+import { SettingsIcon, TrashIcon, Check, X } from "lucide-react"
 import { Button } from "@/components/button"
 
 interface BaseTriggerProps extends NodeProps {
@@ -93,7 +93,7 @@ export const BaseTriggerNode = memo((props: BaseTriggerProps) => {
                     {status && (
                         <div className={`pointer-events-none absolute -bottom-2 -right-2 z-10 size-5 rounded-full flex items-center justify-center ${getStatusColor(status)}`}>
                             {status === "loading" && (
-                                <LoaderCircle className="size-3.5 animate-spin" strokeWidth={2.25} />
+                                <span className="inline-block size-3 rounded-full border-2 border-current border-t-transparent animate-spin" />
                             )}
                             {status === "success" && (
                                 <Check className="size-3 text-white" strokeWidth={3} />

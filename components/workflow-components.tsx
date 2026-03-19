@@ -1,5 +1,5 @@
 import { NodeToolbar } from "@xyflow/react";
-import { SettingsIcon, TrashIcon, Check, X, LoaderCircle } from "lucide-react"
+import { SettingsIcon, TrashIcon, Check, X } from "lucide-react"
 import { Button } from "./button"
 import { ReactNode } from "react";
 import { BaseNode } from "./react-flow/base-node";
@@ -64,7 +64,7 @@ export function WorkflowNode({
                     {status && (
                         <div className={`pointer-events-none absolute -bottom-2 -right-2 z-10 size-5 rounded-full flex items-center justify-center ${getStatusColor(status)}`}>
                             {status === "loading" && (
-                                <LoaderCircle className="size-3.5 animate-spin" strokeWidth={2.25} />
+                                <span className="inline-block size-3 rounded-full border-2 border-current border-t-transparent animate-spin" />
                             )}
                             {status === "success" && (
                                 <Check className="size-3 text-white" strokeWidth={3} />
