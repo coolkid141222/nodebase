@@ -8,15 +8,15 @@ import { BaseExcutionNode } from "@/components/base-execution-node"
 import { HttpRequestDialog } from "./dialog"
 import { FormType } from "./dialog"
 import type { HttpRequestNodeData } from "../../http-request/shared"
+import { useWorkflowNodeStatus } from "../workflow-execution-status-context"
 
 export const HttpRequestNode = memo((props: NodeProps) => {
     const { setNodes } = useReactFlow()
     const nodeData = props.data as HttpRequestNodeData
+    const nodeStatus = useWorkflowNodeStatus(props.id)
     const description = nodeData?.endpoint
         ? `${nodeData.method || "GET"} : ${nodeData.endpoint}${nodeData.credentialId ? " · credential" : ""}`
         : "Not configured"
-
-    const nodeStatus = "success"
     const [dialogOpen, setDialogOpen] = useState(false);
     const handleOpenSettings = () => setDialogOpen(true);
 

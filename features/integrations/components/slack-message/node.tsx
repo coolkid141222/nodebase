@@ -10,10 +10,12 @@ import {
   type SlackMessageFormValues,
 } from "./dialog";
 import type { SlackMessageNodeData } from "../../slack/shared";
+import { useWorkflowNodeStatus } from "@/features/executions/components/workflow-execution-status-context";
 
 export const SlackMessageNode = memo((props: NodeProps) => {
   const { setNodes } = useReactFlow();
   const nodeData = props.data as SlackMessageNodeData;
+  const nodeStatus = useWorkflowNodeStatus(props.id);
   const [dialogOpen, setDialogOpen] = useState(false);
 
   const description = nodeData.content
@@ -54,6 +56,7 @@ export const SlackMessageNode = memo((props: NodeProps) => {
         icon={MessageSquareIcon}
         name="Slack Message"
         description={description}
+        status={nodeStatus}
         onSetting={() => setDialogOpen(true)}
       />
     </>

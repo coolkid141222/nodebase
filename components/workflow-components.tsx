@@ -1,5 +1,5 @@
 import { NodeToolbar } from "@xyflow/react";
-import { SettingsIcon, TrashIcon, Check, X } from "lucide-react"
+import { SettingsIcon, TrashIcon, Check, X, Loader2 } from "lucide-react"
 import { Button } from "./button"
 import { ReactNode } from "react";
 import { BaseNode } from "./react-flow/base-node";
@@ -28,7 +28,7 @@ export function WorkflowNode({
     const getStatusColor = (status?: NodeStatus) => {
         switch (status) {
             case "loading":
-                return "bg-blue-500";
+                return "bg-blue-500 animate-pulse";
             case "success":
                 return "bg-emerald-500";
             case "error":
@@ -61,8 +61,11 @@ export function WorkflowNode({
                     </NodeStatusIndicator>
 
                     {/* Status Badge */}
-                    {status && status !== "loading" && (
+                    {status && (
                         <div className={`absolute bottom-0 right-0 size-5 rounded-full border-2 border-background flex items-center justify-center ${getStatusColor(status)}`}>
+                            {status === "loading" && (
+                                <Loader2 className="size-3 text-white animate-spin" strokeWidth={3} />
+                            )}
                             {status === "success" && (
                                 <Check className="size-3 text-white" strokeWidth={3} />
                             )}

@@ -10,10 +10,12 @@ import {
   type DiscordMessageFormValues,
 } from "./dialog";
 import type { DiscordMessageNodeData } from "../../discord/shared";
+import { useWorkflowNodeStatus } from "@/features/executions/components/workflow-execution-status-context";
 
 export const DiscordMessageNode = memo((props: NodeProps) => {
   const { setNodes } = useReactFlow();
   const nodeData = props.data as DiscordMessageNodeData;
+  const nodeStatus = useWorkflowNodeStatus(props.id);
   const [dialogOpen, setDialogOpen] = useState(false);
 
   const description = nodeData.content
@@ -54,6 +56,7 @@ export const DiscordMessageNode = memo((props: NodeProps) => {
         icon={MessageSquareIcon}
         name="Discord Message"
         description={description}
+        status={nodeStatus}
         onSetting={() => setDialogOpen(true)}
       />
     </>

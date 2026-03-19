@@ -20,17 +20,11 @@ import {
     Panel
 } from '@xyflow/react';
 
-const initialNodes: Node[] = [
-    { id: 'n1', position: { x: 0, y: 0 }, data: { label: 'Node 1' } },
-    { id: 'n2', position: { x: 0, y: 100 }, data: { label: 'Node 2' } },
-];
-
 import { nodeComponents } from "@/config/node-components";
 import { AddNodeButton } from "./add-node-button";
 import { useSetAtom } from "jotai";
 import { editorAtom } from "../store/atoms";
-
-const initialEdges: Edge[] = [{ id: 'n1-n2', source: 'n1', target: 'n2' }];
+import { WorkflowExecutionStatusProvider } from "@/features/executions/components/workflow-execution-status-context";
 
 export const EditorLoading = () => {
     return (
@@ -67,31 +61,33 @@ export const Editor = ({ workflowId }: { workflowId: string }) => {
 
     return (
         <div className="w-full h-full overflow-hidden">
-            <ReactFlow
-                nodes={nodes}
-                edges={edges}
-                onNodesChange={onNodesChange}
-                onEdgesChange={onEdgesChange}
-                onConnect={onConnect}
-                nodeTypes={nodeComponents}
-                onInit={setEditor}
-                fitView
-                snapGrid={[10, 10]}
-                snapToGrid
-                panOnScroll
-                panOnDrag={false}
-                selectionOnDrag
-                proOptions={{
-                    hideAttribution: true
-                }}
-            >
-                <Background variant={BackgroundVariant.Dots} />
-                <Controls />
-                <MiniMap />
-                <Panel position="top-right" className="p-4">
-                    <AddNodeButton />
-                </Panel>
-            </ReactFlow>
+            <WorkflowExecutionStatusProvider workflowId={workflowId}>
+                <ReactFlow
+                    nodes={nodes}
+                    edges={edges}
+                    onNodesChange={onNodesChange}
+                    onEdgesChange={onEdgesChange}
+                    onConnect={onConnect}
+                    nodeTypes={nodeComponents}
+                    onInit={setEditor}
+                    fitView
+                    snapGrid={[10, 10]}
+                    snapToGrid
+                    panOnScroll
+                    panOnDrag={false}
+                    selectionOnDrag
+                    proOptions={{
+                        hideAttribution: true
+                    }}
+                >
+                    <Background variant={BackgroundVariant.Dots} />
+                    <Controls />
+                    <MiniMap />
+                    <Panel position="top-right" className="p-4">
+                        <AddNodeButton />
+                    </Panel>
+                </ReactFlow>
+            </WorkflowExecutionStatusProvider>
         </div>
     )
 }

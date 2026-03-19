@@ -11,9 +11,14 @@ export const useManualWorkflowExecution = () => {
 
   return useMutation(
     trpc.executions.triggerManual.mutationOptions({
-      onSuccess: (data) => {
+      onSuccess: (data, variables) => {
         toast.success(`Execution ${data.id} queued`);
         queryClient.invalidateQueries(trpc.executions.getMany.queryOptions());
+        queryClient.invalidateQueries(
+          trpc.executions.getLatestRunningForWorkflow.queryOptions({
+            workflowId: variables.workflowId,
+          }),
+        );
       },
       onError: (error) => {
         toast.error(`Failed to trigger workflow: ${error.message}`);

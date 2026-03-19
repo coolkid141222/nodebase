@@ -10,10 +10,12 @@ import {
   getDefaultAITextModel,
   type AITextNodeData,
 } from "../../text/shared";
+import { useWorkflowNodeStatus } from "@/features/executions/components/workflow-execution-status-context";
 
 export const AITextNode = memo((props: NodeProps) => {
   const { setNodes } = useReactFlow();
   const nodeData = props.data as AITextNodeData;
+  const nodeStatus = useWorkflowNodeStatus(props.id);
   const [dialogOpen, setDialogOpen] = useState(false);
   const provider = nodeData.provider ?? "GOOGLE";
   const providerLabel =
@@ -68,6 +70,7 @@ export const AITextNode = memo((props: NodeProps) => {
         icon={BotIcon}
         name="AI Text"
         description={description}
+        status={nodeStatus}
         onSetting={() => setDialogOpen(true)}
       />
     </>

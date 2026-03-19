@@ -8,7 +8,7 @@ import { BaseHandle } from "@/components/react-flow/base-handle"
 import { BaseNode } from "@/components/react-flow/base-node"
 import { NodeStatusIndicator, type NodeStatus } from "@/components/react-flow/node-status-indicator"
 import { NodeToolbar } from "@xyflow/react"
-import { SettingsIcon, TrashIcon, Check, X } from "lucide-react"
+import { SettingsIcon, TrashIcon, Check, X, Loader2 } from "lucide-react"
 import { Button } from "@/components/button"
 
 interface BaseTriggerProps extends NodeProps {
@@ -29,7 +29,7 @@ export const BaseTriggerNode = memo((props: BaseTriggerProps) => {
     const getStatusColor = (status?: NodeStatus) => {
         switch (status) {
             case "loading":
-                return "bg-blue-500";
+                return "bg-blue-500 animate-pulse";
             case "success":
                 return "bg-emerald-500";
             case "error":
@@ -86,8 +86,11 @@ export const BaseTriggerNode = memo((props: BaseTriggerProps) => {
                     </NodeStatusIndicator>
 
                     {/* Status Badge */}
-                    {status && status !== "loading" && (
+                    {status && (
                         <div className={`absolute bottom-0 right-0 size-5 rounded-full border-2 border-background flex items-center justify-center ${getStatusColor(status)}`}>
+                            {status === "loading" && (
+                                <Loader2 className="size-3 text-white animate-spin" strokeWidth={3} />
+                            )}
                             {status === "success" && (
                                 <Check className="size-3 text-white" strokeWidth={3} />
                             )}
