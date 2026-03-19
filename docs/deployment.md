@@ -44,6 +44,28 @@ For this repo, the least-friction production path is:
 
 Use [`.env.example`](../.env.example) as the starting template.
 
+## Reuse current env safely
+
+Your local `.env` currently contains these active names:
+
+- `DATABASE_URL`
+- `BETTER_AUTH_SECRET`
+- `BETTER_AUTH_URL`
+- `GOOGLE_GENERATIVE_AI_API_KEY`
+- `DEEPSEEK_API_KEY`
+- `GOOGLE_USE_PROXY`
+- `GOOGLE_PROXY_URL`
+- `SENTRY_AUTH_TOKEN`
+
+These are the ones that map directly to the deployed app. Do not paste raw values into source control; add them in Vercel's dashboard or with `vercel env`.
+
+Current legacy values in `.env` that are not used by the deployed code path:
+
+- `ZHIPU_API_KEY`
+- `ZHIPU_BASE_URL`
+
+If you want a cleaner production setup, omit those legacy values from the Vercel project entirely.
+
 ## Neon
 
 Use two connection strings:
@@ -57,8 +79,9 @@ This repo already points Prisma CLI at `DIRECT_URL` through [`prisma.config.ts`]
 
 1. Import the repo into Vercel.
 2. Add the environment variables from this guide.
-3. If you use Preview deployments, give Preview its own database instead of reusing Production.
-4. Deploy once.
+3. Add `DIRECT_URL` for Production from Neon's direct connection string.
+4. If you use Preview deployments, give Preview its own database instead of reusing Production.
+5. Deploy once.
 
 Better Auth is configured to accept `localhost:3000`, `127.0.0.1:3000`, the host from `BETTER_AUTH_URL`/`VERCEL_PROJECT_PRODUCTION_URL`, and the current request URL origin so Vercel preview URLs can still pass origin validation without a broad wildcard.
 
@@ -87,6 +110,7 @@ Production notes:
 - The route is pinned to `runtime = "nodejs"`.
 - The route exports `maxDuration = 300` for Vercel.
 - The Inngest client now sets `appVersion` from Vercel deployment metadata when available.
+- On Vercel, use the official Inngest integration or set `INNGEST_EVENT_KEY` and `INNGEST_SIGNING_KEY` manually in the project settings.
 
 If Vercel Deployment Protection is enabled, Inngest needs either:
 
@@ -111,6 +135,7 @@ If you enable Paddle:
 4. Confirm `/executions` shows the run.
 5. Confirm Inngest syncs functions successfully.
 6. If Paddle is enabled, verify the webhook endpoint returns a signed success response from Paddle.
+7. Confirm the webhook trigger dialog copies a URL that includes the `token` query parameter.
 
 ## References
 
