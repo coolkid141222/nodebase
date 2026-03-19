@@ -2,7 +2,6 @@
 
 import Link from "next/link";
 import { formatDistanceToNow } from "date-fns";
-import { useMemo } from "react";
 import { Check, Clock3, X } from "lucide-react";
 import {
   Card,
@@ -16,6 +15,16 @@ import {
 } from "./workflow-execution-status-context";
 
 type StatusValue = ExecutionStatus | ExecutionStepStatus;
+type PreviewExecution = {
+  status: ExecutionStatus;
+  steps: Array<{
+    nodeType: string;
+    nodeName: string;
+    status: ExecutionStepStatus;
+    output: unknown;
+    error: unknown;
+  }>;
+};
 
 function getExecutionStatusClasses(status: StatusValue) {
   switch (status) {
@@ -61,7 +70,9 @@ function StatusChip({
       className={`inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-[11px] font-medium ${classes}`}
     >
       {status === "RUNNING" && (
-        <span className="inline-block size-3 rounded-full border-2 border-current border-t-transparent animate-spin" />
+        <span className="inline-flex size-3 shrink-0 items-center justify-center">
+          <span className="block size-3 rounded-full border-[1.5px] border-current border-t-transparent animate-spin" />
+        </span>
       )}
       {status === "SUCCESS" && <Check className="size-3" />}
       {status === "FAILED" && <X className="size-3" />}
@@ -111,21 +122,49 @@ function getStepSummaryNote(
   return "Final step output for this run.";
 }
 
-function pickPreviewStep(execution: {
-  status: ExecutionStatus;
-  steps: Array<{
-    nodeType: string;
-    nodeName: string;
-    status: ExecutionStepStatus;
-    output: unknown;
-    error: unknown;
-  }>;
-}) {
+function getDisplayExecutionStatus(execution: PreviewExecution): ExecutionStatus {
+  if (
+    execution.status !== ExecutionStatus.RUNNING &&
+    execution.status !== ExecutionStatus.PENDING
+  ) {
+    return execution.status;
+  }
+
+  if (execution.steps.some((step) => step.status === ExecutionStepStatus.FAILED)) {
+    return ExecutionStatus.FAILED;
+  }
+
+  if (execution.steps.some((step) => step.status === ExecutionStepStatus.RUNNING)) {
+    return ExecutionStatus.RUNNING;
+  }
+
+  if (
+    execution.steps.length > 0 &&
+    execution.steps.every(
+      (step) =>
+        step.status === ExecutionStepStatus.SUCCESS ||
+        step.status === ExecutionStepStatus.SKIPPED,
+    )
+  ) {
+    return ExecutionStatus.SUCCESS;
+  }
+
+  return execution.status;
+}
+
+function pickFocusedStep(
+  execution: PreviewExecution,
+  displayStatus: ExecutionStatus,
+) {
   const steps = execution.steps;
   const terminalSteps = [...steps].reverse();
 
-  if (execution.status === ExecutionStatus.RUNNING || execution.status === ExecutionStatus.PENDING) {
+  if (
+    displayStatus === ExecutionStatus.RUNNING ||
+    displayStatus === ExecutionStatus.PENDING
+  ) {
     return (
+      steps.find((step) => step.status === ExecutionStepStatus.RUNNING) ??
       terminalSteps.find(
         (step) =>
           step.status === "SUCCESS" &&
@@ -133,7 +172,6 @@ function pickPreviewStep(execution: {
           step.nodeType !== "WEBHOOK_TRIGGER",
       ) ??
       terminalSteps.find((step) => step.status === "FAILED") ??
-      steps.find((step) => step.status === "RUNNING") ??
       steps.find((step) => step.status === "FAILED") ??
       steps.at(-1)
     );
@@ -150,6 +188,35 @@ function pickPreviewStep(execution: {
     terminalSteps.find((step) => step.output != null) ??
     steps.at(-1)
   );
+}
+
+function pickResultStep(
+  execution: PreviewExecution,
+  displayStatus: ExecutionStatus,
+  focusedStep:
+    | PreviewExecution["steps"][number]
+    | undefined,
+) {
+  const terminalSteps = [...execution.steps].reverse();
+
+  if (
+    displayStatus === ExecutionStatus.RUNNING ||
+    displayStatus === ExecutionStatus.PENDING
+  ) {
+    return (
+      terminalSteps.find(
+        (step) =>
+          step.output != null &&
+          step.nodeType !== "MANUAL_TRIGGER" &&
+          step.nodeType !== "WEBHOOK_TRIGGER",
+      ) ??
+      terminalSteps.find((step) => step.error != null) ??
+      terminalSteps.find((step) => step.output != null) ??
+      focusedStep
+    );
+  }
+
+  return focusedStep;
 }
 
 function extractPreviewResult(value: unknown) {
@@ -198,10 +265,19 @@ function extractPreviewResult(value: unknown) {
 
 function ExecutionPreviewCard() {
   const { execution } = useWorkflowExecutionStatus();
-  const previewStep = execution ? pickPreviewStep(execution) : undefined;
-  const previewResult = useMemo(
-    () => extractPreviewResult(previewStep?.output ?? previewStep?.error),
-    [previewStep?.output, previewStep?.error],
+  const displayStatus = execution
+    ? getDisplayExecutionStatus(execution)
+    : undefined;
+  const focusedStep =
+    execution && displayStatus
+      ? pickFocusedStep(execution, displayStatus)
+      : undefined;
+  const resultStep =
+    execution && displayStatus
+      ? pickResultStep(execution, displayStatus, focusedStep)
+      : undefined;
+  const previewResult = extractPreviewResult(
+    resultStep?.output ?? resultStep?.error,
   );
 
   if (!execution) {
@@ -229,7 +305,7 @@ function ExecutionPreviewCard() {
 
   return (
     <Card className="w-full min-w-0 max-h-[28rem] overflow-hidden border-border/60 bg-background/95 shadow-sm">
-      <div className={`h-1 w-full ${getExecutionAccentClass(execution.status)}`} />
+      <div className={`h-1 w-full ${getExecutionAccentClass(displayStatus ?? execution.status)}`} />
       <div className="flex min-h-0 w-full min-w-0 flex-col overflow-y-auto overflow-x-hidden">
         <CardHeader className="space-y-3 pb-3">
           <div className="flex items-start justify-between gap-3 min-w-0">
@@ -238,7 +314,7 @@ function ExecutionPreviewCard() {
                 Run preview
               </CardDescription>
               <div className="flex flex-wrap items-center gap-2">
-                <StatusChip status={execution.status} />
+                <StatusChip status={displayStatus ?? execution.status} />
                 <span className="text-xs text-muted-foreground break-all">
                   {formatDistanceToNow(new Date(execution.createdAt), {
                     addSuffix: true,
@@ -254,19 +330,19 @@ function ExecutionPreviewCard() {
             </Link>
           </div>
 
-          {previewStep && (
+          {focusedStep && (
             <div className="rounded-xl border border-border/70 bg-muted/25 p-3">
               <div className="text-[11px] uppercase tracking-[0.16em] text-muted-foreground">
-                {execution.status === ExecutionStatus.RUNNING ||
-                execution.status === ExecutionStatus.PENDING
+                {(displayStatus ?? execution.status) === ExecutionStatus.RUNNING ||
+                (displayStatus ?? execution.status) === ExecutionStatus.PENDING
                   ? "Focused step"
                   : "Final step"}
               </div>
               <div className="mt-1 truncate text-sm font-medium text-foreground">
-                {previewStep.nodeName}
+                {focusedStep.nodeName}
               </div>
               <div className="mt-1 text-xs leading-5 text-muted-foreground">
-                {getStepSummaryNote(execution.status, previewStep.status)}
+                {getStepSummaryNote(displayStatus ?? execution.status, focusedStep.status)}
               </div>
             </div>
           )}
@@ -274,7 +350,7 @@ function ExecutionPreviewCard() {
         <CardContent className="space-y-2 pb-4">
           <div className="space-y-1">
             <div className="text-xs font-medium text-muted-foreground">
-              {getResultLabel(execution.status, previewStep?.status)}
+              {getResultLabel(displayStatus ?? execution.status, resultStep?.status)}
             </div>
             <div className="max-h-28 overflow-y-auto overflow-x-hidden break-words rounded-xl border border-border/70 bg-background p-3 text-sm leading-5">
               {previewResult || "No extractable result yet."}
