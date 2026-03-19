@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { formatDistanceToNow } from "date-fns";
 import { useMemo } from "react";
 import { Check, Clock3, X } from "lucide-react";
@@ -32,6 +33,22 @@ function getExecutionStatusClasses(status: StatusValue) {
   }
 }
 
+function getExecutionAccentClass(status: ExecutionStatus) {
+  switch (status) {
+    case "RUNNING":
+    case "PENDING":
+      return "bg-blue-600";
+    case "SUCCESS":
+      return "bg-emerald-600";
+    case "FAILED":
+      return "bg-red-600";
+    case "CANCELED":
+      return "bg-zinc-500";
+    default:
+      return "bg-gray-500";
+  }
+}
+
 function StatusChip({
   status,
 }: {
@@ -56,12 +73,42 @@ function StatusChip({
   );
 }
 
-function StepNamePill({ label }: { label: string }) {
-  return (
-    <div className="inline-flex max-w-full items-center rounded-full border border-border/70 bg-background px-2.5 py-1 text-[11px] font-medium text-muted-foreground">
-      <span className="truncate">Step: {label}</span>
-    </div>
-  );
+function getResultLabel(
+  executionStatus: ExecutionStatus,
+  stepStatus?: ExecutionStepStatus,
+) {
+  if (stepStatus === "FAILED" || executionStatus === "FAILED") {
+    return "Error";
+  }
+
+  if (stepStatus === "RUNNING") {
+    return "Current output";
+  }
+
+  if (executionStatus === ExecutionStatus.RUNNING || executionStatus === ExecutionStatus.PENDING) {
+    return "Latest output";
+  }
+
+  return "Result";
+}
+
+function getStepSummaryNote(
+  executionStatus: ExecutionStatus,
+  stepStatus?: ExecutionStepStatus,
+) {
+  if (!stepStatus) {
+    return "No step has produced output yet.";
+  }
+
+  if (stepStatus === "RUNNING") {
+    return "This step is still processing.";
+  }
+
+  if (executionStatus === ExecutionStatus.RUNNING || executionStatus === ExecutionStatus.PENDING) {
+    return "Latest finished step while the workflow continues.";
+  }
+
+  return "Final step output for this run.";
 }
 
 function pickPreviewStep(execution: {
@@ -79,9 +126,15 @@ function pickPreviewStep(execution: {
 
   if (execution.status === ExecutionStatus.RUNNING || execution.status === ExecutionStatus.PENDING) {
     return (
+      terminalSteps.find(
+        (step) =>
+          step.status === "SUCCESS" &&
+          step.nodeType !== "MANUAL_TRIGGER" &&
+          step.nodeType !== "WEBHOOK_TRIGGER",
+      ) ??
+      terminalSteps.find((step) => step.status === "FAILED") ??
       steps.find((step) => step.status === "RUNNING") ??
       steps.find((step) => step.status === "FAILED") ??
-      steps.find((step) => step.output != null) ??
       steps.at(-1)
     );
   }
@@ -154,13 +207,21 @@ function ExecutionPreviewCard() {
   if (!execution) {
     return (
       <Card className="w-full min-w-0 max-h-[20rem] overflow-hidden border-border/60 bg-background/95 shadow-sm">
+        <div className="h-1 w-full bg-muted" />
         <CardHeader className="space-y-2">
-          <CardDescription className="text-xs">
-            Run the workflow to inspect the latest result here.
-          </CardDescription>
+          <div className="flex items-start justify-between gap-3">
+            <div className="min-w-0 space-y-1">
+              <CardDescription className="text-[11px] uppercase tracking-[0.18em]">
+                Run preview
+              </CardDescription>
+              <p className="text-sm font-medium text-foreground">
+                No execution yet
+              </p>
+            </div>
+          </div>
         </CardHeader>
-        <CardContent className="text-sm text-muted-foreground">
-          No execution yet.
+        <CardContent className="space-y-3 text-sm text-muted-foreground">
+          <p>Run the workflow to inspect the latest result here.</p>
         </CardContent>
       </Card>
     );
@@ -168,30 +229,54 @@ function ExecutionPreviewCard() {
 
   return (
     <Card className="w-full min-w-0 max-h-[28rem] overflow-hidden border-border/60 bg-background/95 shadow-sm">
+      <div className={`h-1 w-full ${getExecutionAccentClass(execution.status)}`} />
       <div className="flex min-h-0 w-full min-w-0 flex-col overflow-y-auto overflow-x-hidden">
-        <CardHeader className="space-y-1 pb-3">
+        <CardHeader className="space-y-3 pb-3">
           <div className="flex items-start justify-between gap-3 min-w-0">
             <div className="min-w-0 space-y-1">
-              <CardDescription className="text-xs break-all">
-                {formatDistanceToNow(new Date(execution.createdAt), {
-                  addSuffix: true,
-                })}
+              <CardDescription className="text-[11px] uppercase tracking-[0.18em]">
+                Run preview
               </CardDescription>
               <div className="flex flex-wrap items-center gap-2">
-                <StatusChip
-                  status={previewStep?.status ?? execution.status}
-                />
-                {previewStep && <StepNamePill label={previewStep.nodeName} />}
+                <StatusChip status={execution.status} />
+                <span className="text-xs text-muted-foreground break-all">
+                  {formatDistanceToNow(new Date(execution.createdAt), {
+                    addSuffix: true,
+                  })}
+                </span>
               </div>
             </div>
+            <Link
+              href={`/executions/${execution.id}`}
+              className="shrink-0 text-[11px] font-medium text-muted-foreground transition-colors hover:text-foreground"
+            >
+              Open
+            </Link>
           </div>
+
+          {previewStep && (
+            <div className="rounded-xl border border-border/70 bg-muted/25 p-3">
+              <div className="text-[11px] uppercase tracking-[0.16em] text-muted-foreground">
+                {execution.status === ExecutionStatus.RUNNING ||
+                execution.status === ExecutionStatus.PENDING
+                  ? "Focused step"
+                  : "Final step"}
+              </div>
+              <div className="mt-1 truncate text-sm font-medium text-foreground">
+                {previewStep.nodeName}
+              </div>
+              <div className="mt-1 text-xs leading-5 text-muted-foreground">
+                {getStepSummaryNote(execution.status, previewStep.status)}
+              </div>
+            </div>
+          )}
         </CardHeader>
         <CardContent className="space-y-2 pb-4">
           <div className="space-y-1">
             <div className="text-xs font-medium text-muted-foreground">
-              {previewStep?.status === "RUNNING" ? "Current output" : "Result"}
+              {getResultLabel(execution.status, previewStep?.status)}
             </div>
-            <div className="max-h-20 overflow-y-auto overflow-x-hidden break-words rounded-md border bg-muted/30 p-3 text-sm leading-5">
+            <div className="max-h-28 overflow-y-auto overflow-x-hidden break-words rounded-xl border border-border/70 bg-background p-3 text-sm leading-5">
               {previewResult || "No extractable result yet."}
             </div>
           </div>
