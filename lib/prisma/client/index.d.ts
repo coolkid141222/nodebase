@@ -68,13 +68,42 @@ export type ExecutionStep = $Result.DefaultSelection<Prisma.$ExecutionStepPayloa
  * Enums
  */
 export namespace $Enums {
-  export const NodeType: {
+  export const BillingPlan: {
+  FREE: 'FREE',
+  PRO: 'PRO'
+};
+
+export type BillingPlan = (typeof BillingPlan)[keyof typeof BillingPlan]
+
+
+export const BillingProvider: {
+  MOCK: 'MOCK',
+  PADDLE: 'PADDLE'
+};
+
+export type BillingProvider = (typeof BillingProvider)[keyof typeof BillingProvider]
+
+
+export const BillingStatus: {
+  INACTIVE: 'INACTIVE',
+  ACTIVE: 'ACTIVE',
+  CANCELED: 'CANCELED'
+};
+
+export type BillingStatus = (typeof BillingStatus)[keyof typeof BillingStatus]
+
+
+export const NodeType: {
   INITIAL: 'INITIAL',
   TRIGGER: 'TRIGGER',
   ACTION: 'ACTION',
   CONDITION: 'CONDITION',
   HTTP_REQUEST: 'HTTP_REQUEST',
-  MANUAL_TRIGGER: 'MANUAL_TRIGGER'
+  MANUAL_TRIGGER: 'MANUAL_TRIGGER',
+  WEBHOOK_TRIGGER: 'WEBHOOK_TRIGGER',
+  AI_TEXT: 'AI_TEXT',
+  DISCORD_MESSAGE: 'DISCORD_MESSAGE',
+  SLACK_MESSAGE: 'SLACK_MESSAGE'
 };
 
 export type NodeType = (typeof NodeType)[keyof typeof NodeType]
@@ -125,6 +154,18 @@ export const ExecutionStepStatus: {
 export type ExecutionStepStatus = (typeof ExecutionStepStatus)[keyof typeof ExecutionStepStatus]
 
 }
+
+export type BillingPlan = $Enums.BillingPlan
+
+export const BillingPlan: typeof $Enums.BillingPlan
+
+export type BillingProvider = $Enums.BillingProvider
+
+export const BillingProvider: typeof $Enums.BillingProvider
+
+export type BillingStatus = $Enums.BillingStatus
+
+export const BillingStatus: typeof $Enums.BillingStatus
 
 export type NodeType = $Enums.NodeType
 
@@ -1973,6 +2014,14 @@ export namespace Prisma {
     email: string | null
     emailVerified: boolean | null
     image: string | null
+    plan: $Enums.BillingPlan | null
+    billingProvider: $Enums.BillingProvider | null
+    billingStatus: $Enums.BillingStatus | null
+    billingCustomerId: string | null
+    billingSubscriptionId: string | null
+    billingCurrentPeriodEnd: Date | null
+    billingLastEventId: string | null
+    billingLastEventAt: Date | null
     createdAt: Date | null
     updatedAt: Date | null
   }
@@ -1983,6 +2032,14 @@ export namespace Prisma {
     email: string | null
     emailVerified: boolean | null
     image: string | null
+    plan: $Enums.BillingPlan | null
+    billingProvider: $Enums.BillingProvider | null
+    billingStatus: $Enums.BillingStatus | null
+    billingCustomerId: string | null
+    billingSubscriptionId: string | null
+    billingCurrentPeriodEnd: Date | null
+    billingLastEventId: string | null
+    billingLastEventAt: Date | null
     createdAt: Date | null
     updatedAt: Date | null
   }
@@ -1993,6 +2050,14 @@ export namespace Prisma {
     email: number
     emailVerified: number
     image: number
+    plan: number
+    billingProvider: number
+    billingStatus: number
+    billingCustomerId: number
+    billingSubscriptionId: number
+    billingCurrentPeriodEnd: number
+    billingLastEventId: number
+    billingLastEventAt: number
     createdAt: number
     updatedAt: number
     _all: number
@@ -2005,6 +2070,14 @@ export namespace Prisma {
     email?: true
     emailVerified?: true
     image?: true
+    plan?: true
+    billingProvider?: true
+    billingStatus?: true
+    billingCustomerId?: true
+    billingSubscriptionId?: true
+    billingCurrentPeriodEnd?: true
+    billingLastEventId?: true
+    billingLastEventAt?: true
     createdAt?: true
     updatedAt?: true
   }
@@ -2015,6 +2088,14 @@ export namespace Prisma {
     email?: true
     emailVerified?: true
     image?: true
+    plan?: true
+    billingProvider?: true
+    billingStatus?: true
+    billingCustomerId?: true
+    billingSubscriptionId?: true
+    billingCurrentPeriodEnd?: true
+    billingLastEventId?: true
+    billingLastEventAt?: true
     createdAt?: true
     updatedAt?: true
   }
@@ -2025,6 +2106,14 @@ export namespace Prisma {
     email?: true
     emailVerified?: true
     image?: true
+    plan?: true
+    billingProvider?: true
+    billingStatus?: true
+    billingCustomerId?: true
+    billingSubscriptionId?: true
+    billingCurrentPeriodEnd?: true
+    billingLastEventId?: true
+    billingLastEventAt?: true
     createdAt?: true
     updatedAt?: true
     _all?: true
@@ -2108,6 +2197,14 @@ export namespace Prisma {
     email: string
     emailVerified: boolean
     image: string | null
+    plan: $Enums.BillingPlan
+    billingProvider: $Enums.BillingProvider | null
+    billingStatus: $Enums.BillingStatus
+    billingCustomerId: string | null
+    billingSubscriptionId: string | null
+    billingCurrentPeriodEnd: Date | null
+    billingLastEventId: string | null
+    billingLastEventAt: Date | null
     createdAt: Date
     updatedAt: Date
     _count: UserCountAggregateOutputType | null
@@ -2135,6 +2232,14 @@ export namespace Prisma {
     email?: boolean
     emailVerified?: boolean
     image?: boolean
+    plan?: boolean
+    billingProvider?: boolean
+    billingStatus?: boolean
+    billingCustomerId?: boolean
+    billingSubscriptionId?: boolean
+    billingCurrentPeriodEnd?: boolean
+    billingLastEventId?: boolean
+    billingLastEventAt?: boolean
     createdAt?: boolean
     updatedAt?: boolean
     sessions?: boolean | User$sessionsArgs<ExtArgs>
@@ -2151,6 +2256,14 @@ export namespace Prisma {
     email?: boolean
     emailVerified?: boolean
     image?: boolean
+    plan?: boolean
+    billingProvider?: boolean
+    billingStatus?: boolean
+    billingCustomerId?: boolean
+    billingSubscriptionId?: boolean
+    billingCurrentPeriodEnd?: boolean
+    billingLastEventId?: boolean
+    billingLastEventAt?: boolean
     createdAt?: boolean
     updatedAt?: boolean
   }, ExtArgs["result"]["user"]>
@@ -2161,6 +2274,14 @@ export namespace Prisma {
     email?: boolean
     emailVerified?: boolean
     image?: boolean
+    plan?: boolean
+    billingProvider?: boolean
+    billingStatus?: boolean
+    billingCustomerId?: boolean
+    billingSubscriptionId?: boolean
+    billingCurrentPeriodEnd?: boolean
+    billingLastEventId?: boolean
+    billingLastEventAt?: boolean
     createdAt?: boolean
     updatedAt?: boolean
   }, ExtArgs["result"]["user"]>
@@ -2171,11 +2292,19 @@ export namespace Prisma {
     email?: boolean
     emailVerified?: boolean
     image?: boolean
+    plan?: boolean
+    billingProvider?: boolean
+    billingStatus?: boolean
+    billingCustomerId?: boolean
+    billingSubscriptionId?: boolean
+    billingCurrentPeriodEnd?: boolean
+    billingLastEventId?: boolean
+    billingLastEventAt?: boolean
     createdAt?: boolean
     updatedAt?: boolean
   }
 
-  export type UserOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "name" | "email" | "emailVerified" | "image" | "createdAt" | "updatedAt", ExtArgs["result"]["user"]>
+  export type UserOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "name" | "email" | "emailVerified" | "image" | "plan" | "billingProvider" | "billingStatus" | "billingCustomerId" | "billingSubscriptionId" | "billingCurrentPeriodEnd" | "billingLastEventId" | "billingLastEventAt" | "createdAt" | "updatedAt", ExtArgs["result"]["user"]>
   export type UserInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     sessions?: boolean | User$sessionsArgs<ExtArgs>
     accounts?: boolean | User$accountsArgs<ExtArgs>
@@ -2202,6 +2331,14 @@ export namespace Prisma {
       email: string
       emailVerified: boolean
       image: string | null
+      plan: $Enums.BillingPlan
+      billingProvider: $Enums.BillingProvider | null
+      billingStatus: $Enums.BillingStatus
+      billingCustomerId: string | null
+      billingSubscriptionId: string | null
+      billingCurrentPeriodEnd: Date | null
+      billingLastEventId: string | null
+      billingLastEventAt: Date | null
       createdAt: Date
       updatedAt: Date
     }, ExtArgs["result"]["user"]>
@@ -2637,6 +2774,14 @@ export namespace Prisma {
     readonly email: FieldRef<"User", 'String'>
     readonly emailVerified: FieldRef<"User", 'Boolean'>
     readonly image: FieldRef<"User", 'String'>
+    readonly plan: FieldRef<"User", 'BillingPlan'>
+    readonly billingProvider: FieldRef<"User", 'BillingProvider'>
+    readonly billingStatus: FieldRef<"User", 'BillingStatus'>
+    readonly billingCustomerId: FieldRef<"User", 'String'>
+    readonly billingSubscriptionId: FieldRef<"User", 'String'>
+    readonly billingCurrentPeriodEnd: FieldRef<"User", 'DateTime'>
+    readonly billingLastEventId: FieldRef<"User", 'String'>
+    readonly billingLastEventAt: FieldRef<"User", 'DateTime'>
     readonly createdAt: FieldRef<"User", 'DateTime'>
     readonly updatedAt: FieldRef<"User", 'DateTime'>
   }
@@ -13473,6 +13618,14 @@ export namespace Prisma {
     email: 'email',
     emailVerified: 'emailVerified',
     image: 'image',
+    plan: 'plan',
+    billingProvider: 'billingProvider',
+    billingStatus: 'billingStatus',
+    billingCustomerId: 'billingCustomerId',
+    billingSubscriptionId: 'billingSubscriptionId',
+    billingCurrentPeriodEnd: 'billingCurrentPeriodEnd',
+    billingLastEventId: 'billingLastEventId',
+    billingLastEventAt: 'billingLastEventAt',
     createdAt: 'createdAt',
     updatedAt: 'updatedAt'
   };
@@ -13697,6 +13850,48 @@ export namespace Prisma {
 
 
   /**
+   * Reference to a field of type 'BillingPlan'
+   */
+  export type EnumBillingPlanFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'BillingPlan'>
+    
+
+
+  /**
+   * Reference to a field of type 'BillingPlan[]'
+   */
+  export type ListEnumBillingPlanFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'BillingPlan[]'>
+    
+
+
+  /**
+   * Reference to a field of type 'BillingProvider'
+   */
+  export type EnumBillingProviderFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'BillingProvider'>
+    
+
+
+  /**
+   * Reference to a field of type 'BillingProvider[]'
+   */
+  export type ListEnumBillingProviderFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'BillingProvider[]'>
+    
+
+
+  /**
+   * Reference to a field of type 'BillingStatus'
+   */
+  export type EnumBillingStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'BillingStatus'>
+    
+
+
+  /**
+   * Reference to a field of type 'BillingStatus[]'
+   */
+  export type ListEnumBillingStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'BillingStatus[]'>
+    
+
+
+  /**
    * Reference to a field of type 'DateTime'
    */
   export type DateTimeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'DateTime'>
@@ -13834,6 +14029,14 @@ export namespace Prisma {
     email?: StringFilter<"User"> | string
     emailVerified?: BoolFilter<"User"> | boolean
     image?: StringNullableFilter<"User"> | string | null
+    plan?: EnumBillingPlanFilter<"User"> | $Enums.BillingPlan
+    billingProvider?: EnumBillingProviderNullableFilter<"User"> | $Enums.BillingProvider | null
+    billingStatus?: EnumBillingStatusFilter<"User"> | $Enums.BillingStatus
+    billingCustomerId?: StringNullableFilter<"User"> | string | null
+    billingSubscriptionId?: StringNullableFilter<"User"> | string | null
+    billingCurrentPeriodEnd?: DateTimeNullableFilter<"User"> | Date | string | null
+    billingLastEventId?: StringNullableFilter<"User"> | string | null
+    billingLastEventAt?: DateTimeNullableFilter<"User"> | Date | string | null
     createdAt?: DateTimeFilter<"User"> | Date | string
     updatedAt?: DateTimeFilter<"User"> | Date | string
     sessions?: SessionListRelationFilter
@@ -13849,6 +14052,14 @@ export namespace Prisma {
     email?: SortOrder
     emailVerified?: SortOrder
     image?: SortOrderInput | SortOrder
+    plan?: SortOrder
+    billingProvider?: SortOrderInput | SortOrder
+    billingStatus?: SortOrder
+    billingCustomerId?: SortOrderInput | SortOrder
+    billingSubscriptionId?: SortOrderInput | SortOrder
+    billingCurrentPeriodEnd?: SortOrderInput | SortOrder
+    billingLastEventId?: SortOrderInput | SortOrder
+    billingLastEventAt?: SortOrderInput | SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
     sessions?: SessionOrderByRelationAggregateInput
@@ -13867,6 +14078,14 @@ export namespace Prisma {
     name?: StringFilter<"User"> | string
     emailVerified?: BoolFilter<"User"> | boolean
     image?: StringNullableFilter<"User"> | string | null
+    plan?: EnumBillingPlanFilter<"User"> | $Enums.BillingPlan
+    billingProvider?: EnumBillingProviderNullableFilter<"User"> | $Enums.BillingProvider | null
+    billingStatus?: EnumBillingStatusFilter<"User"> | $Enums.BillingStatus
+    billingCustomerId?: StringNullableFilter<"User"> | string | null
+    billingSubscriptionId?: StringNullableFilter<"User"> | string | null
+    billingCurrentPeriodEnd?: DateTimeNullableFilter<"User"> | Date | string | null
+    billingLastEventId?: StringNullableFilter<"User"> | string | null
+    billingLastEventAt?: DateTimeNullableFilter<"User"> | Date | string | null
     createdAt?: DateTimeFilter<"User"> | Date | string
     updatedAt?: DateTimeFilter<"User"> | Date | string
     sessions?: SessionListRelationFilter
@@ -13882,6 +14101,14 @@ export namespace Prisma {
     email?: SortOrder
     emailVerified?: SortOrder
     image?: SortOrderInput | SortOrder
+    plan?: SortOrder
+    billingProvider?: SortOrderInput | SortOrder
+    billingStatus?: SortOrder
+    billingCustomerId?: SortOrderInput | SortOrder
+    billingSubscriptionId?: SortOrderInput | SortOrder
+    billingCurrentPeriodEnd?: SortOrderInput | SortOrder
+    billingLastEventId?: SortOrderInput | SortOrder
+    billingLastEventAt?: SortOrderInput | SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
     _count?: UserCountOrderByAggregateInput
@@ -13898,6 +14125,14 @@ export namespace Prisma {
     email?: StringWithAggregatesFilter<"User"> | string
     emailVerified?: BoolWithAggregatesFilter<"User"> | boolean
     image?: StringNullableWithAggregatesFilter<"User"> | string | null
+    plan?: EnumBillingPlanWithAggregatesFilter<"User"> | $Enums.BillingPlan
+    billingProvider?: EnumBillingProviderNullableWithAggregatesFilter<"User"> | $Enums.BillingProvider | null
+    billingStatus?: EnumBillingStatusWithAggregatesFilter<"User"> | $Enums.BillingStatus
+    billingCustomerId?: StringNullableWithAggregatesFilter<"User"> | string | null
+    billingSubscriptionId?: StringNullableWithAggregatesFilter<"User"> | string | null
+    billingCurrentPeriodEnd?: DateTimeNullableWithAggregatesFilter<"User"> | Date | string | null
+    billingLastEventId?: StringNullableWithAggregatesFilter<"User"> | string | null
+    billingLastEventAt?: DateTimeNullableWithAggregatesFilter<"User"> | Date | string | null
     createdAt?: DateTimeWithAggregatesFilter<"User"> | Date | string
     updatedAt?: DateTimeWithAggregatesFilter<"User"> | Date | string
   }
@@ -14652,6 +14887,14 @@ export namespace Prisma {
     email: string
     emailVerified?: boolean
     image?: string | null
+    plan?: $Enums.BillingPlan
+    billingProvider?: $Enums.BillingProvider | null
+    billingStatus?: $Enums.BillingStatus
+    billingCustomerId?: string | null
+    billingSubscriptionId?: string | null
+    billingCurrentPeriodEnd?: Date | string | null
+    billingLastEventId?: string | null
+    billingLastEventAt?: Date | string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     sessions?: SessionCreateNestedManyWithoutUserInput
@@ -14667,6 +14910,14 @@ export namespace Prisma {
     email: string
     emailVerified?: boolean
     image?: string | null
+    plan?: $Enums.BillingPlan
+    billingProvider?: $Enums.BillingProvider | null
+    billingStatus?: $Enums.BillingStatus
+    billingCustomerId?: string | null
+    billingSubscriptionId?: string | null
+    billingCurrentPeriodEnd?: Date | string | null
+    billingLastEventId?: string | null
+    billingLastEventAt?: Date | string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     sessions?: SessionUncheckedCreateNestedManyWithoutUserInput
@@ -14682,6 +14933,14 @@ export namespace Prisma {
     email?: StringFieldUpdateOperationsInput | string
     emailVerified?: BoolFieldUpdateOperationsInput | boolean
     image?: NullableStringFieldUpdateOperationsInput | string | null
+    plan?: EnumBillingPlanFieldUpdateOperationsInput | $Enums.BillingPlan
+    billingProvider?: NullableEnumBillingProviderFieldUpdateOperationsInput | $Enums.BillingProvider | null
+    billingStatus?: EnumBillingStatusFieldUpdateOperationsInput | $Enums.BillingStatus
+    billingCustomerId?: NullableStringFieldUpdateOperationsInput | string | null
+    billingSubscriptionId?: NullableStringFieldUpdateOperationsInput | string | null
+    billingCurrentPeriodEnd?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    billingLastEventId?: NullableStringFieldUpdateOperationsInput | string | null
+    billingLastEventAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     sessions?: SessionUpdateManyWithoutUserNestedInput
@@ -14697,6 +14956,14 @@ export namespace Prisma {
     email?: StringFieldUpdateOperationsInput | string
     emailVerified?: BoolFieldUpdateOperationsInput | boolean
     image?: NullableStringFieldUpdateOperationsInput | string | null
+    plan?: EnumBillingPlanFieldUpdateOperationsInput | $Enums.BillingPlan
+    billingProvider?: NullableEnumBillingProviderFieldUpdateOperationsInput | $Enums.BillingProvider | null
+    billingStatus?: EnumBillingStatusFieldUpdateOperationsInput | $Enums.BillingStatus
+    billingCustomerId?: NullableStringFieldUpdateOperationsInput | string | null
+    billingSubscriptionId?: NullableStringFieldUpdateOperationsInput | string | null
+    billingCurrentPeriodEnd?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    billingLastEventId?: NullableStringFieldUpdateOperationsInput | string | null
+    billingLastEventAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     sessions?: SessionUncheckedUpdateManyWithoutUserNestedInput
@@ -14712,6 +14979,14 @@ export namespace Prisma {
     email: string
     emailVerified?: boolean
     image?: string | null
+    plan?: $Enums.BillingPlan
+    billingProvider?: $Enums.BillingProvider | null
+    billingStatus?: $Enums.BillingStatus
+    billingCustomerId?: string | null
+    billingSubscriptionId?: string | null
+    billingCurrentPeriodEnd?: Date | string | null
+    billingLastEventId?: string | null
+    billingLastEventAt?: Date | string | null
     createdAt?: Date | string
     updatedAt?: Date | string
   }
@@ -14722,6 +14997,14 @@ export namespace Prisma {
     email?: StringFieldUpdateOperationsInput | string
     emailVerified?: BoolFieldUpdateOperationsInput | boolean
     image?: NullableStringFieldUpdateOperationsInput | string | null
+    plan?: EnumBillingPlanFieldUpdateOperationsInput | $Enums.BillingPlan
+    billingProvider?: NullableEnumBillingProviderFieldUpdateOperationsInput | $Enums.BillingProvider | null
+    billingStatus?: EnumBillingStatusFieldUpdateOperationsInput | $Enums.BillingStatus
+    billingCustomerId?: NullableStringFieldUpdateOperationsInput | string | null
+    billingSubscriptionId?: NullableStringFieldUpdateOperationsInput | string | null
+    billingCurrentPeriodEnd?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    billingLastEventId?: NullableStringFieldUpdateOperationsInput | string | null
+    billingLastEventAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -14732,6 +15015,14 @@ export namespace Prisma {
     email?: StringFieldUpdateOperationsInput | string
     emailVerified?: BoolFieldUpdateOperationsInput | boolean
     image?: NullableStringFieldUpdateOperationsInput | string | null
+    plan?: EnumBillingPlanFieldUpdateOperationsInput | $Enums.BillingPlan
+    billingProvider?: NullableEnumBillingProviderFieldUpdateOperationsInput | $Enums.BillingProvider | null
+    billingStatus?: EnumBillingStatusFieldUpdateOperationsInput | $Enums.BillingStatus
+    billingCustomerId?: NullableStringFieldUpdateOperationsInput | string | null
+    billingSubscriptionId?: NullableStringFieldUpdateOperationsInput | string | null
+    billingCurrentPeriodEnd?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    billingLastEventId?: NullableStringFieldUpdateOperationsInput | string | null
+    billingLastEventAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -15592,6 +15883,38 @@ export namespace Prisma {
     not?: NestedStringNullableFilter<$PrismaModel> | string | null
   }
 
+  export type EnumBillingPlanFilter<$PrismaModel = never> = {
+    equals?: $Enums.BillingPlan | EnumBillingPlanFieldRefInput<$PrismaModel>
+    in?: $Enums.BillingPlan[] | ListEnumBillingPlanFieldRefInput<$PrismaModel>
+    notIn?: $Enums.BillingPlan[] | ListEnumBillingPlanFieldRefInput<$PrismaModel>
+    not?: NestedEnumBillingPlanFilter<$PrismaModel> | $Enums.BillingPlan
+  }
+
+  export type EnumBillingProviderNullableFilter<$PrismaModel = never> = {
+    equals?: $Enums.BillingProvider | EnumBillingProviderFieldRefInput<$PrismaModel> | null
+    in?: $Enums.BillingProvider[] | ListEnumBillingProviderFieldRefInput<$PrismaModel> | null
+    notIn?: $Enums.BillingProvider[] | ListEnumBillingProviderFieldRefInput<$PrismaModel> | null
+    not?: NestedEnumBillingProviderNullableFilter<$PrismaModel> | $Enums.BillingProvider | null
+  }
+
+  export type EnumBillingStatusFilter<$PrismaModel = never> = {
+    equals?: $Enums.BillingStatus | EnumBillingStatusFieldRefInput<$PrismaModel>
+    in?: $Enums.BillingStatus[] | ListEnumBillingStatusFieldRefInput<$PrismaModel>
+    notIn?: $Enums.BillingStatus[] | ListEnumBillingStatusFieldRefInput<$PrismaModel>
+    not?: NestedEnumBillingStatusFilter<$PrismaModel> | $Enums.BillingStatus
+  }
+
+  export type DateTimeNullableFilter<$PrismaModel = never> = {
+    equals?: Date | string | DateTimeFieldRefInput<$PrismaModel> | null
+    in?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel> | null
+    notIn?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel> | null
+    lt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    lte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    gt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    gte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    not?: NestedDateTimeNullableFilter<$PrismaModel> | Date | string | null
+  }
+
   export type DateTimeFilter<$PrismaModel = never> = {
     equals?: Date | string | DateTimeFieldRefInput<$PrismaModel>
     in?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel>
@@ -15664,6 +15987,14 @@ export namespace Prisma {
     email?: SortOrder
     emailVerified?: SortOrder
     image?: SortOrder
+    plan?: SortOrder
+    billingProvider?: SortOrder
+    billingStatus?: SortOrder
+    billingCustomerId?: SortOrder
+    billingSubscriptionId?: SortOrder
+    billingCurrentPeriodEnd?: SortOrder
+    billingLastEventId?: SortOrder
+    billingLastEventAt?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
   }
@@ -15674,6 +16005,14 @@ export namespace Prisma {
     email?: SortOrder
     emailVerified?: SortOrder
     image?: SortOrder
+    plan?: SortOrder
+    billingProvider?: SortOrder
+    billingStatus?: SortOrder
+    billingCustomerId?: SortOrder
+    billingSubscriptionId?: SortOrder
+    billingCurrentPeriodEnd?: SortOrder
+    billingLastEventId?: SortOrder
+    billingLastEventAt?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
   }
@@ -15684,6 +16023,14 @@ export namespace Prisma {
     email?: SortOrder
     emailVerified?: SortOrder
     image?: SortOrder
+    plan?: SortOrder
+    billingProvider?: SortOrder
+    billingStatus?: SortOrder
+    billingCustomerId?: SortOrder
+    billingSubscriptionId?: SortOrder
+    billingCurrentPeriodEnd?: SortOrder
+    billingLastEventId?: SortOrder
+    billingLastEventAt?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
   }
@@ -15730,6 +16077,50 @@ export namespace Prisma {
     _count?: NestedIntNullableFilter<$PrismaModel>
     _min?: NestedStringNullableFilter<$PrismaModel>
     _max?: NestedStringNullableFilter<$PrismaModel>
+  }
+
+  export type EnumBillingPlanWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: $Enums.BillingPlan | EnumBillingPlanFieldRefInput<$PrismaModel>
+    in?: $Enums.BillingPlan[] | ListEnumBillingPlanFieldRefInput<$PrismaModel>
+    notIn?: $Enums.BillingPlan[] | ListEnumBillingPlanFieldRefInput<$PrismaModel>
+    not?: NestedEnumBillingPlanWithAggregatesFilter<$PrismaModel> | $Enums.BillingPlan
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedEnumBillingPlanFilter<$PrismaModel>
+    _max?: NestedEnumBillingPlanFilter<$PrismaModel>
+  }
+
+  export type EnumBillingProviderNullableWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: $Enums.BillingProvider | EnumBillingProviderFieldRefInput<$PrismaModel> | null
+    in?: $Enums.BillingProvider[] | ListEnumBillingProviderFieldRefInput<$PrismaModel> | null
+    notIn?: $Enums.BillingProvider[] | ListEnumBillingProviderFieldRefInput<$PrismaModel> | null
+    not?: NestedEnumBillingProviderNullableWithAggregatesFilter<$PrismaModel> | $Enums.BillingProvider | null
+    _count?: NestedIntNullableFilter<$PrismaModel>
+    _min?: NestedEnumBillingProviderNullableFilter<$PrismaModel>
+    _max?: NestedEnumBillingProviderNullableFilter<$PrismaModel>
+  }
+
+  export type EnumBillingStatusWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: $Enums.BillingStatus | EnumBillingStatusFieldRefInput<$PrismaModel>
+    in?: $Enums.BillingStatus[] | ListEnumBillingStatusFieldRefInput<$PrismaModel>
+    notIn?: $Enums.BillingStatus[] | ListEnumBillingStatusFieldRefInput<$PrismaModel>
+    not?: NestedEnumBillingStatusWithAggregatesFilter<$PrismaModel> | $Enums.BillingStatus
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedEnumBillingStatusFilter<$PrismaModel>
+    _max?: NestedEnumBillingStatusFilter<$PrismaModel>
+  }
+
+  export type DateTimeNullableWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: Date | string | DateTimeFieldRefInput<$PrismaModel> | null
+    in?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel> | null
+    notIn?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel> | null
+    lt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    lte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    gt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    gte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    not?: NestedDateTimeNullableWithAggregatesFilter<$PrismaModel> | Date | string | null
+    _count?: NestedIntNullableFilter<$PrismaModel>
+    _min?: NestedDateTimeNullableFilter<$PrismaModel>
+    _max?: NestedDateTimeNullableFilter<$PrismaModel>
   }
 
   export type DateTimeWithAggregatesFilter<$PrismaModel = never> = {
@@ -15784,17 +16175,6 @@ export namespace Prisma {
     userId?: SortOrder
   }
 
-  export type DateTimeNullableFilter<$PrismaModel = never> = {
-    equals?: Date | string | DateTimeFieldRefInput<$PrismaModel> | null
-    in?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel> | null
-    notIn?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel> | null
-    lt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    lte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    gt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    gte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    not?: NestedDateTimeNullableFilter<$PrismaModel> | Date | string | null
-  }
-
   export type AccountCountOrderByAggregateInput = {
     id?: SortOrder
     accountId?: SortOrder
@@ -15841,20 +16221,6 @@ export namespace Prisma {
     password?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
-  }
-
-  export type DateTimeNullableWithAggregatesFilter<$PrismaModel = never> = {
-    equals?: Date | string | DateTimeFieldRefInput<$PrismaModel> | null
-    in?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel> | null
-    notIn?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel> | null
-    lt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    lte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    gt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    gte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    not?: NestedDateTimeNullableWithAggregatesFilter<$PrismaModel> | Date | string | null
-    _count?: NestedIntNullableFilter<$PrismaModel>
-    _min?: NestedDateTimeNullableFilter<$PrismaModel>
-    _max?: NestedDateTimeNullableFilter<$PrismaModel>
   }
 
   export type VerificationCountOrderByAggregateInput = {
@@ -16497,6 +16863,22 @@ export namespace Prisma {
     set?: string | null
   }
 
+  export type EnumBillingPlanFieldUpdateOperationsInput = {
+    set?: $Enums.BillingPlan
+  }
+
+  export type NullableEnumBillingProviderFieldUpdateOperationsInput = {
+    set?: $Enums.BillingProvider | null
+  }
+
+  export type EnumBillingStatusFieldUpdateOperationsInput = {
+    set?: $Enums.BillingStatus
+  }
+
+  export type NullableDateTimeFieldUpdateOperationsInput = {
+    set?: Date | string | null
+  }
+
   export type DateTimeFieldUpdateOperationsInput = {
     set?: Date | string
   }
@@ -16659,10 +17041,6 @@ export namespace Prisma {
     create?: XOR<UserCreateWithoutAccountsInput, UserUncheckedCreateWithoutAccountsInput>
     connectOrCreate?: UserCreateOrConnectWithoutAccountsInput
     connect?: UserWhereUniqueInput
-  }
-
-  export type NullableDateTimeFieldUpdateOperationsInput = {
-    set?: Date | string | null
   }
 
   export type UserUpdateOneRequiredWithoutAccountsNestedInput = {
@@ -17180,6 +17558,38 @@ export namespace Prisma {
     not?: NestedStringNullableFilter<$PrismaModel> | string | null
   }
 
+  export type NestedEnumBillingPlanFilter<$PrismaModel = never> = {
+    equals?: $Enums.BillingPlan | EnumBillingPlanFieldRefInput<$PrismaModel>
+    in?: $Enums.BillingPlan[] | ListEnumBillingPlanFieldRefInput<$PrismaModel>
+    notIn?: $Enums.BillingPlan[] | ListEnumBillingPlanFieldRefInput<$PrismaModel>
+    not?: NestedEnumBillingPlanFilter<$PrismaModel> | $Enums.BillingPlan
+  }
+
+  export type NestedEnumBillingProviderNullableFilter<$PrismaModel = never> = {
+    equals?: $Enums.BillingProvider | EnumBillingProviderFieldRefInput<$PrismaModel> | null
+    in?: $Enums.BillingProvider[] | ListEnumBillingProviderFieldRefInput<$PrismaModel> | null
+    notIn?: $Enums.BillingProvider[] | ListEnumBillingProviderFieldRefInput<$PrismaModel> | null
+    not?: NestedEnumBillingProviderNullableFilter<$PrismaModel> | $Enums.BillingProvider | null
+  }
+
+  export type NestedEnumBillingStatusFilter<$PrismaModel = never> = {
+    equals?: $Enums.BillingStatus | EnumBillingStatusFieldRefInput<$PrismaModel>
+    in?: $Enums.BillingStatus[] | ListEnumBillingStatusFieldRefInput<$PrismaModel>
+    notIn?: $Enums.BillingStatus[] | ListEnumBillingStatusFieldRefInput<$PrismaModel>
+    not?: NestedEnumBillingStatusFilter<$PrismaModel> | $Enums.BillingStatus
+  }
+
+  export type NestedDateTimeNullableFilter<$PrismaModel = never> = {
+    equals?: Date | string | DateTimeFieldRefInput<$PrismaModel> | null
+    in?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel> | null
+    notIn?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel> | null
+    lt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    lte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    gt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    gte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    not?: NestedDateTimeNullableFilter<$PrismaModel> | Date | string | null
+  }
+
   export type NestedDateTimeFilter<$PrismaModel = never> = {
     equals?: Date | string | DateTimeFieldRefInput<$PrismaModel>
     in?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel>
@@ -17255,29 +17665,34 @@ export namespace Prisma {
     not?: NestedIntNullableFilter<$PrismaModel> | number | null
   }
 
-  export type NestedDateTimeWithAggregatesFilter<$PrismaModel = never> = {
-    equals?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    in?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel>
-    notIn?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel>
-    lt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    lte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    gt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    gte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    not?: NestedDateTimeWithAggregatesFilter<$PrismaModel> | Date | string
+  export type NestedEnumBillingPlanWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: $Enums.BillingPlan | EnumBillingPlanFieldRefInput<$PrismaModel>
+    in?: $Enums.BillingPlan[] | ListEnumBillingPlanFieldRefInput<$PrismaModel>
+    notIn?: $Enums.BillingPlan[] | ListEnumBillingPlanFieldRefInput<$PrismaModel>
+    not?: NestedEnumBillingPlanWithAggregatesFilter<$PrismaModel> | $Enums.BillingPlan
     _count?: NestedIntFilter<$PrismaModel>
-    _min?: NestedDateTimeFilter<$PrismaModel>
-    _max?: NestedDateTimeFilter<$PrismaModel>
+    _min?: NestedEnumBillingPlanFilter<$PrismaModel>
+    _max?: NestedEnumBillingPlanFilter<$PrismaModel>
   }
 
-  export type NestedDateTimeNullableFilter<$PrismaModel = never> = {
-    equals?: Date | string | DateTimeFieldRefInput<$PrismaModel> | null
-    in?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel> | null
-    notIn?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel> | null
-    lt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    lte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    gt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    gte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    not?: NestedDateTimeNullableFilter<$PrismaModel> | Date | string | null
+  export type NestedEnumBillingProviderNullableWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: $Enums.BillingProvider | EnumBillingProviderFieldRefInput<$PrismaModel> | null
+    in?: $Enums.BillingProvider[] | ListEnumBillingProviderFieldRefInput<$PrismaModel> | null
+    notIn?: $Enums.BillingProvider[] | ListEnumBillingProviderFieldRefInput<$PrismaModel> | null
+    not?: NestedEnumBillingProviderNullableWithAggregatesFilter<$PrismaModel> | $Enums.BillingProvider | null
+    _count?: NestedIntNullableFilter<$PrismaModel>
+    _min?: NestedEnumBillingProviderNullableFilter<$PrismaModel>
+    _max?: NestedEnumBillingProviderNullableFilter<$PrismaModel>
+  }
+
+  export type NestedEnumBillingStatusWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: $Enums.BillingStatus | EnumBillingStatusFieldRefInput<$PrismaModel>
+    in?: $Enums.BillingStatus[] | ListEnumBillingStatusFieldRefInput<$PrismaModel>
+    notIn?: $Enums.BillingStatus[] | ListEnumBillingStatusFieldRefInput<$PrismaModel>
+    not?: NestedEnumBillingStatusWithAggregatesFilter<$PrismaModel> | $Enums.BillingStatus
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedEnumBillingStatusFilter<$PrismaModel>
+    _max?: NestedEnumBillingStatusFilter<$PrismaModel>
   }
 
   export type NestedDateTimeNullableWithAggregatesFilter<$PrismaModel = never> = {
@@ -17292,6 +17707,20 @@ export namespace Prisma {
     _count?: NestedIntNullableFilter<$PrismaModel>
     _min?: NestedDateTimeNullableFilter<$PrismaModel>
     _max?: NestedDateTimeNullableFilter<$PrismaModel>
+  }
+
+  export type NestedDateTimeWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    in?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel>
+    notIn?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel>
+    lt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    lte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    gt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    gte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    not?: NestedDateTimeWithAggregatesFilter<$PrismaModel> | Date | string
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedDateTimeFilter<$PrismaModel>
+    _max?: NestedDateTimeFilter<$PrismaModel>
   }
 
   export type NestedEnumNodeTypeFilter<$PrismaModel = never> = {
@@ -17820,6 +18249,14 @@ export namespace Prisma {
     email: string
     emailVerified?: boolean
     image?: string | null
+    plan?: $Enums.BillingPlan
+    billingProvider?: $Enums.BillingProvider | null
+    billingStatus?: $Enums.BillingStatus
+    billingCustomerId?: string | null
+    billingSubscriptionId?: string | null
+    billingCurrentPeriodEnd?: Date | string | null
+    billingLastEventId?: string | null
+    billingLastEventAt?: Date | string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     accounts?: AccountCreateNestedManyWithoutUserInput
@@ -17834,6 +18271,14 @@ export namespace Prisma {
     email: string
     emailVerified?: boolean
     image?: string | null
+    plan?: $Enums.BillingPlan
+    billingProvider?: $Enums.BillingProvider | null
+    billingStatus?: $Enums.BillingStatus
+    billingCustomerId?: string | null
+    billingSubscriptionId?: string | null
+    billingCurrentPeriodEnd?: Date | string | null
+    billingLastEventId?: string | null
+    billingLastEventAt?: Date | string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     accounts?: AccountUncheckedCreateNestedManyWithoutUserInput
@@ -17864,6 +18309,14 @@ export namespace Prisma {
     email?: StringFieldUpdateOperationsInput | string
     emailVerified?: BoolFieldUpdateOperationsInput | boolean
     image?: NullableStringFieldUpdateOperationsInput | string | null
+    plan?: EnumBillingPlanFieldUpdateOperationsInput | $Enums.BillingPlan
+    billingProvider?: NullableEnumBillingProviderFieldUpdateOperationsInput | $Enums.BillingProvider | null
+    billingStatus?: EnumBillingStatusFieldUpdateOperationsInput | $Enums.BillingStatus
+    billingCustomerId?: NullableStringFieldUpdateOperationsInput | string | null
+    billingSubscriptionId?: NullableStringFieldUpdateOperationsInput | string | null
+    billingCurrentPeriodEnd?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    billingLastEventId?: NullableStringFieldUpdateOperationsInput | string | null
+    billingLastEventAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     accounts?: AccountUpdateManyWithoutUserNestedInput
@@ -17878,6 +18331,14 @@ export namespace Prisma {
     email?: StringFieldUpdateOperationsInput | string
     emailVerified?: BoolFieldUpdateOperationsInput | boolean
     image?: NullableStringFieldUpdateOperationsInput | string | null
+    plan?: EnumBillingPlanFieldUpdateOperationsInput | $Enums.BillingPlan
+    billingProvider?: NullableEnumBillingProviderFieldUpdateOperationsInput | $Enums.BillingProvider | null
+    billingStatus?: EnumBillingStatusFieldUpdateOperationsInput | $Enums.BillingStatus
+    billingCustomerId?: NullableStringFieldUpdateOperationsInput | string | null
+    billingSubscriptionId?: NullableStringFieldUpdateOperationsInput | string | null
+    billingCurrentPeriodEnd?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    billingLastEventId?: NullableStringFieldUpdateOperationsInput | string | null
+    billingLastEventAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     accounts?: AccountUncheckedUpdateManyWithoutUserNestedInput
@@ -17892,6 +18353,14 @@ export namespace Prisma {
     email: string
     emailVerified?: boolean
     image?: string | null
+    plan?: $Enums.BillingPlan
+    billingProvider?: $Enums.BillingProvider | null
+    billingStatus?: $Enums.BillingStatus
+    billingCustomerId?: string | null
+    billingSubscriptionId?: string | null
+    billingCurrentPeriodEnd?: Date | string | null
+    billingLastEventId?: string | null
+    billingLastEventAt?: Date | string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     sessions?: SessionCreateNestedManyWithoutUserInput
@@ -17906,6 +18375,14 @@ export namespace Prisma {
     email: string
     emailVerified?: boolean
     image?: string | null
+    plan?: $Enums.BillingPlan
+    billingProvider?: $Enums.BillingProvider | null
+    billingStatus?: $Enums.BillingStatus
+    billingCustomerId?: string | null
+    billingSubscriptionId?: string | null
+    billingCurrentPeriodEnd?: Date | string | null
+    billingLastEventId?: string | null
+    billingLastEventAt?: Date | string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     sessions?: SessionUncheckedCreateNestedManyWithoutUserInput
@@ -17936,6 +18413,14 @@ export namespace Prisma {
     email?: StringFieldUpdateOperationsInput | string
     emailVerified?: BoolFieldUpdateOperationsInput | boolean
     image?: NullableStringFieldUpdateOperationsInput | string | null
+    plan?: EnumBillingPlanFieldUpdateOperationsInput | $Enums.BillingPlan
+    billingProvider?: NullableEnumBillingProviderFieldUpdateOperationsInput | $Enums.BillingProvider | null
+    billingStatus?: EnumBillingStatusFieldUpdateOperationsInput | $Enums.BillingStatus
+    billingCustomerId?: NullableStringFieldUpdateOperationsInput | string | null
+    billingSubscriptionId?: NullableStringFieldUpdateOperationsInput | string | null
+    billingCurrentPeriodEnd?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    billingLastEventId?: NullableStringFieldUpdateOperationsInput | string | null
+    billingLastEventAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     sessions?: SessionUpdateManyWithoutUserNestedInput
@@ -17950,6 +18435,14 @@ export namespace Prisma {
     email?: StringFieldUpdateOperationsInput | string
     emailVerified?: BoolFieldUpdateOperationsInput | boolean
     image?: NullableStringFieldUpdateOperationsInput | string | null
+    plan?: EnumBillingPlanFieldUpdateOperationsInput | $Enums.BillingPlan
+    billingProvider?: NullableEnumBillingProviderFieldUpdateOperationsInput | $Enums.BillingProvider | null
+    billingStatus?: EnumBillingStatusFieldUpdateOperationsInput | $Enums.BillingStatus
+    billingCustomerId?: NullableStringFieldUpdateOperationsInput | string | null
+    billingSubscriptionId?: NullableStringFieldUpdateOperationsInput | string | null
+    billingCurrentPeriodEnd?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    billingLastEventId?: NullableStringFieldUpdateOperationsInput | string | null
+    billingLastEventAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     sessions?: SessionUncheckedUpdateManyWithoutUserNestedInput
@@ -18074,6 +18567,14 @@ export namespace Prisma {
     email: string
     emailVerified?: boolean
     image?: string | null
+    plan?: $Enums.BillingPlan
+    billingProvider?: $Enums.BillingProvider | null
+    billingStatus?: $Enums.BillingStatus
+    billingCustomerId?: string | null
+    billingSubscriptionId?: string | null
+    billingCurrentPeriodEnd?: Date | string | null
+    billingLastEventId?: string | null
+    billingLastEventAt?: Date | string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     sessions?: SessionCreateNestedManyWithoutUserInput
@@ -18088,6 +18589,14 @@ export namespace Prisma {
     email: string
     emailVerified?: boolean
     image?: string | null
+    plan?: $Enums.BillingPlan
+    billingProvider?: $Enums.BillingProvider | null
+    billingStatus?: $Enums.BillingStatus
+    billingCustomerId?: string | null
+    billingSubscriptionId?: string | null
+    billingCurrentPeriodEnd?: Date | string | null
+    billingLastEventId?: string | null
+    billingLastEventAt?: Date | string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     sessions?: SessionUncheckedCreateNestedManyWithoutUserInput
@@ -18195,6 +18704,14 @@ export namespace Prisma {
     email?: StringFieldUpdateOperationsInput | string
     emailVerified?: BoolFieldUpdateOperationsInput | boolean
     image?: NullableStringFieldUpdateOperationsInput | string | null
+    plan?: EnumBillingPlanFieldUpdateOperationsInput | $Enums.BillingPlan
+    billingProvider?: NullableEnumBillingProviderFieldUpdateOperationsInput | $Enums.BillingProvider | null
+    billingStatus?: EnumBillingStatusFieldUpdateOperationsInput | $Enums.BillingStatus
+    billingCustomerId?: NullableStringFieldUpdateOperationsInput | string | null
+    billingSubscriptionId?: NullableStringFieldUpdateOperationsInput | string | null
+    billingCurrentPeriodEnd?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    billingLastEventId?: NullableStringFieldUpdateOperationsInput | string | null
+    billingLastEventAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     sessions?: SessionUpdateManyWithoutUserNestedInput
@@ -18209,6 +18726,14 @@ export namespace Prisma {
     email?: StringFieldUpdateOperationsInput | string
     emailVerified?: BoolFieldUpdateOperationsInput | boolean
     image?: NullableStringFieldUpdateOperationsInput | string | null
+    plan?: EnumBillingPlanFieldUpdateOperationsInput | $Enums.BillingPlan
+    billingProvider?: NullableEnumBillingProviderFieldUpdateOperationsInput | $Enums.BillingProvider | null
+    billingStatus?: EnumBillingStatusFieldUpdateOperationsInput | $Enums.BillingStatus
+    billingCustomerId?: NullableStringFieldUpdateOperationsInput | string | null
+    billingSubscriptionId?: NullableStringFieldUpdateOperationsInput | string | null
+    billingCurrentPeriodEnd?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    billingLastEventId?: NullableStringFieldUpdateOperationsInput | string | null
+    billingLastEventAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     sessions?: SessionUncheckedUpdateManyWithoutUserNestedInput
@@ -18651,6 +19176,14 @@ export namespace Prisma {
     email: string
     emailVerified?: boolean
     image?: string | null
+    plan?: $Enums.BillingPlan
+    billingProvider?: $Enums.BillingProvider | null
+    billingStatus?: $Enums.BillingStatus
+    billingCustomerId?: string | null
+    billingSubscriptionId?: string | null
+    billingCurrentPeriodEnd?: Date | string | null
+    billingLastEventId?: string | null
+    billingLastEventAt?: Date | string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     sessions?: SessionCreateNestedManyWithoutUserInput
@@ -18665,6 +19198,14 @@ export namespace Prisma {
     email: string
     emailVerified?: boolean
     image?: string | null
+    plan?: $Enums.BillingPlan
+    billingProvider?: $Enums.BillingProvider | null
+    billingStatus?: $Enums.BillingStatus
+    billingCustomerId?: string | null
+    billingSubscriptionId?: string | null
+    billingCurrentPeriodEnd?: Date | string | null
+    billingLastEventId?: string | null
+    billingLastEventAt?: Date | string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     sessions?: SessionUncheckedCreateNestedManyWithoutUserInput
@@ -18695,6 +19236,14 @@ export namespace Prisma {
     email?: StringFieldUpdateOperationsInput | string
     emailVerified?: BoolFieldUpdateOperationsInput | boolean
     image?: NullableStringFieldUpdateOperationsInput | string | null
+    plan?: EnumBillingPlanFieldUpdateOperationsInput | $Enums.BillingPlan
+    billingProvider?: NullableEnumBillingProviderFieldUpdateOperationsInput | $Enums.BillingProvider | null
+    billingStatus?: EnumBillingStatusFieldUpdateOperationsInput | $Enums.BillingStatus
+    billingCustomerId?: NullableStringFieldUpdateOperationsInput | string | null
+    billingSubscriptionId?: NullableStringFieldUpdateOperationsInput | string | null
+    billingCurrentPeriodEnd?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    billingLastEventId?: NullableStringFieldUpdateOperationsInput | string | null
+    billingLastEventAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     sessions?: SessionUpdateManyWithoutUserNestedInput
@@ -18709,6 +19258,14 @@ export namespace Prisma {
     email?: StringFieldUpdateOperationsInput | string
     emailVerified?: BoolFieldUpdateOperationsInput | boolean
     image?: NullableStringFieldUpdateOperationsInput | string | null
+    plan?: EnumBillingPlanFieldUpdateOperationsInput | $Enums.BillingPlan
+    billingProvider?: NullableEnumBillingProviderFieldUpdateOperationsInput | $Enums.BillingProvider | null
+    billingStatus?: EnumBillingStatusFieldUpdateOperationsInput | $Enums.BillingStatus
+    billingCustomerId?: NullableStringFieldUpdateOperationsInput | string | null
+    billingSubscriptionId?: NullableStringFieldUpdateOperationsInput | string | null
+    billingCurrentPeriodEnd?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    billingLastEventId?: NullableStringFieldUpdateOperationsInput | string | null
+    billingLastEventAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     sessions?: SessionUncheckedUpdateManyWithoutUserNestedInput
@@ -18748,6 +19305,14 @@ export namespace Prisma {
     email: string
     emailVerified?: boolean
     image?: string | null
+    plan?: $Enums.BillingPlan
+    billingProvider?: $Enums.BillingProvider | null
+    billingStatus?: $Enums.BillingStatus
+    billingCustomerId?: string | null
+    billingSubscriptionId?: string | null
+    billingCurrentPeriodEnd?: Date | string | null
+    billingLastEventId?: string | null
+    billingLastEventAt?: Date | string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     sessions?: SessionCreateNestedManyWithoutUserInput
@@ -18762,6 +19327,14 @@ export namespace Prisma {
     email: string
     emailVerified?: boolean
     image?: string | null
+    plan?: $Enums.BillingPlan
+    billingProvider?: $Enums.BillingProvider | null
+    billingStatus?: $Enums.BillingStatus
+    billingCustomerId?: string | null
+    billingSubscriptionId?: string | null
+    billingCurrentPeriodEnd?: Date | string | null
+    billingLastEventId?: string | null
+    billingLastEventAt?: Date | string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     sessions?: SessionUncheckedCreateNestedManyWithoutUserInput
@@ -18869,6 +19442,14 @@ export namespace Prisma {
     email?: StringFieldUpdateOperationsInput | string
     emailVerified?: BoolFieldUpdateOperationsInput | boolean
     image?: NullableStringFieldUpdateOperationsInput | string | null
+    plan?: EnumBillingPlanFieldUpdateOperationsInput | $Enums.BillingPlan
+    billingProvider?: NullableEnumBillingProviderFieldUpdateOperationsInput | $Enums.BillingProvider | null
+    billingStatus?: EnumBillingStatusFieldUpdateOperationsInput | $Enums.BillingStatus
+    billingCustomerId?: NullableStringFieldUpdateOperationsInput | string | null
+    billingSubscriptionId?: NullableStringFieldUpdateOperationsInput | string | null
+    billingCurrentPeriodEnd?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    billingLastEventId?: NullableStringFieldUpdateOperationsInput | string | null
+    billingLastEventAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     sessions?: SessionUpdateManyWithoutUserNestedInput
@@ -18883,6 +19464,14 @@ export namespace Prisma {
     email?: StringFieldUpdateOperationsInput | string
     emailVerified?: BoolFieldUpdateOperationsInput | boolean
     image?: NullableStringFieldUpdateOperationsInput | string | null
+    plan?: EnumBillingPlanFieldUpdateOperationsInput | $Enums.BillingPlan
+    billingProvider?: NullableEnumBillingProviderFieldUpdateOperationsInput | $Enums.BillingProvider | null
+    billingStatus?: EnumBillingStatusFieldUpdateOperationsInput | $Enums.BillingStatus
+    billingCustomerId?: NullableStringFieldUpdateOperationsInput | string | null
+    billingSubscriptionId?: NullableStringFieldUpdateOperationsInput | string | null
+    billingCurrentPeriodEnd?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    billingLastEventId?: NullableStringFieldUpdateOperationsInput | string | null
+    billingLastEventAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     sessions?: SessionUncheckedUpdateManyWithoutUserNestedInput

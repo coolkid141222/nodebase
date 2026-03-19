@@ -15,21 +15,45 @@ datasource db {
 }
 
 model User {
-  id            String       @id
-  name          String
-  email         String
-  emailVerified Boolean      @default(false)
-  image         String?
-  createdAt     DateTime     @default(now())
-  updatedAt     DateTime     @updatedAt
-  sessions      Session[]
-  accounts      Account[]
-  workflows     Workflow[]
-  credentials   Credential[]
-  executions    Execution[]  @relation("TriggeredByUser")
+  id                      String           @id
+  name                    String
+  email                   String
+  emailVerified           Boolean          @default(false)
+  image                   String?
+  plan                    BillingPlan      @default(FREE)
+  billingProvider         BillingProvider?
+  billingStatus           BillingStatus    @default(INACTIVE)
+  billingCustomerId       String?
+  billingSubscriptionId   String?
+  billingCurrentPeriodEnd DateTime?
+  billingLastEventId      String?
+  billingLastEventAt      DateTime?
+  createdAt               DateTime         @default(now())
+  updatedAt               DateTime         @updatedAt
+  sessions                Session[]
+  accounts                Account[]
+  workflows               Workflow[]
+  credentials             Credential[]
+  executions              Execution[]      @relation("TriggeredByUser")
 
   @@unique([email])
   @@map("user")
+}
+
+enum BillingPlan {
+  FREE
+  PRO
+}
+
+enum BillingProvider {
+  MOCK
+  PADDLE
+}
+
+enum BillingStatus {
+  INACTIVE
+  ACTIVE
+  CANCELED
 }
 
 model Session {
@@ -102,6 +126,10 @@ enum NodeType {
   CONDITION
   HTTP_REQUEST
   MANUAL_TRIGGER
+  WEBHOOK_TRIGGER
+  AI_TEXT
+  DISCORD_MESSAGE
+  SLACK_MESSAGE
 }
 
 model Node {
