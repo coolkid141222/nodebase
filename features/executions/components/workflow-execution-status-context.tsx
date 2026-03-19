@@ -1,74 +1,18 @@
 "use client";
 
-import { createContext, useContext, useMemo, type ReactNode } from "react";
-import { keepPreviousData, useQuery } from "@tanstack/react-query";
+import { useEffect, type ReactNode } from "react";
+import { useQuery } from "@tanstack/react-query";
+import { useSetAtom, useAtomValue } from "jotai";
 import { usePathname } from "next/navigation";
 
 import { useTRPC } from "@/trpc/client";
-import { ExecutionStatus, ExecutionStepStatus } from "@/lib/prisma/client";
-import type { NodeStatus } from "@/components/react-flow/node-status-indicator";
-
-type WorkflowExecutionStep = {
-  id: string;
-  nodeId: string | null;
-  nodeName: string;
-  nodeType: string;
-  status: ExecutionStepStatus;
-  position: number;
-  input: unknown;
-  output: unknown;
-  error: unknown;
-  startedAt: Date | null;
-  completedAt: Date | null;
-};
-
-type WorkflowExecution = {
-  id: string;
-  status: ExecutionStatus;
-  createdAt: Date;
-  startedAt: Date | null;
-  completedAt: Date | null;
-  triggerType: string;
-  steps: WorkflowExecutionStep[];
-};
-
-type WorkflowExecutionStatusContextValue = {
-  execution: WorkflowExecution | null;
-  nodeStatuses: Record<string, NodeStatus>;
-};
-
-const WorkflowExecutionStatusContext =
-  createContext<WorkflowExecutionStatusContextValue | null>(null);
-
-function mapExecutionStepStatus(status: ExecutionStepStatus): NodeStatus | undefined {
-  switch (status) {
-    case ExecutionStepStatus.RUNNING:
-      return "loading";
-    case ExecutionStepStatus.SUCCESS:
-      return "success";
-    case ExecutionStepStatus.FAILED:
-      return "error";
-    default:
-      return undefined;
-  }
-}
-
-function buildNodeStatusMap(steps: WorkflowExecutionStep[]) {
-  return steps.reduce<Record<string, NodeStatus>>((accumulator, step) => {
-    if (!step.nodeId) {
-      return accumulator;
-    }
-
-    const mappedStatus = mapExecutionStepStatus(step.status);
-
-    if (!mappedStatus) {
-      return accumulator;
-    }
-
-    accumulator[step.nodeId] = mappedStatus;
-    return accumulator;
-  }, {});
-}
+import { ExecutionStatus } from "@/lib/prisma/client";
+import {
+  buildWorkflowExecutionState,
+  emptyWorkflowExecutionState,
+  type WorkflowExecutionSnapshot,
+  workflowExecutionStateAtom,
+} from "../store/atoms";
 
 export function WorkflowExecutionStatusProvider({
   workflowId,
@@ -78,9 +22,9 @@ export function WorkflowExecutionStatusProvider({
   children: ReactNode;
 }) {
   const trpc = useTRPC();
+  const setWorkflowExecutionState = useSetAtom(workflowExecutionStateAtom);
   const executionQuery = useQuery({
     ...trpc.executions.getLatestForWorkflow.queryOptions({ workflowId }),
-    placeholderData: keepPreviousData,
     staleTime: 0,
     refetchInterval: (query) => {
       const status = query.state.data?.status;
@@ -94,27 +38,21 @@ export function WorkflowExecutionStatusProvider({
     refetchOnReconnect: true,
   });
 
-  const value = useMemo<WorkflowExecutionStatusContextValue>(() => {
-    const execution = executionQuery.data;
+  useEffect(() => {
+    setWorkflowExecutionState(
+      buildWorkflowExecutionState(
+        (executionQuery.data as WorkflowExecutionSnapshot | undefined) ?? null,
+      ),
+    );
+  }, [executionQuery.data, setWorkflowExecutionState]);
 
-    if (!execution) {
-      return {
-        execution: null,
-        nodeStatuses: {},
-      };
-    }
-
-    return {
-      execution: execution as WorkflowExecution,
-      nodeStatuses: buildNodeStatusMap(execution.steps as WorkflowExecutionStep[]),
+  useEffect(() => {
+    return () => {
+      setWorkflowExecutionState(emptyWorkflowExecutionState);
     };
-  }, [executionQuery.data]);
+  }, [setWorkflowExecutionState]);
 
-  return (
-    <WorkflowExecutionStatusContext.Provider value={value}>
-      {children}
-    </WorkflowExecutionStatusContext.Provider>
-  );
+  return <>{children}</>;
 }
 
 export function WorkflowExecutionStatusScope({
@@ -131,23 +69,14 @@ export function WorkflowExecutionStatusScope({
   }
 
   return (
-    <WorkflowExecutionStatusProvider workflowId={workflowId}>
+    <WorkflowExecutionStatusProvider key={workflowId} workflowId={workflowId}>
       {children}
     </WorkflowExecutionStatusProvider>
   );
 }
 
 export function useWorkflowExecutionStatus() {
-  const context = useContext(WorkflowExecutionStatusContext);
-
-  if (!context) {
-    return {
-      execution: null,
-      nodeStatuses: {},
-    };
-  }
-
-  return context;
+  return useAtomValue(workflowExecutionStateAtom);
 }
 
 export function useWorkflowNodeStatus(nodeId: string) {

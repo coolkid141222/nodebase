@@ -1,18 +1,22 @@
 "use client";
 
 import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useSetAtom } from "jotai";
 import * as Sentry from "@sentry/nextjs";
 import { toast } from "sonner";
 import { useTRPC } from "@/trpc/client";
+import { createQueuedWorkflowExecutionState, workflowExecutionStateAtom } from "../store/atoms";
 
 export const useManualWorkflowExecution = () => {
   const trpc = useTRPC();
   const queryClient = useQueryClient();
+  const setWorkflowExecutionState = useSetAtom(workflowExecutionStateAtom);
 
   return useMutation(
     trpc.executions.triggerManual.mutationOptions({
       onSuccess: (data, variables) => {
         toast.success(`Execution ${data.id} queued`);
+        setWorkflowExecutionState(createQueuedWorkflowExecutionState(data.id));
         const executionsListQuery = trpc.executions.getMany.queryOptions();
         queryClient.invalidateQueries({
           queryKey: executionsListQuery.queryKey,
