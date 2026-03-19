@@ -1030,6 +1030,9 @@ export async function createManualExecution(params: {
     triggeredByUserId: params.triggeredByUserId,
     triggerPayload: {
       source: "manual",
+      body: {
+        message: "Triggered from the workflow editor.",
+      },
     },
   });
 }

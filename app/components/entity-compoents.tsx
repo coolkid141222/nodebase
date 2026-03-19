@@ -124,7 +124,7 @@ export const EntitySearch = ({
 }: EntitySearchProps) => {
     return (
         <div className="relative ml-auto">
-            <SearchIcon className="size-3.5 absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
+            <SearchIcon className="size-3.5 absolute top-1/3 left-3  text-muted-foreground" />
             <Input 
                 className="block max-w-[200px] bg-background shadow-none
                 border-border pl-8"
@@ -235,12 +235,14 @@ export const EmptyView = ({
                     You&apos;re all caught up. New items will appear here.
                 </EmptyDescription>
             </EmptyHeader>
-            <EmptyContent>
-                <Button variant="outline" onClick={onNew} disabled={isPending}>
-                <PlusIcon />
-                    Create
-                </Button>
-            </EmptyContent>
+            {onNew && (
+                <EmptyContent>
+                    <Button variant="outline" onClick={onNew} disabled={isPending}>
+                        <PlusIcon />
+                        Create
+                    </Button>
+                </EmptyContent>
+            )}
         </Empty>
     )   
 }
