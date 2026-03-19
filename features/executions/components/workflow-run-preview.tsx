@@ -113,7 +113,7 @@ function ExecutionPreviewCard({
   const extracted = extractRegexMatch(sourceValue, pattern);
 
   return (
-    <Card className="w-full overflow-hidden border-border/60 bg-background/95 shadow-sm">
+    <Card className="w-full max-h-[calc(100dvh-16rem)] overflow-hidden border-border/60 bg-background/95 shadow-sm">
       <div className="flex min-h-0 flex-col overflow-y-auto">
         <CardHeader className="space-y-2">
         <div className="flex items-center justify-between gap-3">
@@ -173,7 +173,7 @@ function ExecutionPreviewCard({
           <Textarea
             readOnly
             value={sourceValue}
-            className="min-h-32 resize-none font-mono text-[11px]"
+            className="max-h-40 resize-none overflow-y-auto font-mono text-[11px]"
           />
         </div>
 
@@ -184,7 +184,7 @@ function ExecutionPreviewCard({
           <Textarea
             readOnly
             value={extracted.error ? extracted.error : extracted.match}
-            className={`min-h-24 resize-none font-mono text-[11px] ${
+            className={`max-h-28 resize-none overflow-y-auto font-mono text-[11px] ${
               extracted.error ? "text-destructive" : ""
             }`}
           />
@@ -217,7 +217,7 @@ export function WorkflowRunPreviewSidebar({
   return latestExecution ? (
     <ExecutionPreviewCard executionId={latestExecution.id} />
   ) : (
-    <Card className="w-full overflow-hidden border-border/60 bg-background/95 shadow-sm">
+    <Card className="w-full max-h-[calc(100dvh-16rem)] overflow-hidden border-border/60 bg-background/95 shadow-sm">
       <CardHeader className="space-y-2">
         <CardTitle className="text-sm">Latest run</CardTitle>
         <CardDescription className="text-xs">

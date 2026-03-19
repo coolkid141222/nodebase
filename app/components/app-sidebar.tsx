@@ -51,7 +51,9 @@ const menuItems = [
 export const AppSidebar = () => {
     const pathname = usePathname()
     const router = useRouter();
-    const showWorkflowPreview = pathname.startsWith("/workflows/");
+    const workflowMatch = pathname.match(/^\/workflows\/([^/]+)$/);
+    const workflowId = workflowMatch?.[1] ?? "";
+    const showWorkflowPreview = Boolean(workflowId && workflowId !== "new");
     return (
         <Sidebar collapsible="icon">
             <SidebarHeader>
@@ -97,7 +99,7 @@ export const AppSidebar = () => {
                             <SidebarGroupLabel>Latest run</SidebarGroupLabel>
                             <SidebarGroupContent className="px-2 pb-2">
                                 <WorkflowRunPreviewSidebar
-                                    workflowId={pathname.split("/").at(-1) || ""}
+                                    workflowId={workflowId}
                                 />
                             </SidebarGroupContent>
                         </SidebarGroup>
