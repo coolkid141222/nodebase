@@ -2,18 +2,38 @@
 
 import { createContext, useContext, useMemo, type ReactNode } from "react";
 import { keepPreviousData, useQuery } from "@tanstack/react-query";
+import { usePathname } from "next/navigation";
 
 import { useTRPC } from "@/trpc/client";
 import { ExecutionStatus, ExecutionStepStatus } from "@/lib/prisma/client";
 import type { NodeStatus } from "@/components/react-flow/node-status-indicator";
 
 type WorkflowExecutionStep = {
+  id: string;
   nodeId: string | null;
+  nodeName: string;
+  nodeType: string;
   status: ExecutionStepStatus;
+  position: number;
+  input: unknown;
+  output: unknown;
+  error: unknown;
+  startedAt: Date | null;
+  completedAt: Date | null;
+};
+
+type WorkflowExecution = {
+  id: string;
+  status: ExecutionStatus;
+  createdAt: Date;
+  startedAt: Date | null;
+  completedAt: Date | null;
+  triggerType: string;
+  steps: WorkflowExecutionStep[];
 };
 
 type WorkflowExecutionStatusContextValue = {
-  executionId: string | null;
+  execution: WorkflowExecution | null;
   nodeStatuses: Record<string, NodeStatus>;
 };
 
@@ -73,15 +93,15 @@ export function WorkflowExecutionStatusProvider({
   const value = useMemo<WorkflowExecutionStatusContextValue>(() => {
     const execution = executionQuery.data;
 
-    if (!execution || execution.status !== ExecutionStatus.RUNNING) {
+    if (!execution) {
       return {
-        executionId: null,
+        execution: null,
         nodeStatuses: {},
       };
     }
 
     return {
-      executionId: execution.id,
+      execution: execution as WorkflowExecution,
       nodeStatuses: buildNodeStatusMap(execution.steps as WorkflowExecutionStep[]),
     };
   }, [executionQuery.data]);
@@ -93,12 +113,40 @@ export function WorkflowExecutionStatusProvider({
   );
 }
 
-export function useWorkflowNodeStatus(nodeId: string) {
+export function WorkflowExecutionStatusScope({
+  children,
+}: {
+  children: ReactNode;
+}) {
+  const pathname = usePathname();
+  const workflowMatch = pathname.match(/^\/workflows\/([^/]+)$/);
+  const workflowId = workflowMatch?.[1];
+
+  if (!workflowId || workflowId === "new") {
+    return <>{children}</>;
+  }
+
+  return (
+    <WorkflowExecutionStatusProvider workflowId={workflowId}>
+      {children}
+    </WorkflowExecutionStatusProvider>
+  );
+}
+
+export function useWorkflowExecutionStatus() {
   const context = useContext(WorkflowExecutionStatusContext);
 
   if (!context) {
-    return undefined;
+    return {
+      execution: null,
+      nodeStatuses: {},
+    };
   }
 
-  return context.nodeStatuses[nodeId];
+  return context;
+}
+
+export function useWorkflowNodeStatus(nodeId: string) {
+  const { nodeStatuses } = useWorkflowExecutionStatus();
+  return nodeStatuses[nodeId];
 }

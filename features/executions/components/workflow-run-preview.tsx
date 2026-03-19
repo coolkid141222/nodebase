@@ -2,33 +2,91 @@
 
 import { formatDistanceToNow } from "date-fns";
 import { useMemo } from "react";
-import { Badge } from "@/components/badge";
+import { Check, Clock3, Loader2, X } from "lucide-react";
 import {
   Card,
   CardContent,
   CardDescription,
   CardHeader,
 } from "@/components/card";
-import { ExecutionStepStatus } from "@/lib/prisma/client";
-import { useSuspenseExecution, useSuspenseExecutions } from "../hooks/use-executions";
+import {
+  ExecutionStatus,
+  ExecutionStepStatus,
+} from "@/lib/prisma/client";
+import {
+  useWorkflowExecutionStatus,
+} from "./workflow-execution-status-context";
 
-const executionStatusVariant = {
-  PENDING: "secondary",
-  RUNNING: "secondary",
-  SUCCESS: "default",
-  FAILED: "destructive",
-  CANCELED: "outline",
-} as const;
+function getExecutionStatusClasses(status: ExecutionStatus) {
+  switch (status) {
+    case "RUNNING":
+    case "PENDING":
+      return "bg-blue-600 text-white shadow-[0_0_0_4px_rgba(37,99,235,0.12)]";
+    case "SUCCESS":
+      return "bg-emerald-600 text-white shadow-[0_0_0_4px_rgba(5,150,105,0.12)]";
+    case "FAILED":
+      return "bg-red-600 text-white shadow-[0_0_0_4px_rgba(220,38,38,0.12)]";
+    case "CANCELED":
+      return "bg-zinc-500 text-white shadow-[0_0_0_4px_rgba(113,113,122,0.12)]";
+    default:
+      return "bg-gray-500 text-white";
+  }
+}
+
+function getStepStatusClasses(status: ExecutionStepStatus) {
+  switch (status) {
+    case "RUNNING":
+      return "bg-blue-600 text-white shadow-[0_0_0_4px_rgba(37,99,235,0.12)]";
+    case "SUCCESS":
+      return "bg-emerald-600 text-white shadow-[0_0_0_4px_rgba(5,150,105,0.12)]";
+    case "FAILED":
+      return "bg-red-600 text-white shadow-[0_0_0_4px_rgba(220,38,38,0.12)]";
+    case "SKIPPED":
+      return "bg-zinc-500 text-white shadow-[0_0_0_4px_rgba(113,113,122,0.12)]";
+    default:
+      return "bg-gray-500 text-white";
+  }
+}
+
+function StatusChip({
+  status,
+  kind,
+}: {
+  status: ExecutionStatus | ExecutionStepStatus;
+  kind: "execution" | "step";
+}) {
+  const classes =
+    kind === "execution"
+      ? getExecutionStatusClasses(status as ExecutionStatus)
+      : getStepStatusClasses(status as ExecutionStepStatus);
+
+  return (
+    <div
+      className={`inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-[11px] font-medium ${classes}`}
+    >
+      {status === "RUNNING" && <Loader2 className="size-3 animate-spin" />}
+      {status === "SUCCESS" && <Check className="size-3" />}
+      {status === "FAILED" && <X className="size-3" />}
+      {status === "PENDING" && <Clock3 className="size-3" />}
+      {status === "CANCELED" && <Clock3 className="size-3" />}
+      {status === "SKIPPED" && <Clock3 className="size-3" />}
+      <span className="uppercase tracking-wide">{status}</span>
+    </div>
+  );
+}
 
 function pickPreviewStep(execution: {
   steps: Array<{
     nodeType: string;
+    nodeName: string;
     status: ExecutionStepStatus;
     output: unknown;
     error: unknown;
   }>;
 }) {
   return (
+    execution.steps.find((step) => step.status === "RUNNING") ??
+    execution.steps.find((step) => step.status === "FAILED") ??
     execution.steps.find(
       (step) => step.nodeType === "AI_TEXT" && step.status === "SUCCESS",
     ) ??
@@ -81,39 +139,58 @@ function extractPreviewResult(value: unknown) {
   }
 }
 
-function ExecutionPreviewCard({
-  executionId,
-}: {
-  executionId: string;
-}) {
-  const { data } = useSuspenseExecution(executionId);
-  const previewStep = pickPreviewStep(data);
+function ExecutionPreviewCard() {
+  const { execution } = useWorkflowExecutionStatus();
+  const previewStep = execution ? pickPreviewStep(execution) : undefined;
   const previewResult = useMemo(
     () => extractPreviewResult(previewStep?.output ?? previewStep?.error),
     [previewStep?.output, previewStep?.error],
   );
 
+  if (!execution) {
+    return (
+      <Card className="w-full min-w-0 max-h-[20rem] overflow-hidden border-border/60 bg-background/95 shadow-sm">
+        <CardHeader className="space-y-2">
+          <CardDescription className="text-xs">
+            Run the workflow to inspect the latest result here.
+          </CardDescription>
+        </CardHeader>
+        <CardContent className="text-sm text-muted-foreground">
+          No execution yet.
+        </CardContent>
+      </Card>
+    );
+  }
+
   return (
     <Card className="w-full min-w-0 max-h-[28rem] overflow-hidden border-border/60 bg-background/95 shadow-sm">
       <div className="flex min-h-0 w-full min-w-0 flex-col overflow-y-auto overflow-x-hidden">
         <CardHeader className="space-y-1 pb-3">
-          <div className="flex items-center justify-between gap-3 min-w-0">
-            <div className="min-w-0">
+          <div className="flex items-start justify-between gap-3 min-w-0">
+            <div className="min-w-0 space-y-1">
               <CardDescription className="text-xs break-all">
-                {formatDistanceToNow(new Date(data.createdAt), {
+                {formatDistanceToNow(new Date(execution.createdAt), {
                   addSuffix: true,
                 })}
               </CardDescription>
+              <div className="flex flex-wrap items-center gap-2">
+                <StatusChip status={execution.status} kind="execution" />
+                {previewStep && (
+                  <StatusChip status={previewStep.status} kind="step" />
+                )}
+              </div>
+              {previewStep && (
+                <CardDescription className="text-xs break-all">
+                  Step: {previewStep.nodeName}
+                </CardDescription>
+              )}
             </div>
-            <Badge variant={executionStatusVariant[data.status]}>
-              {data.status}
-            </Badge>
           </div>
         </CardHeader>
         <CardContent className="space-y-2 pb-4">
           <div className="space-y-1">
             <div className="text-xs font-medium text-muted-foreground">
-              Result
+              {previewStep?.status === "RUNNING" ? "Current output" : "Result"}
             </div>
             <div className="max-h-20 overflow-y-auto overflow-x-hidden break-words rounded-md border bg-muted/30 p-3 text-sm leading-5">
               {previewResult || "No extractable result yet."}
@@ -125,28 +202,6 @@ function ExecutionPreviewCard({
   );
 }
 
-export function WorkflowRunPreviewSidebar({
-  workflowId,
-}: {
-  workflowId: string;
-}) {
-  const executions = useSuspenseExecutions();
-  const latestExecution = executions.data.find(
-    (execution) => execution.workflow.id === workflowId,
-  );
-
-  return latestExecution ? (
-    <ExecutionPreviewCard executionId={latestExecution.id} />
-  ) : (
-    <Card className="w-full min-w-0 max-h-[20rem] overflow-hidden border-border/60 bg-background/95 shadow-sm">
-      <CardHeader className="space-y-2">
-        <CardDescription className="text-xs">
-          Run the workflow to inspect the latest result here.
-        </CardDescription>
-      </CardHeader>
-      <CardContent className="text-sm text-muted-foreground">
-        No execution yet.
-      </CardContent>
-    </Card>
-  );
+export function WorkflowRunPreviewSidebar() {
+  return <ExecutionPreviewCard />;
 }

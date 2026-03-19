@@ -24,7 +24,6 @@ import { nodeComponents } from "@/config/node-components";
 import { AddNodeButton } from "./add-node-button";
 import { useSetAtom } from "jotai";
 import { editorAtom } from "../store/atoms";
-import { WorkflowExecutionStatusProvider } from "@/features/executions/components/workflow-execution-status-context";
 
 export const EditorLoading = () => {
     return (
@@ -61,33 +60,31 @@ export const Editor = ({ workflowId }: { workflowId: string }) => {
 
     return (
         <div className="w-full h-full overflow-hidden">
-            <WorkflowExecutionStatusProvider workflowId={workflowId}>
-                <ReactFlow
-                    nodes={nodes}
-                    edges={edges}
-                    onNodesChange={onNodesChange}
-                    onEdgesChange={onEdgesChange}
-                    onConnect={onConnect}
-                    nodeTypes={nodeComponents}
-                    onInit={setEditor}
-                    fitView
-                    snapGrid={[10, 10]}
-                    snapToGrid
-                    panOnScroll
-                    panOnDrag={false}
-                    selectionOnDrag
-                    proOptions={{
-                        hideAttribution: true
-                    }}
-                >
-                    <Background variant={BackgroundVariant.Dots} />
-                    <Controls />
-                    <MiniMap />
-                    <Panel position="top-right" className="p-4">
-                        <AddNodeButton />
-                    </Panel>
-                </ReactFlow>
-            </WorkflowExecutionStatusProvider>
+            <ReactFlow
+                nodes={nodes}
+                edges={edges}
+                onNodesChange={onNodesChange}
+                onEdgesChange={onEdgesChange}
+                onConnect={onConnect}
+                nodeTypes={nodeComponents}
+                onInit={setEditor}
+                fitView
+                snapGrid={[10, 10]}
+                snapToGrid
+                panOnScroll
+                panOnDrag={false}
+                selectionOnDrag
+                proOptions={{
+                    hideAttribution: true
+                }}
+            >
+                <Background variant={BackgroundVariant.Dots} />
+                <Controls />
+                <MiniMap />
+                <Panel position="top-right" className="p-4">
+                    <AddNodeButton />
+                </Panel>
+            </ReactFlow>
         </div>
     )
 }

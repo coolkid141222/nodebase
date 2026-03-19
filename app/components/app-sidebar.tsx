@@ -6,7 +6,6 @@ import {
     SidebarFooter,
     SidebarGroup,
     SidebarGroupContent,
-    SidebarGroupLabel,
     SidebarHeader,
     SidebarSeparator,
     SidebarMenu,
@@ -96,11 +95,8 @@ export const AppSidebar = () => {
                     <>
                         <SidebarSeparator />
                         <SidebarGroup className="gap-2 min-w-0 group-data-[collapsible=icon]:hidden">
-                            <SidebarGroupLabel>Preview</SidebarGroupLabel>
-                            <SidebarGroupContent className="min-w-0 px-2 pb-2 overflow-y-auto overflow-x-hidden">
-                                <WorkflowRunPreviewSidebar
-                                    workflowId={workflowId}
-                                />
+                                <SidebarGroupContent className="min-w-0 px-2 pb-2 overflow-y-auto overflow-x-hidden">
+                                <WorkflowRunPreviewSidebar />
                             </SidebarGroupContent>
                         </SidebarGroup>
                     </>
