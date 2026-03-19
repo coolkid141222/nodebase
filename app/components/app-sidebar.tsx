@@ -127,10 +127,12 @@ export const AppSidebar = () => {
                         <SidebarMenuButton
                             tooltip="Billing Portal"
                             className="gap-x-4 h-10 px-4"
-                            onClick={() => router.push("/billing")}
+                            asChild
                         >
-                            <CreditCardIcon className="h-4 w-4" />
-                            <span>Billing Portal</span>
+                            <Link href="/billing" prefetch>
+                                <CreditCardIcon className="h-4 w-4" />
+                                <span>Billing Portal</span>
+                            </Link>
                         </SidebarMenuButton>
                     </SidebarMenuItem>
                     <SidebarMenuItem>
