@@ -5,6 +5,7 @@ import {
     BotIcon,
     GlobeIcon,
     MessageSquareIcon,
+    LinkIcon,
     MousePointerIcon
 } from "lucide-react"
 import { useCallback } from "react"
@@ -29,9 +30,15 @@ export type NodeTypeOptions = {
 const triggerNodes: NodeTypeOptions[] = [
     {
         type: "MANUAL_TRIGGER",
-        label: "Trigger Manual",
-        decription: "Trigger the Manual",
+        label: "MANUAL TRIGGER",
+        decription: "Start the workflow manually",
         icon: MousePointerIcon
+    },
+    {
+        type: "WEBHOOK_TRIGGER",
+        label: "WEBHOOK TRIGGER",
+        decription: "Start the workflow from an HTTP request",
+        icon: LinkIcon
     }
 ]
 
@@ -75,13 +82,13 @@ export function NodeSelector({
 }: NodeSelectorProps) {
     const { setNodes, getNodes, screenToFlowPosition } = useReactFlow();
     const handleNodeSelect = useCallback((selection: NodeTypeOptions) => {
-        if (selection.type === "MANUAL_TRIGGER") {
+        if (selection.type === "MANUAL_TRIGGER" || selection.type === "WEBHOOK_TRIGGER") {
             const nodes = getNodes();
-            const hasManualTrigger = nodes.some(
-                (node) => node.type === "MANUAL_TRIGGER",
+            const hasTriggerNode = nodes.some(
+                (node) => node.type === "MANUAL_TRIGGER" || node.type === "WEBHOOK_TRIGGER",
             )
-            if (hasManualTrigger) {
-                toast.error("Only one Manual trigger is allowed per workflow")
+            if (hasTriggerNode) {
+                toast.error("Only one trigger is allowed per workflow")
                 return
             }
         }

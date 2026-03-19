@@ -54,6 +54,8 @@ type ExecutionPlan = {
   orderedNodes: WorkflowForExecution["nodes"];
 };
 
+type TriggerNodeType = NodeType.MANUAL_TRIGGER | NodeType.WEBHOOK_TRIGGER;
+
 type NodeExecutionResult = {
   status: ExecutionStepStatus;
   input?: Prisma.InputJsonValue;
@@ -104,6 +106,7 @@ export class WorkflowExecutionError extends Error {
     message: string,
     public readonly code:
       | "MANUAL_TRIGGER_NOT_FOUND"
+      | "WEBHOOK_TRIGGER_NOT_FOUND"
       | "WORKFLOW_HAS_CYCLE"
       | "UNSUPPORTED_NODE_TYPE"
       | "INVALID_HTTP_REQUEST_CONFIG"
@@ -766,15 +769,21 @@ async function executeAITextNode(
   };
 }
 
-function buildManualExecutionPlan(workflow: WorkflowForExecution): ExecutionPlan {
-  const manualTriggerNodes = workflow.nodes.filter(
-    (node) => node.type === NodeType.MANUAL_TRIGGER,
+function buildTriggeredExecutionPlan(
+  workflow: WorkflowForExecution,
+  triggerNodeType: TriggerNodeType,
+  missingTriggerCode:
+    | "MANUAL_TRIGGER_NOT_FOUND"
+    | "WEBHOOK_TRIGGER_NOT_FOUND",
+): ExecutionPlan {
+  const triggerNodes = workflow.nodes.filter(
+    (node) => node.type === triggerNodeType,
   );
 
-  if (manualTriggerNodes.length === 0) {
+  if (triggerNodes.length === 0) {
     throw new WorkflowExecutionError(
-      "Workflow must contain a manual trigger node before it can be executed manually.",
-      "MANUAL_TRIGGER_NOT_FOUND",
+      `Workflow must contain a ${triggerNodeType.toLowerCase().replaceAll("_", " ")} node before it can be executed.`,
+      missingTriggerCode,
     );
   }
 
@@ -791,7 +800,7 @@ function buildManualExecutionPlan(workflow: WorkflowForExecution): ExecutionPlan
   }
 
   const reachableNodeIds = new Set<string>();
-  const queue = manualTriggerNodes.map((node) => node.id);
+  const queue = triggerNodes.map((node) => node.id);
 
   while (queue.length > 0) {
     const nodeId = queue.shift();
@@ -884,11 +893,12 @@ async function executeNode(
           reason: "INITIAL is a canvas placeholder node.",
         },
       };
-    case NodeType.MANUAL_TRIGGER:
-      return {
-        status: ExecutionStepStatus.SUCCESS,
-        output: execution.triggerPayload as Prisma.InputJsonValue,
-      };
+      case NodeType.MANUAL_TRIGGER:
+      case NodeType.WEBHOOK_TRIGGER:
+        return {
+          status: ExecutionStepStatus.SUCCESS,
+          output: execution.triggerPayload as Prisma.InputJsonValue,
+        };
     case NodeType.HTTP_REQUEST:
       return executeHttpRequestNode(
         execution,
@@ -920,10 +930,11 @@ function resolveNodeInput(
   context: ExecutionTemplateContext,
 ): Prisma.InputJsonValue | null {
   switch (node.type) {
-    case NodeType.INITIAL:
-      return null;
-    case NodeType.MANUAL_TRIGGER:
-      return execution.triggerPayload as Prisma.InputJsonValue;
+      case NodeType.INITIAL:
+        return null;
+      case NodeType.MANUAL_TRIGGER:
+      case NodeType.WEBHOOK_TRIGGER:
+        return execution.triggerPayload as Prisma.InputJsonValue;
     case NodeType.HTTP_REQUEST:
       return normalizeHttpRequestNodeData(node, context);
     case NodeType.AI_TEXT:
@@ -939,35 +950,111 @@ function resolveNodeInput(
   }
 }
 
-export async function createManualExecution(params: {
+async function findWorkflowForExecution(params: {
   workflowId: string;
-  triggeredByUserId: string;
+  userId?: string;
 }) {
-  const workflow = await prisma.workflow.findFirst({
-    where: {
-      id: params.workflowId,
-      userId: params.triggeredByUserId,
-    },
+  return prisma.workflow.findFirst({
+    where: params.userId
+      ? {
+          id: params.workflowId,
+          userId: params.userId,
+        }
+      : {
+          id: params.workflowId,
+        },
     include: {
       nodes: true,
       connections: true,
     },
+  });
+}
+
+async function createTriggeredExecution(params: {
+  workflowId: string;
+  triggerType: ExecutionTriggerType;
+  triggerNodeType: TriggerNodeType;
+  missingTriggerCode:
+    | "MANUAL_TRIGGER_NOT_FOUND"
+    | "WEBHOOK_TRIGGER_NOT_FOUND";
+  workflowUserId?: string;
+  triggeredByUserId: string;
+  triggerPayload: Prisma.InputJsonValue;
+}) {
+  const workflow = await findWorkflowForExecution({
+    workflowId: params.workflowId,
+    userId: params.workflowUserId,
   });
 
   if (!workflow) {
     return null;
   }
 
-  buildManualExecutionPlan(workflow);
+  buildTriggeredExecutionPlan(
+    workflow,
+    params.triggerNodeType,
+    params.missingTriggerCode,
+  );
 
   return prisma.execution.create({
     data: {
       workflowId: workflow.id,
-      triggerType: ExecutionTriggerType.MANUAL,
+      triggerType: params.triggerType,
       status: ExecutionStatus.PENDING,
       triggeredByUserId: params.triggeredByUserId,
+      triggerPayload: params.triggerPayload,
+      workflowSnapshot: createWorkflowSnapshot(workflow),
+      state: {
+        phase: "queued",
+      },
+    },
+  });
+}
+
+export async function createManualExecution(params: {
+  workflowId: string;
+  triggeredByUserId: string;
+}) {
+  return createTriggeredExecution({
+    workflowId: params.workflowId,
+    triggerType: ExecutionTriggerType.MANUAL,
+    triggerNodeType: NodeType.MANUAL_TRIGGER,
+    missingTriggerCode: "MANUAL_TRIGGER_NOT_FOUND",
+    workflowUserId: params.triggeredByUserId,
+    triggeredByUserId: params.triggeredByUserId,
+    triggerPayload: {
+      source: "manual",
+    },
+  });
+}
+
+export async function createWebhookExecution(params: {
+  workflowId: string;
+  triggerPayload: Prisma.InputJsonValue;
+}) {
+  const workflow = await findWorkflowForExecution({
+    workflowId: params.workflowId,
+  });
+
+  if (!workflow) {
+    return null;
+  }
+
+  buildTriggeredExecutionPlan(
+    workflow,
+    NodeType.WEBHOOK_TRIGGER,
+    "WEBHOOK_TRIGGER_NOT_FOUND",
+  );
+
+  return prisma.execution.create({
+    data: {
+      workflowId: workflow.id,
+      triggerType: ExecutionTriggerType.WEBHOOK,
+      status: ExecutionStatus.PENDING,
+      triggeredByUserId: workflow.userId,
       triggerPayload: {
-        source: "manual",
+        source: "webhook",
+        body: params.triggerPayload,
       },
       workflowSnapshot: createWorkflowSnapshot(workflow),
       state: {
@@ -1020,7 +1107,15 @@ export async function runExecution(executionId: string) {
   }
 
   try {
-    const plan = buildManualExecutionPlan(execution.workflow);
+    const plan = buildTriggeredExecutionPlan(
+      execution.workflow,
+      execution.triggerType === ExecutionTriggerType.WEBHOOK
+        ? NodeType.WEBHOOK_TRIGGER
+        : NodeType.MANUAL_TRIGGER,
+      execution.triggerType === ExecutionTriggerType.WEBHOOK
+        ? "WEBHOOK_TRIGGER_NOT_FOUND"
+        : "MANUAL_TRIGGER_NOT_FOUND",
+    );
     const completedSteps = new Map<string, CompletedStepResult>();
 
     await prisma.execution.update({

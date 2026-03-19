@@ -46,8 +46,10 @@ export const BaseTriggerNode = memo((props: BaseTriggerProps) => {
         })
 
         setEdges((currentEdges) => {
-            const updatedEdges = currentEdges.filter((edge) => edge.target !== id)
-            return currentEdges
+            const updatedEdges = currentEdges.filter(
+                (edge) => edge.source !== id && edge.target !== id,
+            )
+            return updatedEdges
         })
     };
     return(

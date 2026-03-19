@@ -27,7 +27,9 @@ export const BaseExcutionNode = memo((props: BaseExcutionProps) => {
         })
 
         setEdges((currentEdges) => {
-            const updatedEdges = currentEdges.filter((edge) => edge.target !== id)
+            const updatedEdges = currentEdges.filter(
+                (edge) => edge.source !== id && edge.target !== id,
+            )
             return updatedEdges
         })
     };
