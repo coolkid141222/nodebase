@@ -90,11 +90,8 @@ export const BaseTriggerNode = memo((props: BaseTriggerProps) => {
                     </NodeStatusIndicator>
 
                     {/* Status Badge */}
-                    {status && (
+                    {(status === "success" || status === "error") && (
                         <div className={`pointer-events-none absolute -bottom-2 -right-2 z-10 size-5 rounded-full flex items-center justify-center ${getStatusColor(status)}`}>
-                            {status === "loading" && (
-                                <span className="inline-block size-3 rounded-full border-2 border-current border-t-transparent animate-spin" />
-                            )}
                             {status === "success" && (
                                 <Check className="size-3 text-white" strokeWidth={3} />
                             )}

@@ -26,6 +26,12 @@ type PreviewExecution = {
   }>;
 };
 
+type AITextPreview = {
+  text: string;
+  provider?: string;
+  model?: string;
+};
+
 function getExecutionStatusClasses(status: StatusValue) {
   switch (status) {
     case "RUNNING":
@@ -69,11 +75,6 @@ function StatusChip({
     <div
       className={`inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-[11px] font-medium ${classes}`}
     >
-      {status === "RUNNING" && (
-        <span className="inline-flex size-3 shrink-0 items-center justify-center">
-          <span className="block size-3 rounded-full border-[1.5px] border-current border-t-transparent animate-spin" />
-        </span>
-      )}
       {status === "SUCCESS" && <Check className="size-3" />}
       {status === "FAILED" && <X className="size-3" />}
       {status === "PENDING" && <Clock3 className="size-3" />}
@@ -263,6 +264,45 @@ function extractPreviewResult(value: unknown) {
   }
 }
 
+function extractAITextPreview(value: unknown): AITextPreview | null {
+  if (
+    typeof value !== "object" ||
+    value === null ||
+    Array.isArray(value)
+  ) {
+    return null;
+  }
+
+  const text = "text" in value && typeof value.text === "string"
+    ? value.text.trim()
+    : "";
+
+  if (!text) {
+    return null;
+  }
+
+  return {
+    text,
+    provider:
+      "provider" in value && typeof value.provider === "string"
+        ? value.provider
+        : undefined,
+    model:
+      "model" in value && typeof value.model === "string"
+        ? value.model
+        : undefined,
+  };
+}
+
+function pickLatestAITextStep(execution: PreviewExecution) {
+  return [...execution.steps].reverse().find(
+    (step) =>
+      step.nodeType === "AI_TEXT" &&
+      step.status === ExecutionStepStatus.SUCCESS &&
+      extractAITextPreview(step.output) !== null,
+  );
+}
+
 function ExecutionPreviewCard() {
   const { execution } = useWorkflowExecutionStatus();
   const displayStatus = execution
@@ -276,6 +316,10 @@ function ExecutionPreviewCard() {
     execution && displayStatus
       ? pickResultStep(execution, displayStatus, focusedStep)
       : undefined;
+  const aiTextStep = execution ? pickLatestAITextStep(execution) : undefined;
+  const aiTextPreview = aiTextStep
+    ? extractAITextPreview(aiTextStep.output)
+    : null;
   const previewResult = extractPreviewResult(
     resultStep?.output ?? resultStep?.error,
   );
@@ -348,6 +392,25 @@ function ExecutionPreviewCard() {
           )}
         </CardHeader>
         <CardContent className="space-y-2 pb-4">
+          {aiTextPreview && (
+            <div className="space-y-1">
+              <div className="text-xs font-medium text-muted-foreground">
+                LLM output
+              </div>
+              <div className="rounded-xl border border-emerald-200 bg-emerald-50/60 p-3">
+                {(aiTextPreview.provider || aiTextPreview.model) && (
+                  <div className="mb-2 text-[11px] uppercase tracking-[0.16em] text-emerald-700/80">
+                    {[aiTextPreview.provider, aiTextPreview.model]
+                      .filter(Boolean)
+                      .join(" · ")}
+                  </div>
+                )}
+                <div className="max-h-28 overflow-y-auto overflow-x-hidden break-words text-sm leading-5 text-foreground">
+                  {aiTextPreview.text}
+                </div>
+              </div>
+            </div>
+          )}
           <div className="space-y-1">
             <div className="text-xs font-medium text-muted-foreground">
               {getResultLabel(displayStatus ?? execution.status, resultStep?.status)}
