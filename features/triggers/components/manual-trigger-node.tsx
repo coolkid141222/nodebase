@@ -4,23 +4,21 @@ import { BaseTriggerNode } from "./base-trigger-node";
 import { MousePointerIcon } from "lucide-react";
 import { ManualTriggerDialog } from "./dialog";
 import { useParams } from "next/navigation";
-import { useManualWorkflowExecution } from "@/features/executions/hooks/use-manual-workflow-execution";
 import { useWorkflowNodeStatus } from "@/features/executions/components/workflow-execution-status-context";
+import { useExecuteWorkflow } from "@/features/executions/hooks/use-execute-workflow";
 
 const ManualTriggerNodeComponent = (props: NodeProps) => {
     const params = useParams<{ workflowId: string }>();
     const workflowId = params.workflowId;
-    const manualExecution = useManualWorkflowExecution();
+    const workflowExecution = useExecuteWorkflow(workflowId);
     const [dialogOpen, setDialogOpen] = useState(false);
     const runtimeStatus = useWorkflowNodeStatus(props.id);
-    const nodeStatus = manualExecution.isPending || runtimeStatus === "loading"
+    const nodeStatus = workflowExecution.isPending || runtimeStatus === "loading"
         ? "loading"
         : runtimeStatus;
     const handleOpenSettings = () => setDialogOpen(true);
-    const handleTrigger = () => {
-        manualExecution.mutate({
-            workflowId,
-        });
+    const handleTrigger = async () => {
+        return workflowExecution.executeWorkflow();
     };
 
     return (
@@ -29,7 +27,9 @@ const ManualTriggerNodeComponent = (props: NodeProps) => {
                 open={dialogOpen}
                 onOpenChange={setDialogOpen}
                 onTrigger={handleTrigger}
-                disabled={manualExecution.isPending}
+                disabled={workflowExecution.isPending || !workflowExecution.editorReady}
+                isPending={workflowExecution.isPending}
+                pendingLabel={workflowExecution.isSaving ? "Saving..." : "Running..."}
             />
             <BaseTriggerNode
                 {...props}

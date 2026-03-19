@@ -12,22 +12,8 @@ import {
 import { Input } from "@/components/input";
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link"
-import { useSuspenseWorkflow, useUpdateWorkflow, useUpdateWorkflowName } from "@/features/workflows/hooks/user-workflows";
-import { useAtomValue } from "jotai";
-import { editorAtom } from "../store/atoms";
-import { useManualWorkflowExecution } from "@/features/executions/hooks/use-manual-workflow-execution";
-import type { ReactFlowInstance } from "@xyflow/react";
-
-const snapshotWorkflow = (editor: ReactFlowInstance | null) => {
-    if (!editor) {
-        return null;
-    }
-
-    return {
-        nodes: editor.getNodes(),
-        edges: editor.getEdges(),
-    };
-};
+import { useSuspenseWorkflow, useUpdateWorkflowName } from "@/features/workflows/hooks/user-workflows";
+import { useExecuteWorkflow } from "@/features/executions/hooks/use-execute-workflow";
 
 export const EditorNameInput = ({ workflowId }: { workflowId: string }) => {
     const { data: workflow } = useSuspenseWorkflow(workflowId);
@@ -121,41 +107,7 @@ export const EditorBreadcrumbs = ({ workflowId }: { workflowId: string }) => {
 }
 
 export const EditorHeader = ({ workflowId }: { workflowId: string }) => {
-    const editor = useAtomValue(editorAtom);
-    const updateWorkflow = useUpdateWorkflow();
-    const manualExecution = useManualWorkflowExecution();
-
-    const saveWorkflow = async () => {
-        const snapshot = snapshotWorkflow(editor);
-
-        if (!snapshot) {
-            return false;
-        }
-
-        try {
-            await updateWorkflow.mutateAsync({
-                id: workflowId,
-                ...snapshot,
-            });
-            return true;
-        } catch {
-            return false;
-        }
-    };
-
-    const handleRun = async () => {
-        const saved = await saveWorkflow();
-
-        if (!saved) {
-            return;
-        }
-
-        try {
-            await manualExecution.mutateAsync({ workflowId });
-        } catch {
-            // toast handled by the mutation hook
-        }
-    };
+    const workflowExecution = useExecuteWorkflow(workflowId);
 
     return (
         <header className="flex h-14 shrink-0 items-center gap-2 border-b px-4 bg-background">
@@ -167,21 +119,21 @@ export const EditorHeader = ({ workflowId }: { workflowId: string }) => {
                         <Button
                             size="sm"
                             variant="secondary"
-                            onClick={() => void handleRun()}
-                            disabled={manualExecution.isPending || updateWorkflow.isPending || !editor}
+                            onClick={() => void workflowExecution.executeWorkflow()}
+                            disabled={workflowExecution.isPending || !workflowExecution.editorReady}
                         >
                             <PlayIcon className="size-4" />
-                            {manualExecution.isPending
+                            {workflowExecution.isRunning
                                 ? "Running"
-                                : updateWorkflow.isPending
+                                : workflowExecution.isSaving
                                   ? "Saving..."
                                   : "Execute workflow"}
                         </Button>
                     </div>
                     <Button
                         size="sm"
-                        onClick={() => void saveWorkflow()}
-                        disabled={updateWorkflow.isPending || !editor}
+                        onClick={() => void workflowExecution.saveWorkflow()}
+                        disabled={workflowExecution.isPending || !workflowExecution.editorReady}
                     >
                         <SaveIcon />
                         Save

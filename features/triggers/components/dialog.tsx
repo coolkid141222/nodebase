@@ -14,8 +14,10 @@ import { PlayIcon } from "lucide-react"
 interface Props {
     open: boolean;
     onOpenChange: (open: boolean) => void;
-    onTrigger?: () => void;
+    onTrigger?: () => Promise<boolean> | boolean;
     disabled?: boolean;
+    isPending?: boolean;
+    pendingLabel?: string;
 }
 
 export const ManualTriggerDialog = ({
@@ -23,10 +25,15 @@ export const ManualTriggerDialog = ({
     onOpenChange,
     onTrigger,
     disabled,
+    isPending,
+    pendingLabel,
 }: Props) => {
-    const handleTrigger = () => {
-        onTrigger?.();
-        onOpenChange(false);
+    const handleTrigger = async () => {
+        const triggered = await onTrigger?.();
+
+        if (triggered) {
+            onOpenChange(false);
+        }
     };
 
     return (
@@ -48,11 +55,11 @@ export const ManualTriggerDialog = ({
                 <DialogFooter className="gap-2 sm:justify-end">
                     <Button
                         variant="default"
-                        onClick={handleTrigger}
-                        disabled={disabled}
+                        onClick={() => void handleTrigger()}
+                        disabled={disabled || isPending}
                     >
                         <PlayIcon className="mr-2 h-4 w-4" />
-                        立即触发
+                        {isPending ? pendingLabel || "Running..." : "立即触发"}
                     </Button>
                 </DialogFooter>
             </DialogContent>
