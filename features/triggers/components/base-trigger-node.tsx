@@ -67,8 +67,12 @@ export const BaseTriggerNode = memo((props: BaseTriggerProps) => {
             {/* Node with Status Indicator - wrapped to limit absolute positioning */}
             <div className="flex flex-col items-center">
                 <div className="relative inline-block">
-                    <NodeStatusIndicator status={status} variant="border" className="rounded-l-2xl">
-                        <BaseNode className={`relative block mx-auto size-[56px] rounded-l-2xl`}>
+                    <NodeStatusIndicator status={status} variant="border" className="rounded-[5px]">
+                        <BaseNode
+                            className={`relative block mx-auto size-[56px] rounded-[5px] ${
+                                status ? "border-transparent" : ""
+                            }`}
+                        >
                             <div onClick={onDoubleClick} className="w-full h-full flex items-center justify-center">
                                 {typeof Icon === "string" ? (
                                     <Image src={Icon} alt={name} width={16} height={16}/>
