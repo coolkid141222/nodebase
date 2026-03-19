@@ -1,5 +1,6 @@
 "use client"
 
+import { useState } from "react";
 import {
     Sidebar,
     SidebarContent,
@@ -18,6 +19,9 @@ import Link from "next/link"
 import { usePathname, useRouter } from "next/navigation"
 import { authClient } from "@/lib/auth-client"
 import { WorkflowRunPreviewSidebar } from "@/features/executions/components/workflow-run-preview"
+import { UpgradeModal } from "@/app/components/upgrade-modal";
+import { useBillingState } from "@/features/billing/hooks/use-billing";
+import { BillingPlan } from "@/lib/prisma/client";
 
 const menuItems = [
     {
@@ -50,9 +54,14 @@ const menuItems = [
 export const AppSidebar = () => {
     const pathname = usePathname()
     const router = useRouter();
+    const [isUpgradeOpen, setIsUpgradeOpen] = useState(false);
+    const billingState = useBillingState();
     const workflowMatch = pathname.match(/^\/workflows\/([^/]+)$/);
     const workflowId = workflowMatch?.[1] ?? "";
     const showWorkflowPreview = Boolean(workflowId && workflowId !== "new");
+    const activePlan = billingState.data?.plan ?? BillingPlan.FREE;
+    const upgradeLabel =
+        activePlan === BillingPlan.PRO ? "Manage Pro plan" : "Upgrade to Pro";
     return (
         <Sidebar collapsible="icon">
             <SidebarHeader>
@@ -108,17 +117,17 @@ export const AppSidebar = () => {
                         <SidebarMenuButton
                             tooltip="Upgrade to Pro"
                             className="gap-x-4 h-10 px-4"
-                            onClick={() => { }}
+                            onClick={() => setIsUpgradeOpen(true)}
                         >
                             <StarsIcon className="h-4 w-4" />
-                            <span>Upgrade to Pro</span>
+                            <span>{upgradeLabel}</span>
                         </SidebarMenuButton>
                     </SidebarMenuItem>
                     <SidebarMenuItem>
                         <SidebarMenuButton
                             tooltip="Billing Portal"
                             className="gap-x-4 h-10 px-4"
-                            onClick={() => { }}
+                            onClick={() => router.push("/billing")}
                         >
                             <CreditCardIcon className="h-4 w-4" />
                             <span>Billing Portal</span>
@@ -142,6 +151,7 @@ export const AppSidebar = () => {
                     </SidebarMenuItem>
                 </SidebarMenu>
             </SidebarFooter>
+            <UpgradeModal open={isUpgradeOpen} onOpenChange={setIsUpgradeOpen} />
         </Sidebar>
     )
 }

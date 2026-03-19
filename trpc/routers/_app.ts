@@ -3,6 +3,7 @@ import { credentialsRouter } from "@/features/credentials/server/router";
 import { workflowsRouter } from "@/features/workflows/server/router";
 import { executionsRouter } from "@/features/executions/server/router";
 import { aiRouter } from "@/features/ai/server/router";
+import { billingRouter } from "@/features/billing/server/router";
 import { DEFAULT_AI_SMOKE_PROMPT } from "@/features/ai/shared";
 import { runAISmokeTest } from "@/features/ai/server/smoke-test";
 
@@ -19,6 +20,7 @@ export const appRouter = createTRPCRouter({
   executions: executionsRouter,
   credentials: credentialsRouter,
   ai: aiRouter,
+  billing: billingRouter,
 });
 
 // export type definition of API
