@@ -67,9 +67,9 @@ export const BaseTriggerNode = memo((props: BaseTriggerProps) => {
             {/* Node with Status Indicator - wrapped to limit absolute positioning */}
             <div className="flex flex-col items-center">
                 <div className="relative inline-block">
-                    <NodeStatusIndicator status={status} variant="border" className="rounded-[5px]">
+                    <NodeStatusIndicator status={status} variant="border">
                         <BaseNode
-                            className={`relative block mx-auto size-[56px] rounded-[5px] ${
+                            className={`relative block mx-auto size-[56px] ${
                                 status ? "border-transparent" : ""
                             }`}
                         >

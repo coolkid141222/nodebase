@@ -25,7 +25,7 @@ export const SpinnerLoadingIndicator = ({
     <div className={cn("relative", className)}>
       <StatusBorder className="border-blue-700/40">{children}</StatusBorder>
 
-      <div className="bg-background/50 absolute inset-0 z-50 rounded-[5px] backdrop-blur-xs" />
+      <div className="bg-background/50 absolute inset-0 z-50 rounded-md backdrop-blur-xs" />
       <div className="absolute inset-0 z-50">
         <span className="absolute top-[calc(50%-1.25rem)] left-[calc(50%-1.25rem)] inline-block h-10 w-10 animate-ping rounded-full bg-blue-700/20" />
 
@@ -62,7 +62,7 @@ export const BorderLoadingIndicator = ({
         }
       `}
         </style>
-        <div className={cn("absolute inset-0 overflow-hidden rounded-[5px]", className)}>
+        <div className={cn("absolute inset-0 overflow-hidden rounded-md", className)}>
           <div className="spinner rounded-full bg-[conic-gradient(from_0deg_at_50%_50%,rgb(42,67,233)_0deg,rgba(42,138,246,0)_360deg)]" />
         </div>
       </div>
@@ -82,7 +82,7 @@ const StatusBorder = ({
     <>
       <div
         className={cn(
-          "absolute -top-px -left-px h-[calc(100%+2px)] w-[calc(100%+2px)] rounded-[5px] border-2",
+          "absolute -top-px -left-px h-[calc(100%+2px)] w-[calc(100%+2px)] rounded-md border-2",
           className,
         )}
       />
