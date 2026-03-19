@@ -22,6 +22,7 @@ export const billingRouter = createTRPCRouter({
         id: ctx.user.id,
       },
       select: {
+        id: true,
         name: true,
         email: true,
         plan: true,
@@ -30,6 +31,7 @@ export const billingRouter = createTRPCRouter({
         billingCustomerId: true,
         billingSubscriptionId: true,
         billingCurrentPeriodEnd: true,
+        billingLastEventAt: true,
       },
     });
 

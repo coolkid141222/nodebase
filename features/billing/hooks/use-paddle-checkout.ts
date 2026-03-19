@@ -32,6 +32,10 @@ type PaddleCheckoutCustomer = {
   };
 };
 
+type PaddleCheckoutCustomData = {
+  appUserId?: string;
+};
+
 type PaddleInstance = {
   Environment?: {
     set: (environment: "sandbox") => void;
@@ -54,6 +58,7 @@ type PaddleInstance = {
     open: (config: {
       items: PaddleCheckoutItem[];
       customer?: PaddleCheckoutCustomer;
+      customData?: PaddleCheckoutCustomData;
       settings?: {
         displayMode?: "overlay" | "inline";
         locale?: string;
@@ -81,9 +86,10 @@ export const usePaddleCheckout = () => {
   );
 
   const paddle = billing.data?.paddle;
+  const shouldLoadScript = Boolean(paddle?.hasClientToken);
 
   useEffect(() => {
-    if (typeof window === "undefined") {
+    if (typeof window === "undefined" || !shouldLoadScript) {
       return;
     }
 
@@ -109,7 +115,7 @@ export const usePaddleCheckout = () => {
     return () => {
       script.onload = null;
     };
-  }, []);
+  }, [shouldLoadScript]);
 
   useEffect(() => {
     if (!scriptReady || !paddle?.enabled || !paddle.clientToken || !window.Paddle) {
@@ -182,6 +188,9 @@ export const usePaddleCheckout = () => {
         : {
             email: billing.data?.email,
           },
+      customData: {
+        appUserId: billing.data?.id,
+      },
       settings: {
         displayMode: "overlay",
         locale: "zh-CN",

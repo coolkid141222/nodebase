@@ -29,6 +29,7 @@ import {
   isProPlanActive,
   PADDLE_BILLING_WORKFLOWS_URL,
   PADDLE_SUPPORTED_COUNTRIES_URL,
+  PADDLE_WEBHOOK_ENDPOINT_PATH,
   PRO_PLAN_FEATURES,
 } from "../shared";
 import {
@@ -186,6 +187,7 @@ export const BillingPortalView = () => {
                   <li>API key: {state.paddle.hasApiKey ? "ready" : "missing"}</li>
                   <li>Client token: {state.paddle.hasClientToken ? "ready" : "missing"}</li>
                   <li>Price ID: {state.paddle.hasPriceId ? "ready" : "missing"}</li>
+                  <li>Webhook secret: {state.paddle.hasWebhookSecret ? "ready" : "missing"}</li>
                   <li>
                     Checkout script:{" "}
                     {state.paddle.enabled
@@ -195,6 +197,9 @@ export const BillingPortalView = () => {
                       : "waiting for config"}
                   </li>
                 </ul>
+                <div className="mt-3 rounded-xl border bg-muted/25 px-3 py-2 text-xs text-foreground">
+                  Webhook endpoint: {PADDLE_WEBHOOK_ENDPOINT_PATH}
+                </div>
               </div>
             </CardContent>
             <CardFooter className="flex flex-col gap-2 border-t pt-6 sm:items-start">

@@ -16,6 +16,7 @@ import {
 import {
   FREE_PLAN_FEATURES,
   PADDLE_SUPPORTED_COUNTRIES_URL,
+  PADDLE_WEBHOOK_ENDPOINT_PATH,
   PRO_PLAN_FEATURES,
 } from "@/features/billing/shared";
 import {
@@ -114,7 +115,13 @@ export const UpgradeModal = ({
               <Badge variant="outline">
                 Price ID {billing.data.paddle.hasPriceId ? "ready" : "missing"}
               </Badge>
+              <Badge variant="outline">
+                Webhook {billing.data.paddle.hasWebhookSecret ? "ready" : "missing"}
+              </Badge>
             </div>
+            <p className="mt-3 text-xs text-foreground">
+              Endpoint: {PADDLE_WEBHOOK_ENDPOINT_PATH}
+            </p>
           </div>
         )}
 

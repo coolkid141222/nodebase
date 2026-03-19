@@ -26,17 +26,24 @@ const getPaddleEnvironment = (): PaddleEnvironment => {
 const getPaddleApiKey = () => process.env.PADDLE_API_KEY ?? "";
 const getPaddleClientToken = () => process.env.NEXT_PUBLIC_PADDLE_CLIENT_TOKEN ?? "";
 const getPaddlePriceId = () => process.env.PADDLE_PRO_PRICE_ID ?? "";
+export const getPaddleWebhookSecret = () => process.env.PADDLE_WEBHOOK_SECRET ?? "";
+export const getPaddleWebhookToleranceSeconds = () => {
+  const value = Number(process.env.PADDLE_WEBHOOK_TOLERANCE_SECONDS ?? "30");
+  return Number.isFinite(value) && value > 0 ? value : 30;
+};
 
 export const getPaddleConfig = () => {
   const apiKey = getPaddleApiKey();
   const clientToken = getPaddleClientToken();
   const priceId = getPaddlePriceId();
+  const webhookSecret = getPaddleWebhookSecret();
 
   return {
     environment: getPaddleEnvironment(),
     hasApiKey: Boolean(apiKey),
     hasClientToken: Boolean(clientToken),
     hasPriceId: Boolean(priceId),
+    hasWebhookSecret: Boolean(webhookSecret),
     enabled: Boolean(apiKey && clientToken && priceId),
     clientToken: clientToken || null,
     priceId: priceId || null,

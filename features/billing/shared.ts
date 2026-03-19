@@ -19,6 +19,7 @@ export const PADDLE_SUPPORTED_COUNTRIES_URL =
 
 export const PADDLE_BILLING_WORKFLOWS_URL =
   "https://developer.paddle.com/migrate/overview";
+export const PADDLE_WEBHOOK_ENDPOINT_PATH = "/api/webhooks/paddle";
 
 export type BillingStateSnapshot = {
   plan: BillingPlan;
