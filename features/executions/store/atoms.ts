@@ -41,6 +41,24 @@ export const workflowExecutionStateAtom = atom<WorkflowExecutionState>(
   emptyWorkflowExecutionState,
 );
 
+export const workflowExecutionActiveIdAtom = atom<string | null>(null);
+
+export function isExecutionPendingOrRunning(
+  status: ExecutionStatus | null | undefined,
+) {
+  return status === ExecutionStatus.PENDING || status === ExecutionStatus.RUNNING;
+}
+
+export function isExecutionTerminal(
+  status: ExecutionStatus | null | undefined,
+) {
+  return (
+    status === ExecutionStatus.SUCCESS ||
+    status === ExecutionStatus.FAILED ||
+    status === ExecutionStatus.CANCELED
+  );
+}
+
 function mapExecutionStepStatus(
   status: ExecutionStepStatus,
 ): NodeStatus | undefined {

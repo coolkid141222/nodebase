@@ -6,11 +6,13 @@ import { useSetAtom, useAtomValue } from "jotai";
 import { usePathname } from "next/navigation";
 
 import { useTRPC } from "@/trpc/client";
-import { ExecutionStatus } from "@/lib/prisma/client";
 import {
   buildWorkflowExecutionState,
   emptyWorkflowExecutionState,
+  isExecutionPendingOrRunning,
+  isExecutionTerminal,
   type WorkflowExecutionSnapshot,
+  workflowExecutionActiveIdAtom,
   workflowExecutionStateAtom,
 } from "../store/atoms";
 
@@ -23,15 +25,33 @@ export function WorkflowExecutionStatusProvider({
 }) {
   const trpc = useTRPC();
   const setWorkflowExecutionState = useSetAtom(workflowExecutionStateAtom);
-  const executionQuery = useQuery({
+  const setActiveExecutionId = useSetAtom(workflowExecutionActiveIdAtom);
+  const activeExecutionId = useAtomValue(workflowExecutionActiveIdAtom);
+  const latestExecutionQuery = useQuery({
     ...trpc.executions.getLatestForWorkflow.queryOptions({ workflowId }),
     staleTime: 0,
     refetchInterval: (query) => {
       const status = query.state.data?.status;
 
-      return status === ExecutionStatus.PENDING || status === ExecutionStatus.RUNNING
-        ? 1000
-        : 5000;
+      if (activeExecutionId) {
+        return 1000;
+      }
+
+      return isExecutionPendingOrRunning(status) ? 1000 : 5000;
+    },
+    refetchIntervalInBackground: true,
+    refetchOnWindowFocus: true,
+    refetchOnReconnect: true,
+  });
+  const activeExecutionQuery = useQuery({
+    ...trpc.executions.getOne.queryOptions({
+      id: activeExecutionId ?? "",
+    }),
+    enabled: Boolean(activeExecutionId),
+    staleTime: 0,
+    refetchInterval: (query) => {
+      const status = query.state.data?.status;
+      return isExecutionPendingOrRunning(status) ? 500 : false;
     },
     refetchIntervalInBackground: true,
     refetchOnWindowFocus: true,
@@ -39,18 +59,71 @@ export function WorkflowExecutionStatusProvider({
   });
 
   useEffect(() => {
+    if (activeExecutionId) {
+      const activeExecution =
+        (activeExecutionQuery.data as WorkflowExecutionSnapshot | undefined) ??
+        null;
+
+      if (activeExecution) {
+        setWorkflowExecutionState(buildWorkflowExecutionState(activeExecution));
+      }
+
+      return;
+    }
+
     setWorkflowExecutionState(
       buildWorkflowExecutionState(
-        (executionQuery.data as WorkflowExecutionSnapshot | undefined) ?? null,
+        (latestExecutionQuery.data as WorkflowExecutionSnapshot | undefined) ??
+          null,
       ),
     );
-  }, [executionQuery.data, setWorkflowExecutionState]);
+  }, [
+    activeExecutionId,
+    activeExecutionQuery.data,
+    latestExecutionQuery.data,
+    setWorkflowExecutionState,
+  ]);
+
+  useEffect(() => {
+    if (!activeExecutionId) {
+      return;
+    }
+
+    const activeExecution =
+      (activeExecutionQuery.data as WorkflowExecutionSnapshot | undefined) ??
+      null;
+
+    if (!activeExecution || !isExecutionTerminal(activeExecution.status)) {
+      return;
+    }
+
+    const latestExecution =
+      (latestExecutionQuery.data as WorkflowExecutionSnapshot | undefined) ??
+      null;
+
+    if (
+      latestExecution?.id === activeExecution.id &&
+      latestExecution.status === activeExecution.status
+    ) {
+      setWorkflowExecutionState(buildWorkflowExecutionState(latestExecution));
+      // Release the handoff once the latest execution query has caught up.
+      // The preview state already reflects the terminal result.
+      setActiveExecutionId(null);
+    }
+  }, [
+    activeExecutionId,
+    activeExecutionQuery.data,
+    latestExecutionQuery.data,
+    setWorkflowExecutionState,
+    setActiveExecutionId,
+  ]);
 
   useEffect(() => {
     return () => {
       setWorkflowExecutionState(emptyWorkflowExecutionState);
+      setActiveExecutionId(null);
     };
-  }, [setWorkflowExecutionState]);
+  }, [setWorkflowExecutionState, setActiveExecutionId]);
 
   return <>{children}</>;
 }

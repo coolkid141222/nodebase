@@ -5,17 +5,23 @@ import { useSetAtom } from "jotai";
 import * as Sentry from "@sentry/nextjs";
 import { toast } from "sonner";
 import { useTRPC } from "@/trpc/client";
-import { createQueuedWorkflowExecutionState, workflowExecutionStateAtom } from "../store/atoms";
+import {
+  createQueuedWorkflowExecutionState,
+  workflowExecutionActiveIdAtom,
+  workflowExecutionStateAtom,
+} from "../store/atoms";
 
 export const useManualWorkflowExecution = () => {
   const trpc = useTRPC();
   const queryClient = useQueryClient();
   const setWorkflowExecutionState = useSetAtom(workflowExecutionStateAtom);
+  const setActiveExecutionId = useSetAtom(workflowExecutionActiveIdAtom);
 
   return useMutation(
     trpc.executions.triggerManual.mutationOptions({
       onSuccess: (data, variables) => {
         toast.success(`Execution ${data.id} queued`);
+        setActiveExecutionId(data.id);
         setWorkflowExecutionState(createQueuedWorkflowExecutionState(data.id));
         const executionsListQuery = trpc.executions.getMany.queryOptions();
         queryClient.invalidateQueries({

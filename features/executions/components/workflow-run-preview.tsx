@@ -2,7 +2,7 @@
 
 import { formatDistanceToNow } from "date-fns";
 import { useMemo } from "react";
-import { Check, Clock3, Loader2, X } from "lucide-react";
+import { Check, Clock3, X } from "lucide-react";
 import {
   Card,
   CardContent,
@@ -14,7 +14,9 @@ import {
   useWorkflowExecutionStatus,
 } from "./workflow-execution-status-context";
 
-function getExecutionStatusClasses(status: ExecutionStatus) {
+type StatusValue = ExecutionStatus | ExecutionStepStatus;
+
+function getExecutionStatusClasses(status: StatusValue) {
   switch (status) {
     case "RUNNING":
     case "PENDING":
@@ -33,7 +35,7 @@ function getExecutionStatusClasses(status: ExecutionStatus) {
 function StatusChip({
   status,
 }: {
-  status: ExecutionStatus;
+  status: StatusValue;
 }) {
   const classes = getExecutionStatusClasses(status);
 
@@ -41,7 +43,9 @@ function StatusChip({
     <div
       className={`inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-[11px] font-medium ${classes}`}
     >
-      {status === "RUNNING" && <Loader2 className="size-3 animate-spin" />}
+      {status === "RUNNING" && (
+        <span className="inline-block size-3 rounded-full border-2 border-current border-t-transparent animate-spin" />
+      )}
       {status === "SUCCESS" && <Check className="size-3" />}
       {status === "FAILED" && <X className="size-3" />}
       {status === "PENDING" && <Clock3 className="size-3" />}
@@ -174,7 +178,9 @@ function ExecutionPreviewCard() {
                 })}
               </CardDescription>
               <div className="flex flex-wrap items-center gap-2">
-                <StatusChip status={execution.status} />
+                <StatusChip
+                  status={previewStep?.status ?? execution.status}
+                />
                 {previewStep && <StepNamePill label={previewStep.nodeName} />}
               </div>
             </div>
