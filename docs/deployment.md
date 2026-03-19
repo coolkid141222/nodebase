@@ -15,7 +15,7 @@ For this repo, the least-friction production path is:
 - `DATABASE_URL`
 - `DIRECT_URL`
 - `BETTER_AUTH_SECRET`
-- `BETTER_AUTH_URL`
+- `BETTER_AUTH_URL` is still useful for local dev and explicit production fallback.
 
 ### Strongly recommended
 
@@ -59,6 +59,9 @@ This repo already points Prisma CLI at `DIRECT_URL` through [`prisma.config.ts`]
 2. Add the environment variables from this guide.
 3. If you use Preview deployments, give Preview its own database instead of reusing Production.
 4. Deploy once.
+
+Better Auth is already configured to accept `localhost:3000`, `127.0.0.1:3000`, `*.vercel.app`, and the host from `BETTER_AUTH_URL`/`VERCEL_PROJECT_PRODUCTION_URL`.
+Better Auth is also configured with `trustedOrigins` so Vercel preview URLs can still pass origin validation.
 
 ## Database migrations
 
