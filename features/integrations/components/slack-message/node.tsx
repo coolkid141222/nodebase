@@ -53,7 +53,6 @@ export const SlackMessageNode = memo((props: NodeProps) => {
         {...props}
         icon={MessageSquareIcon}
         name="Slack Message"
-        status="success"
         description={description}
         onSetting={() => setDialogOpen(true)}
       />

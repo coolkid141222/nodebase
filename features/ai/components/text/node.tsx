@@ -67,7 +67,6 @@ export const AITextNode = memo((props: NodeProps) => {
         {...props}
         icon={BotIcon}
         name="AI Text"
-        status="success"
         description={description}
         onSetting={() => setDialogOpen(true)}
       />

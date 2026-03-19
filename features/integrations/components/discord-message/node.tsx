@@ -53,7 +53,6 @@ export const DiscordMessageNode = memo((props: NodeProps) => {
         {...props}
         icon={MessageSquareIcon}
         name="Discord Message"
-        status="success"
         description={description}
         onSetting={() => setDialogOpen(true)}
       />
