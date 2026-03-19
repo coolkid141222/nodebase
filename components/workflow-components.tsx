@@ -28,13 +28,13 @@ export function WorkflowNode({
     const getStatusColor = (status?: NodeStatus) => {
         switch (status) {
             case "loading":
-                return "bg-blue-500 animate-pulse";
+                return "bg-blue-600 text-white shadow-[0_0_0_4px_rgba(37,99,235,0.16)]";
             case "success":
-                return "bg-emerald-500";
+                return "bg-emerald-600 text-white shadow-[0_0_0_4px_rgba(5,150,105,0.16)]";
             case "error":
-                return "bg-red-500";
+                return "bg-red-600 text-white shadow-[0_0_0_4px_rgba(220,38,38,0.16)]";
             default:
-                return "bg-gray-400";
+                return "bg-gray-400 text-white";
         }
     };
 

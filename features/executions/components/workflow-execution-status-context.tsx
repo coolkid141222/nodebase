@@ -1,7 +1,7 @@
 "use client";
 
 import { createContext, useContext, useMemo, type ReactNode } from "react";
-import { useQuery } from "@tanstack/react-query";
+import { keepPreviousData, useQuery } from "@tanstack/react-query";
 
 import { useTRPC } from "@/trpc/client";
 import { ExecutionStatus, ExecutionStepStatus } from "@/lib/prisma/client";
@@ -59,9 +59,14 @@ export function WorkflowExecutionStatusProvider({
 }) {
   const trpc = useTRPC();
   const executionQuery = useQuery({
-    ...trpc.executions.getLatestRunningForWorkflow.queryOptions({ workflowId }),
-    refetchInterval: (query) =>
-      query.state.data?.status === ExecutionStatus.RUNNING ? 1000 : 5000,
+    ...trpc.executions.getLatestForWorkflow.queryOptions({ workflowId }),
+    placeholderData: keepPreviousData,
+    refetchInterval: (query) => {
+      const status = query.state.data?.status;
+      return status === ExecutionStatus.PENDING || status === ExecutionStatus.RUNNING
+        ? 1000
+        : 10000;
+    },
     refetchIntervalInBackground: true,
   });
 

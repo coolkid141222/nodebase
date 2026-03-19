@@ -15,7 +15,7 @@ export const useManualWorkflowExecution = () => {
         toast.success(`Execution ${data.id} queued`);
         queryClient.invalidateQueries(trpc.executions.getMany.queryOptions());
         queryClient.invalidateQueries(
-          trpc.executions.getLatestRunningForWorkflow.queryOptions({
+          trpc.executions.getLatestForWorkflow.queryOptions({
             workflowId: variables.workflowId,
           }),
         );

@@ -106,39 +106,6 @@ export const executionsRouter = createTRPCRouter({
         },
       });
     }),
-  getLatestRunningForWorkflow: protectedProcedure
-    .input(
-      z.object({
-        workflowId: z.string(),
-      }),
-    )
-    .query(async ({ ctx, input }) => {
-      return prisma.execution.findFirst({
-        where: {
-          workflowId: input.workflowId,
-          status: ExecutionStatus.RUNNING,
-          workflow: {
-            userId: ctx.user.id,
-          },
-        },
-        orderBy: {
-          createdAt: "desc",
-        },
-        include: {
-          workflow: {
-            select: {
-              id: true,
-              name: true,
-            },
-          },
-          steps: {
-            orderBy: {
-              position: "asc",
-            },
-          },
-        },
-      });
-    }),
   triggerManual: protectedProcedure
     .input(
       z.object({
