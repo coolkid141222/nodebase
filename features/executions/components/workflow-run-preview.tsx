@@ -61,6 +61,7 @@ function StepNamePill({ label }: { label: string }) {
 }
 
 function pickPreviewStep(execution: {
+  status: ExecutionStatus;
   steps: Array<{
     nodeType: string;
     nodeName: string;
@@ -69,14 +70,28 @@ function pickPreviewStep(execution: {
     error: unknown;
   }>;
 }) {
+  const steps = execution.steps;
+  const terminalSteps = [...steps].reverse();
+
+  if (execution.status === ExecutionStatus.RUNNING || execution.status === ExecutionStatus.PENDING) {
+    return (
+      steps.find((step) => step.status === "RUNNING") ??
+      steps.find((step) => step.status === "FAILED") ??
+      steps.find((step) => step.output != null) ??
+      steps.at(-1)
+    );
+  }
+
   return (
-    execution.steps.find((step) => step.status === "RUNNING") ??
-    execution.steps.find((step) => step.status === "FAILED") ??
-    execution.steps.find(
-      (step) => step.nodeType === "AI_TEXT" && step.status === "SUCCESS",
+    terminalSteps.find(
+      (step) =>
+        step.status === "SUCCESS" &&
+        step.nodeType !== "MANUAL_TRIGGER" &&
+        step.nodeType !== "WEBHOOK_TRIGGER",
     ) ??
-    execution.steps.find((step) => step.output != null) ??
-    execution.steps.at(-1)
+    terminalSteps.find((step) => step.status === "FAILED") ??
+    terminalSteps.find((step) => step.output != null) ??
+    steps.at(-1)
   );
 }
 

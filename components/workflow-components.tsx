@@ -62,9 +62,9 @@ export function WorkflowNode({
 
                     {/* Status Badge */}
                     {status && (
-                        <div className={`pointer-events-none absolute -bottom-1 -right-1 z-10 size-5 rounded-full flex items-center justify-center ${getStatusColor(status)}`}>
+                        <div className={`pointer-events-none absolute -bottom-2 -right-2 z-10 size-5 rounded-full flex items-center justify-center ${getStatusColor(status)}`}>
                             {status === "loading" && (
-                                <LoaderCircle className="size-3 animate-spin" strokeWidth={2.5} />
+                                <LoaderCircle className="size-3.5 animate-spin" strokeWidth={2.25} />
                             )}
                             {status === "success" && (
                                 <Check className="size-3 text-white" strokeWidth={3} />
