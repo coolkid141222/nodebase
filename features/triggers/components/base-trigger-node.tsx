@@ -8,7 +8,7 @@ import { BaseHandle } from "@/components/react-flow/base-handle"
 import { BaseNode } from "@/components/react-flow/base-node"
 import { NodeStatusIndicator, type NodeStatus } from "@/components/react-flow/node-status-indicator"
 import { NodeToolbar } from "@xyflow/react"
-import { SettingsIcon, TrashIcon, Check, X, Loader2 } from "lucide-react"
+import { SettingsIcon, TrashIcon, Check, X, LoaderCircle } from "lucide-react"
 import { Button } from "@/components/button"
 
 interface BaseTriggerProps extends NodeProps {
@@ -29,7 +29,7 @@ export const BaseTriggerNode = memo((props: BaseTriggerProps) => {
     const getStatusColor = (status?: NodeStatus) => {
         switch (status) {
             case "loading":
-                return "bg-background text-blue-600 border border-blue-500 shadow-[0_0_0_4px_rgba(37,99,235,0.12)]";
+                return "bg-background text-blue-600 border border-border shadow-sm";
             case "success":
                 return "bg-emerald-600 text-white border-2 border-background shadow-[0_0_0_4px_rgba(5,150,105,0.16)]";
             case "error":
@@ -93,7 +93,7 @@ export const BaseTriggerNode = memo((props: BaseTriggerProps) => {
                     {status && (
                         <div className={`pointer-events-none absolute -bottom-1 -right-1 z-10 size-5 rounded-full flex items-center justify-center ${getStatusColor(status)}`}>
                             {status === "loading" && (
-                                <Loader2 className="size-3 animate-spin" strokeWidth={3} />
+                                <LoaderCircle className="size-3 animate-spin" strokeWidth={2.5} />
                             )}
                             {status === "success" && (
                                 <Check className="size-3 text-white" strokeWidth={3} />
