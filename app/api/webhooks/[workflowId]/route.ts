@@ -28,6 +28,19 @@ export async function POST(
   { params }: { params: Promise<{ workflowId: string }> | { workflowId: string } },
 ) {
   const { workflowId } = await params;
+  const webhookSecret = new URL(request.url).searchParams.get("token");
+
+  if (!webhookSecret) {
+    return NextResponse.json(
+      {
+        message: "Workflow not found.",
+      },
+      {
+        status: 404,
+      },
+    );
+  }
+
   const bodyText = await request.text();
   const triggerPayload = parseWebhookPayload(bodyText);
   let executionId: string | null = null;
@@ -35,6 +48,7 @@ export async function POST(
   try {
     const execution = await createWebhookExecution({
       workflowId,
+      webhookSecret,
       triggerPayload,
     });
 

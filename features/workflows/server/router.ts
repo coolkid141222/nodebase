@@ -5,12 +5,16 @@ import z from "zod";
 import { PAGINATION } from "@/config/constants";
 import type { Node, Edge } from "@xyflow/react"
 import { NodeType } from "@/types/workflow"
+import { randomBytes } from "node:crypto";
+
+const createWebhookSecret = () => randomBytes(32).toString("hex");
 
 export const workflowsRouter = createTRPCRouter({
     create: protectedProcedure.mutation(({ ctx }) => {
         return prisma.workflow.create({
             data: {
                 name: generateSlug(3),
+                webhookSecret: createWebhookSecret(),
                 userId: ctx.user.id,
                 nodes: {
                     create: {
@@ -143,6 +147,7 @@ export const workflowsRouter = createTRPCRouter({
             return {
                 id: workflow.id,
                 name: workflow.name,
+                webhookSecret: workflow.webhookSecret,
                 nodes,
                 edges,
             }

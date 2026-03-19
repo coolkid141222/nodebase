@@ -105,11 +105,12 @@ model Verification {
 }
 
 model Workflow {
-  id          String       @id @default(cuid())
-  name        String
-  nodes       Node[]
-  connections Connection[]
-  executions  Execution[]
+  id            String       @id @default(cuid())
+  name          String
+  webhookSecret String       @unique @default(uuid())
+  nodes         Node[]
+  connections   Connection[]
+  executions    Execution[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt

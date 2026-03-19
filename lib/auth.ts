@@ -16,15 +16,18 @@ export const auth = betterAuth({
         secret: betterAuthSecret,
       }
     : {}),
-  trustedOrigins: async () => {
+  trustedOrigins: async (request) => {
     const origins = new Set<string>([
       "http://localhost:3000",
       "http://127.0.0.1:3000",
-      "https://*.vercel.app",
     ]);
 
     if (betterAuthBaseURL) {
       origins.add(betterAuthBaseURL);
+    }
+
+    if (request) {
+      origins.add(new URL(request.url).origin);
     }
 
     if (process.env.VERCEL_PROJECT_PRODUCTION_URL) {

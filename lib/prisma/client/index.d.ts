@@ -6590,6 +6590,7 @@ export namespace Prisma {
   export type WorkflowMinAggregateOutputType = {
     id: string | null
     name: string | null
+    webhookSecret: string | null
     createdAt: Date | null
     updatedAt: Date | null
     userId: string | null
@@ -6598,6 +6599,7 @@ export namespace Prisma {
   export type WorkflowMaxAggregateOutputType = {
     id: string | null
     name: string | null
+    webhookSecret: string | null
     createdAt: Date | null
     updatedAt: Date | null
     userId: string | null
@@ -6606,6 +6608,7 @@ export namespace Prisma {
   export type WorkflowCountAggregateOutputType = {
     id: number
     name: number
+    webhookSecret: number
     createdAt: number
     updatedAt: number
     userId: number
@@ -6616,6 +6619,7 @@ export namespace Prisma {
   export type WorkflowMinAggregateInputType = {
     id?: true
     name?: true
+    webhookSecret?: true
     createdAt?: true
     updatedAt?: true
     userId?: true
@@ -6624,6 +6628,7 @@ export namespace Prisma {
   export type WorkflowMaxAggregateInputType = {
     id?: true
     name?: true
+    webhookSecret?: true
     createdAt?: true
     updatedAt?: true
     userId?: true
@@ -6632,6 +6637,7 @@ export namespace Prisma {
   export type WorkflowCountAggregateInputType = {
     id?: true
     name?: true
+    webhookSecret?: true
     createdAt?: true
     updatedAt?: true
     userId?: true
@@ -6713,6 +6719,7 @@ export namespace Prisma {
   export type WorkflowGroupByOutputType = {
     id: string
     name: string
+    webhookSecret: string
     createdAt: Date
     updatedAt: Date
     userId: string
@@ -6738,6 +6745,7 @@ export namespace Prisma {
   export type WorkflowSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
     name?: boolean
+    webhookSecret?: boolean
     createdAt?: boolean
     updatedAt?: boolean
     userId?: boolean
@@ -6751,6 +6759,7 @@ export namespace Prisma {
   export type WorkflowSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
     name?: boolean
+    webhookSecret?: boolean
     createdAt?: boolean
     updatedAt?: boolean
     userId?: boolean
@@ -6760,6 +6769,7 @@ export namespace Prisma {
   export type WorkflowSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
     name?: boolean
+    webhookSecret?: boolean
     createdAt?: boolean
     updatedAt?: boolean
     userId?: boolean
@@ -6769,12 +6779,13 @@ export namespace Prisma {
   export type WorkflowSelectScalar = {
     id?: boolean
     name?: boolean
+    webhookSecret?: boolean
     createdAt?: boolean
     updatedAt?: boolean
     userId?: boolean
   }
 
-  export type WorkflowOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "name" | "createdAt" | "updatedAt" | "userId", ExtArgs["result"]["workflow"]>
+  export type WorkflowOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "name" | "webhookSecret" | "createdAt" | "updatedAt" | "userId", ExtArgs["result"]["workflow"]>
   export type WorkflowInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     nodes?: boolean | Workflow$nodesArgs<ExtArgs>
     connections?: boolean | Workflow$connectionsArgs<ExtArgs>
@@ -6800,6 +6811,7 @@ export namespace Prisma {
     scalars: $Extensions.GetPayloadResult<{
       id: string
       name: string
+      webhookSecret: string
       createdAt: Date
       updatedAt: Date
       userId: string
@@ -7232,6 +7244,7 @@ export namespace Prisma {
   interface WorkflowFieldRefs {
     readonly id: FieldRef<"Workflow", 'String'>
     readonly name: FieldRef<"Workflow", 'String'>
+    readonly webhookSecret: FieldRef<"Workflow", 'String'>
     readonly createdAt: FieldRef<"Workflow", 'DateTime'>
     readonly updatedAt: FieldRef<"Workflow", 'DateTime'>
     readonly userId: FieldRef<"Workflow", 'String'>
@@ -13681,6 +13694,7 @@ export namespace Prisma {
   export const WorkflowScalarFieldEnum: {
     id: 'id',
     name: 'name',
+    webhookSecret: 'webhookSecret',
     createdAt: 'createdAt',
     updatedAt: 'updatedAt',
     userId: 'userId'
@@ -14365,6 +14379,7 @@ export namespace Prisma {
     NOT?: WorkflowWhereInput | WorkflowWhereInput[]
     id?: StringFilter<"Workflow"> | string
     name?: StringFilter<"Workflow"> | string
+    webhookSecret?: StringFilter<"Workflow"> | string
     createdAt?: DateTimeFilter<"Workflow"> | Date | string
     updatedAt?: DateTimeFilter<"Workflow"> | Date | string
     userId?: StringFilter<"Workflow"> | string
@@ -14377,6 +14392,7 @@ export namespace Prisma {
   export type WorkflowOrderByWithRelationInput = {
     id?: SortOrder
     name?: SortOrder
+    webhookSecret?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
     userId?: SortOrder
@@ -14388,6 +14404,7 @@ export namespace Prisma {
 
   export type WorkflowWhereUniqueInput = Prisma.AtLeast<{
     id?: string
+    webhookSecret?: string
     AND?: WorkflowWhereInput | WorkflowWhereInput[]
     OR?: WorkflowWhereInput[]
     NOT?: WorkflowWhereInput | WorkflowWhereInput[]
@@ -14399,11 +14416,12 @@ export namespace Prisma {
     connections?: ConnectionListRelationFilter
     executions?: ExecutionListRelationFilter
     user?: XOR<UserScalarRelationFilter, UserWhereInput>
-  }, "id">
+  }, "id" | "webhookSecret">
 
   export type WorkflowOrderByWithAggregationInput = {
     id?: SortOrder
     name?: SortOrder
+    webhookSecret?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
     userId?: SortOrder
@@ -14418,6 +14436,7 @@ export namespace Prisma {
     NOT?: WorkflowScalarWhereWithAggregatesInput | WorkflowScalarWhereWithAggregatesInput[]
     id?: StringWithAggregatesFilter<"Workflow"> | string
     name?: StringWithAggregatesFilter<"Workflow"> | string
+    webhookSecret?: StringWithAggregatesFilter<"Workflow"> | string
     createdAt?: DateTimeWithAggregatesFilter<"Workflow"> | Date | string
     updatedAt?: DateTimeWithAggregatesFilter<"Workflow"> | Date | string
     userId?: StringWithAggregatesFilter<"Workflow"> | string
@@ -15280,6 +15299,7 @@ export namespace Prisma {
   export type WorkflowCreateInput = {
     id?: string
     name: string
+    webhookSecret?: string
     createdAt?: Date | string
     updatedAt?: Date | string
     nodes?: NodeCreateNestedManyWithoutWorkflowInput
@@ -15291,6 +15311,7 @@ export namespace Prisma {
   export type WorkflowUncheckedCreateInput = {
     id?: string
     name: string
+    webhookSecret?: string
     createdAt?: Date | string
     updatedAt?: Date | string
     userId: string
@@ -15302,6 +15323,7 @@ export namespace Prisma {
   export type WorkflowUpdateInput = {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
+    webhookSecret?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     nodes?: NodeUpdateManyWithoutWorkflowNestedInput
@@ -15313,6 +15335,7 @@ export namespace Prisma {
   export type WorkflowUncheckedUpdateInput = {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
+    webhookSecret?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     userId?: StringFieldUpdateOperationsInput | string
@@ -15324,6 +15347,7 @@ export namespace Prisma {
   export type WorkflowCreateManyInput = {
     id?: string
     name: string
+    webhookSecret?: string
     createdAt?: Date | string
     updatedAt?: Date | string
     userId: string
@@ -15332,6 +15356,7 @@ export namespace Prisma {
   export type WorkflowUpdateManyMutationInput = {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
+    webhookSecret?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -15339,6 +15364,7 @@ export namespace Prisma {
   export type WorkflowUncheckedUpdateManyInput = {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
+    webhookSecret?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     userId?: StringFieldUpdateOperationsInput | string
@@ -16273,6 +16299,7 @@ export namespace Prisma {
   export type WorkflowCountOrderByAggregateInput = {
     id?: SortOrder
     name?: SortOrder
+    webhookSecret?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
     userId?: SortOrder
@@ -16281,6 +16308,7 @@ export namespace Prisma {
   export type WorkflowMaxOrderByAggregateInput = {
     id?: SortOrder
     name?: SortOrder
+    webhookSecret?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
     userId?: SortOrder
@@ -16289,6 +16317,7 @@ export namespace Prisma {
   export type WorkflowMinOrderByAggregateInput = {
     id?: SortOrder
     name?: SortOrder
+    webhookSecret?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
     userId?: SortOrder
@@ -17981,6 +18010,7 @@ export namespace Prisma {
   export type WorkflowCreateWithoutUserInput = {
     id?: string
     name: string
+    webhookSecret?: string
     createdAt?: Date | string
     updatedAt?: Date | string
     nodes?: NodeCreateNestedManyWithoutWorkflowInput
@@ -17991,6 +18021,7 @@ export namespace Prisma {
   export type WorkflowUncheckedCreateWithoutUserInput = {
     id?: string
     name: string
+    webhookSecret?: string
     createdAt?: Date | string
     updatedAt?: Date | string
     nodes?: NodeUncheckedCreateNestedManyWithoutWorkflowInput
@@ -18171,6 +18202,7 @@ export namespace Prisma {
     NOT?: WorkflowScalarWhereInput | WorkflowScalarWhereInput[]
     id?: StringFilter<"Workflow"> | string
     name?: StringFilter<"Workflow"> | string
+    webhookSecret?: StringFilter<"Workflow"> | string
     createdAt?: DateTimeFilter<"Workflow"> | Date | string
     updatedAt?: DateTimeFilter<"Workflow"> | Date | string
     userId?: StringFilter<"Workflow"> | string
@@ -18745,6 +18777,7 @@ export namespace Prisma {
   export type WorkflowCreateWithoutNodesInput = {
     id?: string
     name: string
+    webhookSecret?: string
     createdAt?: Date | string
     updatedAt?: Date | string
     connections?: ConnectionCreateNestedManyWithoutWorkflowInput
@@ -18755,6 +18788,7 @@ export namespace Prisma {
   export type WorkflowUncheckedCreateWithoutNodesInput = {
     id?: string
     name: string
+    webhookSecret?: string
     createdAt?: Date | string
     updatedAt?: Date | string
     userId: string
@@ -18891,6 +18925,7 @@ export namespace Prisma {
   export type WorkflowUpdateWithoutNodesInput = {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
+    webhookSecret?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     connections?: ConnectionUpdateManyWithoutWorkflowNestedInput
@@ -18901,6 +18936,7 @@ export namespace Prisma {
   export type WorkflowUncheckedUpdateWithoutNodesInput = {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
+    webhookSecret?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     userId?: StringFieldUpdateOperationsInput | string
@@ -18981,6 +19017,7 @@ export namespace Prisma {
   export type WorkflowCreateWithoutConnectionsInput = {
     id?: string
     name: string
+    webhookSecret?: string
     createdAt?: Date | string
     updatedAt?: Date | string
     nodes?: NodeCreateNestedManyWithoutWorkflowInput
@@ -18991,6 +19028,7 @@ export namespace Prisma {
   export type WorkflowUncheckedCreateWithoutConnectionsInput = {
     id?: string
     name: string
+    webhookSecret?: string
     createdAt?: Date | string
     updatedAt?: Date | string
     userId: string
@@ -19079,6 +19117,7 @@ export namespace Prisma {
   export type WorkflowUpdateWithoutConnectionsInput = {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
+    webhookSecret?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     nodes?: NodeUpdateManyWithoutWorkflowNestedInput
@@ -19089,6 +19128,7 @@ export namespace Prisma {
   export type WorkflowUncheckedUpdateWithoutConnectionsInput = {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
+    webhookSecret?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     userId?: StringFieldUpdateOperationsInput | string
@@ -19277,6 +19317,7 @@ export namespace Prisma {
   export type WorkflowCreateWithoutExecutionsInput = {
     id?: string
     name: string
+    webhookSecret?: string
     createdAt?: Date | string
     updatedAt?: Date | string
     nodes?: NodeCreateNestedManyWithoutWorkflowInput
@@ -19287,6 +19328,7 @@ export namespace Prisma {
   export type WorkflowUncheckedCreateWithoutExecutionsInput = {
     id?: string
     name: string
+    webhookSecret?: string
     createdAt?: Date | string
     updatedAt?: Date | string
     userId: string
@@ -19408,6 +19450,7 @@ export namespace Prisma {
   export type WorkflowUpdateWithoutExecutionsInput = {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
+    webhookSecret?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     nodes?: NodeUpdateManyWithoutWorkflowNestedInput
@@ -19418,6 +19461,7 @@ export namespace Prisma {
   export type WorkflowUncheckedUpdateWithoutExecutionsInput = {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
+    webhookSecret?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     userId?: StringFieldUpdateOperationsInput | string
@@ -19672,6 +19716,7 @@ export namespace Prisma {
   export type WorkflowCreateManyUserInput = {
     id?: string
     name: string
+    webhookSecret?: string
     createdAt?: Date | string
     updatedAt?: Date | string
   }
@@ -19781,6 +19826,7 @@ export namespace Prisma {
   export type WorkflowUpdateWithoutUserInput = {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
+    webhookSecret?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     nodes?: NodeUpdateManyWithoutWorkflowNestedInput
@@ -19791,6 +19837,7 @@ export namespace Prisma {
   export type WorkflowUncheckedUpdateWithoutUserInput = {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
+    webhookSecret?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     nodes?: NodeUncheckedUpdateManyWithoutWorkflowNestedInput
@@ -19801,6 +19848,7 @@ export namespace Prisma {
   export type WorkflowUncheckedUpdateManyWithoutUserInput = {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
+    webhookSecret?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }

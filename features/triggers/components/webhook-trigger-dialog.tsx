@@ -16,14 +16,16 @@ type Props = {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   workflowId: string;
+  webhookSecret: string;
 };
 
 export const WebhookTriggerDialog = ({
   open,
   onOpenChange,
   workflowId,
+  webhookSecret,
 }: Props) => {
-  const endpointPath = `/api/webhooks/${workflowId}`;
+  const endpointPath = `/api/webhooks/${workflowId}?token=${webhookSecret}`;
 
   const handleCopy = async () => {
     await navigator.clipboard.writeText(

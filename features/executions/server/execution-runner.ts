@@ -958,6 +958,7 @@ function resolveNodeInput(
 
 async function findWorkflowForExecution(params: {
   workflowId: string;
+  webhookSecret?: string;
   userId?: string;
 }) {
   return prisma.workflow.findFirst({
@@ -965,9 +966,19 @@ async function findWorkflowForExecution(params: {
       ? {
           id: params.workflowId,
           userId: params.userId,
+          ...(params.webhookSecret
+            ? {
+                webhookSecret: params.webhookSecret,
+              }
+            : {}),
         }
       : {
           id: params.workflowId,
+          ...(params.webhookSecret
+            ? {
+                webhookSecret: params.webhookSecret,
+              }
+            : {}),
         },
     include: {
       nodes: true,
@@ -1039,10 +1050,12 @@ export async function createManualExecution(params: {
 
 export async function createWebhookExecution(params: {
   workflowId: string;
+  webhookSecret: string;
   triggerPayload: Prisma.InputJsonValue;
 }) {
   const workflow = await findWorkflowForExecution({
     workflowId: params.workflowId,
+    webhookSecret: params.webhookSecret,
   });
 
   if (!workflow) {
