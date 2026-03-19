@@ -51,8 +51,22 @@ function extractPreviewResult(value: unknown) {
     return "";
   }
 
+  if (typeof value === "string") {
+    return value.trim();
+  }
+
+  if (
+    typeof value === "object" &&
+    value !== null &&
+    !Array.isArray(value) &&
+    "text" in value &&
+    typeof (value as { text?: unknown }).text === "string"
+  ) {
+    return ((value as { text: string }).text || "").trim();
+  }
+
   const sourceText =
-    typeof value === "string" ? value : JSON.stringify(value, null, 2);
+    JSON.stringify(value, null, 2);
 
   try {
     const regex = /"text"\s*:\s*"([^"]+)"/g;
@@ -89,15 +103,12 @@ function ExecutionPreviewCard({
   );
 
   return (
-    <Card className="w-full min-w-0 max-h-[calc(100dvh-16rem)] overflow-hidden border-border/60 bg-background/95 shadow-sm">
+    <Card className="w-full min-w-0 max-h-[28rem] overflow-hidden border-border/60 bg-background/95 shadow-sm">
       <div className="flex min-h-0 w-full min-w-0 flex-col overflow-y-auto overflow-x-hidden">
-        <CardHeader className="space-y-2">
+        <CardHeader className="space-y-2 pb-3">
           <div className="flex items-center justify-between gap-3 min-w-0">
-            <div className="min-w-0 space-y-1">
+            <div className="min-w-0">
               <CardTitle className="text-sm">Latest run</CardTitle>
-              <CardDescription className="text-xs break-all">
-                {data.workflow.name}
-              </CardDescription>
               <CardDescription className="text-xs break-all">
                 {formatDistanceToNow(new Date(data.createdAt), {
                   addSuffix: true,
@@ -108,30 +119,25 @@ function ExecutionPreviewCard({
               {data.status}
             </Badge>
           </div>
-          <div className="flex flex-wrap items-center gap-2 text-xs text-muted-foreground">
-            <Badge variant="outline">{data.triggerType}</Badge>
-            <span className="min-w-0 break-all">
-              Step: {previewStep?.nodeName ?? "No result"}
-            </span>
-          </div>
         </CardHeader>
-        <CardContent className="space-y-3">
+        <CardContent className="space-y-3 pb-4">
+          <div className="flex items-center gap-2 text-xs text-muted-foreground">
+            <Badge variant="outline">{data.triggerType}</Badge>
+            <span className="min-w-0 break-all">{previewStep?.nodeName ?? "No result"}</span>
+          </div>
+          {previewStep && (
+            <Badge variant={stepStatusVariant[previewStep.status]}>
+              {previewStep.status}
+            </Badge>
+          )}
           <div className="space-y-1">
             <div className="text-xs font-medium text-muted-foreground">
               Result
             </div>
-            <div className="max-h-40 overflow-y-auto overflow-x-hidden break-all whitespace-pre-wrap rounded-md border bg-muted/30 p-3 text-sm leading-6">
+            <div className="max-h-24 overflow-y-auto overflow-x-hidden break-all whitespace-pre-wrap rounded-md border bg-muted/30 p-3 text-sm leading-6">
               {previewResult || "No extractable result yet."}
             </div>
           </div>
-          {previewStep && (
-            <div className="flex items-center justify-between gap-2 text-xs text-muted-foreground">
-              <Badge variant={stepStatusVariant[previewStep.status]}>
-                {previewStep.status}
-              </Badge>
-              <span className="min-w-0 break-all">{previewStep.nodeType}</span>
-            </div>
-          )}
         </CardContent>
       </div>
     </Card>
@@ -151,7 +157,7 @@ export function WorkflowRunPreviewSidebar({
   return latestExecution ? (
     <ExecutionPreviewCard executionId={latestExecution.id} />
   ) : (
-    <Card className="w-full min-w-0 max-h-[calc(100dvh-16rem)] overflow-hidden border-border/60 bg-background/95 shadow-sm">
+    <Card className="w-full min-w-0 max-h-[20rem] overflow-hidden border-border/60 bg-background/95 shadow-sm">
       <CardHeader className="space-y-2">
         <CardTitle className="text-sm">Latest run</CardTitle>
         <CardDescription className="text-xs">
