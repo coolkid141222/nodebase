@@ -7,6 +7,10 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
+    "typecheck": "tsc --noEmit",
+    "db:deploy": "prisma migrate deploy",
+    "deploy:check": "npm run lint && npm run typecheck && npm run build",
+    "vercel-build": "prisma generate && prisma migrate deploy && next build",
     "postinstall": "prisma generate",
     "inngest:dev": "inngest-cli dev",
     "dev:all": "mprocs \"npm run dev\" \"npm run inngest:dev\""

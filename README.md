@@ -1,36 +1,54 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Nodebase
 
-## Getting Started
+Nodebase is a Next.js workflow builder with React Flow, Prisma, Better Auth, Inngest, AI nodes, webhook/manual triggers, execution history, credentials, and a local-first billing layer.
 
-First, run the development server:
+## Stack
+
+- Next.js 16 App Router
+- Prisma ORM + PostgreSQL/Neon
+- Better Auth
+- Inngest
+- tRPC + React Query
+- React Flow
+- Sentry
+
+## Local development
+
+1. Copy [`.env.example`](./.env.example) into `.env`.
+2. Fill in at least `DATABASE_URL`, `DIRECT_URL`, `BETTER_AUTH_SECRET`, and `BETTER_AUTH_URL`.
+3. Install dependencies and generate Prisma Client:
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+npm install
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+4. Apply migrations:
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+```bash
+npm run db:deploy
+```
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+5. Start the app and the local Inngest dev server:
 
-## Learn More
+```bash
+npm run dev:all
+```
 
-To learn more about Next.js, take a look at the following resources:
+## Pre-deploy checks
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+```bash
+npm run deploy:check
+```
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## Deploy
 
-## Deploy on Vercel
+The recommended path for this repo is Vercel + Neon + Inngest Cloud.
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+- Deployment guide: [`docs/deployment.md`](./docs/deployment.md)
+- Environment variable template: [`.env.example`](./.env.example)
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## Notes
+
+- `DATABASE_URL` should be the pooled runtime connection string.
+- `DIRECT_URL` should be the direct connection string for Prisma CLI and migrations.
+- Billing works in local mode without Paddle. Paddle is optional and only needed when you want a real checkout.
