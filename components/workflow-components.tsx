@@ -28,11 +28,11 @@ export function WorkflowNode({
     const getStatusColor = (status?: NodeStatus) => {
         switch (status) {
             case "loading":
-                return "bg-blue-600 text-white shadow-[0_0_0_4px_rgba(37,99,235,0.16)]";
+                return "bg-background text-blue-600 border border-blue-500 shadow-[0_0_0_4px_rgba(37,99,235,0.12)]";
             case "success":
-                return "bg-emerald-600 text-white shadow-[0_0_0_4px_rgba(5,150,105,0.16)]";
+                return "bg-emerald-600 text-white border-2 border-background shadow-[0_0_0_4px_rgba(5,150,105,0.16)]";
             case "error":
-                return "bg-red-600 text-white shadow-[0_0_0_4px_rgba(220,38,38,0.16)]";
+                return "bg-red-600 text-white border-2 border-background shadow-[0_0_0_4px_rgba(220,38,38,0.16)]";
             default:
                 return "bg-gray-400 text-white";
         }
@@ -62,9 +62,9 @@ export function WorkflowNode({
 
                     {/* Status Badge */}
                     {status && (
-                        <div className={`pointer-events-none absolute -bottom-1 -right-1 z-10 size-5 rounded-full border-2 border-background flex items-center justify-center ${getStatusColor(status)}`}>
+                        <div className={`pointer-events-none absolute -bottom-1 -right-1 z-10 size-5 rounded-full flex items-center justify-center ${getStatusColor(status)}`}>
                             {status === "loading" && (
-                                <Loader2 className="size-3 text-white animate-spin" strokeWidth={3} />
+                                <Loader2 className="size-3 animate-spin" strokeWidth={3} />
                             )}
                             {status === "success" && (
                                 <Check className="size-3 text-white" strokeWidth={3} />
