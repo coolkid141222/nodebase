@@ -61,12 +61,12 @@ function DialogContent({
         <DialogPrimitive.Content
           data-slot="dialog-content"
           className={cn(
-            "bg-background data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 relative grid w-full max-w-[calc(100%-2rem)] max-h-[calc(100vh-2rem)] gap-4 overflow-hidden rounded-lg border p-6 shadow-lg duration-200 sm:max-w-lg",
+            "bg-background data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 relative flex w-full max-w-[calc(100%-2rem)] max-h-[calc(100vh-2rem)] flex-col gap-4 overflow-hidden rounded-lg border p-6 shadow-lg duration-200 sm:max-w-lg",
             className
           )}
           {...props}
         >
-          <div className="flex min-h-0 flex-col gap-4 overflow-y-auto pr-1">
+          <div className="flex min-h-0 flex-1 flex-col gap-4 overflow-y-auto overflow-x-hidden pr-1">
             {children}
           </div>
           {showCloseButton && (
