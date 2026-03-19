@@ -65,7 +65,7 @@ export const AppSidebar = () => {
                     </SidebarMenuButton>
                 </SidebarMenuItem>
             </SidebarHeader>
-            <SidebarContent>
+            <SidebarContent className={showWorkflowPreview ? "overflow-hidden" : undefined}>
                 {menuItems.map((group) => (
                     <SidebarGroup key={group.title}>
                         <SidebarMenu>
@@ -94,8 +94,8 @@ export const AppSidebar = () => {
                 {showWorkflowPreview && (
                     <>
                         <SidebarSeparator />
-                        <SidebarGroup className="gap-2 min-w-0 group-data-[collapsible=icon]:hidden">
-                                <SidebarGroupContent className="min-w-0 px-2 pb-2 overflow-y-auto overflow-x-hidden">
+                        <SidebarGroup className="min-w-0 min-h-0 flex-1 gap-2 group-data-[collapsible=icon]:hidden">
+                                <SidebarGroupContent className="min-w-0 min-h-0 flex-1 px-2 pb-2 overflow-hidden">
                                 <WorkflowRunPreviewSidebar />
                             </SidebarGroupContent>
                         </SidebarGroup>

@@ -326,7 +326,7 @@ function ExecutionPreviewCard() {
 
   if (!execution) {
     return (
-      <Card className="w-full min-w-0 max-h-[20rem] overflow-hidden border-border/60 bg-background/95 shadow-sm">
+      <Card className="flex h-full min-h-0 w-full min-w-0 flex-col overflow-hidden border-border/60 bg-background/95 shadow-sm">
         <div className="h-1 w-full bg-muted" />
         <CardHeader className="space-y-2">
           <div className="flex items-start justify-between gap-3">
@@ -348,7 +348,7 @@ function ExecutionPreviewCard() {
   }
 
   return (
-    <Card className="w-full min-w-0 max-h-[28rem] overflow-hidden border-border/60 bg-background/95 shadow-sm">
+    <Card className="flex h-full min-h-0 w-full min-w-0 flex-col overflow-hidden border-border/60 bg-background/95 shadow-sm">
       <div className={`h-1 w-full ${getExecutionAccentClass(displayStatus ?? execution.status)}`} />
       <div className="flex min-h-0 w-full min-w-0 flex-col overflow-y-auto overflow-x-hidden">
         <CardHeader className="space-y-3 pb-3">
