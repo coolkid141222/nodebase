@@ -5,7 +5,10 @@ import {
     SidebarContent,
     SidebarFooter,
     SidebarGroup,
+    SidebarGroupContent,
+    SidebarGroupLabel,
     SidebarHeader,
+    SidebarSeparator,
     SidebarMenu,
     SidebarMenuButton,
     SidebarMenuItem,
@@ -15,6 +18,7 @@ import Image from "next/image"
 import Link from "next/link"
 import { usePathname, useRouter } from "next/navigation"
 import { authClient } from "@/lib/auth-client"
+import { WorkflowRunPreviewSidebar } from "@/features/executions/components/workflow-run-preview"
 
 const menuItems = [
     {
@@ -47,6 +51,7 @@ const menuItems = [
 export const AppSidebar = () => {
     const pathname = usePathname()
     const router = useRouter();
+    const showWorkflowPreview = pathname.startsWith("/workflows/");
     return (
         <Sidebar collapsible="icon">
             <SidebarHeader>
@@ -85,6 +90,19 @@ export const AppSidebar = () => {
                         </SidebarMenu>
                     </SidebarGroup>
                 ))}
+                {showWorkflowPreview && (
+                    <>
+                        <SidebarSeparator />
+                        <SidebarGroup className="gap-2">
+                            <SidebarGroupLabel>Latest run</SidebarGroupLabel>
+                            <SidebarGroupContent className="px-2 pb-2">
+                                <WorkflowRunPreviewSidebar
+                                    workflowId={pathname.split("/").at(-1) || ""}
+                                />
+                            </SidebarGroupContent>
+                        </SidebarGroup>
+                    </>
+                )}
             </SidebarContent>
             <SidebarFooter>
                 <SidebarMenu>

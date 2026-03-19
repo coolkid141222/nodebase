@@ -3,7 +3,6 @@
 import { formatDistanceToNow } from "date-fns";
 import Link from "next/link";
 import { useState } from "react";
-import { Panel } from "@xyflow/react";
 import { Badge } from "@/components/badge";
 import { Button } from "@/components/button";
 import {
@@ -114,8 +113,8 @@ function ExecutionPreviewCard({
   const extracted = extractRegexMatch(sourceValue, pattern);
 
   return (
-    <Card className="border-border/60 bg-background/95 shadow-lg backdrop-blur max-h-[calc(100vh-2rem)] overflow-hidden">
-      <div className="flex max-h-[calc(100vh-2rem)] min-h-0 flex-col overflow-y-auto">
+    <Card className="w-full overflow-hidden border-border/60 bg-background/95 shadow-sm">
+      <div className="flex min-h-0 flex-col overflow-y-auto">
         <CardHeader className="space-y-2">
         <div className="flex items-center justify-between gap-3">
           <div className="space-y-1">
@@ -205,7 +204,7 @@ function ExecutionPreviewCard({
   );
 }
 
-export function WorkflowRunPreviewPanel({
+export function WorkflowRunPreviewSidebar({
   workflowId,
 }: {
   workflowId: string;
@@ -215,26 +214,19 @@ export function WorkflowRunPreviewPanel({
     (execution) => execution.workflow.id === workflowId,
   );
 
-  return (
-    <Panel
-      position="top-left"
-      className="pointer-events-auto w-[min(360px,calc(100vw-2rem))] p-4"
-    >
-      {latestExecution ? (
-        <ExecutionPreviewCard executionId={latestExecution.id} />
-      ) : (
-        <Card className="border-border/60 bg-background/95 shadow-lg backdrop-blur">
-          <CardHeader className="space-y-2">
-            <CardTitle className="text-sm">Latest run</CardTitle>
-            <CardDescription className="text-xs">
-              Run the workflow to inspect the latest result here.
-            </CardDescription>
-          </CardHeader>
-          <CardContent className="text-sm text-muted-foreground">
-            No execution yet.
-          </CardContent>
-        </Card>
-      )}
-    </Panel>
+  return latestExecution ? (
+    <ExecutionPreviewCard executionId={latestExecution.id} />
+  ) : (
+    <Card className="w-full overflow-hidden border-border/60 bg-background/95 shadow-sm">
+      <CardHeader className="space-y-2">
+        <CardTitle className="text-sm">Latest run</CardTitle>
+        <CardDescription className="text-xs">
+          Run the workflow to inspect the latest result here.
+        </CardDescription>
+      </CardHeader>
+      <CardContent className="text-sm text-muted-foreground">
+        No execution yet.
+      </CardContent>
+    </Card>
   );
 }
