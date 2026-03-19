@@ -20,6 +20,12 @@ model User {
   email         String
   emailVerified Boolean    @default(false)
   image         String?
+  plan          BillingPlan @default(FREE)
+  billingProvider BillingProvider?
+  billingStatus  BillingStatus @default(INACTIVE)
+  billingCustomerId String?
+  billingSubscriptionId String?
+  billingCurrentPeriodEnd DateTime?
   createdAt     DateTime   @default(now())
   updatedAt     DateTime   @updatedAt
   sessions      Session[]
@@ -30,6 +36,22 @@ model User {
 
   @@unique([email])
   @@map("user")
+}
+
+enum BillingPlan {
+  FREE
+  PRO
+}
+
+enum BillingProvider {
+  MOCK
+  PADDLE
+}
+
+enum BillingStatus {
+  INACTIVE
+  ACTIVE
+  CANCELED
 }
 
 model Session {
