@@ -26,6 +26,8 @@ model User {
   billingCustomerId String?
   billingSubscriptionId String?
   billingCurrentPeriodEnd DateTime?
+  billingLastEventId String?
+  billingLastEventAt DateTime?
   createdAt     DateTime   @default(now())
   updatedAt     DateTime   @updatedAt
   sessions      Session[]

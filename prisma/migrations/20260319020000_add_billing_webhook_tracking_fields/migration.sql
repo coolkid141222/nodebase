@@ -1,0 +1,3 @@
+ALTER TABLE "user"
+    ADD COLUMN IF NOT EXISTS "billingLastEventId" TEXT,
+    ADD COLUMN IF NOT EXISTS "billingLastEventAt" TIMESTAMP(3);
