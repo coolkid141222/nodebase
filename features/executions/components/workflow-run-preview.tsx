@@ -8,7 +8,6 @@ import {
   CardContent,
   CardDescription,
   CardHeader,
-  CardTitle,
 } from "@/components/card";
 import { ExecutionStepStatus } from "@/lib/prisma/client";
 import { useSuspenseExecution, useSuspenseExecutions } from "../hooks/use-executions";
@@ -19,14 +18,6 @@ const executionStatusVariant = {
   SUCCESS: "default",
   FAILED: "destructive",
   CANCELED: "outline",
-} as const;
-
-const stepStatusVariant = {
-  PENDING: "secondary",
-  RUNNING: "secondary",
-  SUCCESS: "default",
-  FAILED: "destructive",
-  SKIPPED: "outline",
 } as const;
 
 function pickPreviewStep(execution: {
@@ -105,10 +96,9 @@ function ExecutionPreviewCard({
   return (
     <Card className="w-full min-w-0 max-h-[28rem] overflow-hidden border-border/60 bg-background/95 shadow-sm">
       <div className="flex min-h-0 w-full min-w-0 flex-col overflow-y-auto overflow-x-hidden">
-        <CardHeader className="space-y-2 pb-3">
+        <CardHeader className="space-y-1 pb-3">
           <div className="flex items-center justify-between gap-3 min-w-0">
             <div className="min-w-0">
-              <CardTitle className="text-sm">Latest run</CardTitle>
               <CardDescription className="text-xs break-all">
                 {formatDistanceToNow(new Date(data.createdAt), {
                   addSuffix: true,
@@ -120,21 +110,12 @@ function ExecutionPreviewCard({
             </Badge>
           </div>
         </CardHeader>
-        <CardContent className="space-y-3 pb-4">
-          <div className="flex items-center gap-2 text-xs text-muted-foreground">
-            <Badge variant="outline">{data.triggerType}</Badge>
-            <span className="min-w-0 break-all">{previewStep?.nodeName ?? "No result"}</span>
-          </div>
-          {previewStep && (
-            <Badge variant={stepStatusVariant[previewStep.status]}>
-              {previewStep.status}
-            </Badge>
-          )}
+        <CardContent className="space-y-2 pb-4">
           <div className="space-y-1">
             <div className="text-xs font-medium text-muted-foreground">
               Result
             </div>
-            <div className="max-h-24 overflow-y-auto overflow-x-hidden break-all whitespace-pre-wrap rounded-md border bg-muted/30 p-3 text-sm leading-6">
+            <div className="max-h-20 overflow-y-auto overflow-x-hidden break-words rounded-md border bg-muted/30 p-3 text-sm leading-5">
               {previewResult || "No extractable result yet."}
             </div>
           </div>
@@ -159,7 +140,6 @@ export function WorkflowRunPreviewSidebar({
   ) : (
     <Card className="w-full min-w-0 max-h-[20rem] overflow-hidden border-border/60 bg-background/95 shadow-sm">
       <CardHeader className="space-y-2">
-        <CardTitle className="text-sm">Latest run</CardTitle>
         <CardDescription className="text-xs">
           Run the workflow to inspect the latest result here.
         </CardDescription>

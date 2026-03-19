@@ -96,7 +96,7 @@ export const AppSidebar = () => {
                     <>
                         <SidebarSeparator />
                         <SidebarGroup className="gap-2 min-w-0 group-data-[collapsible=icon]:hidden">
-                            <SidebarGroupLabel>Latest run</SidebarGroupLabel>
+                            <SidebarGroupLabel>Preview</SidebarGroupLabel>
                             <SidebarGroupContent className="min-w-0 px-2 pb-2 overflow-y-auto overflow-x-hidden">
                                 <WorkflowRunPreviewSidebar
                                     workflowId={workflowId}
