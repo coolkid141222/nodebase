@@ -7,6 +7,7 @@ import {
   ArrowUpRightIcon,
   CreditCardIcon,
   CrownIcon,
+  ExternalLinkIcon,
   SparklesIcon,
 } from "lucide-react";
 import { BillingPlan } from "@/lib/prisma/client";
@@ -35,6 +36,7 @@ import {
   useSuspenseBillingState,
   useUpgradeToPro,
 } from "../hooks/use-billing";
+import { usePaddleCheckout } from "../hooks/use-paddle-checkout";
 
 export const BillingLoading = () => {
   return <LoadingView message="Loading billing..." />;
@@ -47,6 +49,7 @@ export const BillingPortalView = () => {
 
   const state = billing.data;
   const isPro = isProPlanActive(state);
+  const paddleCheckout = usePaddleCheckout();
 
   return (
     <div className="p-4 md:px-10 md:py-6">
@@ -91,6 +94,17 @@ export const BillingPortalView = () => {
                 />
               </div>
 
+              <div className="grid gap-4 sm:grid-cols-2">
+                <MetricTile
+                  label="Paddle env"
+                  value={state.paddle.environment}
+                />
+                <MetricTile
+                  label="Paddle setup"
+                  value={state.paddle.enabled ? "Ready" : "Incomplete"}
+                />
+              </div>
+
               <div className="rounded-2xl border bg-muted/25 p-4">
                 <p className="text-xs font-medium uppercase tracking-[0.24em] text-muted-foreground">
                   Renewal
@@ -108,26 +122,31 @@ export const BillingPortalView = () => {
               </div>
             </CardContent>
             <CardFooter className="flex flex-col gap-3 border-t pt-6 sm:flex-row sm:items-center">
-              {isPro ? (
-                <Button
-                  variant="outline"
-                  onClick={() => downgradeToFree.mutate()}
-                  disabled={downgradeToFree.isPending}
-                >
-                  Return to Free
-                </Button>
-              ) : (
-                <Button
-                  onClick={() => upgradeToPro.mutate()}
-                  disabled={upgradeToPro.isPending}
-                >
-                  <CrownIcon />
-                  Enable Pro
-                </Button>
-              )}
-              <p className="text-sm text-muted-foreground">
-                Keep this local mode for now, then swap the backend provider later.
-              </p>
+              <div className="flex flex-col gap-2 sm:flex-row">
+                {isPro ? (
+                  <Button
+                    variant="outline"
+                    onClick={() => downgradeToFree.mutate()}
+                    disabled={downgradeToFree.isPending}
+                  >
+                    Return to Free
+                  </Button>
+                ) : (
+                  <Button
+                    onClick={() => upgradeToPro.mutate()}
+                    disabled={upgradeToPro.isPending}
+                  >
+                    <CrownIcon />
+                    Enable Pro locally
+                  </Button>
+                )}
+                {state.paddle.enabled && (
+                  <Button variant="outline" onClick={() => void paddleCheckout.openCheckout()}>
+                    <CreditCardIcon />
+                    Checkout with Paddle
+                  </Button>
+                )}
+              </div>
             </CardFooter>
           </Card>
 
@@ -159,8 +178,32 @@ export const BillingPortalView = () => {
                   <li>This project already has enough moving parts; real tax and billing flows can wait.</li>
                 </ul>
               </div>
+              <div className="rounded-2xl border bg-background p-4">
+                <p className="text-xs font-medium uppercase tracking-[0.24em] text-muted-foreground">
+                  Paddle readiness
+                </p>
+                <ul className="mt-3 space-y-2 text-sm text-muted-foreground">
+                  <li>API key: {state.paddle.hasApiKey ? "ready" : "missing"}</li>
+                  <li>Client token: {state.paddle.hasClientToken ? "ready" : "missing"}</li>
+                  <li>Price ID: {state.paddle.hasPriceId ? "ready" : "missing"}</li>
+                  <li>
+                    Checkout script:{" "}
+                    {state.paddle.enabled
+                      ? paddleCheckout.readiness === "loading-script"
+                        ? "loading"
+                        : "ready"
+                      : "waiting for config"}
+                  </li>
+                </ul>
+              </div>
             </CardContent>
             <CardFooter className="flex flex-col gap-2 border-t pt-6 sm:items-start">
+              {state.paddle.enabled && (
+                <Button onClick={() => void paddleCheckout.openPortal()} disabled={paddleCheckout.isOpeningPortal}>
+                  <ExternalLinkIcon />
+                  Open Paddle portal
+                </Button>
+              )}
               <Button variant="outline" asChild>
                 <Link href={PADDLE_SUPPORTED_COUNTRIES_URL} target="_blank">
                   Supported countries
@@ -218,7 +261,7 @@ export const BillingPortalView = () => {
                   disabled={upgradeToPro.isPending}
                 >
                   <CreditCardIcon />
-                  Upgrade to Pro
+                  Enable Pro locally
                 </Button>
               )
             }

@@ -57,3 +57,34 @@ export const useDowngradeToFree = () => {
     }),
   );
 };
+
+export const useSyncPaddleCheckout = () => {
+  const trpc = useTRPC();
+  const queryClient = useQueryClient();
+
+  return useMutation(
+    trpc.billing.syncPaddleCheckout.mutationOptions({
+      onSuccess: async () => {
+        toast.success("Paddle checkout completed");
+        await invalidateBilling(queryClient, trpc);
+      },
+      onError: (error) => {
+        toast.error(`Failed to sync Paddle checkout: ${error.message}`);
+        Sentry.captureException(error);
+      },
+    }),
+  );
+};
+
+export const useCreatePaddlePortalLink = () => {
+  const trpc = useTRPC();
+
+  return useMutation(
+    trpc.billing.createPaddlePortalLink.mutationOptions({
+      onError: (error) => {
+        toast.error(`Failed to open Paddle portal: ${error.message}`);
+        Sentry.captureException(error);
+      },
+    }),
+  );
+};

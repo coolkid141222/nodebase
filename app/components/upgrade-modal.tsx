@@ -1,7 +1,7 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { CrownIcon, SparklesIcon } from "lucide-react";
+import { CreditCardIcon, CrownIcon, SparklesIcon } from "lucide-react";
 import { BillingPlan } from "@/lib/prisma/client";
 import { Badge } from "@/components/badge";
 import { Button } from "@/components/button";
@@ -22,6 +22,7 @@ import {
   useBillingState,
   useUpgradeToPro,
 } from "@/features/billing/hooks/use-billing";
+import { usePaddleCheckout } from "@/features/billing/hooks/use-paddle-checkout";
 
 interface UpgradeModalProps {
   open: boolean;
@@ -35,9 +36,11 @@ export const UpgradeModal = ({
   const router = useRouter();
   const billing = useBillingState();
   const upgradeToPro = useUpgradeToPro();
+  const paddleCheckout = usePaddleCheckout();
 
   const activePlan = billing.data?.plan ?? BillingPlan.FREE;
   const isPro = activePlan === BillingPlan.PRO;
+  const paddleEnabled = Boolean(billing.data?.paddle.enabled);
 
   const handleUpgrade = async () => {
     if (isPro) {
@@ -98,6 +101,23 @@ export const UpgradeModal = ({
           </p>
         </div>
 
+        {billing.data?.paddle && (
+          <div className="rounded-2xl border bg-muted/25 p-4 text-sm text-muted-foreground">
+            <p className="font-medium text-foreground">Paddle setup</p>
+            <div className="mt-3 flex flex-wrap gap-2">
+              <Badge variant="outline">
+                API key {billing.data.paddle.hasApiKey ? "ready" : "missing"}
+              </Badge>
+              <Badge variant="outline">
+                Client token {billing.data.paddle.hasClientToken ? "ready" : "missing"}
+              </Badge>
+              <Badge variant="outline">
+                Price ID {billing.data.paddle.hasPriceId ? "ready" : "missing"}
+              </Badge>
+            </div>
+          </div>
+        )}
+
         <DialogFooter className="sm:justify-between">
           <Button variant="ghost" asChild className="justify-start px-0">
             <a href={PADDLE_SUPPORTED_COUNTRIES_URL} target="_blank" rel="noreferrer">
@@ -105,6 +125,12 @@ export const UpgradeModal = ({
             </a>
           </Button>
           <div className="flex flex-col-reverse gap-2 sm:flex-row">
+            {paddleEnabled && (
+              <Button variant="outline" onClick={() => void paddleCheckout.openCheckout()}>
+                <CreditCardIcon />
+                Checkout with Paddle
+              </Button>
+            )}
             <Button variant="outline" onClick={() => onOpenChange(false)}>
               Not now
             </Button>
