@@ -53,6 +53,12 @@ const executionNodes: NodeTypeOptions[] = [
         label: "DISCORD MESSAGE",
         decription: "Post a message to Discord",
         icon: MessageSquareIcon
+    },
+    {
+        type: "SLACK_MESSAGE",
+        label: "SLACK MESSAGE",
+        decription: "Post a message to Slack",
+        icon: MessageSquareIcon
     }
 ]
 

@@ -25,6 +25,7 @@ import {
   getDefaultAITextModel,
 } from "@/features/ai/text/shared";
 import type { DiscordMessageNodeData } from "@/features/integrations/discord/shared";
+import type { SlackMessageNodeData } from "@/features/integrations/slack/shared";
 import {
   createAnthropicProvider,
   createGoogleProvider,
@@ -81,6 +82,12 @@ type ResolvedDiscordMessageInput = {
   content: string;
 };
 
+type ResolvedSlackMessageInput = {
+  credentialId: string;
+  credentialField: string;
+  content: string;
+};
+
 type CompletedStepResult = {
   id: string;
   nodeId: string;
@@ -102,10 +109,12 @@ export class WorkflowExecutionError extends Error {
       | "INVALID_HTTP_REQUEST_CONFIG"
       | "INVALID_AI_NODE_CONFIG"
       | "INVALID_DISCORD_CONFIG"
+      | "INVALID_SLACK_CONFIG"
       | "CREDENTIAL_NOT_FOUND"
       | "INVALID_CREDENTIAL_CONFIG"
       | "HTTP_REQUEST_FAILED"
-      | "DISCORD_REQUEST_FAILED",
+      | "DISCORD_REQUEST_FAILED"
+      | "SLACK_REQUEST_FAILED",
   ) {
     super(message);
     this.name = "WorkflowExecutionError";
@@ -485,6 +494,38 @@ function normalizeDiscordMessageNodeData(
   };
 }
 
+function normalizeSlackMessageNodeData(
+  node: WorkflowForExecution["nodes"][number],
+  context: ExecutionTemplateContext,
+): ResolvedSlackMessageInput {
+  const data = (node.data ?? {}) as SlackMessageNodeData;
+  const content = data.content
+    ? resolveTemplateString(data.content, context).trim()
+    : "";
+  const credentialId = data.credentialId?.trim();
+  const credentialField = data.credentialField?.trim() || "webhookUrl";
+
+  if (!content) {
+    throw new WorkflowExecutionError(
+      `Slack Message node "${node.name}" is missing message content.`,
+      "INVALID_SLACK_CONFIG",
+    );
+  }
+
+  if (!credentialId) {
+    throw new WorkflowExecutionError(
+      `Slack Message node "${node.name}" requires a Slack credential.`,
+      "INVALID_SLACK_CONFIG",
+    );
+  }
+
+  return {
+    credentialId,
+    credentialField,
+    content,
+  };
+}
+
 function normalizeAITextNodeData(
   node: WorkflowForExecution["nodes"][number],
   context: ExecutionTemplateContext,
@@ -581,6 +622,60 @@ async function executeDiscordMessageNode(
     throw new WorkflowExecutionError(
       `Discord webhook request failed with status ${response.status}.`,
       "DISCORD_REQUEST_FAILED",
+    );
+  }
+
+  return {
+    status: ExecutionStepStatus.SUCCESS,
+    output,
+  };
+}
+
+async function executeSlackMessageNode(
+  execution: ExecutionWithWorkflow,
+  input: ResolvedSlackMessageInput,
+): Promise<NodeExecutionResult> {
+  const webhookUrl = await resolveCredentialStringValue({
+    execution,
+    credentialId: input.credentialId,
+    field: input.credentialField,
+    provider: CredentialProvider.SLACK,
+  });
+
+  let requestUrl: URL;
+  try {
+    requestUrl = new URL(webhookUrl);
+  } catch {
+    throw new WorkflowExecutionError(
+      `Slack credential field "${input.credentialField}" must contain a valid webhook URL.`,
+      "INVALID_CREDENTIAL_CONFIG",
+    );
+  }
+
+  const response = await fetch(requestUrl, {
+    method: "POST",
+    headers: {
+      "content-type": "application/json",
+    },
+    body: JSON.stringify({
+      text: input.content,
+    }),
+    signal: AbortSignal.timeout(15_000),
+  });
+
+  const responseText = await response.text();
+  const responseBody = parseJsonOrReturnText(responseText);
+  const output: Prisma.InputJsonValue = {
+    ok: response.ok,
+    status: response.status,
+    body: responseBody,
+    content: input.content,
+  };
+
+  if (!response.ok) {
+    throw new WorkflowExecutionError(
+      `Slack webhook request failed with status ${response.status}.`,
+      "SLACK_REQUEST_FAILED",
     );
   }
 
@@ -806,6 +901,11 @@ async function executeNode(
         execution,
         input as ResolvedDiscordMessageInput,
       );
+    case NodeType.SLACK_MESSAGE:
+      return executeSlackMessageNode(
+        execution,
+        input as ResolvedSlackMessageInput,
+      );
     default:
       throw new WorkflowExecutionError(
         `Node executor for "${node.type}" is not implemented yet.`,
@@ -830,6 +930,8 @@ function resolveNodeInput(
       return normalizeAITextNodeData(node, context);
     case NodeType.DISCORD_MESSAGE:
       return normalizeDiscordMessageNodeData(node, context);
+    case NodeType.SLACK_MESSAGE:
+      return normalizeSlackMessageNodeData(node, context);
     default:
       return {
         triggerType: execution.triggerType,

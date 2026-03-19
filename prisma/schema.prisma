@@ -104,6 +104,7 @@ enum NodeType {
   MANUAL_TRIGGER
   AI_TEXT
   DISCORD_MESSAGE
+  SLACK_MESSAGE
 }
 
 model Node {
