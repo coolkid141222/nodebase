@@ -90,7 +90,7 @@ function ExecutionPreviewCard({
 
   return (
     <Card className="w-full max-h-[calc(100dvh-16rem)] overflow-hidden border-border/60 bg-background/95 shadow-sm">
-      <div className="flex min-h-0 flex-col overflow-y-auto overflow-x-hidden">
+      <div className="flex min-h-0 w-full flex-col overflow-y-auto overflow-x-hidden">
         <CardHeader className="space-y-2">
           <div className="flex items-center justify-between gap-3">
             <div className="space-y-1 min-w-0">
@@ -116,7 +116,7 @@ function ExecutionPreviewCard({
             <div className="text-xs font-medium text-muted-foreground">
               Result
             </div>
-            <div className="max-h-40 overflow-y-auto break-words rounded-md border bg-muted/30 p-3 text-sm leading-6">
+            <div className="max-h-40 overflow-y-auto overflow-x-hidden break-words rounded-md border bg-muted/30 p-3 text-sm leading-6">
               {previewResult || "No extractable result yet."}
             </div>
           </div>
