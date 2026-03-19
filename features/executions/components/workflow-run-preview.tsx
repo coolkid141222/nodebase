@@ -9,10 +9,7 @@ import {
   CardDescription,
   CardHeader,
 } from "@/components/card";
-import {
-  ExecutionStatus,
-  ExecutionStepStatus,
-} from "@/lib/prisma/client";
+import { ExecutionStatus, ExecutionStepStatus } from "@/lib/prisma/client";
 import {
   useWorkflowExecutionStatus,
 } from "./workflow-execution-status-context";
@@ -33,32 +30,12 @@ function getExecutionStatusClasses(status: ExecutionStatus) {
   }
 }
 
-function getStepStatusClasses(status: ExecutionStepStatus) {
-  switch (status) {
-    case "RUNNING":
-      return "bg-blue-600 text-white shadow-[0_0_0_4px_rgba(37,99,235,0.12)]";
-    case "SUCCESS":
-      return "bg-emerald-600 text-white shadow-[0_0_0_4px_rgba(5,150,105,0.12)]";
-    case "FAILED":
-      return "bg-red-600 text-white shadow-[0_0_0_4px_rgba(220,38,38,0.12)]";
-    case "SKIPPED":
-      return "bg-zinc-500 text-white shadow-[0_0_0_4px_rgba(113,113,122,0.12)]";
-    default:
-      return "bg-gray-500 text-white";
-  }
-}
-
 function StatusChip({
   status,
-  kind,
 }: {
-  status: ExecutionStatus | ExecutionStepStatus;
-  kind: "execution" | "step";
+  status: ExecutionStatus;
 }) {
-  const classes =
-    kind === "execution"
-      ? getExecutionStatusClasses(status as ExecutionStatus)
-      : getStepStatusClasses(status as ExecutionStepStatus);
+  const classes = getExecutionStatusClasses(status);
 
   return (
     <div
@@ -71,6 +48,14 @@ function StatusChip({
       {status === "CANCELED" && <Clock3 className="size-3" />}
       {status === "SKIPPED" && <Clock3 className="size-3" />}
       <span className="uppercase tracking-wide">{status}</span>
+    </div>
+  );
+}
+
+function StepNamePill({ label }: { label: string }) {
+  return (
+    <div className="inline-flex max-w-full items-center rounded-full border border-border/70 bg-background px-2.5 py-1 text-[11px] font-medium text-muted-foreground">
+      <span className="truncate">Step: {label}</span>
     </div>
   );
 }
@@ -174,16 +159,9 @@ function ExecutionPreviewCard() {
                 })}
               </CardDescription>
               <div className="flex flex-wrap items-center gap-2">
-                <StatusChip status={execution.status} kind="execution" />
-                {previewStep && (
-                  <StatusChip status={previewStep.status} kind="step" />
-                )}
+                <StatusChip status={execution.status} />
+                {previewStep && <StepNamePill label={previewStep.nodeName} />}
               </div>
-              {previewStep && (
-                <CardDescription className="text-xs break-all">
-                  Step: {previewStep.nodeName}
-                </CardDescription>
-              )}
             </div>
           </div>
         </CardHeader>
