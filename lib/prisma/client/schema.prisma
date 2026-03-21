@@ -231,22 +231,24 @@ enum ExecutionStepStatus {
 }
 
 model Execution {
-  id                String               @id @default(cuid())
+  id                String                 @id @default(cuid())
   workflowId        String
-  workflow          Workflow             @relation(fields: [workflowId], references: [id], onDelete: Cascade)
+  workflow          Workflow               @relation(fields: [workflowId], references: [id], onDelete: Cascade)
   triggerType       ExecutionTriggerType
-  status            ExecutionStatus      @default(PENDING)
+  status            ExecutionStatus        @default(PENDING)
   triggeredByUserId String?
-  triggeredByUser   User?                @relation("TriggeredByUser", fields: [triggeredByUserId], references: [id], onDelete: SetNull)
-  triggerPayload    Json                 @default("{}")
-  state             Json                 @default("{}")
+  triggeredByUser   User?                  @relation("TriggeredByUser", fields: [triggeredByUserId], references: [id], onDelete: SetNull)
+  triggerPayload    Json                   @default("{}")
+  state             Json                   @default("{}")
   workflowSnapshot  Json?
   startedAt         DateTime?
   completedAt       DateTime?
   error             Json?
-  createdAt         DateTime             @default(now())
-  updatedAt         DateTime             @updatedAt
+  createdAt         DateTime               @default(now())
+  updatedAt         DateTime               @updatedAt
   steps             ExecutionStep[]
+  memoryEntries     ExecutionMemoryEntry[]
+  memoryEvents      ExecutionMemoryEvent[]
 
   @@index([workflowId, createdAt])
   @@index([triggeredByUserId, createdAt])
@@ -278,4 +280,61 @@ model ExecutionStep {
   @@index([nodeId])
   @@index([status, createdAt])
   @@map("execution_steps")
+}
+
+enum ExecutionMemoryScope {
+  SHARED
+  NODE
+}
+
+enum ExecutionMemoryVisibility {
+  PUBLIC
+  PRIVATE
+}
+
+enum ExecutionMemoryWriteMode {
+  REPLACE
+  MERGE
+  APPEND
+}
+
+model ExecutionMemoryEntry {
+  id           String                    @id @default(cuid())
+  executionId  String
+  execution    Execution                 @relation(fields: [executionId], references: [id], onDelete: Cascade)
+  scope        ExecutionMemoryScope      @default(SHARED)
+  visibility   ExecutionMemoryVisibility @default(PUBLIC)
+  ownerNodeId  String                    @default("")
+  namespace    String                    @default("default")
+  key          String
+  value        Json
+  sourceStepId String?
+  createdAt    DateTime                  @default(now())
+  updatedAt    DateTime                  @updatedAt
+
+  @@unique([executionId, scope, ownerNodeId, namespace, key])
+  @@index([executionId, scope, ownerNodeId, updatedAt])
+  @@index([sourceStepId])
+  @@map("execution_memory_entries")
+}
+
+model ExecutionMemoryEvent {
+  id          String                    @id @default(cuid())
+  executionId String
+  execution   Execution                 @relation(fields: [executionId], references: [id], onDelete: Cascade)
+  stepId      String?
+  nodeId      String                    @default("")
+  scope       ExecutionMemoryScope
+  visibility  ExecutionMemoryVisibility @default(PUBLIC)
+  ownerNodeId String                    @default("")
+  namespace   String                    @default("default")
+  key         String
+  mode        ExecutionMemoryWriteMode  @default(REPLACE)
+  value       Json
+  createdAt   DateTime                  @default(now())
+
+  @@index([executionId, createdAt])
+  @@index([stepId])
+  @@index([nodeId, createdAt])
+  @@map("execution_memory_events")
 }

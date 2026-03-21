@@ -63,6 +63,16 @@ export type Execution = $Result.DefaultSelection<Prisma.$ExecutionPayload>
  * 
  */
 export type ExecutionStep = $Result.DefaultSelection<Prisma.$ExecutionStepPayload>
+/**
+ * Model ExecutionMemoryEntry
+ * 
+ */
+export type ExecutionMemoryEntry = $Result.DefaultSelection<Prisma.$ExecutionMemoryEntryPayload>
+/**
+ * Model ExecutionMemoryEvent
+ * 
+ */
+export type ExecutionMemoryEvent = $Result.DefaultSelection<Prisma.$ExecutionMemoryEventPayload>
 
 /**
  * Enums
@@ -155,6 +165,31 @@ export const ExecutionStepStatus: {
 
 export type ExecutionStepStatus = (typeof ExecutionStepStatus)[keyof typeof ExecutionStepStatus]
 
+
+export const ExecutionMemoryScope: {
+  SHARED: 'SHARED',
+  NODE: 'NODE'
+};
+
+export type ExecutionMemoryScope = (typeof ExecutionMemoryScope)[keyof typeof ExecutionMemoryScope]
+
+
+export const ExecutionMemoryVisibility: {
+  PUBLIC: 'PUBLIC',
+  PRIVATE: 'PRIVATE'
+};
+
+export type ExecutionMemoryVisibility = (typeof ExecutionMemoryVisibility)[keyof typeof ExecutionMemoryVisibility]
+
+
+export const ExecutionMemoryWriteMode: {
+  REPLACE: 'REPLACE',
+  MERGE: 'MERGE',
+  APPEND: 'APPEND'
+};
+
+export type ExecutionMemoryWriteMode = (typeof ExecutionMemoryWriteMode)[keyof typeof ExecutionMemoryWriteMode]
+
 }
 
 export type BillingPlan = $Enums.BillingPlan
@@ -188,6 +223,18 @@ export const ExecutionStatus: typeof $Enums.ExecutionStatus
 export type ExecutionStepStatus = $Enums.ExecutionStepStatus
 
 export const ExecutionStepStatus: typeof $Enums.ExecutionStepStatus
+
+export type ExecutionMemoryScope = $Enums.ExecutionMemoryScope
+
+export const ExecutionMemoryScope: typeof $Enums.ExecutionMemoryScope
+
+export type ExecutionMemoryVisibility = $Enums.ExecutionMemoryVisibility
+
+export const ExecutionMemoryVisibility: typeof $Enums.ExecutionMemoryVisibility
+
+export type ExecutionMemoryWriteMode = $Enums.ExecutionMemoryWriteMode
+
+export const ExecutionMemoryWriteMode: typeof $Enums.ExecutionMemoryWriteMode
 
 /**
  * ##  Prisma Client ʲˢ
@@ -406,6 +453,26 @@ export class PrismaClient<
     * ```
     */
   get executionStep(): Prisma.ExecutionStepDelegate<ExtArgs, ClientOptions>;
+
+  /**
+   * `prisma.executionMemoryEntry`: Exposes CRUD operations for the **ExecutionMemoryEntry** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more ExecutionMemoryEntries
+    * const executionMemoryEntries = await prisma.executionMemoryEntry.findMany()
+    * ```
+    */
+  get executionMemoryEntry(): Prisma.ExecutionMemoryEntryDelegate<ExtArgs, ClientOptions>;
+
+  /**
+   * `prisma.executionMemoryEvent`: Exposes CRUD operations for the **ExecutionMemoryEvent** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more ExecutionMemoryEvents
+    * const executionMemoryEvents = await prisma.executionMemoryEvent.findMany()
+    * ```
+    */
+  get executionMemoryEvent(): Prisma.ExecutionMemoryEventDelegate<ExtArgs, ClientOptions>;
 }
 
 export namespace Prisma {
@@ -856,7 +923,9 @@ export namespace Prisma {
     Connection: 'Connection',
     Credential: 'Credential',
     Execution: 'Execution',
-    ExecutionStep: 'ExecutionStep'
+    ExecutionStep: 'ExecutionStep',
+    ExecutionMemoryEntry: 'ExecutionMemoryEntry',
+    ExecutionMemoryEvent: 'ExecutionMemoryEvent'
   };
 
   export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -875,7 +944,7 @@ export namespace Prisma {
       omit: GlobalOmitOptions
     }
     meta: {
-      modelProps: "user" | "session" | "account" | "verification" | "workflow" | "node" | "connection" | "credential" | "execution" | "executionStep"
+      modelProps: "user" | "session" | "account" | "verification" | "workflow" | "node" | "connection" | "credential" | "execution" | "executionStep" | "executionMemoryEntry" | "executionMemoryEvent"
       txIsolationLevel: Prisma.TransactionIsolationLevel
     }
     model: {
@@ -1619,6 +1688,154 @@ export namespace Prisma {
           }
         }
       }
+      ExecutionMemoryEntry: {
+        payload: Prisma.$ExecutionMemoryEntryPayload<ExtArgs>
+        fields: Prisma.ExecutionMemoryEntryFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.ExecutionMemoryEntryFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ExecutionMemoryEntryPayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.ExecutionMemoryEntryFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ExecutionMemoryEntryPayload>
+          }
+          findFirst: {
+            args: Prisma.ExecutionMemoryEntryFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ExecutionMemoryEntryPayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.ExecutionMemoryEntryFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ExecutionMemoryEntryPayload>
+          }
+          findMany: {
+            args: Prisma.ExecutionMemoryEntryFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ExecutionMemoryEntryPayload>[]
+          }
+          create: {
+            args: Prisma.ExecutionMemoryEntryCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ExecutionMemoryEntryPayload>
+          }
+          createMany: {
+            args: Prisma.ExecutionMemoryEntryCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          createManyAndReturn: {
+            args: Prisma.ExecutionMemoryEntryCreateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ExecutionMemoryEntryPayload>[]
+          }
+          delete: {
+            args: Prisma.ExecutionMemoryEntryDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ExecutionMemoryEntryPayload>
+          }
+          update: {
+            args: Prisma.ExecutionMemoryEntryUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ExecutionMemoryEntryPayload>
+          }
+          deleteMany: {
+            args: Prisma.ExecutionMemoryEntryDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.ExecutionMemoryEntryUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateManyAndReturn: {
+            args: Prisma.ExecutionMemoryEntryUpdateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ExecutionMemoryEntryPayload>[]
+          }
+          upsert: {
+            args: Prisma.ExecutionMemoryEntryUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ExecutionMemoryEntryPayload>
+          }
+          aggregate: {
+            args: Prisma.ExecutionMemoryEntryAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregateExecutionMemoryEntry>
+          }
+          groupBy: {
+            args: Prisma.ExecutionMemoryEntryGroupByArgs<ExtArgs>
+            result: $Utils.Optional<ExecutionMemoryEntryGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.ExecutionMemoryEntryCountArgs<ExtArgs>
+            result: $Utils.Optional<ExecutionMemoryEntryCountAggregateOutputType> | number
+          }
+        }
+      }
+      ExecutionMemoryEvent: {
+        payload: Prisma.$ExecutionMemoryEventPayload<ExtArgs>
+        fields: Prisma.ExecutionMemoryEventFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.ExecutionMemoryEventFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ExecutionMemoryEventPayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.ExecutionMemoryEventFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ExecutionMemoryEventPayload>
+          }
+          findFirst: {
+            args: Prisma.ExecutionMemoryEventFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ExecutionMemoryEventPayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.ExecutionMemoryEventFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ExecutionMemoryEventPayload>
+          }
+          findMany: {
+            args: Prisma.ExecutionMemoryEventFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ExecutionMemoryEventPayload>[]
+          }
+          create: {
+            args: Prisma.ExecutionMemoryEventCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ExecutionMemoryEventPayload>
+          }
+          createMany: {
+            args: Prisma.ExecutionMemoryEventCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          createManyAndReturn: {
+            args: Prisma.ExecutionMemoryEventCreateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ExecutionMemoryEventPayload>[]
+          }
+          delete: {
+            args: Prisma.ExecutionMemoryEventDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ExecutionMemoryEventPayload>
+          }
+          update: {
+            args: Prisma.ExecutionMemoryEventUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ExecutionMemoryEventPayload>
+          }
+          deleteMany: {
+            args: Prisma.ExecutionMemoryEventDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.ExecutionMemoryEventUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateManyAndReturn: {
+            args: Prisma.ExecutionMemoryEventUpdateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ExecutionMemoryEventPayload>[]
+          }
+          upsert: {
+            args: Prisma.ExecutionMemoryEventUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ExecutionMemoryEventPayload>
+          }
+          aggregate: {
+            args: Prisma.ExecutionMemoryEventAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregateExecutionMemoryEvent>
+          }
+          groupBy: {
+            args: Prisma.ExecutionMemoryEventGroupByArgs<ExtArgs>
+            result: $Utils.Optional<ExecutionMemoryEventGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.ExecutionMemoryEventCountArgs<ExtArgs>
+            result: $Utils.Optional<ExecutionMemoryEventCountAggregateOutputType> | number
+          }
+        }
+      }
     }
   } & {
     other: {
@@ -1725,6 +1942,8 @@ export namespace Prisma {
     credential?: CredentialOmit
     execution?: ExecutionOmit
     executionStep?: ExecutionStepOmit
+    executionMemoryEntry?: ExecutionMemoryEntryOmit
+    executionMemoryEvent?: ExecutionMemoryEventOmit
   }
 
   /* Types for Logging */
@@ -1971,10 +2190,14 @@ export namespace Prisma {
 
   export type ExecutionCountOutputType = {
     steps: number
+    memoryEntries: number
+    memoryEvents: number
   }
 
   export type ExecutionCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     steps?: boolean | ExecutionCountOutputTypeCountStepsArgs
+    memoryEntries?: boolean | ExecutionCountOutputTypeCountMemoryEntriesArgs
+    memoryEvents?: boolean | ExecutionCountOutputTypeCountMemoryEventsArgs
   }
 
   // Custom InputTypes
@@ -1993,6 +2216,20 @@ export namespace Prisma {
    */
   export type ExecutionCountOutputTypeCountStepsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     where?: ExecutionStepWhereInput
+  }
+
+  /**
+   * ExecutionCountOutputType without action
+   */
+  export type ExecutionCountOutputTypeCountMemoryEntriesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: ExecutionMemoryEntryWhereInput
+  }
+
+  /**
+   * ExecutionCountOutputType without action
+   */
+  export type ExecutionCountOutputTypeCountMemoryEventsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: ExecutionMemoryEventWhereInput
   }
 
 
@@ -11367,6 +11604,8 @@ export namespace Prisma {
     workflow?: boolean | WorkflowDefaultArgs<ExtArgs>
     triggeredByUser?: boolean | Execution$triggeredByUserArgs<ExtArgs>
     steps?: boolean | Execution$stepsArgs<ExtArgs>
+    memoryEntries?: boolean | Execution$memoryEntriesArgs<ExtArgs>
+    memoryEvents?: boolean | Execution$memoryEventsArgs<ExtArgs>
     _count?: boolean | ExecutionCountOutputTypeDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["execution"]>
 
@@ -11427,6 +11666,8 @@ export namespace Prisma {
     workflow?: boolean | WorkflowDefaultArgs<ExtArgs>
     triggeredByUser?: boolean | Execution$triggeredByUserArgs<ExtArgs>
     steps?: boolean | Execution$stepsArgs<ExtArgs>
+    memoryEntries?: boolean | Execution$memoryEntriesArgs<ExtArgs>
+    memoryEvents?: boolean | Execution$memoryEventsArgs<ExtArgs>
     _count?: boolean | ExecutionCountOutputTypeDefaultArgs<ExtArgs>
   }
   export type ExecutionIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -11444,6 +11685,8 @@ export namespace Prisma {
       workflow: Prisma.$WorkflowPayload<ExtArgs>
       triggeredByUser: Prisma.$UserPayload<ExtArgs> | null
       steps: Prisma.$ExecutionStepPayload<ExtArgs>[]
+      memoryEntries: Prisma.$ExecutionMemoryEntryPayload<ExtArgs>[]
+      memoryEvents: Prisma.$ExecutionMemoryEventPayload<ExtArgs>[]
     }
     scalars: $Extensions.GetPayloadResult<{
       id: string
@@ -11856,6 +12099,8 @@ export namespace Prisma {
     workflow<T extends WorkflowDefaultArgs<ExtArgs> = {}>(args?: Subset<T, WorkflowDefaultArgs<ExtArgs>>): Prisma__WorkflowClient<$Result.GetResult<Prisma.$WorkflowPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
     triggeredByUser<T extends Execution$triggeredByUserArgs<ExtArgs> = {}>(args?: Subset<T, Execution$triggeredByUserArgs<ExtArgs>>): Prisma__UserClient<$Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
     steps<T extends Execution$stepsArgs<ExtArgs> = {}>(args?: Subset<T, Execution$stepsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ExecutionStepPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    memoryEntries<T extends Execution$memoryEntriesArgs<ExtArgs> = {}>(args?: Subset<T, Execution$memoryEntriesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ExecutionMemoryEntryPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    memoryEvents<T extends Execution$memoryEventsArgs<ExtArgs> = {}>(args?: Subset<T, Execution$memoryEventsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ExecutionMemoryEventPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -12334,6 +12579,54 @@ export namespace Prisma {
     take?: number
     skip?: number
     distinct?: ExecutionStepScalarFieldEnum | ExecutionStepScalarFieldEnum[]
+  }
+
+  /**
+   * Execution.memoryEntries
+   */
+  export type Execution$memoryEntriesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ExecutionMemoryEntry
+     */
+    select?: ExecutionMemoryEntrySelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the ExecutionMemoryEntry
+     */
+    omit?: ExecutionMemoryEntryOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ExecutionMemoryEntryInclude<ExtArgs> | null
+    where?: ExecutionMemoryEntryWhereInput
+    orderBy?: ExecutionMemoryEntryOrderByWithRelationInput | ExecutionMemoryEntryOrderByWithRelationInput[]
+    cursor?: ExecutionMemoryEntryWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: ExecutionMemoryEntryScalarFieldEnum | ExecutionMemoryEntryScalarFieldEnum[]
+  }
+
+  /**
+   * Execution.memoryEvents
+   */
+  export type Execution$memoryEventsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ExecutionMemoryEvent
+     */
+    select?: ExecutionMemoryEventSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the ExecutionMemoryEvent
+     */
+    omit?: ExecutionMemoryEventOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ExecutionMemoryEventInclude<ExtArgs> | null
+    where?: ExecutionMemoryEventWhereInput
+    orderBy?: ExecutionMemoryEventOrderByWithRelationInput | ExecutionMemoryEventOrderByWithRelationInput[]
+    cursor?: ExecutionMemoryEventWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: ExecutionMemoryEventScalarFieldEnum | ExecutionMemoryEventScalarFieldEnum[]
   }
 
   /**
@@ -13614,6 +13907,2283 @@ export namespace Prisma {
 
 
   /**
+   * Model ExecutionMemoryEntry
+   */
+
+  export type AggregateExecutionMemoryEntry = {
+    _count: ExecutionMemoryEntryCountAggregateOutputType | null
+    _min: ExecutionMemoryEntryMinAggregateOutputType | null
+    _max: ExecutionMemoryEntryMaxAggregateOutputType | null
+  }
+
+  export type ExecutionMemoryEntryMinAggregateOutputType = {
+    id: string | null
+    executionId: string | null
+    scope: $Enums.ExecutionMemoryScope | null
+    visibility: $Enums.ExecutionMemoryVisibility | null
+    ownerNodeId: string | null
+    namespace: string | null
+    key: string | null
+    sourceStepId: string | null
+    createdAt: Date | null
+    updatedAt: Date | null
+  }
+
+  export type ExecutionMemoryEntryMaxAggregateOutputType = {
+    id: string | null
+    executionId: string | null
+    scope: $Enums.ExecutionMemoryScope | null
+    visibility: $Enums.ExecutionMemoryVisibility | null
+    ownerNodeId: string | null
+    namespace: string | null
+    key: string | null
+    sourceStepId: string | null
+    createdAt: Date | null
+    updatedAt: Date | null
+  }
+
+  export type ExecutionMemoryEntryCountAggregateOutputType = {
+    id: number
+    executionId: number
+    scope: number
+    visibility: number
+    ownerNodeId: number
+    namespace: number
+    key: number
+    value: number
+    sourceStepId: number
+    createdAt: number
+    updatedAt: number
+    _all: number
+  }
+
+
+  export type ExecutionMemoryEntryMinAggregateInputType = {
+    id?: true
+    executionId?: true
+    scope?: true
+    visibility?: true
+    ownerNodeId?: true
+    namespace?: true
+    key?: true
+    sourceStepId?: true
+    createdAt?: true
+    updatedAt?: true
+  }
+
+  export type ExecutionMemoryEntryMaxAggregateInputType = {
+    id?: true
+    executionId?: true
+    scope?: true
+    visibility?: true
+    ownerNodeId?: true
+    namespace?: true
+    key?: true
+    sourceStepId?: true
+    createdAt?: true
+    updatedAt?: true
+  }
+
+  export type ExecutionMemoryEntryCountAggregateInputType = {
+    id?: true
+    executionId?: true
+    scope?: true
+    visibility?: true
+    ownerNodeId?: true
+    namespace?: true
+    key?: true
+    value?: true
+    sourceStepId?: true
+    createdAt?: true
+    updatedAt?: true
+    _all?: true
+  }
+
+  export type ExecutionMemoryEntryAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which ExecutionMemoryEntry to aggregate.
+     */
+    where?: ExecutionMemoryEntryWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of ExecutionMemoryEntries to fetch.
+     */
+    orderBy?: ExecutionMemoryEntryOrderByWithRelationInput | ExecutionMemoryEntryOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: ExecutionMemoryEntryWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` ExecutionMemoryEntries from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` ExecutionMemoryEntries.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned ExecutionMemoryEntries
+    **/
+    _count?: true | ExecutionMemoryEntryCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: ExecutionMemoryEntryMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: ExecutionMemoryEntryMaxAggregateInputType
+  }
+
+  export type GetExecutionMemoryEntryAggregateType<T extends ExecutionMemoryEntryAggregateArgs> = {
+        [P in keyof T & keyof AggregateExecutionMemoryEntry]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateExecutionMemoryEntry[P]>
+      : GetScalarType<T[P], AggregateExecutionMemoryEntry[P]>
+  }
+
+
+
+
+  export type ExecutionMemoryEntryGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: ExecutionMemoryEntryWhereInput
+    orderBy?: ExecutionMemoryEntryOrderByWithAggregationInput | ExecutionMemoryEntryOrderByWithAggregationInput[]
+    by: ExecutionMemoryEntryScalarFieldEnum[] | ExecutionMemoryEntryScalarFieldEnum
+    having?: ExecutionMemoryEntryScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: ExecutionMemoryEntryCountAggregateInputType | true
+    _min?: ExecutionMemoryEntryMinAggregateInputType
+    _max?: ExecutionMemoryEntryMaxAggregateInputType
+  }
+
+  export type ExecutionMemoryEntryGroupByOutputType = {
+    id: string
+    executionId: string
+    scope: $Enums.ExecutionMemoryScope
+    visibility: $Enums.ExecutionMemoryVisibility
+    ownerNodeId: string
+    namespace: string
+    key: string
+    value: JsonValue
+    sourceStepId: string | null
+    createdAt: Date
+    updatedAt: Date
+    _count: ExecutionMemoryEntryCountAggregateOutputType | null
+    _min: ExecutionMemoryEntryMinAggregateOutputType | null
+    _max: ExecutionMemoryEntryMaxAggregateOutputType | null
+  }
+
+  type GetExecutionMemoryEntryGroupByPayload<T extends ExecutionMemoryEntryGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<ExecutionMemoryEntryGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof ExecutionMemoryEntryGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], ExecutionMemoryEntryGroupByOutputType[P]>
+            : GetScalarType<T[P], ExecutionMemoryEntryGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type ExecutionMemoryEntrySelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    executionId?: boolean
+    scope?: boolean
+    visibility?: boolean
+    ownerNodeId?: boolean
+    namespace?: boolean
+    key?: boolean
+    value?: boolean
+    sourceStepId?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+    execution?: boolean | ExecutionDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["executionMemoryEntry"]>
+
+  export type ExecutionMemoryEntrySelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    executionId?: boolean
+    scope?: boolean
+    visibility?: boolean
+    ownerNodeId?: boolean
+    namespace?: boolean
+    key?: boolean
+    value?: boolean
+    sourceStepId?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+    execution?: boolean | ExecutionDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["executionMemoryEntry"]>
+
+  export type ExecutionMemoryEntrySelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    executionId?: boolean
+    scope?: boolean
+    visibility?: boolean
+    ownerNodeId?: boolean
+    namespace?: boolean
+    key?: boolean
+    value?: boolean
+    sourceStepId?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+    execution?: boolean | ExecutionDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["executionMemoryEntry"]>
+
+  export type ExecutionMemoryEntrySelectScalar = {
+    id?: boolean
+    executionId?: boolean
+    scope?: boolean
+    visibility?: boolean
+    ownerNodeId?: boolean
+    namespace?: boolean
+    key?: boolean
+    value?: boolean
+    sourceStepId?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+  }
+
+  export type ExecutionMemoryEntryOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "executionId" | "scope" | "visibility" | "ownerNodeId" | "namespace" | "key" | "value" | "sourceStepId" | "createdAt" | "updatedAt", ExtArgs["result"]["executionMemoryEntry"]>
+  export type ExecutionMemoryEntryInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    execution?: boolean | ExecutionDefaultArgs<ExtArgs>
+  }
+  export type ExecutionMemoryEntryIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    execution?: boolean | ExecutionDefaultArgs<ExtArgs>
+  }
+  export type ExecutionMemoryEntryIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    execution?: boolean | ExecutionDefaultArgs<ExtArgs>
+  }
+
+  export type $ExecutionMemoryEntryPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "ExecutionMemoryEntry"
+    objects: {
+      execution: Prisma.$ExecutionPayload<ExtArgs>
+    }
+    scalars: $Extensions.GetPayloadResult<{
+      id: string
+      executionId: string
+      scope: $Enums.ExecutionMemoryScope
+      visibility: $Enums.ExecutionMemoryVisibility
+      ownerNodeId: string
+      namespace: string
+      key: string
+      value: Prisma.JsonValue
+      sourceStepId: string | null
+      createdAt: Date
+      updatedAt: Date
+    }, ExtArgs["result"]["executionMemoryEntry"]>
+    composites: {}
+  }
+
+  type ExecutionMemoryEntryGetPayload<S extends boolean | null | undefined | ExecutionMemoryEntryDefaultArgs> = $Result.GetResult<Prisma.$ExecutionMemoryEntryPayload, S>
+
+  type ExecutionMemoryEntryCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> =
+    Omit<ExecutionMemoryEntryFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
+      select?: ExecutionMemoryEntryCountAggregateInputType | true
+    }
+
+  export interface ExecutionMemoryEntryDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['ExecutionMemoryEntry'], meta: { name: 'ExecutionMemoryEntry' } }
+    /**
+     * Find zero or one ExecutionMemoryEntry that matches the filter.
+     * @param {ExecutionMemoryEntryFindUniqueArgs} args - Arguments to find a ExecutionMemoryEntry
+     * @example
+     * // Get one ExecutionMemoryEntry
+     * const executionMemoryEntry = await prisma.executionMemoryEntry.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends ExecutionMemoryEntryFindUniqueArgs>(args: SelectSubset<T, ExecutionMemoryEntryFindUniqueArgs<ExtArgs>>): Prisma__ExecutionMemoryEntryClient<$Result.GetResult<Prisma.$ExecutionMemoryEntryPayload<ExtArgs>, T, "findUnique", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find one ExecutionMemoryEntry that matches the filter or throw an error with `error.code='P2025'`
+     * if no matches were found.
+     * @param {ExecutionMemoryEntryFindUniqueOrThrowArgs} args - Arguments to find a ExecutionMemoryEntry
+     * @example
+     * // Get one ExecutionMemoryEntry
+     * const executionMemoryEntry = await prisma.executionMemoryEntry.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends ExecutionMemoryEntryFindUniqueOrThrowArgs>(args: SelectSubset<T, ExecutionMemoryEntryFindUniqueOrThrowArgs<ExtArgs>>): Prisma__ExecutionMemoryEntryClient<$Result.GetResult<Prisma.$ExecutionMemoryEntryPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first ExecutionMemoryEntry that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ExecutionMemoryEntryFindFirstArgs} args - Arguments to find a ExecutionMemoryEntry
+     * @example
+     * // Get one ExecutionMemoryEntry
+     * const executionMemoryEntry = await prisma.executionMemoryEntry.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends ExecutionMemoryEntryFindFirstArgs>(args?: SelectSubset<T, ExecutionMemoryEntryFindFirstArgs<ExtArgs>>): Prisma__ExecutionMemoryEntryClient<$Result.GetResult<Prisma.$ExecutionMemoryEntryPayload<ExtArgs>, T, "findFirst", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first ExecutionMemoryEntry that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ExecutionMemoryEntryFindFirstOrThrowArgs} args - Arguments to find a ExecutionMemoryEntry
+     * @example
+     * // Get one ExecutionMemoryEntry
+     * const executionMemoryEntry = await prisma.executionMemoryEntry.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends ExecutionMemoryEntryFindFirstOrThrowArgs>(args?: SelectSubset<T, ExecutionMemoryEntryFindFirstOrThrowArgs<ExtArgs>>): Prisma__ExecutionMemoryEntryClient<$Result.GetResult<Prisma.$ExecutionMemoryEntryPayload<ExtArgs>, T, "findFirstOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find zero or more ExecutionMemoryEntries that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ExecutionMemoryEntryFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all ExecutionMemoryEntries
+     * const executionMemoryEntries = await prisma.executionMemoryEntry.findMany()
+     * 
+     * // Get first 10 ExecutionMemoryEntries
+     * const executionMemoryEntries = await prisma.executionMemoryEntry.findMany({ take: 10 })
+     * 
+     * // Only select the `id`
+     * const executionMemoryEntryWithIdOnly = await prisma.executionMemoryEntry.findMany({ select: { id: true } })
+     * 
+     */
+    findMany<T extends ExecutionMemoryEntryFindManyArgs>(args?: SelectSubset<T, ExecutionMemoryEntryFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ExecutionMemoryEntryPayload<ExtArgs>, T, "findMany", GlobalOmitOptions>>
+
+    /**
+     * Create a ExecutionMemoryEntry.
+     * @param {ExecutionMemoryEntryCreateArgs} args - Arguments to create a ExecutionMemoryEntry.
+     * @example
+     * // Create one ExecutionMemoryEntry
+     * const ExecutionMemoryEntry = await prisma.executionMemoryEntry.create({
+     *   data: {
+     *     // ... data to create a ExecutionMemoryEntry
+     *   }
+     * })
+     * 
+     */
+    create<T extends ExecutionMemoryEntryCreateArgs>(args: SelectSubset<T, ExecutionMemoryEntryCreateArgs<ExtArgs>>): Prisma__ExecutionMemoryEntryClient<$Result.GetResult<Prisma.$ExecutionMemoryEntryPayload<ExtArgs>, T, "create", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Create many ExecutionMemoryEntries.
+     * @param {ExecutionMemoryEntryCreateManyArgs} args - Arguments to create many ExecutionMemoryEntries.
+     * @example
+     * // Create many ExecutionMemoryEntries
+     * const executionMemoryEntry = await prisma.executionMemoryEntry.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends ExecutionMemoryEntryCreateManyArgs>(args?: SelectSubset<T, ExecutionMemoryEntryCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create many ExecutionMemoryEntries and returns the data saved in the database.
+     * @param {ExecutionMemoryEntryCreateManyAndReturnArgs} args - Arguments to create many ExecutionMemoryEntries.
+     * @example
+     * // Create many ExecutionMemoryEntries
+     * const executionMemoryEntry = await prisma.executionMemoryEntry.createManyAndReturn({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Create many ExecutionMemoryEntries and only return the `id`
+     * const executionMemoryEntryWithIdOnly = await prisma.executionMemoryEntry.createManyAndReturn({
+     *   select: { id: true },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    createManyAndReturn<T extends ExecutionMemoryEntryCreateManyAndReturnArgs>(args?: SelectSubset<T, ExecutionMemoryEntryCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ExecutionMemoryEntryPayload<ExtArgs>, T, "createManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Delete a ExecutionMemoryEntry.
+     * @param {ExecutionMemoryEntryDeleteArgs} args - Arguments to delete one ExecutionMemoryEntry.
+     * @example
+     * // Delete one ExecutionMemoryEntry
+     * const ExecutionMemoryEntry = await prisma.executionMemoryEntry.delete({
+     *   where: {
+     *     // ... filter to delete one ExecutionMemoryEntry
+     *   }
+     * })
+     * 
+     */
+    delete<T extends ExecutionMemoryEntryDeleteArgs>(args: SelectSubset<T, ExecutionMemoryEntryDeleteArgs<ExtArgs>>): Prisma__ExecutionMemoryEntryClient<$Result.GetResult<Prisma.$ExecutionMemoryEntryPayload<ExtArgs>, T, "delete", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Update one ExecutionMemoryEntry.
+     * @param {ExecutionMemoryEntryUpdateArgs} args - Arguments to update one ExecutionMemoryEntry.
+     * @example
+     * // Update one ExecutionMemoryEntry
+     * const executionMemoryEntry = await prisma.executionMemoryEntry.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends ExecutionMemoryEntryUpdateArgs>(args: SelectSubset<T, ExecutionMemoryEntryUpdateArgs<ExtArgs>>): Prisma__ExecutionMemoryEntryClient<$Result.GetResult<Prisma.$ExecutionMemoryEntryPayload<ExtArgs>, T, "update", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Delete zero or more ExecutionMemoryEntries.
+     * @param {ExecutionMemoryEntryDeleteManyArgs} args - Arguments to filter ExecutionMemoryEntries to delete.
+     * @example
+     * // Delete a few ExecutionMemoryEntries
+     * const { count } = await prisma.executionMemoryEntry.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends ExecutionMemoryEntryDeleteManyArgs>(args?: SelectSubset<T, ExecutionMemoryEntryDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more ExecutionMemoryEntries.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ExecutionMemoryEntryUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many ExecutionMemoryEntries
+     * const executionMemoryEntry = await prisma.executionMemoryEntry.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends ExecutionMemoryEntryUpdateManyArgs>(args: SelectSubset<T, ExecutionMemoryEntryUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more ExecutionMemoryEntries and returns the data updated in the database.
+     * @param {ExecutionMemoryEntryUpdateManyAndReturnArgs} args - Arguments to update many ExecutionMemoryEntries.
+     * @example
+     * // Update many ExecutionMemoryEntries
+     * const executionMemoryEntry = await prisma.executionMemoryEntry.updateManyAndReturn({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Update zero or more ExecutionMemoryEntries and only return the `id`
+     * const executionMemoryEntryWithIdOnly = await prisma.executionMemoryEntry.updateManyAndReturn({
+     *   select: { id: true },
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    updateManyAndReturn<T extends ExecutionMemoryEntryUpdateManyAndReturnArgs>(args: SelectSubset<T, ExecutionMemoryEntryUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ExecutionMemoryEntryPayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Create or update one ExecutionMemoryEntry.
+     * @param {ExecutionMemoryEntryUpsertArgs} args - Arguments to update or create a ExecutionMemoryEntry.
+     * @example
+     * // Update or create a ExecutionMemoryEntry
+     * const executionMemoryEntry = await prisma.executionMemoryEntry.upsert({
+     *   create: {
+     *     // ... data to create a ExecutionMemoryEntry
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the ExecutionMemoryEntry we want to update
+     *   }
+     * })
+     */
+    upsert<T extends ExecutionMemoryEntryUpsertArgs>(args: SelectSubset<T, ExecutionMemoryEntryUpsertArgs<ExtArgs>>): Prisma__ExecutionMemoryEntryClient<$Result.GetResult<Prisma.$ExecutionMemoryEntryPayload<ExtArgs>, T, "upsert", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+
+    /**
+     * Count the number of ExecutionMemoryEntries.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ExecutionMemoryEntryCountArgs} args - Arguments to filter ExecutionMemoryEntries to count.
+     * @example
+     * // Count the number of ExecutionMemoryEntries
+     * const count = await prisma.executionMemoryEntry.count({
+     *   where: {
+     *     // ... the filter for the ExecutionMemoryEntries we want to count
+     *   }
+     * })
+    **/
+    count<T extends ExecutionMemoryEntryCountArgs>(
+      args?: Subset<T, ExecutionMemoryEntryCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], ExecutionMemoryEntryCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a ExecutionMemoryEntry.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ExecutionMemoryEntryAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends ExecutionMemoryEntryAggregateArgs>(args: Subset<T, ExecutionMemoryEntryAggregateArgs>): Prisma.PrismaPromise<GetExecutionMemoryEntryAggregateType<T>>
+
+    /**
+     * Group by ExecutionMemoryEntry.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ExecutionMemoryEntryGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends ExecutionMemoryEntryGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: ExecutionMemoryEntryGroupByArgs['orderBy'] }
+        : { orderBy?: ExecutionMemoryEntryGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, ExecutionMemoryEntryGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetExecutionMemoryEntryGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the ExecutionMemoryEntry model
+   */
+  readonly fields: ExecutionMemoryEntryFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for ExecutionMemoryEntry.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__ExecutionMemoryEntryClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    execution<T extends ExecutionDefaultArgs<ExtArgs> = {}>(args?: Subset<T, ExecutionDefaultArgs<ExtArgs>>): Prisma__ExecutionClient<$Result.GetResult<Prisma.$ExecutionPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the ExecutionMemoryEntry model
+   */
+  interface ExecutionMemoryEntryFieldRefs {
+    readonly id: FieldRef<"ExecutionMemoryEntry", 'String'>
+    readonly executionId: FieldRef<"ExecutionMemoryEntry", 'String'>
+    readonly scope: FieldRef<"ExecutionMemoryEntry", 'ExecutionMemoryScope'>
+    readonly visibility: FieldRef<"ExecutionMemoryEntry", 'ExecutionMemoryVisibility'>
+    readonly ownerNodeId: FieldRef<"ExecutionMemoryEntry", 'String'>
+    readonly namespace: FieldRef<"ExecutionMemoryEntry", 'String'>
+    readonly key: FieldRef<"ExecutionMemoryEntry", 'String'>
+    readonly value: FieldRef<"ExecutionMemoryEntry", 'Json'>
+    readonly sourceStepId: FieldRef<"ExecutionMemoryEntry", 'String'>
+    readonly createdAt: FieldRef<"ExecutionMemoryEntry", 'DateTime'>
+    readonly updatedAt: FieldRef<"ExecutionMemoryEntry", 'DateTime'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * ExecutionMemoryEntry findUnique
+   */
+  export type ExecutionMemoryEntryFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ExecutionMemoryEntry
+     */
+    select?: ExecutionMemoryEntrySelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the ExecutionMemoryEntry
+     */
+    omit?: ExecutionMemoryEntryOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ExecutionMemoryEntryInclude<ExtArgs> | null
+    /**
+     * Filter, which ExecutionMemoryEntry to fetch.
+     */
+    where: ExecutionMemoryEntryWhereUniqueInput
+  }
+
+  /**
+   * ExecutionMemoryEntry findUniqueOrThrow
+   */
+  export type ExecutionMemoryEntryFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ExecutionMemoryEntry
+     */
+    select?: ExecutionMemoryEntrySelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the ExecutionMemoryEntry
+     */
+    omit?: ExecutionMemoryEntryOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ExecutionMemoryEntryInclude<ExtArgs> | null
+    /**
+     * Filter, which ExecutionMemoryEntry to fetch.
+     */
+    where: ExecutionMemoryEntryWhereUniqueInput
+  }
+
+  /**
+   * ExecutionMemoryEntry findFirst
+   */
+  export type ExecutionMemoryEntryFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ExecutionMemoryEntry
+     */
+    select?: ExecutionMemoryEntrySelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the ExecutionMemoryEntry
+     */
+    omit?: ExecutionMemoryEntryOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ExecutionMemoryEntryInclude<ExtArgs> | null
+    /**
+     * Filter, which ExecutionMemoryEntry to fetch.
+     */
+    where?: ExecutionMemoryEntryWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of ExecutionMemoryEntries to fetch.
+     */
+    orderBy?: ExecutionMemoryEntryOrderByWithRelationInput | ExecutionMemoryEntryOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for ExecutionMemoryEntries.
+     */
+    cursor?: ExecutionMemoryEntryWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` ExecutionMemoryEntries from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` ExecutionMemoryEntries.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of ExecutionMemoryEntries.
+     */
+    distinct?: ExecutionMemoryEntryScalarFieldEnum | ExecutionMemoryEntryScalarFieldEnum[]
+  }
+
+  /**
+   * ExecutionMemoryEntry findFirstOrThrow
+   */
+  export type ExecutionMemoryEntryFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ExecutionMemoryEntry
+     */
+    select?: ExecutionMemoryEntrySelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the ExecutionMemoryEntry
+     */
+    omit?: ExecutionMemoryEntryOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ExecutionMemoryEntryInclude<ExtArgs> | null
+    /**
+     * Filter, which ExecutionMemoryEntry to fetch.
+     */
+    where?: ExecutionMemoryEntryWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of ExecutionMemoryEntries to fetch.
+     */
+    orderBy?: ExecutionMemoryEntryOrderByWithRelationInput | ExecutionMemoryEntryOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for ExecutionMemoryEntries.
+     */
+    cursor?: ExecutionMemoryEntryWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` ExecutionMemoryEntries from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` ExecutionMemoryEntries.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of ExecutionMemoryEntries.
+     */
+    distinct?: ExecutionMemoryEntryScalarFieldEnum | ExecutionMemoryEntryScalarFieldEnum[]
+  }
+
+  /**
+   * ExecutionMemoryEntry findMany
+   */
+  export type ExecutionMemoryEntryFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ExecutionMemoryEntry
+     */
+    select?: ExecutionMemoryEntrySelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the ExecutionMemoryEntry
+     */
+    omit?: ExecutionMemoryEntryOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ExecutionMemoryEntryInclude<ExtArgs> | null
+    /**
+     * Filter, which ExecutionMemoryEntries to fetch.
+     */
+    where?: ExecutionMemoryEntryWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of ExecutionMemoryEntries to fetch.
+     */
+    orderBy?: ExecutionMemoryEntryOrderByWithRelationInput | ExecutionMemoryEntryOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing ExecutionMemoryEntries.
+     */
+    cursor?: ExecutionMemoryEntryWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` ExecutionMemoryEntries from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` ExecutionMemoryEntries.
+     */
+    skip?: number
+    distinct?: ExecutionMemoryEntryScalarFieldEnum | ExecutionMemoryEntryScalarFieldEnum[]
+  }
+
+  /**
+   * ExecutionMemoryEntry create
+   */
+  export type ExecutionMemoryEntryCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ExecutionMemoryEntry
+     */
+    select?: ExecutionMemoryEntrySelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the ExecutionMemoryEntry
+     */
+    omit?: ExecutionMemoryEntryOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ExecutionMemoryEntryInclude<ExtArgs> | null
+    /**
+     * The data needed to create a ExecutionMemoryEntry.
+     */
+    data: XOR<ExecutionMemoryEntryCreateInput, ExecutionMemoryEntryUncheckedCreateInput>
+  }
+
+  /**
+   * ExecutionMemoryEntry createMany
+   */
+  export type ExecutionMemoryEntryCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many ExecutionMemoryEntries.
+     */
+    data: ExecutionMemoryEntryCreateManyInput | ExecutionMemoryEntryCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * ExecutionMemoryEntry createManyAndReturn
+   */
+  export type ExecutionMemoryEntryCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ExecutionMemoryEntry
+     */
+    select?: ExecutionMemoryEntrySelectCreateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the ExecutionMemoryEntry
+     */
+    omit?: ExecutionMemoryEntryOmit<ExtArgs> | null
+    /**
+     * The data used to create many ExecutionMemoryEntries.
+     */
+    data: ExecutionMemoryEntryCreateManyInput | ExecutionMemoryEntryCreateManyInput[]
+    skipDuplicates?: boolean
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ExecutionMemoryEntryIncludeCreateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * ExecutionMemoryEntry update
+   */
+  export type ExecutionMemoryEntryUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ExecutionMemoryEntry
+     */
+    select?: ExecutionMemoryEntrySelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the ExecutionMemoryEntry
+     */
+    omit?: ExecutionMemoryEntryOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ExecutionMemoryEntryInclude<ExtArgs> | null
+    /**
+     * The data needed to update a ExecutionMemoryEntry.
+     */
+    data: XOR<ExecutionMemoryEntryUpdateInput, ExecutionMemoryEntryUncheckedUpdateInput>
+    /**
+     * Choose, which ExecutionMemoryEntry to update.
+     */
+    where: ExecutionMemoryEntryWhereUniqueInput
+  }
+
+  /**
+   * ExecutionMemoryEntry updateMany
+   */
+  export type ExecutionMemoryEntryUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update ExecutionMemoryEntries.
+     */
+    data: XOR<ExecutionMemoryEntryUpdateManyMutationInput, ExecutionMemoryEntryUncheckedUpdateManyInput>
+    /**
+     * Filter which ExecutionMemoryEntries to update
+     */
+    where?: ExecutionMemoryEntryWhereInput
+    /**
+     * Limit how many ExecutionMemoryEntries to update.
+     */
+    limit?: number
+  }
+
+  /**
+   * ExecutionMemoryEntry updateManyAndReturn
+   */
+  export type ExecutionMemoryEntryUpdateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ExecutionMemoryEntry
+     */
+    select?: ExecutionMemoryEntrySelectUpdateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the ExecutionMemoryEntry
+     */
+    omit?: ExecutionMemoryEntryOmit<ExtArgs> | null
+    /**
+     * The data used to update ExecutionMemoryEntries.
+     */
+    data: XOR<ExecutionMemoryEntryUpdateManyMutationInput, ExecutionMemoryEntryUncheckedUpdateManyInput>
+    /**
+     * Filter which ExecutionMemoryEntries to update
+     */
+    where?: ExecutionMemoryEntryWhereInput
+    /**
+     * Limit how many ExecutionMemoryEntries to update.
+     */
+    limit?: number
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ExecutionMemoryEntryIncludeUpdateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * ExecutionMemoryEntry upsert
+   */
+  export type ExecutionMemoryEntryUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ExecutionMemoryEntry
+     */
+    select?: ExecutionMemoryEntrySelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the ExecutionMemoryEntry
+     */
+    omit?: ExecutionMemoryEntryOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ExecutionMemoryEntryInclude<ExtArgs> | null
+    /**
+     * The filter to search for the ExecutionMemoryEntry to update in case it exists.
+     */
+    where: ExecutionMemoryEntryWhereUniqueInput
+    /**
+     * In case the ExecutionMemoryEntry found by the `where` argument doesn't exist, create a new ExecutionMemoryEntry with this data.
+     */
+    create: XOR<ExecutionMemoryEntryCreateInput, ExecutionMemoryEntryUncheckedCreateInput>
+    /**
+     * In case the ExecutionMemoryEntry was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<ExecutionMemoryEntryUpdateInput, ExecutionMemoryEntryUncheckedUpdateInput>
+  }
+
+  /**
+   * ExecutionMemoryEntry delete
+   */
+  export type ExecutionMemoryEntryDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ExecutionMemoryEntry
+     */
+    select?: ExecutionMemoryEntrySelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the ExecutionMemoryEntry
+     */
+    omit?: ExecutionMemoryEntryOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ExecutionMemoryEntryInclude<ExtArgs> | null
+    /**
+     * Filter which ExecutionMemoryEntry to delete.
+     */
+    where: ExecutionMemoryEntryWhereUniqueInput
+  }
+
+  /**
+   * ExecutionMemoryEntry deleteMany
+   */
+  export type ExecutionMemoryEntryDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which ExecutionMemoryEntries to delete
+     */
+    where?: ExecutionMemoryEntryWhereInput
+    /**
+     * Limit how many ExecutionMemoryEntries to delete.
+     */
+    limit?: number
+  }
+
+  /**
+   * ExecutionMemoryEntry without action
+   */
+  export type ExecutionMemoryEntryDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ExecutionMemoryEntry
+     */
+    select?: ExecutionMemoryEntrySelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the ExecutionMemoryEntry
+     */
+    omit?: ExecutionMemoryEntryOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ExecutionMemoryEntryInclude<ExtArgs> | null
+  }
+
+
+  /**
+   * Model ExecutionMemoryEvent
+   */
+
+  export type AggregateExecutionMemoryEvent = {
+    _count: ExecutionMemoryEventCountAggregateOutputType | null
+    _min: ExecutionMemoryEventMinAggregateOutputType | null
+    _max: ExecutionMemoryEventMaxAggregateOutputType | null
+  }
+
+  export type ExecutionMemoryEventMinAggregateOutputType = {
+    id: string | null
+    executionId: string | null
+    stepId: string | null
+    nodeId: string | null
+    scope: $Enums.ExecutionMemoryScope | null
+    visibility: $Enums.ExecutionMemoryVisibility | null
+    ownerNodeId: string | null
+    namespace: string | null
+    key: string | null
+    mode: $Enums.ExecutionMemoryWriteMode | null
+    createdAt: Date | null
+  }
+
+  export type ExecutionMemoryEventMaxAggregateOutputType = {
+    id: string | null
+    executionId: string | null
+    stepId: string | null
+    nodeId: string | null
+    scope: $Enums.ExecutionMemoryScope | null
+    visibility: $Enums.ExecutionMemoryVisibility | null
+    ownerNodeId: string | null
+    namespace: string | null
+    key: string | null
+    mode: $Enums.ExecutionMemoryWriteMode | null
+    createdAt: Date | null
+  }
+
+  export type ExecutionMemoryEventCountAggregateOutputType = {
+    id: number
+    executionId: number
+    stepId: number
+    nodeId: number
+    scope: number
+    visibility: number
+    ownerNodeId: number
+    namespace: number
+    key: number
+    mode: number
+    value: number
+    createdAt: number
+    _all: number
+  }
+
+
+  export type ExecutionMemoryEventMinAggregateInputType = {
+    id?: true
+    executionId?: true
+    stepId?: true
+    nodeId?: true
+    scope?: true
+    visibility?: true
+    ownerNodeId?: true
+    namespace?: true
+    key?: true
+    mode?: true
+    createdAt?: true
+  }
+
+  export type ExecutionMemoryEventMaxAggregateInputType = {
+    id?: true
+    executionId?: true
+    stepId?: true
+    nodeId?: true
+    scope?: true
+    visibility?: true
+    ownerNodeId?: true
+    namespace?: true
+    key?: true
+    mode?: true
+    createdAt?: true
+  }
+
+  export type ExecutionMemoryEventCountAggregateInputType = {
+    id?: true
+    executionId?: true
+    stepId?: true
+    nodeId?: true
+    scope?: true
+    visibility?: true
+    ownerNodeId?: true
+    namespace?: true
+    key?: true
+    mode?: true
+    value?: true
+    createdAt?: true
+    _all?: true
+  }
+
+  export type ExecutionMemoryEventAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which ExecutionMemoryEvent to aggregate.
+     */
+    where?: ExecutionMemoryEventWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of ExecutionMemoryEvents to fetch.
+     */
+    orderBy?: ExecutionMemoryEventOrderByWithRelationInput | ExecutionMemoryEventOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: ExecutionMemoryEventWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` ExecutionMemoryEvents from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` ExecutionMemoryEvents.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned ExecutionMemoryEvents
+    **/
+    _count?: true | ExecutionMemoryEventCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: ExecutionMemoryEventMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: ExecutionMemoryEventMaxAggregateInputType
+  }
+
+  export type GetExecutionMemoryEventAggregateType<T extends ExecutionMemoryEventAggregateArgs> = {
+        [P in keyof T & keyof AggregateExecutionMemoryEvent]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateExecutionMemoryEvent[P]>
+      : GetScalarType<T[P], AggregateExecutionMemoryEvent[P]>
+  }
+
+
+
+
+  export type ExecutionMemoryEventGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: ExecutionMemoryEventWhereInput
+    orderBy?: ExecutionMemoryEventOrderByWithAggregationInput | ExecutionMemoryEventOrderByWithAggregationInput[]
+    by: ExecutionMemoryEventScalarFieldEnum[] | ExecutionMemoryEventScalarFieldEnum
+    having?: ExecutionMemoryEventScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: ExecutionMemoryEventCountAggregateInputType | true
+    _min?: ExecutionMemoryEventMinAggregateInputType
+    _max?: ExecutionMemoryEventMaxAggregateInputType
+  }
+
+  export type ExecutionMemoryEventGroupByOutputType = {
+    id: string
+    executionId: string
+    stepId: string | null
+    nodeId: string
+    scope: $Enums.ExecutionMemoryScope
+    visibility: $Enums.ExecutionMemoryVisibility
+    ownerNodeId: string
+    namespace: string
+    key: string
+    mode: $Enums.ExecutionMemoryWriteMode
+    value: JsonValue
+    createdAt: Date
+    _count: ExecutionMemoryEventCountAggregateOutputType | null
+    _min: ExecutionMemoryEventMinAggregateOutputType | null
+    _max: ExecutionMemoryEventMaxAggregateOutputType | null
+  }
+
+  type GetExecutionMemoryEventGroupByPayload<T extends ExecutionMemoryEventGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<ExecutionMemoryEventGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof ExecutionMemoryEventGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], ExecutionMemoryEventGroupByOutputType[P]>
+            : GetScalarType<T[P], ExecutionMemoryEventGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type ExecutionMemoryEventSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    executionId?: boolean
+    stepId?: boolean
+    nodeId?: boolean
+    scope?: boolean
+    visibility?: boolean
+    ownerNodeId?: boolean
+    namespace?: boolean
+    key?: boolean
+    mode?: boolean
+    value?: boolean
+    createdAt?: boolean
+    execution?: boolean | ExecutionDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["executionMemoryEvent"]>
+
+  export type ExecutionMemoryEventSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    executionId?: boolean
+    stepId?: boolean
+    nodeId?: boolean
+    scope?: boolean
+    visibility?: boolean
+    ownerNodeId?: boolean
+    namespace?: boolean
+    key?: boolean
+    mode?: boolean
+    value?: boolean
+    createdAt?: boolean
+    execution?: boolean | ExecutionDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["executionMemoryEvent"]>
+
+  export type ExecutionMemoryEventSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    executionId?: boolean
+    stepId?: boolean
+    nodeId?: boolean
+    scope?: boolean
+    visibility?: boolean
+    ownerNodeId?: boolean
+    namespace?: boolean
+    key?: boolean
+    mode?: boolean
+    value?: boolean
+    createdAt?: boolean
+    execution?: boolean | ExecutionDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["executionMemoryEvent"]>
+
+  export type ExecutionMemoryEventSelectScalar = {
+    id?: boolean
+    executionId?: boolean
+    stepId?: boolean
+    nodeId?: boolean
+    scope?: boolean
+    visibility?: boolean
+    ownerNodeId?: boolean
+    namespace?: boolean
+    key?: boolean
+    mode?: boolean
+    value?: boolean
+    createdAt?: boolean
+  }
+
+  export type ExecutionMemoryEventOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "executionId" | "stepId" | "nodeId" | "scope" | "visibility" | "ownerNodeId" | "namespace" | "key" | "mode" | "value" | "createdAt", ExtArgs["result"]["executionMemoryEvent"]>
+  export type ExecutionMemoryEventInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    execution?: boolean | ExecutionDefaultArgs<ExtArgs>
+  }
+  export type ExecutionMemoryEventIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    execution?: boolean | ExecutionDefaultArgs<ExtArgs>
+  }
+  export type ExecutionMemoryEventIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    execution?: boolean | ExecutionDefaultArgs<ExtArgs>
+  }
+
+  export type $ExecutionMemoryEventPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "ExecutionMemoryEvent"
+    objects: {
+      execution: Prisma.$ExecutionPayload<ExtArgs>
+    }
+    scalars: $Extensions.GetPayloadResult<{
+      id: string
+      executionId: string
+      stepId: string | null
+      nodeId: string
+      scope: $Enums.ExecutionMemoryScope
+      visibility: $Enums.ExecutionMemoryVisibility
+      ownerNodeId: string
+      namespace: string
+      key: string
+      mode: $Enums.ExecutionMemoryWriteMode
+      value: Prisma.JsonValue
+      createdAt: Date
+    }, ExtArgs["result"]["executionMemoryEvent"]>
+    composites: {}
+  }
+
+  type ExecutionMemoryEventGetPayload<S extends boolean | null | undefined | ExecutionMemoryEventDefaultArgs> = $Result.GetResult<Prisma.$ExecutionMemoryEventPayload, S>
+
+  type ExecutionMemoryEventCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> =
+    Omit<ExecutionMemoryEventFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
+      select?: ExecutionMemoryEventCountAggregateInputType | true
+    }
+
+  export interface ExecutionMemoryEventDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['ExecutionMemoryEvent'], meta: { name: 'ExecutionMemoryEvent' } }
+    /**
+     * Find zero or one ExecutionMemoryEvent that matches the filter.
+     * @param {ExecutionMemoryEventFindUniqueArgs} args - Arguments to find a ExecutionMemoryEvent
+     * @example
+     * // Get one ExecutionMemoryEvent
+     * const executionMemoryEvent = await prisma.executionMemoryEvent.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends ExecutionMemoryEventFindUniqueArgs>(args: SelectSubset<T, ExecutionMemoryEventFindUniqueArgs<ExtArgs>>): Prisma__ExecutionMemoryEventClient<$Result.GetResult<Prisma.$ExecutionMemoryEventPayload<ExtArgs>, T, "findUnique", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find one ExecutionMemoryEvent that matches the filter or throw an error with `error.code='P2025'`
+     * if no matches were found.
+     * @param {ExecutionMemoryEventFindUniqueOrThrowArgs} args - Arguments to find a ExecutionMemoryEvent
+     * @example
+     * // Get one ExecutionMemoryEvent
+     * const executionMemoryEvent = await prisma.executionMemoryEvent.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends ExecutionMemoryEventFindUniqueOrThrowArgs>(args: SelectSubset<T, ExecutionMemoryEventFindUniqueOrThrowArgs<ExtArgs>>): Prisma__ExecutionMemoryEventClient<$Result.GetResult<Prisma.$ExecutionMemoryEventPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first ExecutionMemoryEvent that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ExecutionMemoryEventFindFirstArgs} args - Arguments to find a ExecutionMemoryEvent
+     * @example
+     * // Get one ExecutionMemoryEvent
+     * const executionMemoryEvent = await prisma.executionMemoryEvent.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends ExecutionMemoryEventFindFirstArgs>(args?: SelectSubset<T, ExecutionMemoryEventFindFirstArgs<ExtArgs>>): Prisma__ExecutionMemoryEventClient<$Result.GetResult<Prisma.$ExecutionMemoryEventPayload<ExtArgs>, T, "findFirst", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first ExecutionMemoryEvent that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ExecutionMemoryEventFindFirstOrThrowArgs} args - Arguments to find a ExecutionMemoryEvent
+     * @example
+     * // Get one ExecutionMemoryEvent
+     * const executionMemoryEvent = await prisma.executionMemoryEvent.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends ExecutionMemoryEventFindFirstOrThrowArgs>(args?: SelectSubset<T, ExecutionMemoryEventFindFirstOrThrowArgs<ExtArgs>>): Prisma__ExecutionMemoryEventClient<$Result.GetResult<Prisma.$ExecutionMemoryEventPayload<ExtArgs>, T, "findFirstOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find zero or more ExecutionMemoryEvents that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ExecutionMemoryEventFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all ExecutionMemoryEvents
+     * const executionMemoryEvents = await prisma.executionMemoryEvent.findMany()
+     * 
+     * // Get first 10 ExecutionMemoryEvents
+     * const executionMemoryEvents = await prisma.executionMemoryEvent.findMany({ take: 10 })
+     * 
+     * // Only select the `id`
+     * const executionMemoryEventWithIdOnly = await prisma.executionMemoryEvent.findMany({ select: { id: true } })
+     * 
+     */
+    findMany<T extends ExecutionMemoryEventFindManyArgs>(args?: SelectSubset<T, ExecutionMemoryEventFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ExecutionMemoryEventPayload<ExtArgs>, T, "findMany", GlobalOmitOptions>>
+
+    /**
+     * Create a ExecutionMemoryEvent.
+     * @param {ExecutionMemoryEventCreateArgs} args - Arguments to create a ExecutionMemoryEvent.
+     * @example
+     * // Create one ExecutionMemoryEvent
+     * const ExecutionMemoryEvent = await prisma.executionMemoryEvent.create({
+     *   data: {
+     *     // ... data to create a ExecutionMemoryEvent
+     *   }
+     * })
+     * 
+     */
+    create<T extends ExecutionMemoryEventCreateArgs>(args: SelectSubset<T, ExecutionMemoryEventCreateArgs<ExtArgs>>): Prisma__ExecutionMemoryEventClient<$Result.GetResult<Prisma.$ExecutionMemoryEventPayload<ExtArgs>, T, "create", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Create many ExecutionMemoryEvents.
+     * @param {ExecutionMemoryEventCreateManyArgs} args - Arguments to create many ExecutionMemoryEvents.
+     * @example
+     * // Create many ExecutionMemoryEvents
+     * const executionMemoryEvent = await prisma.executionMemoryEvent.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends ExecutionMemoryEventCreateManyArgs>(args?: SelectSubset<T, ExecutionMemoryEventCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create many ExecutionMemoryEvents and returns the data saved in the database.
+     * @param {ExecutionMemoryEventCreateManyAndReturnArgs} args - Arguments to create many ExecutionMemoryEvents.
+     * @example
+     * // Create many ExecutionMemoryEvents
+     * const executionMemoryEvent = await prisma.executionMemoryEvent.createManyAndReturn({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Create many ExecutionMemoryEvents and only return the `id`
+     * const executionMemoryEventWithIdOnly = await prisma.executionMemoryEvent.createManyAndReturn({
+     *   select: { id: true },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    createManyAndReturn<T extends ExecutionMemoryEventCreateManyAndReturnArgs>(args?: SelectSubset<T, ExecutionMemoryEventCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ExecutionMemoryEventPayload<ExtArgs>, T, "createManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Delete a ExecutionMemoryEvent.
+     * @param {ExecutionMemoryEventDeleteArgs} args - Arguments to delete one ExecutionMemoryEvent.
+     * @example
+     * // Delete one ExecutionMemoryEvent
+     * const ExecutionMemoryEvent = await prisma.executionMemoryEvent.delete({
+     *   where: {
+     *     // ... filter to delete one ExecutionMemoryEvent
+     *   }
+     * })
+     * 
+     */
+    delete<T extends ExecutionMemoryEventDeleteArgs>(args: SelectSubset<T, ExecutionMemoryEventDeleteArgs<ExtArgs>>): Prisma__ExecutionMemoryEventClient<$Result.GetResult<Prisma.$ExecutionMemoryEventPayload<ExtArgs>, T, "delete", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Update one ExecutionMemoryEvent.
+     * @param {ExecutionMemoryEventUpdateArgs} args - Arguments to update one ExecutionMemoryEvent.
+     * @example
+     * // Update one ExecutionMemoryEvent
+     * const executionMemoryEvent = await prisma.executionMemoryEvent.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends ExecutionMemoryEventUpdateArgs>(args: SelectSubset<T, ExecutionMemoryEventUpdateArgs<ExtArgs>>): Prisma__ExecutionMemoryEventClient<$Result.GetResult<Prisma.$ExecutionMemoryEventPayload<ExtArgs>, T, "update", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Delete zero or more ExecutionMemoryEvents.
+     * @param {ExecutionMemoryEventDeleteManyArgs} args - Arguments to filter ExecutionMemoryEvents to delete.
+     * @example
+     * // Delete a few ExecutionMemoryEvents
+     * const { count } = await prisma.executionMemoryEvent.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends ExecutionMemoryEventDeleteManyArgs>(args?: SelectSubset<T, ExecutionMemoryEventDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more ExecutionMemoryEvents.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ExecutionMemoryEventUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many ExecutionMemoryEvents
+     * const executionMemoryEvent = await prisma.executionMemoryEvent.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends ExecutionMemoryEventUpdateManyArgs>(args: SelectSubset<T, ExecutionMemoryEventUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more ExecutionMemoryEvents and returns the data updated in the database.
+     * @param {ExecutionMemoryEventUpdateManyAndReturnArgs} args - Arguments to update many ExecutionMemoryEvents.
+     * @example
+     * // Update many ExecutionMemoryEvents
+     * const executionMemoryEvent = await prisma.executionMemoryEvent.updateManyAndReturn({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Update zero or more ExecutionMemoryEvents and only return the `id`
+     * const executionMemoryEventWithIdOnly = await prisma.executionMemoryEvent.updateManyAndReturn({
+     *   select: { id: true },
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    updateManyAndReturn<T extends ExecutionMemoryEventUpdateManyAndReturnArgs>(args: SelectSubset<T, ExecutionMemoryEventUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ExecutionMemoryEventPayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Create or update one ExecutionMemoryEvent.
+     * @param {ExecutionMemoryEventUpsertArgs} args - Arguments to update or create a ExecutionMemoryEvent.
+     * @example
+     * // Update or create a ExecutionMemoryEvent
+     * const executionMemoryEvent = await prisma.executionMemoryEvent.upsert({
+     *   create: {
+     *     // ... data to create a ExecutionMemoryEvent
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the ExecutionMemoryEvent we want to update
+     *   }
+     * })
+     */
+    upsert<T extends ExecutionMemoryEventUpsertArgs>(args: SelectSubset<T, ExecutionMemoryEventUpsertArgs<ExtArgs>>): Prisma__ExecutionMemoryEventClient<$Result.GetResult<Prisma.$ExecutionMemoryEventPayload<ExtArgs>, T, "upsert", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+
+    /**
+     * Count the number of ExecutionMemoryEvents.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ExecutionMemoryEventCountArgs} args - Arguments to filter ExecutionMemoryEvents to count.
+     * @example
+     * // Count the number of ExecutionMemoryEvents
+     * const count = await prisma.executionMemoryEvent.count({
+     *   where: {
+     *     // ... the filter for the ExecutionMemoryEvents we want to count
+     *   }
+     * })
+    **/
+    count<T extends ExecutionMemoryEventCountArgs>(
+      args?: Subset<T, ExecutionMemoryEventCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], ExecutionMemoryEventCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a ExecutionMemoryEvent.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ExecutionMemoryEventAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends ExecutionMemoryEventAggregateArgs>(args: Subset<T, ExecutionMemoryEventAggregateArgs>): Prisma.PrismaPromise<GetExecutionMemoryEventAggregateType<T>>
+
+    /**
+     * Group by ExecutionMemoryEvent.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ExecutionMemoryEventGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends ExecutionMemoryEventGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: ExecutionMemoryEventGroupByArgs['orderBy'] }
+        : { orderBy?: ExecutionMemoryEventGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, ExecutionMemoryEventGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetExecutionMemoryEventGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the ExecutionMemoryEvent model
+   */
+  readonly fields: ExecutionMemoryEventFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for ExecutionMemoryEvent.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__ExecutionMemoryEventClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    execution<T extends ExecutionDefaultArgs<ExtArgs> = {}>(args?: Subset<T, ExecutionDefaultArgs<ExtArgs>>): Prisma__ExecutionClient<$Result.GetResult<Prisma.$ExecutionPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the ExecutionMemoryEvent model
+   */
+  interface ExecutionMemoryEventFieldRefs {
+    readonly id: FieldRef<"ExecutionMemoryEvent", 'String'>
+    readonly executionId: FieldRef<"ExecutionMemoryEvent", 'String'>
+    readonly stepId: FieldRef<"ExecutionMemoryEvent", 'String'>
+    readonly nodeId: FieldRef<"ExecutionMemoryEvent", 'String'>
+    readonly scope: FieldRef<"ExecutionMemoryEvent", 'ExecutionMemoryScope'>
+    readonly visibility: FieldRef<"ExecutionMemoryEvent", 'ExecutionMemoryVisibility'>
+    readonly ownerNodeId: FieldRef<"ExecutionMemoryEvent", 'String'>
+    readonly namespace: FieldRef<"ExecutionMemoryEvent", 'String'>
+    readonly key: FieldRef<"ExecutionMemoryEvent", 'String'>
+    readonly mode: FieldRef<"ExecutionMemoryEvent", 'ExecutionMemoryWriteMode'>
+    readonly value: FieldRef<"ExecutionMemoryEvent", 'Json'>
+    readonly createdAt: FieldRef<"ExecutionMemoryEvent", 'DateTime'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * ExecutionMemoryEvent findUnique
+   */
+  export type ExecutionMemoryEventFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ExecutionMemoryEvent
+     */
+    select?: ExecutionMemoryEventSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the ExecutionMemoryEvent
+     */
+    omit?: ExecutionMemoryEventOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ExecutionMemoryEventInclude<ExtArgs> | null
+    /**
+     * Filter, which ExecutionMemoryEvent to fetch.
+     */
+    where: ExecutionMemoryEventWhereUniqueInput
+  }
+
+  /**
+   * ExecutionMemoryEvent findUniqueOrThrow
+   */
+  export type ExecutionMemoryEventFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ExecutionMemoryEvent
+     */
+    select?: ExecutionMemoryEventSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the ExecutionMemoryEvent
+     */
+    omit?: ExecutionMemoryEventOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ExecutionMemoryEventInclude<ExtArgs> | null
+    /**
+     * Filter, which ExecutionMemoryEvent to fetch.
+     */
+    where: ExecutionMemoryEventWhereUniqueInput
+  }
+
+  /**
+   * ExecutionMemoryEvent findFirst
+   */
+  export type ExecutionMemoryEventFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ExecutionMemoryEvent
+     */
+    select?: ExecutionMemoryEventSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the ExecutionMemoryEvent
+     */
+    omit?: ExecutionMemoryEventOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ExecutionMemoryEventInclude<ExtArgs> | null
+    /**
+     * Filter, which ExecutionMemoryEvent to fetch.
+     */
+    where?: ExecutionMemoryEventWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of ExecutionMemoryEvents to fetch.
+     */
+    orderBy?: ExecutionMemoryEventOrderByWithRelationInput | ExecutionMemoryEventOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for ExecutionMemoryEvents.
+     */
+    cursor?: ExecutionMemoryEventWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` ExecutionMemoryEvents from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` ExecutionMemoryEvents.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of ExecutionMemoryEvents.
+     */
+    distinct?: ExecutionMemoryEventScalarFieldEnum | ExecutionMemoryEventScalarFieldEnum[]
+  }
+
+  /**
+   * ExecutionMemoryEvent findFirstOrThrow
+   */
+  export type ExecutionMemoryEventFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ExecutionMemoryEvent
+     */
+    select?: ExecutionMemoryEventSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the ExecutionMemoryEvent
+     */
+    omit?: ExecutionMemoryEventOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ExecutionMemoryEventInclude<ExtArgs> | null
+    /**
+     * Filter, which ExecutionMemoryEvent to fetch.
+     */
+    where?: ExecutionMemoryEventWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of ExecutionMemoryEvents to fetch.
+     */
+    orderBy?: ExecutionMemoryEventOrderByWithRelationInput | ExecutionMemoryEventOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for ExecutionMemoryEvents.
+     */
+    cursor?: ExecutionMemoryEventWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` ExecutionMemoryEvents from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` ExecutionMemoryEvents.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of ExecutionMemoryEvents.
+     */
+    distinct?: ExecutionMemoryEventScalarFieldEnum | ExecutionMemoryEventScalarFieldEnum[]
+  }
+
+  /**
+   * ExecutionMemoryEvent findMany
+   */
+  export type ExecutionMemoryEventFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ExecutionMemoryEvent
+     */
+    select?: ExecutionMemoryEventSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the ExecutionMemoryEvent
+     */
+    omit?: ExecutionMemoryEventOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ExecutionMemoryEventInclude<ExtArgs> | null
+    /**
+     * Filter, which ExecutionMemoryEvents to fetch.
+     */
+    where?: ExecutionMemoryEventWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of ExecutionMemoryEvents to fetch.
+     */
+    orderBy?: ExecutionMemoryEventOrderByWithRelationInput | ExecutionMemoryEventOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing ExecutionMemoryEvents.
+     */
+    cursor?: ExecutionMemoryEventWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` ExecutionMemoryEvents from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` ExecutionMemoryEvents.
+     */
+    skip?: number
+    distinct?: ExecutionMemoryEventScalarFieldEnum | ExecutionMemoryEventScalarFieldEnum[]
+  }
+
+  /**
+   * ExecutionMemoryEvent create
+   */
+  export type ExecutionMemoryEventCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ExecutionMemoryEvent
+     */
+    select?: ExecutionMemoryEventSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the ExecutionMemoryEvent
+     */
+    omit?: ExecutionMemoryEventOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ExecutionMemoryEventInclude<ExtArgs> | null
+    /**
+     * The data needed to create a ExecutionMemoryEvent.
+     */
+    data: XOR<ExecutionMemoryEventCreateInput, ExecutionMemoryEventUncheckedCreateInput>
+  }
+
+  /**
+   * ExecutionMemoryEvent createMany
+   */
+  export type ExecutionMemoryEventCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many ExecutionMemoryEvents.
+     */
+    data: ExecutionMemoryEventCreateManyInput | ExecutionMemoryEventCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * ExecutionMemoryEvent createManyAndReturn
+   */
+  export type ExecutionMemoryEventCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ExecutionMemoryEvent
+     */
+    select?: ExecutionMemoryEventSelectCreateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the ExecutionMemoryEvent
+     */
+    omit?: ExecutionMemoryEventOmit<ExtArgs> | null
+    /**
+     * The data used to create many ExecutionMemoryEvents.
+     */
+    data: ExecutionMemoryEventCreateManyInput | ExecutionMemoryEventCreateManyInput[]
+    skipDuplicates?: boolean
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ExecutionMemoryEventIncludeCreateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * ExecutionMemoryEvent update
+   */
+  export type ExecutionMemoryEventUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ExecutionMemoryEvent
+     */
+    select?: ExecutionMemoryEventSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the ExecutionMemoryEvent
+     */
+    omit?: ExecutionMemoryEventOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ExecutionMemoryEventInclude<ExtArgs> | null
+    /**
+     * The data needed to update a ExecutionMemoryEvent.
+     */
+    data: XOR<ExecutionMemoryEventUpdateInput, ExecutionMemoryEventUncheckedUpdateInput>
+    /**
+     * Choose, which ExecutionMemoryEvent to update.
+     */
+    where: ExecutionMemoryEventWhereUniqueInput
+  }
+
+  /**
+   * ExecutionMemoryEvent updateMany
+   */
+  export type ExecutionMemoryEventUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update ExecutionMemoryEvents.
+     */
+    data: XOR<ExecutionMemoryEventUpdateManyMutationInput, ExecutionMemoryEventUncheckedUpdateManyInput>
+    /**
+     * Filter which ExecutionMemoryEvents to update
+     */
+    where?: ExecutionMemoryEventWhereInput
+    /**
+     * Limit how many ExecutionMemoryEvents to update.
+     */
+    limit?: number
+  }
+
+  /**
+   * ExecutionMemoryEvent updateManyAndReturn
+   */
+  export type ExecutionMemoryEventUpdateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ExecutionMemoryEvent
+     */
+    select?: ExecutionMemoryEventSelectUpdateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the ExecutionMemoryEvent
+     */
+    omit?: ExecutionMemoryEventOmit<ExtArgs> | null
+    /**
+     * The data used to update ExecutionMemoryEvents.
+     */
+    data: XOR<ExecutionMemoryEventUpdateManyMutationInput, ExecutionMemoryEventUncheckedUpdateManyInput>
+    /**
+     * Filter which ExecutionMemoryEvents to update
+     */
+    where?: ExecutionMemoryEventWhereInput
+    /**
+     * Limit how many ExecutionMemoryEvents to update.
+     */
+    limit?: number
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ExecutionMemoryEventIncludeUpdateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * ExecutionMemoryEvent upsert
+   */
+  export type ExecutionMemoryEventUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ExecutionMemoryEvent
+     */
+    select?: ExecutionMemoryEventSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the ExecutionMemoryEvent
+     */
+    omit?: ExecutionMemoryEventOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ExecutionMemoryEventInclude<ExtArgs> | null
+    /**
+     * The filter to search for the ExecutionMemoryEvent to update in case it exists.
+     */
+    where: ExecutionMemoryEventWhereUniqueInput
+    /**
+     * In case the ExecutionMemoryEvent found by the `where` argument doesn't exist, create a new ExecutionMemoryEvent with this data.
+     */
+    create: XOR<ExecutionMemoryEventCreateInput, ExecutionMemoryEventUncheckedCreateInput>
+    /**
+     * In case the ExecutionMemoryEvent was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<ExecutionMemoryEventUpdateInput, ExecutionMemoryEventUncheckedUpdateInput>
+  }
+
+  /**
+   * ExecutionMemoryEvent delete
+   */
+  export type ExecutionMemoryEventDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ExecutionMemoryEvent
+     */
+    select?: ExecutionMemoryEventSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the ExecutionMemoryEvent
+     */
+    omit?: ExecutionMemoryEventOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ExecutionMemoryEventInclude<ExtArgs> | null
+    /**
+     * Filter which ExecutionMemoryEvent to delete.
+     */
+    where: ExecutionMemoryEventWhereUniqueInput
+  }
+
+  /**
+   * ExecutionMemoryEvent deleteMany
+   */
+  export type ExecutionMemoryEventDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which ExecutionMemoryEvents to delete
+     */
+    where?: ExecutionMemoryEventWhereInput
+    /**
+     * Limit how many ExecutionMemoryEvents to delete.
+     */
+    limit?: number
+  }
+
+  /**
+   * ExecutionMemoryEvent without action
+   */
+  export type ExecutionMemoryEventDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ExecutionMemoryEvent
+     */
+    select?: ExecutionMemoryEventSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the ExecutionMemoryEvent
+     */
+    omit?: ExecutionMemoryEventOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ExecutionMemoryEventInclude<ExtArgs> | null
+  }
+
+
+  /**
    * Enums
    */
 
@@ -13789,6 +16359,41 @@ export namespace Prisma {
   };
 
   export type ExecutionStepScalarFieldEnum = (typeof ExecutionStepScalarFieldEnum)[keyof typeof ExecutionStepScalarFieldEnum]
+
+
+  export const ExecutionMemoryEntryScalarFieldEnum: {
+    id: 'id',
+    executionId: 'executionId',
+    scope: 'scope',
+    visibility: 'visibility',
+    ownerNodeId: 'ownerNodeId',
+    namespace: 'namespace',
+    key: 'key',
+    value: 'value',
+    sourceStepId: 'sourceStepId',
+    createdAt: 'createdAt',
+    updatedAt: 'updatedAt'
+  };
+
+  export type ExecutionMemoryEntryScalarFieldEnum = (typeof ExecutionMemoryEntryScalarFieldEnum)[keyof typeof ExecutionMemoryEntryScalarFieldEnum]
+
+
+  export const ExecutionMemoryEventScalarFieldEnum: {
+    id: 'id',
+    executionId: 'executionId',
+    stepId: 'stepId',
+    nodeId: 'nodeId',
+    scope: 'scope',
+    visibility: 'visibility',
+    ownerNodeId: 'ownerNodeId',
+    namespace: 'namespace',
+    key: 'key',
+    mode: 'mode',
+    value: 'value',
+    createdAt: 'createdAt'
+  };
+
+  export type ExecutionMemoryEventScalarFieldEnum = (typeof ExecutionMemoryEventScalarFieldEnum)[keyof typeof ExecutionMemoryEventScalarFieldEnum]
 
 
   export const SortOrder: {
@@ -14016,6 +16621,48 @@ export namespace Prisma {
    * Reference to a field of type 'Int[]'
    */
   export type ListIntFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Int[]'>
+    
+
+
+  /**
+   * Reference to a field of type 'ExecutionMemoryScope'
+   */
+  export type EnumExecutionMemoryScopeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'ExecutionMemoryScope'>
+    
+
+
+  /**
+   * Reference to a field of type 'ExecutionMemoryScope[]'
+   */
+  export type ListEnumExecutionMemoryScopeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'ExecutionMemoryScope[]'>
+    
+
+
+  /**
+   * Reference to a field of type 'ExecutionMemoryVisibility'
+   */
+  export type EnumExecutionMemoryVisibilityFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'ExecutionMemoryVisibility'>
+    
+
+
+  /**
+   * Reference to a field of type 'ExecutionMemoryVisibility[]'
+   */
+  export type ListEnumExecutionMemoryVisibilityFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'ExecutionMemoryVisibility[]'>
+    
+
+
+  /**
+   * Reference to a field of type 'ExecutionMemoryWriteMode'
+   */
+  export type EnumExecutionMemoryWriteModeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'ExecutionMemoryWriteMode'>
+    
+
+
+  /**
+   * Reference to a field of type 'ExecutionMemoryWriteMode[]'
+   */
+  export type ListEnumExecutionMemoryWriteModeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'ExecutionMemoryWriteMode[]'>
     
 
 
@@ -14706,6 +17353,8 @@ export namespace Prisma {
     workflow?: XOR<WorkflowScalarRelationFilter, WorkflowWhereInput>
     triggeredByUser?: XOR<UserNullableScalarRelationFilter, UserWhereInput> | null
     steps?: ExecutionStepListRelationFilter
+    memoryEntries?: ExecutionMemoryEntryListRelationFilter
+    memoryEvents?: ExecutionMemoryEventListRelationFilter
   }
 
   export type ExecutionOrderByWithRelationInput = {
@@ -14725,6 +17374,8 @@ export namespace Prisma {
     workflow?: WorkflowOrderByWithRelationInput
     triggeredByUser?: UserOrderByWithRelationInput
     steps?: ExecutionStepOrderByRelationAggregateInput
+    memoryEntries?: ExecutionMemoryEntryOrderByRelationAggregateInput
+    memoryEvents?: ExecutionMemoryEventOrderByRelationAggregateInput
   }
 
   export type ExecutionWhereUniqueInput = Prisma.AtLeast<{
@@ -14747,6 +17398,8 @@ export namespace Prisma {
     workflow?: XOR<WorkflowScalarRelationFilter, WorkflowWhereInput>
     triggeredByUser?: XOR<UserNullableScalarRelationFilter, UserWhereInput> | null
     steps?: ExecutionStepListRelationFilter
+    memoryEntries?: ExecutionMemoryEntryListRelationFilter
+    memoryEvents?: ExecutionMemoryEventListRelationFilter
   }, "id">
 
   export type ExecutionOrderByWithAggregationInput = {
@@ -14900,6 +17553,182 @@ export namespace Prisma {
     durationMs?: IntNullableWithAggregatesFilter<"ExecutionStep"> | number | null
     createdAt?: DateTimeWithAggregatesFilter<"ExecutionStep"> | Date | string
     updatedAt?: DateTimeWithAggregatesFilter<"ExecutionStep"> | Date | string
+  }
+
+  export type ExecutionMemoryEntryWhereInput = {
+    AND?: ExecutionMemoryEntryWhereInput | ExecutionMemoryEntryWhereInput[]
+    OR?: ExecutionMemoryEntryWhereInput[]
+    NOT?: ExecutionMemoryEntryWhereInput | ExecutionMemoryEntryWhereInput[]
+    id?: StringFilter<"ExecutionMemoryEntry"> | string
+    executionId?: StringFilter<"ExecutionMemoryEntry"> | string
+    scope?: EnumExecutionMemoryScopeFilter<"ExecutionMemoryEntry"> | $Enums.ExecutionMemoryScope
+    visibility?: EnumExecutionMemoryVisibilityFilter<"ExecutionMemoryEntry"> | $Enums.ExecutionMemoryVisibility
+    ownerNodeId?: StringFilter<"ExecutionMemoryEntry"> | string
+    namespace?: StringFilter<"ExecutionMemoryEntry"> | string
+    key?: StringFilter<"ExecutionMemoryEntry"> | string
+    value?: JsonFilter<"ExecutionMemoryEntry">
+    sourceStepId?: StringNullableFilter<"ExecutionMemoryEntry"> | string | null
+    createdAt?: DateTimeFilter<"ExecutionMemoryEntry"> | Date | string
+    updatedAt?: DateTimeFilter<"ExecutionMemoryEntry"> | Date | string
+    execution?: XOR<ExecutionScalarRelationFilter, ExecutionWhereInput>
+  }
+
+  export type ExecutionMemoryEntryOrderByWithRelationInput = {
+    id?: SortOrder
+    executionId?: SortOrder
+    scope?: SortOrder
+    visibility?: SortOrder
+    ownerNodeId?: SortOrder
+    namespace?: SortOrder
+    key?: SortOrder
+    value?: SortOrder
+    sourceStepId?: SortOrderInput | SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    execution?: ExecutionOrderByWithRelationInput
+  }
+
+  export type ExecutionMemoryEntryWhereUniqueInput = Prisma.AtLeast<{
+    id?: string
+    executionId_scope_ownerNodeId_namespace_key?: ExecutionMemoryEntryExecutionIdScopeOwnerNodeIdNamespaceKeyCompoundUniqueInput
+    AND?: ExecutionMemoryEntryWhereInput | ExecutionMemoryEntryWhereInput[]
+    OR?: ExecutionMemoryEntryWhereInput[]
+    NOT?: ExecutionMemoryEntryWhereInput | ExecutionMemoryEntryWhereInput[]
+    executionId?: StringFilter<"ExecutionMemoryEntry"> | string
+    scope?: EnumExecutionMemoryScopeFilter<"ExecutionMemoryEntry"> | $Enums.ExecutionMemoryScope
+    visibility?: EnumExecutionMemoryVisibilityFilter<"ExecutionMemoryEntry"> | $Enums.ExecutionMemoryVisibility
+    ownerNodeId?: StringFilter<"ExecutionMemoryEntry"> | string
+    namespace?: StringFilter<"ExecutionMemoryEntry"> | string
+    key?: StringFilter<"ExecutionMemoryEntry"> | string
+    value?: JsonFilter<"ExecutionMemoryEntry">
+    sourceStepId?: StringNullableFilter<"ExecutionMemoryEntry"> | string | null
+    createdAt?: DateTimeFilter<"ExecutionMemoryEntry"> | Date | string
+    updatedAt?: DateTimeFilter<"ExecutionMemoryEntry"> | Date | string
+    execution?: XOR<ExecutionScalarRelationFilter, ExecutionWhereInput>
+  }, "id" | "executionId_scope_ownerNodeId_namespace_key">
+
+  export type ExecutionMemoryEntryOrderByWithAggregationInput = {
+    id?: SortOrder
+    executionId?: SortOrder
+    scope?: SortOrder
+    visibility?: SortOrder
+    ownerNodeId?: SortOrder
+    namespace?: SortOrder
+    key?: SortOrder
+    value?: SortOrder
+    sourceStepId?: SortOrderInput | SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    _count?: ExecutionMemoryEntryCountOrderByAggregateInput
+    _max?: ExecutionMemoryEntryMaxOrderByAggregateInput
+    _min?: ExecutionMemoryEntryMinOrderByAggregateInput
+  }
+
+  export type ExecutionMemoryEntryScalarWhereWithAggregatesInput = {
+    AND?: ExecutionMemoryEntryScalarWhereWithAggregatesInput | ExecutionMemoryEntryScalarWhereWithAggregatesInput[]
+    OR?: ExecutionMemoryEntryScalarWhereWithAggregatesInput[]
+    NOT?: ExecutionMemoryEntryScalarWhereWithAggregatesInput | ExecutionMemoryEntryScalarWhereWithAggregatesInput[]
+    id?: StringWithAggregatesFilter<"ExecutionMemoryEntry"> | string
+    executionId?: StringWithAggregatesFilter<"ExecutionMemoryEntry"> | string
+    scope?: EnumExecutionMemoryScopeWithAggregatesFilter<"ExecutionMemoryEntry"> | $Enums.ExecutionMemoryScope
+    visibility?: EnumExecutionMemoryVisibilityWithAggregatesFilter<"ExecutionMemoryEntry"> | $Enums.ExecutionMemoryVisibility
+    ownerNodeId?: StringWithAggregatesFilter<"ExecutionMemoryEntry"> | string
+    namespace?: StringWithAggregatesFilter<"ExecutionMemoryEntry"> | string
+    key?: StringWithAggregatesFilter<"ExecutionMemoryEntry"> | string
+    value?: JsonWithAggregatesFilter<"ExecutionMemoryEntry">
+    sourceStepId?: StringNullableWithAggregatesFilter<"ExecutionMemoryEntry"> | string | null
+    createdAt?: DateTimeWithAggregatesFilter<"ExecutionMemoryEntry"> | Date | string
+    updatedAt?: DateTimeWithAggregatesFilter<"ExecutionMemoryEntry"> | Date | string
+  }
+
+  export type ExecutionMemoryEventWhereInput = {
+    AND?: ExecutionMemoryEventWhereInput | ExecutionMemoryEventWhereInput[]
+    OR?: ExecutionMemoryEventWhereInput[]
+    NOT?: ExecutionMemoryEventWhereInput | ExecutionMemoryEventWhereInput[]
+    id?: StringFilter<"ExecutionMemoryEvent"> | string
+    executionId?: StringFilter<"ExecutionMemoryEvent"> | string
+    stepId?: StringNullableFilter<"ExecutionMemoryEvent"> | string | null
+    nodeId?: StringFilter<"ExecutionMemoryEvent"> | string
+    scope?: EnumExecutionMemoryScopeFilter<"ExecutionMemoryEvent"> | $Enums.ExecutionMemoryScope
+    visibility?: EnumExecutionMemoryVisibilityFilter<"ExecutionMemoryEvent"> | $Enums.ExecutionMemoryVisibility
+    ownerNodeId?: StringFilter<"ExecutionMemoryEvent"> | string
+    namespace?: StringFilter<"ExecutionMemoryEvent"> | string
+    key?: StringFilter<"ExecutionMemoryEvent"> | string
+    mode?: EnumExecutionMemoryWriteModeFilter<"ExecutionMemoryEvent"> | $Enums.ExecutionMemoryWriteMode
+    value?: JsonFilter<"ExecutionMemoryEvent">
+    createdAt?: DateTimeFilter<"ExecutionMemoryEvent"> | Date | string
+    execution?: XOR<ExecutionScalarRelationFilter, ExecutionWhereInput>
+  }
+
+  export type ExecutionMemoryEventOrderByWithRelationInput = {
+    id?: SortOrder
+    executionId?: SortOrder
+    stepId?: SortOrderInput | SortOrder
+    nodeId?: SortOrder
+    scope?: SortOrder
+    visibility?: SortOrder
+    ownerNodeId?: SortOrder
+    namespace?: SortOrder
+    key?: SortOrder
+    mode?: SortOrder
+    value?: SortOrder
+    createdAt?: SortOrder
+    execution?: ExecutionOrderByWithRelationInput
+  }
+
+  export type ExecutionMemoryEventWhereUniqueInput = Prisma.AtLeast<{
+    id?: string
+    AND?: ExecutionMemoryEventWhereInput | ExecutionMemoryEventWhereInput[]
+    OR?: ExecutionMemoryEventWhereInput[]
+    NOT?: ExecutionMemoryEventWhereInput | ExecutionMemoryEventWhereInput[]
+    executionId?: StringFilter<"ExecutionMemoryEvent"> | string
+    stepId?: StringNullableFilter<"ExecutionMemoryEvent"> | string | null
+    nodeId?: StringFilter<"ExecutionMemoryEvent"> | string
+    scope?: EnumExecutionMemoryScopeFilter<"ExecutionMemoryEvent"> | $Enums.ExecutionMemoryScope
+    visibility?: EnumExecutionMemoryVisibilityFilter<"ExecutionMemoryEvent"> | $Enums.ExecutionMemoryVisibility
+    ownerNodeId?: StringFilter<"ExecutionMemoryEvent"> | string
+    namespace?: StringFilter<"ExecutionMemoryEvent"> | string
+    key?: StringFilter<"ExecutionMemoryEvent"> | string
+    mode?: EnumExecutionMemoryWriteModeFilter<"ExecutionMemoryEvent"> | $Enums.ExecutionMemoryWriteMode
+    value?: JsonFilter<"ExecutionMemoryEvent">
+    createdAt?: DateTimeFilter<"ExecutionMemoryEvent"> | Date | string
+    execution?: XOR<ExecutionScalarRelationFilter, ExecutionWhereInput>
+  }, "id">
+
+  export type ExecutionMemoryEventOrderByWithAggregationInput = {
+    id?: SortOrder
+    executionId?: SortOrder
+    stepId?: SortOrderInput | SortOrder
+    nodeId?: SortOrder
+    scope?: SortOrder
+    visibility?: SortOrder
+    ownerNodeId?: SortOrder
+    namespace?: SortOrder
+    key?: SortOrder
+    mode?: SortOrder
+    value?: SortOrder
+    createdAt?: SortOrder
+    _count?: ExecutionMemoryEventCountOrderByAggregateInput
+    _max?: ExecutionMemoryEventMaxOrderByAggregateInput
+    _min?: ExecutionMemoryEventMinOrderByAggregateInput
+  }
+
+  export type ExecutionMemoryEventScalarWhereWithAggregatesInput = {
+    AND?: ExecutionMemoryEventScalarWhereWithAggregatesInput | ExecutionMemoryEventScalarWhereWithAggregatesInput[]
+    OR?: ExecutionMemoryEventScalarWhereWithAggregatesInput[]
+    NOT?: ExecutionMemoryEventScalarWhereWithAggregatesInput | ExecutionMemoryEventScalarWhereWithAggregatesInput[]
+    id?: StringWithAggregatesFilter<"ExecutionMemoryEvent"> | string
+    executionId?: StringWithAggregatesFilter<"ExecutionMemoryEvent"> | string
+    stepId?: StringNullableWithAggregatesFilter<"ExecutionMemoryEvent"> | string | null
+    nodeId?: StringWithAggregatesFilter<"ExecutionMemoryEvent"> | string
+    scope?: EnumExecutionMemoryScopeWithAggregatesFilter<"ExecutionMemoryEvent"> | $Enums.ExecutionMemoryScope
+    visibility?: EnumExecutionMemoryVisibilityWithAggregatesFilter<"ExecutionMemoryEvent"> | $Enums.ExecutionMemoryVisibility
+    ownerNodeId?: StringWithAggregatesFilter<"ExecutionMemoryEvent"> | string
+    namespace?: StringWithAggregatesFilter<"ExecutionMemoryEvent"> | string
+    key?: StringWithAggregatesFilter<"ExecutionMemoryEvent"> | string
+    mode?: EnumExecutionMemoryWriteModeWithAggregatesFilter<"ExecutionMemoryEvent"> | $Enums.ExecutionMemoryWriteMode
+    value?: JsonWithAggregatesFilter<"ExecutionMemoryEvent">
+    createdAt?: DateTimeWithAggregatesFilter<"ExecutionMemoryEvent"> | Date | string
   }
 
   export type UserCreateInput = {
@@ -15646,6 +18475,8 @@ export namespace Prisma {
     workflow: WorkflowCreateNestedOneWithoutExecutionsInput
     triggeredByUser?: UserCreateNestedOneWithoutExecutionsInput
     steps?: ExecutionStepCreateNestedManyWithoutExecutionInput
+    memoryEntries?: ExecutionMemoryEntryCreateNestedManyWithoutExecutionInput
+    memoryEvents?: ExecutionMemoryEventCreateNestedManyWithoutExecutionInput
   }
 
   export type ExecutionUncheckedCreateInput = {
@@ -15663,6 +18494,8 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     steps?: ExecutionStepUncheckedCreateNestedManyWithoutExecutionInput
+    memoryEntries?: ExecutionMemoryEntryUncheckedCreateNestedManyWithoutExecutionInput
+    memoryEvents?: ExecutionMemoryEventUncheckedCreateNestedManyWithoutExecutionInput
   }
 
   export type ExecutionUpdateInput = {
@@ -15680,6 +18513,8 @@ export namespace Prisma {
     workflow?: WorkflowUpdateOneRequiredWithoutExecutionsNestedInput
     triggeredByUser?: UserUpdateOneWithoutExecutionsNestedInput
     steps?: ExecutionStepUpdateManyWithoutExecutionNestedInput
+    memoryEntries?: ExecutionMemoryEntryUpdateManyWithoutExecutionNestedInput
+    memoryEvents?: ExecutionMemoryEventUpdateManyWithoutExecutionNestedInput
   }
 
   export type ExecutionUncheckedUpdateInput = {
@@ -15697,6 +18532,8 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     steps?: ExecutionStepUncheckedUpdateManyWithoutExecutionNestedInput
+    memoryEntries?: ExecutionMemoryEntryUncheckedUpdateManyWithoutExecutionNestedInput
+    memoryEvents?: ExecutionMemoryEventUncheckedUpdateManyWithoutExecutionNestedInput
   }
 
   export type ExecutionCreateManyInput = {
@@ -15874,6 +18711,207 @@ export namespace Prisma {
     durationMs?: NullableIntFieldUpdateOperationsInput | number | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type ExecutionMemoryEntryCreateInput = {
+    id?: string
+    scope?: $Enums.ExecutionMemoryScope
+    visibility?: $Enums.ExecutionMemoryVisibility
+    ownerNodeId?: string
+    namespace?: string
+    key: string
+    value: JsonNullValueInput | InputJsonValue
+    sourceStepId?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    execution: ExecutionCreateNestedOneWithoutMemoryEntriesInput
+  }
+
+  export type ExecutionMemoryEntryUncheckedCreateInput = {
+    id?: string
+    executionId: string
+    scope?: $Enums.ExecutionMemoryScope
+    visibility?: $Enums.ExecutionMemoryVisibility
+    ownerNodeId?: string
+    namespace?: string
+    key: string
+    value: JsonNullValueInput | InputJsonValue
+    sourceStepId?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type ExecutionMemoryEntryUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    scope?: EnumExecutionMemoryScopeFieldUpdateOperationsInput | $Enums.ExecutionMemoryScope
+    visibility?: EnumExecutionMemoryVisibilityFieldUpdateOperationsInput | $Enums.ExecutionMemoryVisibility
+    ownerNodeId?: StringFieldUpdateOperationsInput | string
+    namespace?: StringFieldUpdateOperationsInput | string
+    key?: StringFieldUpdateOperationsInput | string
+    value?: JsonNullValueInput | InputJsonValue
+    sourceStepId?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    execution?: ExecutionUpdateOneRequiredWithoutMemoryEntriesNestedInput
+  }
+
+  export type ExecutionMemoryEntryUncheckedUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    executionId?: StringFieldUpdateOperationsInput | string
+    scope?: EnumExecutionMemoryScopeFieldUpdateOperationsInput | $Enums.ExecutionMemoryScope
+    visibility?: EnumExecutionMemoryVisibilityFieldUpdateOperationsInput | $Enums.ExecutionMemoryVisibility
+    ownerNodeId?: StringFieldUpdateOperationsInput | string
+    namespace?: StringFieldUpdateOperationsInput | string
+    key?: StringFieldUpdateOperationsInput | string
+    value?: JsonNullValueInput | InputJsonValue
+    sourceStepId?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type ExecutionMemoryEntryCreateManyInput = {
+    id?: string
+    executionId: string
+    scope?: $Enums.ExecutionMemoryScope
+    visibility?: $Enums.ExecutionMemoryVisibility
+    ownerNodeId?: string
+    namespace?: string
+    key: string
+    value: JsonNullValueInput | InputJsonValue
+    sourceStepId?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type ExecutionMemoryEntryUpdateManyMutationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    scope?: EnumExecutionMemoryScopeFieldUpdateOperationsInput | $Enums.ExecutionMemoryScope
+    visibility?: EnumExecutionMemoryVisibilityFieldUpdateOperationsInput | $Enums.ExecutionMemoryVisibility
+    ownerNodeId?: StringFieldUpdateOperationsInput | string
+    namespace?: StringFieldUpdateOperationsInput | string
+    key?: StringFieldUpdateOperationsInput | string
+    value?: JsonNullValueInput | InputJsonValue
+    sourceStepId?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type ExecutionMemoryEntryUncheckedUpdateManyInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    executionId?: StringFieldUpdateOperationsInput | string
+    scope?: EnumExecutionMemoryScopeFieldUpdateOperationsInput | $Enums.ExecutionMemoryScope
+    visibility?: EnumExecutionMemoryVisibilityFieldUpdateOperationsInput | $Enums.ExecutionMemoryVisibility
+    ownerNodeId?: StringFieldUpdateOperationsInput | string
+    namespace?: StringFieldUpdateOperationsInput | string
+    key?: StringFieldUpdateOperationsInput | string
+    value?: JsonNullValueInput | InputJsonValue
+    sourceStepId?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type ExecutionMemoryEventCreateInput = {
+    id?: string
+    stepId?: string | null
+    nodeId?: string
+    scope: $Enums.ExecutionMemoryScope
+    visibility?: $Enums.ExecutionMemoryVisibility
+    ownerNodeId?: string
+    namespace?: string
+    key: string
+    mode?: $Enums.ExecutionMemoryWriteMode
+    value: JsonNullValueInput | InputJsonValue
+    createdAt?: Date | string
+    execution: ExecutionCreateNestedOneWithoutMemoryEventsInput
+  }
+
+  export type ExecutionMemoryEventUncheckedCreateInput = {
+    id?: string
+    executionId: string
+    stepId?: string | null
+    nodeId?: string
+    scope: $Enums.ExecutionMemoryScope
+    visibility?: $Enums.ExecutionMemoryVisibility
+    ownerNodeId?: string
+    namespace?: string
+    key: string
+    mode?: $Enums.ExecutionMemoryWriteMode
+    value: JsonNullValueInput | InputJsonValue
+    createdAt?: Date | string
+  }
+
+  export type ExecutionMemoryEventUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    stepId?: NullableStringFieldUpdateOperationsInput | string | null
+    nodeId?: StringFieldUpdateOperationsInput | string
+    scope?: EnumExecutionMemoryScopeFieldUpdateOperationsInput | $Enums.ExecutionMemoryScope
+    visibility?: EnumExecutionMemoryVisibilityFieldUpdateOperationsInput | $Enums.ExecutionMemoryVisibility
+    ownerNodeId?: StringFieldUpdateOperationsInput | string
+    namespace?: StringFieldUpdateOperationsInput | string
+    key?: StringFieldUpdateOperationsInput | string
+    mode?: EnumExecutionMemoryWriteModeFieldUpdateOperationsInput | $Enums.ExecutionMemoryWriteMode
+    value?: JsonNullValueInput | InputJsonValue
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    execution?: ExecutionUpdateOneRequiredWithoutMemoryEventsNestedInput
+  }
+
+  export type ExecutionMemoryEventUncheckedUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    executionId?: StringFieldUpdateOperationsInput | string
+    stepId?: NullableStringFieldUpdateOperationsInput | string | null
+    nodeId?: StringFieldUpdateOperationsInput | string
+    scope?: EnumExecutionMemoryScopeFieldUpdateOperationsInput | $Enums.ExecutionMemoryScope
+    visibility?: EnumExecutionMemoryVisibilityFieldUpdateOperationsInput | $Enums.ExecutionMemoryVisibility
+    ownerNodeId?: StringFieldUpdateOperationsInput | string
+    namespace?: StringFieldUpdateOperationsInput | string
+    key?: StringFieldUpdateOperationsInput | string
+    mode?: EnumExecutionMemoryWriteModeFieldUpdateOperationsInput | $Enums.ExecutionMemoryWriteMode
+    value?: JsonNullValueInput | InputJsonValue
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type ExecutionMemoryEventCreateManyInput = {
+    id?: string
+    executionId: string
+    stepId?: string | null
+    nodeId?: string
+    scope: $Enums.ExecutionMemoryScope
+    visibility?: $Enums.ExecutionMemoryVisibility
+    ownerNodeId?: string
+    namespace?: string
+    key: string
+    mode?: $Enums.ExecutionMemoryWriteMode
+    value: JsonNullValueInput | InputJsonValue
+    createdAt?: Date | string
+  }
+
+  export type ExecutionMemoryEventUpdateManyMutationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    stepId?: NullableStringFieldUpdateOperationsInput | string | null
+    nodeId?: StringFieldUpdateOperationsInput | string
+    scope?: EnumExecutionMemoryScopeFieldUpdateOperationsInput | $Enums.ExecutionMemoryScope
+    visibility?: EnumExecutionMemoryVisibilityFieldUpdateOperationsInput | $Enums.ExecutionMemoryVisibility
+    ownerNodeId?: StringFieldUpdateOperationsInput | string
+    namespace?: StringFieldUpdateOperationsInput | string
+    key?: StringFieldUpdateOperationsInput | string
+    mode?: EnumExecutionMemoryWriteModeFieldUpdateOperationsInput | $Enums.ExecutionMemoryWriteMode
+    value?: JsonNullValueInput | InputJsonValue
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type ExecutionMemoryEventUncheckedUpdateManyInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    executionId?: StringFieldUpdateOperationsInput | string
+    stepId?: NullableStringFieldUpdateOperationsInput | string | null
+    nodeId?: StringFieldUpdateOperationsInput | string
+    scope?: EnumExecutionMemoryScopeFieldUpdateOperationsInput | $Enums.ExecutionMemoryScope
+    visibility?: EnumExecutionMemoryVisibilityFieldUpdateOperationsInput | $Enums.ExecutionMemoryVisibility
+    ownerNodeId?: StringFieldUpdateOperationsInput | string
+    namespace?: StringFieldUpdateOperationsInput | string
+    key?: StringFieldUpdateOperationsInput | string
+    mode?: EnumExecutionMemoryWriteModeFieldUpdateOperationsInput | $Enums.ExecutionMemoryWriteMode
+    value?: JsonNullValueInput | InputJsonValue
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
   export type StringFilter<$PrismaModel = never> = {
@@ -16582,6 +19620,26 @@ export namespace Prisma {
     isNot?: UserWhereInput | null
   }
 
+  export type ExecutionMemoryEntryListRelationFilter = {
+    every?: ExecutionMemoryEntryWhereInput
+    some?: ExecutionMemoryEntryWhereInput
+    none?: ExecutionMemoryEntryWhereInput
+  }
+
+  export type ExecutionMemoryEventListRelationFilter = {
+    every?: ExecutionMemoryEventWhereInput
+    some?: ExecutionMemoryEventWhereInput
+    none?: ExecutionMemoryEventWhereInput
+  }
+
+  export type ExecutionMemoryEntryOrderByRelationAggregateInput = {
+    _count?: SortOrder
+  }
+
+  export type ExecutionMemoryEventOrderByRelationAggregateInput = {
+    _count?: SortOrder
+  }
+
   export type ExecutionCountOrderByAggregateInput = {
     id?: SortOrder
     workflowId?: SortOrder
@@ -16810,6 +19868,148 @@ export namespace Prisma {
     _sum?: NestedIntNullableFilter<$PrismaModel>
     _min?: NestedIntNullableFilter<$PrismaModel>
     _max?: NestedIntNullableFilter<$PrismaModel>
+  }
+
+  export type EnumExecutionMemoryScopeFilter<$PrismaModel = never> = {
+    equals?: $Enums.ExecutionMemoryScope | EnumExecutionMemoryScopeFieldRefInput<$PrismaModel>
+    in?: $Enums.ExecutionMemoryScope[] | ListEnumExecutionMemoryScopeFieldRefInput<$PrismaModel>
+    notIn?: $Enums.ExecutionMemoryScope[] | ListEnumExecutionMemoryScopeFieldRefInput<$PrismaModel>
+    not?: NestedEnumExecutionMemoryScopeFilter<$PrismaModel> | $Enums.ExecutionMemoryScope
+  }
+
+  export type EnumExecutionMemoryVisibilityFilter<$PrismaModel = never> = {
+    equals?: $Enums.ExecutionMemoryVisibility | EnumExecutionMemoryVisibilityFieldRefInput<$PrismaModel>
+    in?: $Enums.ExecutionMemoryVisibility[] | ListEnumExecutionMemoryVisibilityFieldRefInput<$PrismaModel>
+    notIn?: $Enums.ExecutionMemoryVisibility[] | ListEnumExecutionMemoryVisibilityFieldRefInput<$PrismaModel>
+    not?: NestedEnumExecutionMemoryVisibilityFilter<$PrismaModel> | $Enums.ExecutionMemoryVisibility
+  }
+
+  export type ExecutionMemoryEntryExecutionIdScopeOwnerNodeIdNamespaceKeyCompoundUniqueInput = {
+    executionId: string
+    scope: $Enums.ExecutionMemoryScope
+    ownerNodeId: string
+    namespace: string
+    key: string
+  }
+
+  export type ExecutionMemoryEntryCountOrderByAggregateInput = {
+    id?: SortOrder
+    executionId?: SortOrder
+    scope?: SortOrder
+    visibility?: SortOrder
+    ownerNodeId?: SortOrder
+    namespace?: SortOrder
+    key?: SortOrder
+    value?: SortOrder
+    sourceStepId?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type ExecutionMemoryEntryMaxOrderByAggregateInput = {
+    id?: SortOrder
+    executionId?: SortOrder
+    scope?: SortOrder
+    visibility?: SortOrder
+    ownerNodeId?: SortOrder
+    namespace?: SortOrder
+    key?: SortOrder
+    sourceStepId?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type ExecutionMemoryEntryMinOrderByAggregateInput = {
+    id?: SortOrder
+    executionId?: SortOrder
+    scope?: SortOrder
+    visibility?: SortOrder
+    ownerNodeId?: SortOrder
+    namespace?: SortOrder
+    key?: SortOrder
+    sourceStepId?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type EnumExecutionMemoryScopeWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: $Enums.ExecutionMemoryScope | EnumExecutionMemoryScopeFieldRefInput<$PrismaModel>
+    in?: $Enums.ExecutionMemoryScope[] | ListEnumExecutionMemoryScopeFieldRefInput<$PrismaModel>
+    notIn?: $Enums.ExecutionMemoryScope[] | ListEnumExecutionMemoryScopeFieldRefInput<$PrismaModel>
+    not?: NestedEnumExecutionMemoryScopeWithAggregatesFilter<$PrismaModel> | $Enums.ExecutionMemoryScope
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedEnumExecutionMemoryScopeFilter<$PrismaModel>
+    _max?: NestedEnumExecutionMemoryScopeFilter<$PrismaModel>
+  }
+
+  export type EnumExecutionMemoryVisibilityWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: $Enums.ExecutionMemoryVisibility | EnumExecutionMemoryVisibilityFieldRefInput<$PrismaModel>
+    in?: $Enums.ExecutionMemoryVisibility[] | ListEnumExecutionMemoryVisibilityFieldRefInput<$PrismaModel>
+    notIn?: $Enums.ExecutionMemoryVisibility[] | ListEnumExecutionMemoryVisibilityFieldRefInput<$PrismaModel>
+    not?: NestedEnumExecutionMemoryVisibilityWithAggregatesFilter<$PrismaModel> | $Enums.ExecutionMemoryVisibility
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedEnumExecutionMemoryVisibilityFilter<$PrismaModel>
+    _max?: NestedEnumExecutionMemoryVisibilityFilter<$PrismaModel>
+  }
+
+  export type EnumExecutionMemoryWriteModeFilter<$PrismaModel = never> = {
+    equals?: $Enums.ExecutionMemoryWriteMode | EnumExecutionMemoryWriteModeFieldRefInput<$PrismaModel>
+    in?: $Enums.ExecutionMemoryWriteMode[] | ListEnumExecutionMemoryWriteModeFieldRefInput<$PrismaModel>
+    notIn?: $Enums.ExecutionMemoryWriteMode[] | ListEnumExecutionMemoryWriteModeFieldRefInput<$PrismaModel>
+    not?: NestedEnumExecutionMemoryWriteModeFilter<$PrismaModel> | $Enums.ExecutionMemoryWriteMode
+  }
+
+  export type ExecutionMemoryEventCountOrderByAggregateInput = {
+    id?: SortOrder
+    executionId?: SortOrder
+    stepId?: SortOrder
+    nodeId?: SortOrder
+    scope?: SortOrder
+    visibility?: SortOrder
+    ownerNodeId?: SortOrder
+    namespace?: SortOrder
+    key?: SortOrder
+    mode?: SortOrder
+    value?: SortOrder
+    createdAt?: SortOrder
+  }
+
+  export type ExecutionMemoryEventMaxOrderByAggregateInput = {
+    id?: SortOrder
+    executionId?: SortOrder
+    stepId?: SortOrder
+    nodeId?: SortOrder
+    scope?: SortOrder
+    visibility?: SortOrder
+    ownerNodeId?: SortOrder
+    namespace?: SortOrder
+    key?: SortOrder
+    mode?: SortOrder
+    createdAt?: SortOrder
+  }
+
+  export type ExecutionMemoryEventMinOrderByAggregateInput = {
+    id?: SortOrder
+    executionId?: SortOrder
+    stepId?: SortOrder
+    nodeId?: SortOrder
+    scope?: SortOrder
+    visibility?: SortOrder
+    ownerNodeId?: SortOrder
+    namespace?: SortOrder
+    key?: SortOrder
+    mode?: SortOrder
+    createdAt?: SortOrder
+  }
+
+  export type EnumExecutionMemoryWriteModeWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: $Enums.ExecutionMemoryWriteMode | EnumExecutionMemoryWriteModeFieldRefInput<$PrismaModel>
+    in?: $Enums.ExecutionMemoryWriteMode[] | ListEnumExecutionMemoryWriteModeFieldRefInput<$PrismaModel>
+    notIn?: $Enums.ExecutionMemoryWriteMode[] | ListEnumExecutionMemoryWriteModeFieldRefInput<$PrismaModel>
+    not?: NestedEnumExecutionMemoryWriteModeWithAggregatesFilter<$PrismaModel> | $Enums.ExecutionMemoryWriteMode
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedEnumExecutionMemoryWriteModeFilter<$PrismaModel>
+    _max?: NestedEnumExecutionMemoryWriteModeFilter<$PrismaModel>
   }
 
   export type SessionCreateNestedManyWithoutUserInput = {
@@ -17445,11 +20645,39 @@ export namespace Prisma {
     connect?: ExecutionStepWhereUniqueInput | ExecutionStepWhereUniqueInput[]
   }
 
+  export type ExecutionMemoryEntryCreateNestedManyWithoutExecutionInput = {
+    create?: XOR<ExecutionMemoryEntryCreateWithoutExecutionInput, ExecutionMemoryEntryUncheckedCreateWithoutExecutionInput> | ExecutionMemoryEntryCreateWithoutExecutionInput[] | ExecutionMemoryEntryUncheckedCreateWithoutExecutionInput[]
+    connectOrCreate?: ExecutionMemoryEntryCreateOrConnectWithoutExecutionInput | ExecutionMemoryEntryCreateOrConnectWithoutExecutionInput[]
+    createMany?: ExecutionMemoryEntryCreateManyExecutionInputEnvelope
+    connect?: ExecutionMemoryEntryWhereUniqueInput | ExecutionMemoryEntryWhereUniqueInput[]
+  }
+
+  export type ExecutionMemoryEventCreateNestedManyWithoutExecutionInput = {
+    create?: XOR<ExecutionMemoryEventCreateWithoutExecutionInput, ExecutionMemoryEventUncheckedCreateWithoutExecutionInput> | ExecutionMemoryEventCreateWithoutExecutionInput[] | ExecutionMemoryEventUncheckedCreateWithoutExecutionInput[]
+    connectOrCreate?: ExecutionMemoryEventCreateOrConnectWithoutExecutionInput | ExecutionMemoryEventCreateOrConnectWithoutExecutionInput[]
+    createMany?: ExecutionMemoryEventCreateManyExecutionInputEnvelope
+    connect?: ExecutionMemoryEventWhereUniqueInput | ExecutionMemoryEventWhereUniqueInput[]
+  }
+
   export type ExecutionStepUncheckedCreateNestedManyWithoutExecutionInput = {
     create?: XOR<ExecutionStepCreateWithoutExecutionInput, ExecutionStepUncheckedCreateWithoutExecutionInput> | ExecutionStepCreateWithoutExecutionInput[] | ExecutionStepUncheckedCreateWithoutExecutionInput[]
     connectOrCreate?: ExecutionStepCreateOrConnectWithoutExecutionInput | ExecutionStepCreateOrConnectWithoutExecutionInput[]
     createMany?: ExecutionStepCreateManyExecutionInputEnvelope
     connect?: ExecutionStepWhereUniqueInput | ExecutionStepWhereUniqueInput[]
+  }
+
+  export type ExecutionMemoryEntryUncheckedCreateNestedManyWithoutExecutionInput = {
+    create?: XOR<ExecutionMemoryEntryCreateWithoutExecutionInput, ExecutionMemoryEntryUncheckedCreateWithoutExecutionInput> | ExecutionMemoryEntryCreateWithoutExecutionInput[] | ExecutionMemoryEntryUncheckedCreateWithoutExecutionInput[]
+    connectOrCreate?: ExecutionMemoryEntryCreateOrConnectWithoutExecutionInput | ExecutionMemoryEntryCreateOrConnectWithoutExecutionInput[]
+    createMany?: ExecutionMemoryEntryCreateManyExecutionInputEnvelope
+    connect?: ExecutionMemoryEntryWhereUniqueInput | ExecutionMemoryEntryWhereUniqueInput[]
+  }
+
+  export type ExecutionMemoryEventUncheckedCreateNestedManyWithoutExecutionInput = {
+    create?: XOR<ExecutionMemoryEventCreateWithoutExecutionInput, ExecutionMemoryEventUncheckedCreateWithoutExecutionInput> | ExecutionMemoryEventCreateWithoutExecutionInput[] | ExecutionMemoryEventUncheckedCreateWithoutExecutionInput[]
+    connectOrCreate?: ExecutionMemoryEventCreateOrConnectWithoutExecutionInput | ExecutionMemoryEventCreateOrConnectWithoutExecutionInput[]
+    createMany?: ExecutionMemoryEventCreateManyExecutionInputEnvelope
+    connect?: ExecutionMemoryEventWhereUniqueInput | ExecutionMemoryEventWhereUniqueInput[]
   }
 
   export type EnumExecutionTriggerTypeFieldUpdateOperationsInput = {
@@ -17492,6 +20720,34 @@ export namespace Prisma {
     deleteMany?: ExecutionStepScalarWhereInput | ExecutionStepScalarWhereInput[]
   }
 
+  export type ExecutionMemoryEntryUpdateManyWithoutExecutionNestedInput = {
+    create?: XOR<ExecutionMemoryEntryCreateWithoutExecutionInput, ExecutionMemoryEntryUncheckedCreateWithoutExecutionInput> | ExecutionMemoryEntryCreateWithoutExecutionInput[] | ExecutionMemoryEntryUncheckedCreateWithoutExecutionInput[]
+    connectOrCreate?: ExecutionMemoryEntryCreateOrConnectWithoutExecutionInput | ExecutionMemoryEntryCreateOrConnectWithoutExecutionInput[]
+    upsert?: ExecutionMemoryEntryUpsertWithWhereUniqueWithoutExecutionInput | ExecutionMemoryEntryUpsertWithWhereUniqueWithoutExecutionInput[]
+    createMany?: ExecutionMemoryEntryCreateManyExecutionInputEnvelope
+    set?: ExecutionMemoryEntryWhereUniqueInput | ExecutionMemoryEntryWhereUniqueInput[]
+    disconnect?: ExecutionMemoryEntryWhereUniqueInput | ExecutionMemoryEntryWhereUniqueInput[]
+    delete?: ExecutionMemoryEntryWhereUniqueInput | ExecutionMemoryEntryWhereUniqueInput[]
+    connect?: ExecutionMemoryEntryWhereUniqueInput | ExecutionMemoryEntryWhereUniqueInput[]
+    update?: ExecutionMemoryEntryUpdateWithWhereUniqueWithoutExecutionInput | ExecutionMemoryEntryUpdateWithWhereUniqueWithoutExecutionInput[]
+    updateMany?: ExecutionMemoryEntryUpdateManyWithWhereWithoutExecutionInput | ExecutionMemoryEntryUpdateManyWithWhereWithoutExecutionInput[]
+    deleteMany?: ExecutionMemoryEntryScalarWhereInput | ExecutionMemoryEntryScalarWhereInput[]
+  }
+
+  export type ExecutionMemoryEventUpdateManyWithoutExecutionNestedInput = {
+    create?: XOR<ExecutionMemoryEventCreateWithoutExecutionInput, ExecutionMemoryEventUncheckedCreateWithoutExecutionInput> | ExecutionMemoryEventCreateWithoutExecutionInput[] | ExecutionMemoryEventUncheckedCreateWithoutExecutionInput[]
+    connectOrCreate?: ExecutionMemoryEventCreateOrConnectWithoutExecutionInput | ExecutionMemoryEventCreateOrConnectWithoutExecutionInput[]
+    upsert?: ExecutionMemoryEventUpsertWithWhereUniqueWithoutExecutionInput | ExecutionMemoryEventUpsertWithWhereUniqueWithoutExecutionInput[]
+    createMany?: ExecutionMemoryEventCreateManyExecutionInputEnvelope
+    set?: ExecutionMemoryEventWhereUniqueInput | ExecutionMemoryEventWhereUniqueInput[]
+    disconnect?: ExecutionMemoryEventWhereUniqueInput | ExecutionMemoryEventWhereUniqueInput[]
+    delete?: ExecutionMemoryEventWhereUniqueInput | ExecutionMemoryEventWhereUniqueInput[]
+    connect?: ExecutionMemoryEventWhereUniqueInput | ExecutionMemoryEventWhereUniqueInput[]
+    update?: ExecutionMemoryEventUpdateWithWhereUniqueWithoutExecutionInput | ExecutionMemoryEventUpdateWithWhereUniqueWithoutExecutionInput[]
+    updateMany?: ExecutionMemoryEventUpdateManyWithWhereWithoutExecutionInput | ExecutionMemoryEventUpdateManyWithWhereWithoutExecutionInput[]
+    deleteMany?: ExecutionMemoryEventScalarWhereInput | ExecutionMemoryEventScalarWhereInput[]
+  }
+
   export type ExecutionStepUncheckedUpdateManyWithoutExecutionNestedInput = {
     create?: XOR<ExecutionStepCreateWithoutExecutionInput, ExecutionStepUncheckedCreateWithoutExecutionInput> | ExecutionStepCreateWithoutExecutionInput[] | ExecutionStepUncheckedCreateWithoutExecutionInput[]
     connectOrCreate?: ExecutionStepCreateOrConnectWithoutExecutionInput | ExecutionStepCreateOrConnectWithoutExecutionInput[]
@@ -17504,6 +20760,34 @@ export namespace Prisma {
     update?: ExecutionStepUpdateWithWhereUniqueWithoutExecutionInput | ExecutionStepUpdateWithWhereUniqueWithoutExecutionInput[]
     updateMany?: ExecutionStepUpdateManyWithWhereWithoutExecutionInput | ExecutionStepUpdateManyWithWhereWithoutExecutionInput[]
     deleteMany?: ExecutionStepScalarWhereInput | ExecutionStepScalarWhereInput[]
+  }
+
+  export type ExecutionMemoryEntryUncheckedUpdateManyWithoutExecutionNestedInput = {
+    create?: XOR<ExecutionMemoryEntryCreateWithoutExecutionInput, ExecutionMemoryEntryUncheckedCreateWithoutExecutionInput> | ExecutionMemoryEntryCreateWithoutExecutionInput[] | ExecutionMemoryEntryUncheckedCreateWithoutExecutionInput[]
+    connectOrCreate?: ExecutionMemoryEntryCreateOrConnectWithoutExecutionInput | ExecutionMemoryEntryCreateOrConnectWithoutExecutionInput[]
+    upsert?: ExecutionMemoryEntryUpsertWithWhereUniqueWithoutExecutionInput | ExecutionMemoryEntryUpsertWithWhereUniqueWithoutExecutionInput[]
+    createMany?: ExecutionMemoryEntryCreateManyExecutionInputEnvelope
+    set?: ExecutionMemoryEntryWhereUniqueInput | ExecutionMemoryEntryWhereUniqueInput[]
+    disconnect?: ExecutionMemoryEntryWhereUniqueInput | ExecutionMemoryEntryWhereUniqueInput[]
+    delete?: ExecutionMemoryEntryWhereUniqueInput | ExecutionMemoryEntryWhereUniqueInput[]
+    connect?: ExecutionMemoryEntryWhereUniqueInput | ExecutionMemoryEntryWhereUniqueInput[]
+    update?: ExecutionMemoryEntryUpdateWithWhereUniqueWithoutExecutionInput | ExecutionMemoryEntryUpdateWithWhereUniqueWithoutExecutionInput[]
+    updateMany?: ExecutionMemoryEntryUpdateManyWithWhereWithoutExecutionInput | ExecutionMemoryEntryUpdateManyWithWhereWithoutExecutionInput[]
+    deleteMany?: ExecutionMemoryEntryScalarWhereInput | ExecutionMemoryEntryScalarWhereInput[]
+  }
+
+  export type ExecutionMemoryEventUncheckedUpdateManyWithoutExecutionNestedInput = {
+    create?: XOR<ExecutionMemoryEventCreateWithoutExecutionInput, ExecutionMemoryEventUncheckedCreateWithoutExecutionInput> | ExecutionMemoryEventCreateWithoutExecutionInput[] | ExecutionMemoryEventUncheckedCreateWithoutExecutionInput[]
+    connectOrCreate?: ExecutionMemoryEventCreateOrConnectWithoutExecutionInput | ExecutionMemoryEventCreateOrConnectWithoutExecutionInput[]
+    upsert?: ExecutionMemoryEventUpsertWithWhereUniqueWithoutExecutionInput | ExecutionMemoryEventUpsertWithWhereUniqueWithoutExecutionInput[]
+    createMany?: ExecutionMemoryEventCreateManyExecutionInputEnvelope
+    set?: ExecutionMemoryEventWhereUniqueInput | ExecutionMemoryEventWhereUniqueInput[]
+    disconnect?: ExecutionMemoryEventWhereUniqueInput | ExecutionMemoryEventWhereUniqueInput[]
+    delete?: ExecutionMemoryEventWhereUniqueInput | ExecutionMemoryEventWhereUniqueInput[]
+    connect?: ExecutionMemoryEventWhereUniqueInput | ExecutionMemoryEventWhereUniqueInput[]
+    update?: ExecutionMemoryEventUpdateWithWhereUniqueWithoutExecutionInput | ExecutionMemoryEventUpdateWithWhereUniqueWithoutExecutionInput[]
+    updateMany?: ExecutionMemoryEventUpdateManyWithWhereWithoutExecutionInput | ExecutionMemoryEventUpdateManyWithWhereWithoutExecutionInput[]
+    deleteMany?: ExecutionMemoryEventScalarWhereInput | ExecutionMemoryEventScalarWhereInput[]
   }
 
   export type ExecutionCreateNestedOneWithoutStepsInput = {
@@ -17554,6 +20838,46 @@ export namespace Prisma {
     delete?: NodeWhereInput | boolean
     connect?: NodeWhereUniqueInput
     update?: XOR<XOR<NodeUpdateToOneWithWhereWithoutExecutionStepsInput, NodeUpdateWithoutExecutionStepsInput>, NodeUncheckedUpdateWithoutExecutionStepsInput>
+  }
+
+  export type ExecutionCreateNestedOneWithoutMemoryEntriesInput = {
+    create?: XOR<ExecutionCreateWithoutMemoryEntriesInput, ExecutionUncheckedCreateWithoutMemoryEntriesInput>
+    connectOrCreate?: ExecutionCreateOrConnectWithoutMemoryEntriesInput
+    connect?: ExecutionWhereUniqueInput
+  }
+
+  export type EnumExecutionMemoryScopeFieldUpdateOperationsInput = {
+    set?: $Enums.ExecutionMemoryScope
+  }
+
+  export type EnumExecutionMemoryVisibilityFieldUpdateOperationsInput = {
+    set?: $Enums.ExecutionMemoryVisibility
+  }
+
+  export type ExecutionUpdateOneRequiredWithoutMemoryEntriesNestedInput = {
+    create?: XOR<ExecutionCreateWithoutMemoryEntriesInput, ExecutionUncheckedCreateWithoutMemoryEntriesInput>
+    connectOrCreate?: ExecutionCreateOrConnectWithoutMemoryEntriesInput
+    upsert?: ExecutionUpsertWithoutMemoryEntriesInput
+    connect?: ExecutionWhereUniqueInput
+    update?: XOR<XOR<ExecutionUpdateToOneWithWhereWithoutMemoryEntriesInput, ExecutionUpdateWithoutMemoryEntriesInput>, ExecutionUncheckedUpdateWithoutMemoryEntriesInput>
+  }
+
+  export type ExecutionCreateNestedOneWithoutMemoryEventsInput = {
+    create?: XOR<ExecutionCreateWithoutMemoryEventsInput, ExecutionUncheckedCreateWithoutMemoryEventsInput>
+    connectOrCreate?: ExecutionCreateOrConnectWithoutMemoryEventsInput
+    connect?: ExecutionWhereUniqueInput
+  }
+
+  export type EnumExecutionMemoryWriteModeFieldUpdateOperationsInput = {
+    set?: $Enums.ExecutionMemoryWriteMode
+  }
+
+  export type ExecutionUpdateOneRequiredWithoutMemoryEventsNestedInput = {
+    create?: XOR<ExecutionCreateWithoutMemoryEventsInput, ExecutionUncheckedCreateWithoutMemoryEventsInput>
+    connectOrCreate?: ExecutionCreateOrConnectWithoutMemoryEventsInput
+    upsert?: ExecutionUpsertWithoutMemoryEventsInput
+    connect?: ExecutionWhereUniqueInput
+    update?: XOR<XOR<ExecutionUpdateToOneWithWhereWithoutMemoryEventsInput, ExecutionUpdateWithoutMemoryEventsInput>, ExecutionUncheckedUpdateWithoutMemoryEventsInput>
   }
 
   export type NestedStringFilter<$PrismaModel = never> = {
@@ -17939,6 +21263,57 @@ export namespace Prisma {
     not?: NestedFloatNullableFilter<$PrismaModel> | number | null
   }
 
+  export type NestedEnumExecutionMemoryScopeFilter<$PrismaModel = never> = {
+    equals?: $Enums.ExecutionMemoryScope | EnumExecutionMemoryScopeFieldRefInput<$PrismaModel>
+    in?: $Enums.ExecutionMemoryScope[] | ListEnumExecutionMemoryScopeFieldRefInput<$PrismaModel>
+    notIn?: $Enums.ExecutionMemoryScope[] | ListEnumExecutionMemoryScopeFieldRefInput<$PrismaModel>
+    not?: NestedEnumExecutionMemoryScopeFilter<$PrismaModel> | $Enums.ExecutionMemoryScope
+  }
+
+  export type NestedEnumExecutionMemoryVisibilityFilter<$PrismaModel = never> = {
+    equals?: $Enums.ExecutionMemoryVisibility | EnumExecutionMemoryVisibilityFieldRefInput<$PrismaModel>
+    in?: $Enums.ExecutionMemoryVisibility[] | ListEnumExecutionMemoryVisibilityFieldRefInput<$PrismaModel>
+    notIn?: $Enums.ExecutionMemoryVisibility[] | ListEnumExecutionMemoryVisibilityFieldRefInput<$PrismaModel>
+    not?: NestedEnumExecutionMemoryVisibilityFilter<$PrismaModel> | $Enums.ExecutionMemoryVisibility
+  }
+
+  export type NestedEnumExecutionMemoryScopeWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: $Enums.ExecutionMemoryScope | EnumExecutionMemoryScopeFieldRefInput<$PrismaModel>
+    in?: $Enums.ExecutionMemoryScope[] | ListEnumExecutionMemoryScopeFieldRefInput<$PrismaModel>
+    notIn?: $Enums.ExecutionMemoryScope[] | ListEnumExecutionMemoryScopeFieldRefInput<$PrismaModel>
+    not?: NestedEnumExecutionMemoryScopeWithAggregatesFilter<$PrismaModel> | $Enums.ExecutionMemoryScope
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedEnumExecutionMemoryScopeFilter<$PrismaModel>
+    _max?: NestedEnumExecutionMemoryScopeFilter<$PrismaModel>
+  }
+
+  export type NestedEnumExecutionMemoryVisibilityWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: $Enums.ExecutionMemoryVisibility | EnumExecutionMemoryVisibilityFieldRefInput<$PrismaModel>
+    in?: $Enums.ExecutionMemoryVisibility[] | ListEnumExecutionMemoryVisibilityFieldRefInput<$PrismaModel>
+    notIn?: $Enums.ExecutionMemoryVisibility[] | ListEnumExecutionMemoryVisibilityFieldRefInput<$PrismaModel>
+    not?: NestedEnumExecutionMemoryVisibilityWithAggregatesFilter<$PrismaModel> | $Enums.ExecutionMemoryVisibility
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedEnumExecutionMemoryVisibilityFilter<$PrismaModel>
+    _max?: NestedEnumExecutionMemoryVisibilityFilter<$PrismaModel>
+  }
+
+  export type NestedEnumExecutionMemoryWriteModeFilter<$PrismaModel = never> = {
+    equals?: $Enums.ExecutionMemoryWriteMode | EnumExecutionMemoryWriteModeFieldRefInput<$PrismaModel>
+    in?: $Enums.ExecutionMemoryWriteMode[] | ListEnumExecutionMemoryWriteModeFieldRefInput<$PrismaModel>
+    notIn?: $Enums.ExecutionMemoryWriteMode[] | ListEnumExecutionMemoryWriteModeFieldRefInput<$PrismaModel>
+    not?: NestedEnumExecutionMemoryWriteModeFilter<$PrismaModel> | $Enums.ExecutionMemoryWriteMode
+  }
+
+  export type NestedEnumExecutionMemoryWriteModeWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: $Enums.ExecutionMemoryWriteMode | EnumExecutionMemoryWriteModeFieldRefInput<$PrismaModel>
+    in?: $Enums.ExecutionMemoryWriteMode[] | ListEnumExecutionMemoryWriteModeFieldRefInput<$PrismaModel>
+    notIn?: $Enums.ExecutionMemoryWriteMode[] | ListEnumExecutionMemoryWriteModeFieldRefInput<$PrismaModel>
+    not?: NestedEnumExecutionMemoryWriteModeWithAggregatesFilter<$PrismaModel> | $Enums.ExecutionMemoryWriteMode
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedEnumExecutionMemoryWriteModeFilter<$PrismaModel>
+    _max?: NestedEnumExecutionMemoryWriteModeFilter<$PrismaModel>
+  }
+
   export type SessionCreateWithoutUserInput = {
     id: string
     expiresAt: Date | string
@@ -18089,6 +21464,8 @@ export namespace Prisma {
     updatedAt?: Date | string
     workflow: WorkflowCreateNestedOneWithoutExecutionsInput
     steps?: ExecutionStepCreateNestedManyWithoutExecutionInput
+    memoryEntries?: ExecutionMemoryEntryCreateNestedManyWithoutExecutionInput
+    memoryEvents?: ExecutionMemoryEventCreateNestedManyWithoutExecutionInput
   }
 
   export type ExecutionUncheckedCreateWithoutTriggeredByUserInput = {
@@ -18105,6 +21482,8 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     steps?: ExecutionStepUncheckedCreateNestedManyWithoutExecutionInput
+    memoryEntries?: ExecutionMemoryEntryUncheckedCreateNestedManyWithoutExecutionInput
+    memoryEvents?: ExecutionMemoryEventUncheckedCreateNestedManyWithoutExecutionInput
   }
 
   export type ExecutionCreateOrConnectWithoutTriggeredByUserInput = {
@@ -18567,6 +21946,8 @@ export namespace Prisma {
     updatedAt?: Date | string
     triggeredByUser?: UserCreateNestedOneWithoutExecutionsInput
     steps?: ExecutionStepCreateNestedManyWithoutExecutionInput
+    memoryEntries?: ExecutionMemoryEntryCreateNestedManyWithoutExecutionInput
+    memoryEvents?: ExecutionMemoryEventCreateNestedManyWithoutExecutionInput
   }
 
   export type ExecutionUncheckedCreateWithoutWorkflowInput = {
@@ -18583,6 +21964,8 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     steps?: ExecutionStepUncheckedCreateNestedManyWithoutExecutionInput
+    memoryEntries?: ExecutionMemoryEntryUncheckedCreateNestedManyWithoutExecutionInput
+    memoryEvents?: ExecutionMemoryEventUncheckedCreateNestedManyWithoutExecutionInput
   }
 
   export type ExecutionCreateOrConnectWithoutWorkflowInput = {
@@ -19438,6 +22821,80 @@ export namespace Prisma {
     skipDuplicates?: boolean
   }
 
+  export type ExecutionMemoryEntryCreateWithoutExecutionInput = {
+    id?: string
+    scope?: $Enums.ExecutionMemoryScope
+    visibility?: $Enums.ExecutionMemoryVisibility
+    ownerNodeId?: string
+    namespace?: string
+    key: string
+    value: JsonNullValueInput | InputJsonValue
+    sourceStepId?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type ExecutionMemoryEntryUncheckedCreateWithoutExecutionInput = {
+    id?: string
+    scope?: $Enums.ExecutionMemoryScope
+    visibility?: $Enums.ExecutionMemoryVisibility
+    ownerNodeId?: string
+    namespace?: string
+    key: string
+    value: JsonNullValueInput | InputJsonValue
+    sourceStepId?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type ExecutionMemoryEntryCreateOrConnectWithoutExecutionInput = {
+    where: ExecutionMemoryEntryWhereUniqueInput
+    create: XOR<ExecutionMemoryEntryCreateWithoutExecutionInput, ExecutionMemoryEntryUncheckedCreateWithoutExecutionInput>
+  }
+
+  export type ExecutionMemoryEntryCreateManyExecutionInputEnvelope = {
+    data: ExecutionMemoryEntryCreateManyExecutionInput | ExecutionMemoryEntryCreateManyExecutionInput[]
+    skipDuplicates?: boolean
+  }
+
+  export type ExecutionMemoryEventCreateWithoutExecutionInput = {
+    id?: string
+    stepId?: string | null
+    nodeId?: string
+    scope: $Enums.ExecutionMemoryScope
+    visibility?: $Enums.ExecutionMemoryVisibility
+    ownerNodeId?: string
+    namespace?: string
+    key: string
+    mode?: $Enums.ExecutionMemoryWriteMode
+    value: JsonNullValueInput | InputJsonValue
+    createdAt?: Date | string
+  }
+
+  export type ExecutionMemoryEventUncheckedCreateWithoutExecutionInput = {
+    id?: string
+    stepId?: string | null
+    nodeId?: string
+    scope: $Enums.ExecutionMemoryScope
+    visibility?: $Enums.ExecutionMemoryVisibility
+    ownerNodeId?: string
+    namespace?: string
+    key: string
+    mode?: $Enums.ExecutionMemoryWriteMode
+    value: JsonNullValueInput | InputJsonValue
+    createdAt?: Date | string
+  }
+
+  export type ExecutionMemoryEventCreateOrConnectWithoutExecutionInput = {
+    where: ExecutionMemoryEventWhereUniqueInput
+    create: XOR<ExecutionMemoryEventCreateWithoutExecutionInput, ExecutionMemoryEventUncheckedCreateWithoutExecutionInput>
+  }
+
+  export type ExecutionMemoryEventCreateManyExecutionInputEnvelope = {
+    data: ExecutionMemoryEventCreateManyExecutionInput | ExecutionMemoryEventCreateManyExecutionInput[]
+    skipDuplicates?: boolean
+  }
+
   export type WorkflowUpsertWithoutExecutionsInput = {
     update: XOR<WorkflowUpdateWithoutExecutionsInput, WorkflowUncheckedUpdateWithoutExecutionsInput>
     create: XOR<WorkflowCreateWithoutExecutionsInput, WorkflowUncheckedCreateWithoutExecutionsInput>
@@ -19542,6 +22999,73 @@ export namespace Prisma {
     data: XOR<ExecutionStepUpdateManyMutationInput, ExecutionStepUncheckedUpdateManyWithoutExecutionInput>
   }
 
+  export type ExecutionMemoryEntryUpsertWithWhereUniqueWithoutExecutionInput = {
+    where: ExecutionMemoryEntryWhereUniqueInput
+    update: XOR<ExecutionMemoryEntryUpdateWithoutExecutionInput, ExecutionMemoryEntryUncheckedUpdateWithoutExecutionInput>
+    create: XOR<ExecutionMemoryEntryCreateWithoutExecutionInput, ExecutionMemoryEntryUncheckedCreateWithoutExecutionInput>
+  }
+
+  export type ExecutionMemoryEntryUpdateWithWhereUniqueWithoutExecutionInput = {
+    where: ExecutionMemoryEntryWhereUniqueInput
+    data: XOR<ExecutionMemoryEntryUpdateWithoutExecutionInput, ExecutionMemoryEntryUncheckedUpdateWithoutExecutionInput>
+  }
+
+  export type ExecutionMemoryEntryUpdateManyWithWhereWithoutExecutionInput = {
+    where: ExecutionMemoryEntryScalarWhereInput
+    data: XOR<ExecutionMemoryEntryUpdateManyMutationInput, ExecutionMemoryEntryUncheckedUpdateManyWithoutExecutionInput>
+  }
+
+  export type ExecutionMemoryEntryScalarWhereInput = {
+    AND?: ExecutionMemoryEntryScalarWhereInput | ExecutionMemoryEntryScalarWhereInput[]
+    OR?: ExecutionMemoryEntryScalarWhereInput[]
+    NOT?: ExecutionMemoryEntryScalarWhereInput | ExecutionMemoryEntryScalarWhereInput[]
+    id?: StringFilter<"ExecutionMemoryEntry"> | string
+    executionId?: StringFilter<"ExecutionMemoryEntry"> | string
+    scope?: EnumExecutionMemoryScopeFilter<"ExecutionMemoryEntry"> | $Enums.ExecutionMemoryScope
+    visibility?: EnumExecutionMemoryVisibilityFilter<"ExecutionMemoryEntry"> | $Enums.ExecutionMemoryVisibility
+    ownerNodeId?: StringFilter<"ExecutionMemoryEntry"> | string
+    namespace?: StringFilter<"ExecutionMemoryEntry"> | string
+    key?: StringFilter<"ExecutionMemoryEntry"> | string
+    value?: JsonFilter<"ExecutionMemoryEntry">
+    sourceStepId?: StringNullableFilter<"ExecutionMemoryEntry"> | string | null
+    createdAt?: DateTimeFilter<"ExecutionMemoryEntry"> | Date | string
+    updatedAt?: DateTimeFilter<"ExecutionMemoryEntry"> | Date | string
+  }
+
+  export type ExecutionMemoryEventUpsertWithWhereUniqueWithoutExecutionInput = {
+    where: ExecutionMemoryEventWhereUniqueInput
+    update: XOR<ExecutionMemoryEventUpdateWithoutExecutionInput, ExecutionMemoryEventUncheckedUpdateWithoutExecutionInput>
+    create: XOR<ExecutionMemoryEventCreateWithoutExecutionInput, ExecutionMemoryEventUncheckedCreateWithoutExecutionInput>
+  }
+
+  export type ExecutionMemoryEventUpdateWithWhereUniqueWithoutExecutionInput = {
+    where: ExecutionMemoryEventWhereUniqueInput
+    data: XOR<ExecutionMemoryEventUpdateWithoutExecutionInput, ExecutionMemoryEventUncheckedUpdateWithoutExecutionInput>
+  }
+
+  export type ExecutionMemoryEventUpdateManyWithWhereWithoutExecutionInput = {
+    where: ExecutionMemoryEventScalarWhereInput
+    data: XOR<ExecutionMemoryEventUpdateManyMutationInput, ExecutionMemoryEventUncheckedUpdateManyWithoutExecutionInput>
+  }
+
+  export type ExecutionMemoryEventScalarWhereInput = {
+    AND?: ExecutionMemoryEventScalarWhereInput | ExecutionMemoryEventScalarWhereInput[]
+    OR?: ExecutionMemoryEventScalarWhereInput[]
+    NOT?: ExecutionMemoryEventScalarWhereInput | ExecutionMemoryEventScalarWhereInput[]
+    id?: StringFilter<"ExecutionMemoryEvent"> | string
+    executionId?: StringFilter<"ExecutionMemoryEvent"> | string
+    stepId?: StringNullableFilter<"ExecutionMemoryEvent"> | string | null
+    nodeId?: StringFilter<"ExecutionMemoryEvent"> | string
+    scope?: EnumExecutionMemoryScopeFilter<"ExecutionMemoryEvent"> | $Enums.ExecutionMemoryScope
+    visibility?: EnumExecutionMemoryVisibilityFilter<"ExecutionMemoryEvent"> | $Enums.ExecutionMemoryVisibility
+    ownerNodeId?: StringFilter<"ExecutionMemoryEvent"> | string
+    namespace?: StringFilter<"ExecutionMemoryEvent"> | string
+    key?: StringFilter<"ExecutionMemoryEvent"> | string
+    mode?: EnumExecutionMemoryWriteModeFilter<"ExecutionMemoryEvent"> | $Enums.ExecutionMemoryWriteMode
+    value?: JsonFilter<"ExecutionMemoryEvent">
+    createdAt?: DateTimeFilter<"ExecutionMemoryEvent"> | Date | string
+  }
+
   export type ExecutionCreateWithoutStepsInput = {
     id?: string
     triggerType: $Enums.ExecutionTriggerType
@@ -19556,6 +23080,8 @@ export namespace Prisma {
     updatedAt?: Date | string
     workflow: WorkflowCreateNestedOneWithoutExecutionsInput
     triggeredByUser?: UserCreateNestedOneWithoutExecutionsInput
+    memoryEntries?: ExecutionMemoryEntryCreateNestedManyWithoutExecutionInput
+    memoryEvents?: ExecutionMemoryEventCreateNestedManyWithoutExecutionInput
   }
 
   export type ExecutionUncheckedCreateWithoutStepsInput = {
@@ -19572,6 +23098,8 @@ export namespace Prisma {
     error?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: Date | string
     updatedAt?: Date | string
+    memoryEntries?: ExecutionMemoryEntryUncheckedCreateNestedManyWithoutExecutionInput
+    memoryEvents?: ExecutionMemoryEventUncheckedCreateNestedManyWithoutExecutionInput
   }
 
   export type ExecutionCreateOrConnectWithoutStepsInput = {
@@ -19635,6 +23163,8 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     workflow?: WorkflowUpdateOneRequiredWithoutExecutionsNestedInput
     triggeredByUser?: UserUpdateOneWithoutExecutionsNestedInput
+    memoryEntries?: ExecutionMemoryEntryUpdateManyWithoutExecutionNestedInput
+    memoryEvents?: ExecutionMemoryEventUpdateManyWithoutExecutionNestedInput
   }
 
   export type ExecutionUncheckedUpdateWithoutStepsInput = {
@@ -19651,6 +23181,8 @@ export namespace Prisma {
     error?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    memoryEntries?: ExecutionMemoryEntryUncheckedUpdateManyWithoutExecutionNestedInput
+    memoryEvents?: ExecutionMemoryEventUncheckedUpdateManyWithoutExecutionNestedInput
   }
 
   export type NodeUpsertWithoutExecutionStepsInput = {
@@ -19688,6 +23220,182 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     fromConnections?: ConnectionUncheckedUpdateManyWithoutFromNodeNestedInput
     toConnections?: ConnectionUncheckedUpdateManyWithoutToNodeNestedInput
+  }
+
+  export type ExecutionCreateWithoutMemoryEntriesInput = {
+    id?: string
+    triggerType: $Enums.ExecutionTriggerType
+    status?: $Enums.ExecutionStatus
+    triggerPayload?: JsonNullValueInput | InputJsonValue
+    state?: JsonNullValueInput | InputJsonValue
+    workflowSnapshot?: NullableJsonNullValueInput | InputJsonValue
+    startedAt?: Date | string | null
+    completedAt?: Date | string | null
+    error?: NullableJsonNullValueInput | InputJsonValue
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    workflow: WorkflowCreateNestedOneWithoutExecutionsInput
+    triggeredByUser?: UserCreateNestedOneWithoutExecutionsInput
+    steps?: ExecutionStepCreateNestedManyWithoutExecutionInput
+    memoryEvents?: ExecutionMemoryEventCreateNestedManyWithoutExecutionInput
+  }
+
+  export type ExecutionUncheckedCreateWithoutMemoryEntriesInput = {
+    id?: string
+    workflowId: string
+    triggerType: $Enums.ExecutionTriggerType
+    status?: $Enums.ExecutionStatus
+    triggeredByUserId?: string | null
+    triggerPayload?: JsonNullValueInput | InputJsonValue
+    state?: JsonNullValueInput | InputJsonValue
+    workflowSnapshot?: NullableJsonNullValueInput | InputJsonValue
+    startedAt?: Date | string | null
+    completedAt?: Date | string | null
+    error?: NullableJsonNullValueInput | InputJsonValue
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    steps?: ExecutionStepUncheckedCreateNestedManyWithoutExecutionInput
+    memoryEvents?: ExecutionMemoryEventUncheckedCreateNestedManyWithoutExecutionInput
+  }
+
+  export type ExecutionCreateOrConnectWithoutMemoryEntriesInput = {
+    where: ExecutionWhereUniqueInput
+    create: XOR<ExecutionCreateWithoutMemoryEntriesInput, ExecutionUncheckedCreateWithoutMemoryEntriesInput>
+  }
+
+  export type ExecutionUpsertWithoutMemoryEntriesInput = {
+    update: XOR<ExecutionUpdateWithoutMemoryEntriesInput, ExecutionUncheckedUpdateWithoutMemoryEntriesInput>
+    create: XOR<ExecutionCreateWithoutMemoryEntriesInput, ExecutionUncheckedCreateWithoutMemoryEntriesInput>
+    where?: ExecutionWhereInput
+  }
+
+  export type ExecutionUpdateToOneWithWhereWithoutMemoryEntriesInput = {
+    where?: ExecutionWhereInput
+    data: XOR<ExecutionUpdateWithoutMemoryEntriesInput, ExecutionUncheckedUpdateWithoutMemoryEntriesInput>
+  }
+
+  export type ExecutionUpdateWithoutMemoryEntriesInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    triggerType?: EnumExecutionTriggerTypeFieldUpdateOperationsInput | $Enums.ExecutionTriggerType
+    status?: EnumExecutionStatusFieldUpdateOperationsInput | $Enums.ExecutionStatus
+    triggerPayload?: JsonNullValueInput | InputJsonValue
+    state?: JsonNullValueInput | InputJsonValue
+    workflowSnapshot?: NullableJsonNullValueInput | InputJsonValue
+    startedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    completedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    error?: NullableJsonNullValueInput | InputJsonValue
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    workflow?: WorkflowUpdateOneRequiredWithoutExecutionsNestedInput
+    triggeredByUser?: UserUpdateOneWithoutExecutionsNestedInput
+    steps?: ExecutionStepUpdateManyWithoutExecutionNestedInput
+    memoryEvents?: ExecutionMemoryEventUpdateManyWithoutExecutionNestedInput
+  }
+
+  export type ExecutionUncheckedUpdateWithoutMemoryEntriesInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    workflowId?: StringFieldUpdateOperationsInput | string
+    triggerType?: EnumExecutionTriggerTypeFieldUpdateOperationsInput | $Enums.ExecutionTriggerType
+    status?: EnumExecutionStatusFieldUpdateOperationsInput | $Enums.ExecutionStatus
+    triggeredByUserId?: NullableStringFieldUpdateOperationsInput | string | null
+    triggerPayload?: JsonNullValueInput | InputJsonValue
+    state?: JsonNullValueInput | InputJsonValue
+    workflowSnapshot?: NullableJsonNullValueInput | InputJsonValue
+    startedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    completedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    error?: NullableJsonNullValueInput | InputJsonValue
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    steps?: ExecutionStepUncheckedUpdateManyWithoutExecutionNestedInput
+    memoryEvents?: ExecutionMemoryEventUncheckedUpdateManyWithoutExecutionNestedInput
+  }
+
+  export type ExecutionCreateWithoutMemoryEventsInput = {
+    id?: string
+    triggerType: $Enums.ExecutionTriggerType
+    status?: $Enums.ExecutionStatus
+    triggerPayload?: JsonNullValueInput | InputJsonValue
+    state?: JsonNullValueInput | InputJsonValue
+    workflowSnapshot?: NullableJsonNullValueInput | InputJsonValue
+    startedAt?: Date | string | null
+    completedAt?: Date | string | null
+    error?: NullableJsonNullValueInput | InputJsonValue
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    workflow: WorkflowCreateNestedOneWithoutExecutionsInput
+    triggeredByUser?: UserCreateNestedOneWithoutExecutionsInput
+    steps?: ExecutionStepCreateNestedManyWithoutExecutionInput
+    memoryEntries?: ExecutionMemoryEntryCreateNestedManyWithoutExecutionInput
+  }
+
+  export type ExecutionUncheckedCreateWithoutMemoryEventsInput = {
+    id?: string
+    workflowId: string
+    triggerType: $Enums.ExecutionTriggerType
+    status?: $Enums.ExecutionStatus
+    triggeredByUserId?: string | null
+    triggerPayload?: JsonNullValueInput | InputJsonValue
+    state?: JsonNullValueInput | InputJsonValue
+    workflowSnapshot?: NullableJsonNullValueInput | InputJsonValue
+    startedAt?: Date | string | null
+    completedAt?: Date | string | null
+    error?: NullableJsonNullValueInput | InputJsonValue
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    steps?: ExecutionStepUncheckedCreateNestedManyWithoutExecutionInput
+    memoryEntries?: ExecutionMemoryEntryUncheckedCreateNestedManyWithoutExecutionInput
+  }
+
+  export type ExecutionCreateOrConnectWithoutMemoryEventsInput = {
+    where: ExecutionWhereUniqueInput
+    create: XOR<ExecutionCreateWithoutMemoryEventsInput, ExecutionUncheckedCreateWithoutMemoryEventsInput>
+  }
+
+  export type ExecutionUpsertWithoutMemoryEventsInput = {
+    update: XOR<ExecutionUpdateWithoutMemoryEventsInput, ExecutionUncheckedUpdateWithoutMemoryEventsInput>
+    create: XOR<ExecutionCreateWithoutMemoryEventsInput, ExecutionUncheckedCreateWithoutMemoryEventsInput>
+    where?: ExecutionWhereInput
+  }
+
+  export type ExecutionUpdateToOneWithWhereWithoutMemoryEventsInput = {
+    where?: ExecutionWhereInput
+    data: XOR<ExecutionUpdateWithoutMemoryEventsInput, ExecutionUncheckedUpdateWithoutMemoryEventsInput>
+  }
+
+  export type ExecutionUpdateWithoutMemoryEventsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    triggerType?: EnumExecutionTriggerTypeFieldUpdateOperationsInput | $Enums.ExecutionTriggerType
+    status?: EnumExecutionStatusFieldUpdateOperationsInput | $Enums.ExecutionStatus
+    triggerPayload?: JsonNullValueInput | InputJsonValue
+    state?: JsonNullValueInput | InputJsonValue
+    workflowSnapshot?: NullableJsonNullValueInput | InputJsonValue
+    startedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    completedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    error?: NullableJsonNullValueInput | InputJsonValue
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    workflow?: WorkflowUpdateOneRequiredWithoutExecutionsNestedInput
+    triggeredByUser?: UserUpdateOneWithoutExecutionsNestedInput
+    steps?: ExecutionStepUpdateManyWithoutExecutionNestedInput
+    memoryEntries?: ExecutionMemoryEntryUpdateManyWithoutExecutionNestedInput
+  }
+
+  export type ExecutionUncheckedUpdateWithoutMemoryEventsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    workflowId?: StringFieldUpdateOperationsInput | string
+    triggerType?: EnumExecutionTriggerTypeFieldUpdateOperationsInput | $Enums.ExecutionTriggerType
+    status?: EnumExecutionStatusFieldUpdateOperationsInput | $Enums.ExecutionStatus
+    triggeredByUserId?: NullableStringFieldUpdateOperationsInput | string | null
+    triggerPayload?: JsonNullValueInput | InputJsonValue
+    state?: JsonNullValueInput | InputJsonValue
+    workflowSnapshot?: NullableJsonNullValueInput | InputJsonValue
+    startedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    completedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    error?: NullableJsonNullValueInput | InputJsonValue
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    steps?: ExecutionStepUncheckedUpdateManyWithoutExecutionNestedInput
+    memoryEntries?: ExecutionMemoryEntryUncheckedUpdateManyWithoutExecutionNestedInput
   }
 
   export type SessionCreateManyUserInput = {
@@ -19905,6 +23613,8 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     workflow?: WorkflowUpdateOneRequiredWithoutExecutionsNestedInput
     steps?: ExecutionStepUpdateManyWithoutExecutionNestedInput
+    memoryEntries?: ExecutionMemoryEntryUpdateManyWithoutExecutionNestedInput
+    memoryEvents?: ExecutionMemoryEventUpdateManyWithoutExecutionNestedInput
   }
 
   export type ExecutionUncheckedUpdateWithoutTriggeredByUserInput = {
@@ -19921,6 +23631,8 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     steps?: ExecutionStepUncheckedUpdateManyWithoutExecutionNestedInput
+    memoryEntries?: ExecutionMemoryEntryUncheckedUpdateManyWithoutExecutionNestedInput
+    memoryEvents?: ExecutionMemoryEventUncheckedUpdateManyWithoutExecutionNestedInput
   }
 
   export type ExecutionUncheckedUpdateManyWithoutTriggeredByUserInput = {
@@ -20057,6 +23769,8 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     triggeredByUser?: UserUpdateOneWithoutExecutionsNestedInput
     steps?: ExecutionStepUpdateManyWithoutExecutionNestedInput
+    memoryEntries?: ExecutionMemoryEntryUpdateManyWithoutExecutionNestedInput
+    memoryEvents?: ExecutionMemoryEventUpdateManyWithoutExecutionNestedInput
   }
 
   export type ExecutionUncheckedUpdateWithoutWorkflowInput = {
@@ -20073,6 +23787,8 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     steps?: ExecutionStepUncheckedUpdateManyWithoutExecutionNestedInput
+    memoryEntries?: ExecutionMemoryEntryUncheckedUpdateManyWithoutExecutionNestedInput
+    memoryEvents?: ExecutionMemoryEventUncheckedUpdateManyWithoutExecutionNestedInput
   }
 
   export type ExecutionUncheckedUpdateManyWithoutWorkflowInput = {
@@ -20268,6 +23984,33 @@ export namespace Prisma {
     updatedAt?: Date | string
   }
 
+  export type ExecutionMemoryEntryCreateManyExecutionInput = {
+    id?: string
+    scope?: $Enums.ExecutionMemoryScope
+    visibility?: $Enums.ExecutionMemoryVisibility
+    ownerNodeId?: string
+    namespace?: string
+    key: string
+    value: JsonNullValueInput | InputJsonValue
+    sourceStepId?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type ExecutionMemoryEventCreateManyExecutionInput = {
+    id?: string
+    stepId?: string | null
+    nodeId?: string
+    scope: $Enums.ExecutionMemoryScope
+    visibility?: $Enums.ExecutionMemoryVisibility
+    ownerNodeId?: string
+    namespace?: string
+    key: string
+    mode?: $Enums.ExecutionMemoryWriteMode
+    value: JsonNullValueInput | InputJsonValue
+    createdAt?: Date | string
+  }
+
   export type ExecutionStepUpdateWithoutExecutionInput = {
     id?: StringFieldUpdateOperationsInput | string
     nodeName?: StringFieldUpdateOperationsInput | string
@@ -20320,6 +24063,87 @@ export namespace Prisma {
     durationMs?: NullableIntFieldUpdateOperationsInput | number | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type ExecutionMemoryEntryUpdateWithoutExecutionInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    scope?: EnumExecutionMemoryScopeFieldUpdateOperationsInput | $Enums.ExecutionMemoryScope
+    visibility?: EnumExecutionMemoryVisibilityFieldUpdateOperationsInput | $Enums.ExecutionMemoryVisibility
+    ownerNodeId?: StringFieldUpdateOperationsInput | string
+    namespace?: StringFieldUpdateOperationsInput | string
+    key?: StringFieldUpdateOperationsInput | string
+    value?: JsonNullValueInput | InputJsonValue
+    sourceStepId?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type ExecutionMemoryEntryUncheckedUpdateWithoutExecutionInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    scope?: EnumExecutionMemoryScopeFieldUpdateOperationsInput | $Enums.ExecutionMemoryScope
+    visibility?: EnumExecutionMemoryVisibilityFieldUpdateOperationsInput | $Enums.ExecutionMemoryVisibility
+    ownerNodeId?: StringFieldUpdateOperationsInput | string
+    namespace?: StringFieldUpdateOperationsInput | string
+    key?: StringFieldUpdateOperationsInput | string
+    value?: JsonNullValueInput | InputJsonValue
+    sourceStepId?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type ExecutionMemoryEntryUncheckedUpdateManyWithoutExecutionInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    scope?: EnumExecutionMemoryScopeFieldUpdateOperationsInput | $Enums.ExecutionMemoryScope
+    visibility?: EnumExecutionMemoryVisibilityFieldUpdateOperationsInput | $Enums.ExecutionMemoryVisibility
+    ownerNodeId?: StringFieldUpdateOperationsInput | string
+    namespace?: StringFieldUpdateOperationsInput | string
+    key?: StringFieldUpdateOperationsInput | string
+    value?: JsonNullValueInput | InputJsonValue
+    sourceStepId?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type ExecutionMemoryEventUpdateWithoutExecutionInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    stepId?: NullableStringFieldUpdateOperationsInput | string | null
+    nodeId?: StringFieldUpdateOperationsInput | string
+    scope?: EnumExecutionMemoryScopeFieldUpdateOperationsInput | $Enums.ExecutionMemoryScope
+    visibility?: EnumExecutionMemoryVisibilityFieldUpdateOperationsInput | $Enums.ExecutionMemoryVisibility
+    ownerNodeId?: StringFieldUpdateOperationsInput | string
+    namespace?: StringFieldUpdateOperationsInput | string
+    key?: StringFieldUpdateOperationsInput | string
+    mode?: EnumExecutionMemoryWriteModeFieldUpdateOperationsInput | $Enums.ExecutionMemoryWriteMode
+    value?: JsonNullValueInput | InputJsonValue
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type ExecutionMemoryEventUncheckedUpdateWithoutExecutionInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    stepId?: NullableStringFieldUpdateOperationsInput | string | null
+    nodeId?: StringFieldUpdateOperationsInput | string
+    scope?: EnumExecutionMemoryScopeFieldUpdateOperationsInput | $Enums.ExecutionMemoryScope
+    visibility?: EnumExecutionMemoryVisibilityFieldUpdateOperationsInput | $Enums.ExecutionMemoryVisibility
+    ownerNodeId?: StringFieldUpdateOperationsInput | string
+    namespace?: StringFieldUpdateOperationsInput | string
+    key?: StringFieldUpdateOperationsInput | string
+    mode?: EnumExecutionMemoryWriteModeFieldUpdateOperationsInput | $Enums.ExecutionMemoryWriteMode
+    value?: JsonNullValueInput | InputJsonValue
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type ExecutionMemoryEventUncheckedUpdateManyWithoutExecutionInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    stepId?: NullableStringFieldUpdateOperationsInput | string | null
+    nodeId?: StringFieldUpdateOperationsInput | string
+    scope?: EnumExecutionMemoryScopeFieldUpdateOperationsInput | $Enums.ExecutionMemoryScope
+    visibility?: EnumExecutionMemoryVisibilityFieldUpdateOperationsInput | $Enums.ExecutionMemoryVisibility
+    ownerNodeId?: StringFieldUpdateOperationsInput | string
+    namespace?: StringFieldUpdateOperationsInput | string
+    key?: StringFieldUpdateOperationsInput | string
+    mode?: EnumExecutionMemoryWriteModeFieldUpdateOperationsInput | $Enums.ExecutionMemoryWriteMode
+    value?: JsonNullValueInput | InputJsonValue
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
 
