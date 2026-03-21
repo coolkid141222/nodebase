@@ -3,7 +3,6 @@
 import { Position, type NodeProps } from "@xyflow/react";
 import { memo, useState } from "react";
 import { useReactFlow } from "@xyflow/react";
-import { RotateCwIcon } from "lucide-react";
 import { BaseExcutionNode } from "@/components/base-execution-node";
 import { BaseHandle } from "@/components/react-flow/base-handle";
 import { useWorkflowNodeStatus } from "@/features/executions/components/workflow-execution-status-context";
@@ -55,8 +54,7 @@ export const LoopNode = memo((props: NodeProps) => {
       )}
       <BaseExcutionNode
         {...props}
-        icon={RotateCwIcon}
-        iconClassName={nodeStatus === "loading" ? "animate-spin text-blue-700" : undefined}
+        icon="/logo.svg"
         name="Loop"
         status={nodeStatus}
         nodeClassName="h-[56px] min-w-[112px] rounded-xl border-dashed"
