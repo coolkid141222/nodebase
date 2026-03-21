@@ -13,6 +13,8 @@ function formatNodeType(type?: string | null) {
       return "AI Text";
     case "LOOP":
       return "Loop";
+    case "TOOL":
+      return "Tool";
     case "HTTP_REQUEST":
       return "HTTP Request";
     case "MANUAL_TRIGGER":

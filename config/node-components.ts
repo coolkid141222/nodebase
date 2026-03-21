@@ -7,6 +7,7 @@ import { AITextNode } from "@/features/ai/components/text/node"
 import { DiscordMessageNode } from "@/features/integrations/components/discord-message/node"
 import { SlackMessageNode } from "@/features/integrations/components/slack-message/node"
 import { LoopNode } from "@/features/loops/components/node"
+import { ToolNode } from "@/features/tools/components/node"
 
 export const nodeComponents = {
     "INITIAL": InitialNode,
@@ -15,6 +16,7 @@ export const nodeComponents = {
     "WEBHOOK_TRIGGER": WebhookTriggerNode,
     "AI_TEXT": AITextNode,
     "LOOP": LoopNode,
+    "TOOL": ToolNode,
     "DISCORD_MESSAGE": DiscordMessageNode,
     "SLACK_MESSAGE": SlackMessageNode,
 } as const satisfies NodeTypes

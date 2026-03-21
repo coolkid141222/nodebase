@@ -45,6 +45,8 @@ import {
   createOpenAIProvider,
 } from "@/lib/ai/proxy";
 import { loopNodeSchema } from "@/features/loops/shared";
+import { toolNodeSchema } from "@/features/tools/node/shared";
+import type { ToolProvider } from "@/features/tools/shared";
 
 type WorkflowForExecution = Prisma.WorkflowGetPayload<{
   include: {
@@ -114,6 +116,15 @@ type ResolvedLoopInput = {
   isFinalAttempt: boolean;
 };
 
+type ResolvedToolInput = {
+  provider: ToolProvider;
+  serverId: string | null;
+  serverDisplayName: string | null;
+  toolId: string;
+  toolDisplayName: string | null;
+  arguments: Prisma.InputJsonValue | null;
+};
+
 type CompletedStepResult = {
   id: string;
   nodeId: string;
@@ -135,7 +146,9 @@ export class WorkflowExecutionError extends Error {
       | "WEBHOOK_TRIGGER_NOT_FOUND"
       | "WORKFLOW_HAS_CYCLE"
       | "INVALID_LOOP_CONFIG"
+      | "INVALID_TOOL_CONFIG"
       | "UNSUPPORTED_NODE_TYPE"
+      | "TOOL_ADAPTER_NOT_READY"
       | "INVALID_HTTP_REQUEST_CONFIG"
       | "INVALID_AI_NODE_CONFIG"
       | "INVALID_DISCORD_CONFIG"
@@ -666,6 +679,47 @@ function normalizeLoopNodeData(
     attempt,
     maxIterations: parsed.data.maxIterations,
     isFinalAttempt: attempt >= parsed.data.maxIterations,
+  };
+}
+
+function normalizeToolNodeData(
+  node: WorkflowForExecution["nodes"][number],
+  context: ExecutionTemplateContext,
+): ResolvedToolInput {
+  const parsed = toolNodeSchema.safeParse(node.data ?? {});
+
+  if (!parsed.success) {
+    throw new WorkflowExecutionError(
+      `Tool node "${node.name}" has invalid configuration.`,
+      "INVALID_TOOL_CONFIG",
+    );
+  }
+
+  const toolId = parsed.data.toolId.trim();
+
+  if (!toolId) {
+    throw new WorkflowExecutionError(
+      `Tool node "${node.name}" is missing a tool id.`,
+      "INVALID_TOOL_CONFIG",
+    );
+  }
+
+  const resolvedArguments = resolveTemplateString(
+    parsed.data.argumentsJson,
+    context,
+  );
+  const argumentsValue =
+    typeof resolvedArguments === "string"
+      ? (parseJsonOrReturnText(resolvedArguments) as Prisma.InputJsonValue)
+      : ((resolvedArguments ?? null) as Prisma.InputJsonValue);
+
+  return {
+    provider: parsed.data.provider,
+    serverId: parsed.data.serverId.trim() || null,
+    serverDisplayName: parsed.data.serverDisplayName.trim() || null,
+    toolId,
+    toolDisplayName: parsed.data.toolDisplayName.trim() || null,
+    arguments: argumentsValue,
   };
 }
 
@@ -1493,6 +1547,11 @@ async function executeNode(
         status: ExecutionStepStatus.SUCCESS,
         output: input as ResolvedLoopInput,
       };
+    case NodeType.TOOL:
+      throw new WorkflowExecutionError(
+        `Tool node "${node.name}" selected "${(input as ResolvedToolInput).toolId}" from ${(input as ResolvedToolInput).provider}, but tool execution adapters are not wired into the runtime yet.`,
+        "TOOL_ADAPTER_NOT_READY",
+      );
     case NodeType.DISCORD_MESSAGE:
       return executeDiscordMessageNode(
         execution,
@@ -1528,6 +1587,8 @@ function resolveNodeInput(
       return normalizeAITextNodeData(node, context);
     case NodeType.LOOP:
       return normalizeLoopNodeData(node, context);
+    case NodeType.TOOL:
+      return normalizeToolNodeData(node, context);
     case NodeType.DISCORD_MESSAGE:
       return normalizeDiscordMessageNodeData(node, context);
     case NodeType.SLACK_MESSAGE:

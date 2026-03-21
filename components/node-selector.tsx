@@ -8,6 +8,7 @@ import {
     LinkIcon,
     MousePointerIcon,
     RotateCwIcon,
+    WrenchIcon,
 } from "lucide-react"
 import { useCallback } from "react"
 import { toast } from "sonner"
@@ -61,6 +62,12 @@ const executionNodes: NodeTypeOptions[] = [
         label: "LOOP",
         decription: "Repeat a local cyclic section of the workflow",
         icon: RotateCwIcon
+    },
+    {
+        type: "TOOL",
+        label: "TOOL",
+        decription: "Configure an internal, MCP, or OpenClaw tool call",
+        icon: WrenchIcon
     },
     {
         type: "DISCORD_MESSAGE",
