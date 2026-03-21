@@ -412,27 +412,27 @@ function buildEdgeHandles(params: {
   targetType: AIWorkflowDraft["nodes"][number]["type"];
   role: AIWorkflowDraft["edges"][number]["role"];
 }) {
-  switch (params.role) {
-    case "LOOP_ENTRY":
-      return {
-        sourceHandle: null,
-        targetHandle: params.targetType === "LOOP" ? "target-entry" : null,
-      };
-    case "LOOP_BODY":
-      return {
-        sourceHandle: params.sourceType === "LOOP" ? "source-body" : null,
-        targetHandle: null,
-      };
-    case "LOOP_BACK":
-      return {
-        sourceHandle: null,
-        targetHandle: params.targetType === "LOOP" ? "target-body" : null,
-      };
-    case "LOOP_EXIT":
-      return {
-        sourceHandle: params.sourceType === "LOOP" ? "source-exit" : null,
-        targetHandle: null,
-      };
+    switch (params.role) {
+      case "LOOP_ENTRY":
+        return {
+          sourceHandle: null,
+          targetHandle: params.targetType === "LOOP" ? "target-main" : null,
+        };
+      case "LOOP_BODY":
+        return {
+          sourceHandle: params.sourceType === "LOOP" ? "source-main" : null,
+          targetHandle: null,
+        };
+      case "LOOP_BACK":
+        return {
+          sourceHandle: null,
+          targetHandle: params.targetType === "LOOP" ? "target-main" : null,
+        };
+      case "LOOP_EXIT":
+        return {
+          sourceHandle: params.sourceType === "LOOP" ? "source-main" : null,
+          targetHandle: null,
+        };
     default:
       return {
         sourceHandle: null,

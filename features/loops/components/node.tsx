@@ -62,19 +62,17 @@ export const LoopNode = memo((props: NodeProps) => {
         hideDefaultHandles
         handles={
           <>
-            <BaseHandle id="target-entry" type="target" position={Position.Left} />
-            <BaseHandle id="source-exit" type="source" position={Position.Right} />
             <BaseHandle
-              id="source-body"
-              type="source"
-              position={Position.Bottom}
-              style={{ left: "34%" }}
-            />
-            <BaseHandle
-              id="target-body"
+              id="target-main"
               type="target"
               position={Position.Bottom}
-              style={{ left: "66%" }}
+              style={{ left: "38%" }}
+            />
+            <BaseHandle
+              id="source-main"
+              type="source"
+              position={Position.Bottom}
+              style={{ left: "62%" }}
             />
           </>
         }
