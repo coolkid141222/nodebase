@@ -52,7 +52,7 @@ export const useExecuteWorkflow = (workflowId: string) => {
     }
   };
 
-  const executeWorkflow = async (options?: { snapshot?: WorkflowSnapshot }) => {
+  const executeWorkflow = async (options?: { snapshot?: WorkflowSnapshot; message?: string }) => {
     const saved = await saveWorkflow(options?.snapshot);
 
     if (!saved) {
@@ -60,7 +60,10 @@ export const useExecuteWorkflow = (workflowId: string) => {
     }
 
     try {
-      await manualExecution.mutateAsync({ workflowId });
+      await manualExecution.mutateAsync({
+        workflowId,
+        message: options?.message,
+      });
       return true;
     } catch {
       return false;

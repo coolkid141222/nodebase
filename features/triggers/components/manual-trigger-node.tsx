@@ -54,6 +54,7 @@ const ManualTriggerNodeComponent = (props: NodeProps) => {
                 nodes: nextNodes,
                 edges: nextEdges,
             },
+            message: values.message,
         });
     };
     return (

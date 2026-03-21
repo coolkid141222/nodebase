@@ -128,6 +128,7 @@ export const executionsRouter = createTRPCRouter({
     .input(
       z.object({
         workflowId: z.string(),
+        message: z.string().trim().max(4_000).optional(),
       }),
     )
     .mutation(async ({ ctx, input }) => {
@@ -137,6 +138,7 @@ export const executionsRouter = createTRPCRouter({
         const execution = await createManualExecution({
           workflowId: input.workflowId,
           triggeredByUserId: ctx.user.id,
+          message: input.message,
         });
 
         if (!execution) {

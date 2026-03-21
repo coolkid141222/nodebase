@@ -40,7 +40,11 @@ import type { TemplateVariableOption } from "@/features/executions/components/te
 
 const EMPTY_MEMORY_WRITES: ExecutionMemoryWriteConfig[] = [];
 
-export type ManualTriggerFormValues = z.output<typeof triggerNodeSchema>;
+const manualTriggerDialogSchema = triggerNodeSchema.extend({
+    message: z.string().trim().max(4_000).default(""),
+});
+
+export type ManualTriggerFormValues = z.output<typeof manualTriggerDialogSchema>;
 
 interface Props {
     open: boolean;
@@ -74,13 +78,14 @@ export const ManualTriggerDialog = ({
         [initialMemoryWritesKey],
     );
     const form = useForm<
-        z.input<typeof triggerNodeSchema>,
+        z.input<typeof manualTriggerDialogSchema>,
         unknown,
         ManualTriggerFormValues
     >({
-        resolver: zodResolver(triggerNodeSchema),
+        resolver: zodResolver(manualTriggerDialogSchema),
         defaultValues: {
             memoryWrites: initialMemoryWrites,
+            message: "",
         },
     });
     const {
@@ -95,6 +100,7 @@ export const ManualTriggerDialog = ({
     useEffect(() => {
         form.reset({
             memoryWrites: initialMemoryWrites,
+            message: "",
         });
     }, [form, initialMemoryWrites]);
 
@@ -145,6 +151,23 @@ export const ManualTriggerDialog = ({
                     onSubmit={form.handleSubmit((values) => void handleTrigger(values))}
                     className="space-y-4"
                 >
+                    <FieldGroup>
+                        <FieldLabel htmlFor="message">Run input</FieldLabel>
+                        <Field>
+                            <Textarea
+                                id="message"
+                                rows={4}
+                                className="resize-none"
+                                {...form.register("message")}
+                                placeholder="Describe the problem or task you want this workflow to solve."
+                            />
+                        </Field>
+                        <FieldDescription>
+                            This is sent only with the current run as <code>{"trigger.body.message"}</code>.
+                        </FieldDescription>
+                        <FieldError errors={[form.formState.errors.message]} />
+                    </FieldGroup>
+
                     <FieldGroup className="rounded-xl border border-border/70 bg-muted/20 p-4">
                         <div className="flex items-start justify-between gap-3">
                             <div className="space-y-1">

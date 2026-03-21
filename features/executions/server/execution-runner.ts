@@ -1819,6 +1819,7 @@ async function createTriggeredExecution(params: {
 export async function createManualExecution(params: {
   workflowId: string;
   triggeredByUserId: string;
+  message?: string;
 }) {
   return createTriggeredExecution({
     workflowId: params.workflowId,
@@ -1830,7 +1831,8 @@ export async function createManualExecution(params: {
     triggerPayload: {
       source: "manual",
       body: {
-        message: "Triggered from the workflow editor.",
+        message:
+          params.message?.trim() || "Triggered from the workflow editor.",
       },
     },
   });
