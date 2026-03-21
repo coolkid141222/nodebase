@@ -40,6 +40,7 @@ import {
 } from "../../memory/shared";
 import { TemplateVariablePicker } from "../template-variable-picker";
 import type { TemplateVariableOption } from "../template-variables";
+import { useI18n } from "@/features/i18n/provider";
 
 const EMPTY_MEMORY_WRITES: ExecutionMemoryWriteConfig[] = [];
 
@@ -106,6 +107,7 @@ export const HttpRequestDialog = ({
     defaultMemoryWrites,
     templateVariables = [],
 }: Props) => {
+    const { t } = useI18n();
     const trpc = useTRPC();
     const credentialsQuery = useQuery(trpc.credentials.getMany.queryOptions());
     const initialMemoryWritesKey = JSON.stringify(
@@ -225,24 +227,23 @@ export const HttpRequestDialog = ({
                             <PlayIcon className="h-5 w-5 text-primary" />
                         </div>
                         <div>
-                            <DialogTitle>配置 HTTP 请求</DialogTitle>
+                            <DialogTitle>{t("dialog.http.title")}</DialogTitle>
                             <DialogDescription className="pt-2">
-                                配置请求的端点、方法和请求体。支持模板变量，例如
-                                {" "}
+                                {t("dialog.http.description")}{" "}
                                 <code>{"{{execution.id}}"}</code>
-                                {" "}、
+                                {" "},
                                 <code>{"{{input.body.message}}"}</code>
-                                {" "}、
+                                {" "},
                                 <code>{"{{inputs.main.text}}"}</code>
-                                {" "}、
+                                {" "},
                                 <code>{"{{memory.shared.nodesById.NODE_ID.output}}"}</code>
-                                {" "}、
+                                {" "},
                                 <code>{"{{memory.node.run.output}}"}</code>
-                                {" "}、
+                                {" "},
                                 <code>{"{{trigger.source}}"}</code>
-                                {" "}、
+                                {" "},
                                 <code>{"{{steps.NODE_ID.output.body}}"}</code>
-                                。也可以绑定凭据并注入为 Bearer 或自定义 Header。
+                                .
                             </DialogDescription>
                         </div>
                     </div>
@@ -256,7 +257,7 @@ export const HttpRequestDialog = ({
                         {/* Endpoint */}
                         <FieldGroup>
                             <div className="flex items-center justify-between gap-3">
-                                <FieldLabel htmlFor="endpoint">端点 URL</FieldLabel>
+                                <FieldLabel htmlFor="endpoint">{t("dialog.http.endpoint")}</FieldLabel>
                                 <TemplateVariablePicker
                                     options={templateVariables}
                                     onSelect={(value) => insertIntoField("endpoint", value, "")}
@@ -274,13 +275,13 @@ export const HttpRequestDialog = ({
 
                         {/* Method */}
                         <FieldGroup>
-                            <FieldLabel htmlFor="method">请求方法</FieldLabel>
+                            <FieldLabel htmlFor="method">{t("dialog.http.method")}</FieldLabel>
                             <Select
                                 value={method}
                                 onValueChange={(value: "GET" | "POST" | "PATCH" | "DELETE") => form.setValue("method", value)}
                             >
                                 <SelectTrigger className="w-full">
-                                    <SelectValue placeholder="选择方法" />
+                                    <SelectValue placeholder={t("common.selectMethod")} />
                                 </SelectTrigger>
                                 <SelectContent>
                                     <SelectItem value="GET">GET</SelectItem>
@@ -297,7 +298,7 @@ export const HttpRequestDialog = ({
                         {/* Body */}
                         <FieldGroup>
                             <div className="flex items-center justify-between gap-3">
-                                <FieldLabel htmlFor="body">请求体</FieldLabel>
+                                <FieldLabel htmlFor="body">{t("dialog.http.body")}</FieldLabel>
                                 <TemplateVariablePicker
                                     options={templateVariables}
                                     onSelect={(value) => insertIntoField("body", value)}
@@ -318,16 +319,16 @@ export const HttpRequestDialog = ({
                         </FieldGroup>
 
                         <FieldGroup>
-                            <FieldLabel htmlFor="credentialId">凭据</FieldLabel>
+                            <FieldLabel htmlFor="credentialId">{t("dialog.http.credential")}</FieldLabel>
                             <Select
                                 value={credentialId || "none"}
                                 onValueChange={(value) => form.setValue("credentialId", value, { shouldValidate: true })}
                             >
                                 <SelectTrigger className="w-full">
-                                    <SelectValue placeholder="选择凭据" />
+                                    <SelectValue placeholder={t("dialog.http.selectCredential")} />
                                 </SelectTrigger>
                                 <SelectContent>
-                                    <SelectItem value="none">No credential</SelectItem>
+                                    <SelectItem value="none">{t("common.noCredential")}</SelectItem>
                                     {(credentialsQuery.data ?? []).map((credential) => (
                                         <SelectItem key={credential.id} value={credential.id}>
                                             {credential.name} ({credential.provider})
@@ -340,7 +341,7 @@ export const HttpRequestDialog = ({
                         {hasCredential && (
                             <>
                                 <FieldGroup>
-                                    <FieldLabel htmlFor="authType">鉴权方式</FieldLabel>
+                                    <FieldLabel htmlFor="authType">{t("dialog.http.authType")}</FieldLabel>
                                     <Select
                                         value={authType}
                                         onValueChange={(value: "NONE" | "BEARER" | "HEADER") =>
@@ -348,7 +349,7 @@ export const HttpRequestDialog = ({
                                         }
                                     >
                                         <SelectTrigger className="w-full">
-                                            <SelectValue placeholder="选择鉴权方式" />
+                                            <SelectValue placeholder={t("common.selectAuthType")} />
                                         </SelectTrigger>
                                         <SelectContent>
                                             <SelectItem value="BEARER">Authorization Bearer</SelectItem>
@@ -377,7 +378,7 @@ export const HttpRequestDialog = ({
 
                                 {authType === "HEADER" && (
                                     <FieldGroup>
-                                        <FieldLabel htmlFor="headerName">Header name</FieldLabel>
+                                    <FieldLabel htmlFor="headerName">{t("dialog.http.headerName")}</FieldLabel>
                                         <Field>
                                             <input
                                                 id="headerName"
@@ -397,14 +398,14 @@ export const HttpRequestDialog = ({
                         <FieldGroup className="rounded-xl border border-border/70 bg-muted/20 p-4">
                             <div className="flex items-start justify-between gap-3">
                                 <div className="space-y-1">
-                                    <FieldLabel>Write to memory</FieldLabel>
+                                    <FieldLabel>{t("dialog.ai.writeMemory")}</FieldLabel>
                                     <p className="text-sm text-muted-foreground">
-                                        Persist selected values into execution memory. Useful templates:
+                                        {t("dialog.http.writeMemoryDescription")}
                                         {" "}
                                         <code>{"{{current.output}}"}</code>
-                                        {" "}、
+                                        {" "},
                                         <code>{"{{current.output.body}}"}</code>
-                                        {" "}、
+                                        {" "},
                                         <code>{"{{memory.shared.run.trigger}}"}</code>
                                     </p>
                                 </div>
@@ -415,14 +416,14 @@ export const HttpRequestDialog = ({
                                     onClick={() => appendMemoryWrite(createDefaultExecutionMemoryWriteConfig())}
                                 >
                                     <PlusIcon className="size-4" />
-                                    Add
+                                    {t("common.add")}
                                 </Button>
                             </div>
 
                             <div className="space-y-4">
                                 {memoryWriteFields.length === 0 ? (
                                     <p className="text-sm text-muted-foreground">
-                                        No custom memory writes yet.
+                                        {t("common.noCustomMemoryWrites")}
                                     </p>
                                 ) : (
                                     memoryWriteFields.map((field, index) => (
@@ -432,7 +433,7 @@ export const HttpRequestDialog = ({
                                         >
                                             <div className="flex items-center justify-between gap-3">
                                                 <div className="text-sm font-medium text-foreground">
-                                                    Memory write {index + 1}
+                                                    {t("common.memoryWrite", { count: index + 1 })}
                                                 </div>
                                                 <Button
                                                     type="button"
@@ -441,13 +442,13 @@ export const HttpRequestDialog = ({
                                                     onClick={() => removeMemoryWrite(index)}
                                                 >
                                                     <Trash2Icon className="size-4" />
-                                                    Remove
+                                                    {t("common.remove")}
                                                 </Button>
                                             </div>
 
                                             <div className="grid gap-3 md:grid-cols-2">
                                                 <FieldGroup>
-                                                    <FieldLabel>Scope</FieldLabel>
+                                                    <FieldLabel>{t("common.scopeLabel")}</FieldLabel>
                                                     <Select
                                                         defaultValue={field.scope}
                                                         onValueChange={(value: "SHARED" | "NODE") =>
@@ -458,17 +459,17 @@ export const HttpRequestDialog = ({
                                                         }
                                                     >
                                                         <SelectTrigger className="w-full">
-                                                            <SelectValue placeholder="Select scope" />
+                                                            <SelectValue placeholder={t("common.selectScope")} />
                                                         </SelectTrigger>
                                                         <SelectContent>
-                                                            <SelectItem value="SHARED">Shared</SelectItem>
-                                                            <SelectItem value="NODE">Node private</SelectItem>
+                                                            <SelectItem value="SHARED">{t("common.shared")}</SelectItem>
+                                                            <SelectItem value="NODE">{t("common.nodePrivate")}</SelectItem>
                                                         </SelectContent>
                                                     </Select>
                                                 </FieldGroup>
 
                                                 <FieldGroup>
-                                                    <FieldLabel>Mode</FieldLabel>
+                                                    <FieldLabel>{t("common.modeLabel")}</FieldLabel>
                                                     <Select
                                                         defaultValue={field.mode}
                                                         onValueChange={(value: "REPLACE" | "MERGE" | "APPEND") =>
@@ -479,12 +480,12 @@ export const HttpRequestDialog = ({
                                                         }
                                                     >
                                                         <SelectTrigger className="w-full">
-                                                            <SelectValue placeholder="Select mode" />
+                                                            <SelectValue placeholder={t("common.selectMode")} />
                                                         </SelectTrigger>
                                                         <SelectContent>
-                                                            <SelectItem value="REPLACE">Replace</SelectItem>
-                                                            <SelectItem value="MERGE">Merge</SelectItem>
-                                                            <SelectItem value="APPEND">Append</SelectItem>
+                                                            <SelectItem value="REPLACE">{t("common.replace")}</SelectItem>
+                                                            <SelectItem value="MERGE">{t("common.merge")}</SelectItem>
+                                                            <SelectItem value="APPEND">{t("common.append")}</SelectItem>
                                                         </SelectContent>
                                                     </Select>
                                                 </FieldGroup>
@@ -492,7 +493,7 @@ export const HttpRequestDialog = ({
 
                                             <div className="grid gap-3 md:grid-cols-2">
                                                 <FieldGroup>
-                                                    <FieldLabel>Namespace</FieldLabel>
+                                                    <FieldLabel>{t("common.namespace")}</FieldLabel>
                                                     <Field>
                                                         <input
                                                             {...form.register(`memoryWrites.${index}.namespace`)}
@@ -506,7 +507,7 @@ export const HttpRequestDialog = ({
                                                 </FieldGroup>
 
                                                 <FieldGroup>
-                                                    <FieldLabel>Key</FieldLabel>
+                                                    <FieldLabel>{t("common.key")}</FieldLabel>
                                                     <Field>
                                                         <input
                                                             {...form.register(`memoryWrites.${index}.key`)}
@@ -522,13 +523,13 @@ export const HttpRequestDialog = ({
 
                                             <FieldGroup>
                                                 <div className="flex items-center justify-between gap-3">
-                                                    <FieldLabel>Value template</FieldLabel>
+                                                    <FieldLabel>{t("common.valueTemplate")}</FieldLabel>
                                                     <TemplateVariablePicker
                                                         options={templateVariables}
                                                         onSelect={(value) =>
                                                             insertMemoryWriteTemplate(index, value)
                                                         }
-                                                        label="Insert"
+                                                        label={t("common.insert")}
                                                     />
                                                 </div>
                                                 <Field>
@@ -545,7 +546,7 @@ export const HttpRequestDialog = ({
                                             </FieldGroup>
 
                                             <FieldGroup>
-                                                <FieldLabel>Visibility</FieldLabel>
+                                                <FieldLabel>{t("common.visibilityLabel")}</FieldLabel>
                                                 <Select
                                                     defaultValue={field.visibility}
                                                     onValueChange={(value: "PUBLIC" | "PRIVATE") =>
@@ -556,11 +557,11 @@ export const HttpRequestDialog = ({
                                                     }
                                                 >
                                                     <SelectTrigger className="w-full">
-                                                        <SelectValue placeholder="Select visibility" />
+                                                        <SelectValue placeholder={t("common.selectVisibility")} />
                                                     </SelectTrigger>
                                                     <SelectContent>
-                                                        <SelectItem value="PUBLIC">Public</SelectItem>
-                                                        <SelectItem value="PRIVATE">Private</SelectItem>
+                                                        <SelectItem value="PUBLIC">{t("common.public")}</SelectItem>
+                                                        <SelectItem value="PRIVATE">{t("common.private")}</SelectItem>
                                                     </SelectContent>
                                                 </Select>
                                             </FieldGroup>
@@ -576,7 +577,7 @@ export const HttpRequestDialog = ({
                             type="submit"
                             disabled={form.formState.isSubmitting}
                         >
-                            {form.formState.isSubmitting ? "保存中..." : "保存"}
+                            {form.formState.isSubmitting ? t("common.running") : t("common.save")}
                         </Button>
                     </DialogFooter>
                 </form>

@@ -44,6 +44,7 @@ import {
   getToolProviderLabel,
 } from "../node/shared";
 import { toolProviderSchema } from "../shared";
+import { useI18n } from "@/features/i18n/provider";
 
 const EMPTY_MEMORY_WRITES: ExecutionMemoryWriteConfig[] = [];
 
@@ -76,6 +77,7 @@ export const ToolDialog = ({
   defaultMemoryWrites,
   templateVariables = [],
 }: Props) => {
+  const { t } = useI18n();
   const trpc = useTRPC();
   const registryQuery = useQuery(trpc.tools.getRegistry.queryOptions());
   const initialMemoryWritesKey = JSON.stringify(
@@ -185,10 +187,9 @@ export const ToolDialog = ({
               <WrenchIcon className="h-5 w-5 text-primary" />
             </div>
             <div>
-              <DialogTitle>Configure Tool</DialogTitle>
+              <DialogTitle>{t("dialog.tool.title")}</DialogTitle>
               <DialogDescription className="pt-2">
-                Select an internal tool, an MCP server tool, or an OpenClaw
-                plugin adapter. Argument templates support values like{" "}
+                {t("dialog.tool.description")}{" "}
                 <code>{"{{input}}"}</code>,{" "}
                 <code>{"{{memory.shared.run.lastNode.result}}"}</code>, and{" "}
                 <code>{"{{steps.NODE_ID.output}}"}</code>.
@@ -211,10 +212,10 @@ export const ToolDialog = ({
           className="space-y-4"
         >
           <FieldGroup className="rounded-xl border border-border/70 bg-muted/20 p-4">
-            <FieldLabel>Tool source</FieldLabel>
+            <FieldLabel>{t("dialog.tool.source")}</FieldLabel>
             <FieldDescription>
               {providerSummary?.description ??
-                "Choose where this tool comes from."}
+                t("dialog.tool.sourceFallback")}
             </FieldDescription>
             <div className="flex items-center gap-2 text-xs uppercase tracking-[0.18em] text-muted-foreground">
               <span>{getToolProviderLabel(provider)}</span>
@@ -225,7 +226,7 @@ export const ToolDialog = ({
           </FieldGroup>
 
           <FieldGroup>
-            <FieldLabel htmlFor="provider">Provider</FieldLabel>
+            <FieldLabel htmlFor="provider">{t("dialog.tool.provider")}</FieldLabel>
             <Select
               value={provider}
               onValueChange={(value: z.infer<typeof toolProviderSchema>) => {
@@ -248,20 +249,20 @@ export const ToolDialog = ({
               }}
             >
               <SelectTrigger className="w-full">
-                <SelectValue placeholder="Select provider" />
+                <SelectValue placeholder={t("common.selectProvider")} />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="INTERNAL">Internal runtime</SelectItem>
-                <SelectItem value="MCP">MCP server</SelectItem>
-                <SelectItem value="OPENCLAW">OpenClaw adapter</SelectItem>
-                <SelectItem value="FEISHU">Feishu adapter</SelectItem>
+                <SelectItem value="INTERNAL">{t("common.internalRuntime")}</SelectItem>
+                <SelectItem value="MCP">{t("common.mcpServer")}</SelectItem>
+                <SelectItem value="OPENCLAW">{t("common.openclawAdapter")}</SelectItem>
+                <SelectItem value="FEISHU">{t("common.feishuAdapter")}</SelectItem>
               </SelectContent>
             </Select>
           </FieldGroup>
 
           {provider === "MCP" && (
             <FieldGroup>
-              <FieldLabel htmlFor="serverId">MCP server</FieldLabel>
+              <FieldLabel htmlFor="serverId">{t("dialog.tool.server")}</FieldLabel>
               <Select
                 value={serverId || "none"}
                 onValueChange={(value) =>
@@ -272,10 +273,10 @@ export const ToolDialog = ({
                 }
               >
                 <SelectTrigger className="w-full">
-                  <SelectValue placeholder="Select server" />
+                  <SelectValue placeholder={t("common.selectServer")} />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="none">Choose later</SelectItem>
+                  <SelectItem value="none">{t("common.chooseLater")}</SelectItem>
                   {mcpServers.map((server) => (
                     <SelectItem key={server.id} value={server.id}>
                       {server.displayName}
@@ -286,14 +287,14 @@ export const ToolDialog = ({
               <FieldDescription>
                 {selectedServer?.statusMessage ??
                   (mcpServers.length === 0
-                    ? "No MCP servers configured yet. Add MCP_SERVERS_JSON first."
-                    : "Choose which MCP server should own this tool call.")}
+                    ? t("dialog.tool.noMcpServers")
+                    : t("dialog.tool.chooseMcpServer"))}
               </FieldDescription>
             </FieldGroup>
           )}
 
           <FieldGroup>
-            <FieldLabel htmlFor="toolId">Tool</FieldLabel>
+            <FieldLabel htmlFor="toolId">{t("dialog.tool.tool")}</FieldLabel>
             {availableTools.length > 0 ? (
               <Select
                 value={toolId || "none"}
@@ -305,10 +306,10 @@ export const ToolDialog = ({
                 }
               >
                 <SelectTrigger className="w-full">
-                  <SelectValue placeholder="Select tool" />
+                  <SelectValue placeholder={t("common.selectTool")} />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="none">Choose later</SelectItem>
+                  <SelectItem value="none">{t("common.chooseLater")}</SelectItem>
                   {availableTools.map((tool) => (
                     <SelectItem key={tool.id} value={tool.id}>
                       {tool.displayName}
@@ -336,19 +337,19 @@ export const ToolDialog = ({
             <FieldDescription>
               {selectedTool?.description ??
                 (provider === "MCP"
-                  ? "Tool discovery is scaffolded. You can type a future MCP tool id now."
+                  ? t("dialog.tool.mcpTypeLater")
                   : provider === "OPENCLAW"
-                    ? "OpenClaw plugin tools will appear here once the adapter is wired."
+                    ? t("dialog.tool.openclawLater")
                     : provider === "FEISHU"
-                      ? "Feishu tools will appear here once the adapter is wired."
-                    : "Select one of the built-in runtime tools.")}
+                      ? t("dialog.tool.feishuLater")
+                      : t("dialog.tool.selectBuiltIn"))}
             </FieldDescription>
             <FieldError errors={[form.formState.errors.toolId]} />
           </FieldGroup>
 
           {selectedTool && (
             <FieldGroup className="rounded-xl border border-border/70 bg-background p-4">
-              <FieldLabel>Selected tool details</FieldLabel>
+              <FieldLabel>{t("dialog.tool.selectedDetails")}</FieldLabel>
               <div className="space-y-2 text-sm text-muted-foreground">
                 <p>{selectedTool.description}</p>
                 <div className="flex flex-wrap gap-2">
@@ -360,7 +361,7 @@ export const ToolDialog = ({
                   </span>
                   {selectedTool.dangerous ? (
                     <span className="rounded-full border border-amber-500/30 bg-amber-500/10 px-2 py-1 text-[11px] uppercase tracking-[0.16em] text-amber-700">
-                      Dangerous
+                      {t("dialog.tool.dangerous")}
                     </span>
                   ) : null}
                 </div>
@@ -380,7 +381,7 @@ export const ToolDialog = ({
 
           <FieldGroup>
             <div className="flex items-center justify-between gap-3">
-              <FieldLabel htmlFor="argumentsJson">Arguments JSON</FieldLabel>
+              <FieldLabel htmlFor="argumentsJson">{t("dialog.tool.argumentsJson")}</FieldLabel>
               <TemplateVariablePicker
                 options={templateVariables}
                 onSelect={insertIntoField}
@@ -396,8 +397,7 @@ export const ToolDialog = ({
               />
             </Field>
             <FieldDescription>
-              Store the tool arguments as JSON or a single template value. The
-              runtime adapter will parse this payload later.
+              {t("dialog.tool.argumentsDescription")}
             </FieldDescription>
             <FieldError errors={[form.formState.errors.argumentsJson]} />
           </FieldGroup>
@@ -405,10 +405,9 @@ export const ToolDialog = ({
           <FieldGroup className="rounded-xl border border-border/70 bg-muted/20 p-4">
             <div className="flex items-start justify-between gap-3">
               <div className="space-y-1">
-                <FieldLabel>Write to memory</FieldLabel>
+                <FieldLabel>{t("dialog.ai.writeMemory")}</FieldLabel>
                 <FieldDescription>
-                  Persist tool outputs into execution memory when runtime
-                  adapters are wired. Useful templates:{" "}
+                  {t("dialog.tool.writeMemoryDescription")}{" "}
                   <code>{"{{current.output}}"}</code>,{" "}
                   <code>{"{{current.output.result}}"}</code>,{" "}
                   <code>{"{{memory.shared.run.lastNode.result}}"}</code>.
@@ -423,14 +422,14 @@ export const ToolDialog = ({
                 }
               >
                 <PlusIcon className="size-4" />
-                Add
+                {t("common.add")}
               </Button>
             </div>
 
             <div className="space-y-4">
               {memoryWriteFields.length === 0 ? (
                 <p className="text-sm text-muted-foreground">
-                  No custom memory writes yet.
+                  {t("common.noCustomMemoryWrites")}
                 </p>
               ) : (
                 memoryWriteFields.map((field, index) => (
@@ -440,7 +439,7 @@ export const ToolDialog = ({
                   >
                     <div className="flex items-center justify-between gap-3">
                       <div className="text-sm font-medium text-foreground">
-                        Memory write {index + 1}
+                        {t("common.memoryWrite", { count: index + 1 })}
                       </div>
                       <Button
                         type="button"
@@ -449,13 +448,13 @@ export const ToolDialog = ({
                         onClick={() => removeMemoryWrite(index)}
                       >
                         <Trash2Icon className="size-4" />
-                        Remove
+                        {t("common.remove")}
                       </Button>
                     </div>
 
                     <div className="grid gap-3 md:grid-cols-2">
                       <FieldGroup>
-                        <FieldLabel>Scope</FieldLabel>
+                        <FieldLabel>{t("common.scopeLabel")}</FieldLabel>
                         <Select
                           defaultValue={field.scope}
                           onValueChange={(value: "SHARED" | "NODE") =>
@@ -466,17 +465,17 @@ export const ToolDialog = ({
                           }
                         >
                           <SelectTrigger className="w-full">
-                            <SelectValue placeholder="Select scope" />
+                            <SelectValue placeholder={t("common.selectScope")} />
                           </SelectTrigger>
                           <SelectContent>
-                            <SelectItem value="SHARED">Shared</SelectItem>
-                            <SelectItem value="NODE">Node private</SelectItem>
+                            <SelectItem value="SHARED">{t("common.shared")}</SelectItem>
+                            <SelectItem value="NODE">{t("common.nodePrivate")}</SelectItem>
                           </SelectContent>
                         </Select>
                       </FieldGroup>
 
                       <FieldGroup>
-                        <FieldLabel>Mode</FieldLabel>
+                        <FieldLabel>{t("common.modeLabel")}</FieldLabel>
                         <Select
                           defaultValue={field.mode}
                           onValueChange={(
@@ -489,12 +488,12 @@ export const ToolDialog = ({
                           }
                         >
                           <SelectTrigger className="w-full">
-                            <SelectValue placeholder="Select mode" />
+                            <SelectValue placeholder={t("common.selectMode")} />
                           </SelectTrigger>
                           <SelectContent>
-                            <SelectItem value="REPLACE">Replace</SelectItem>
-                            <SelectItem value="MERGE">Merge</SelectItem>
-                            <SelectItem value="APPEND">Append</SelectItem>
+                            <SelectItem value="REPLACE">{t("common.replace")}</SelectItem>
+                            <SelectItem value="MERGE">{t("common.merge")}</SelectItem>
+                            <SelectItem value="APPEND">{t("common.append")}</SelectItem>
                           </SelectContent>
                         </Select>
                       </FieldGroup>
@@ -502,7 +501,7 @@ export const ToolDialog = ({
 
                     <div className="grid gap-3 md:grid-cols-2">
                       <FieldGroup>
-                        <FieldLabel>Namespace</FieldLabel>
+                        <FieldLabel>{t("common.namespace")}</FieldLabel>
                         <Field>
                           <Input
                             {...form.register(`memoryWrites.${index}.namespace`)}
@@ -518,7 +517,7 @@ export const ToolDialog = ({
                       </FieldGroup>
 
                       <FieldGroup>
-                        <FieldLabel>Key</FieldLabel>
+                        <FieldLabel>{t("common.key")}</FieldLabel>
                         <Field>
                           <Input
                             {...form.register(`memoryWrites.${index}.key`)}
@@ -535,13 +534,13 @@ export const ToolDialog = ({
 
                     <FieldGroup>
                       <div className="flex items-center justify-between gap-3">
-                        <FieldLabel>Value template</FieldLabel>
+                        <FieldLabel>{t("common.valueTemplate")}</FieldLabel>
                         <TemplateVariablePicker
                           options={templateVariables}
                           onSelect={(value) =>
                             insertMemoryWriteTemplate(index, value)
                           }
-                          label="Insert"
+                          label={t("common.insert")}
                         />
                       </div>
                       <Field>
@@ -560,7 +559,7 @@ export const ToolDialog = ({
                     </FieldGroup>
 
                     <FieldGroup>
-                      <FieldLabel>Visibility</FieldLabel>
+                      <FieldLabel>{t("common.visibilityLabel")}</FieldLabel>
                       <Select
                         defaultValue={field.visibility}
                         onValueChange={(value: "PUBLIC" | "PRIVATE") =>
@@ -575,11 +574,11 @@ export const ToolDialog = ({
                         }
                       >
                         <SelectTrigger className="w-full">
-                          <SelectValue placeholder="Select visibility" />
+                          <SelectValue placeholder={t("common.selectVisibility")} />
                         </SelectTrigger>
                         <SelectContent>
-                          <SelectItem value="PUBLIC">Public</SelectItem>
-                          <SelectItem value="PRIVATE">Private</SelectItem>
+                          <SelectItem value="PUBLIC">{t("common.public")}</SelectItem>
+                          <SelectItem value="PRIVATE">{t("common.private")}</SelectItem>
                         </SelectContent>
                       </Select>
                     </FieldGroup>
@@ -591,7 +590,7 @@ export const ToolDialog = ({
 
           <DialogFooter className="gap-2 sm:justify-end">
             <Button type="submit" disabled={form.formState.isSubmitting}>
-              {form.formState.isSubmitting ? "Saving..." : "Save"}
+              {form.formState.isSubmitting ? t("common.running") : t("common.save")}
             </Button>
           </DialogFooter>
         </form>

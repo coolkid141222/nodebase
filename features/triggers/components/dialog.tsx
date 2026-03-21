@@ -37,6 +37,7 @@ import {
 import { triggerNodeSchema } from "../shared";
 import { TemplateVariablePicker } from "@/features/executions/components/template-variable-picker";
 import type { TemplateVariableOption } from "@/features/executions/components/template-variables";
+import { useI18n } from "@/features/i18n/provider";
 
 const EMPTY_MEMORY_WRITES: ExecutionMemoryWriteConfig[] = [];
 
@@ -69,6 +70,7 @@ export const ManualTriggerDialog = ({
     defaultMemoryWrites,
     templateVariables = [],
 }: Props) => {
+    const { t } = useI18n();
     const initialMemoryWritesKey = JSON.stringify(
         defaultMemoryWrites ?? EMPTY_MEMORY_WRITES,
     );
@@ -140,11 +142,11 @@ export const ManualTriggerDialog = ({
                             <PlayIcon className="h-5 w-5 text-primary" />
                         </div>
                         <div>
-                            <DialogTitle>手动触发工作流</DialogTitle>
+                            <DialogTitle>{t("dialog.trigger.manualTitle")}</DialogTitle>
                         </div>
                     </div>
                     <DialogDescription className="pt-2">
-                        确认要手动执行此工作流吗？此操作将立即启动工作流运行。
+                        {t("dialog.trigger.manualDescription")}
                     </DialogDescription>
                 </DialogHeader>
                 <form
@@ -152,7 +154,7 @@ export const ManualTriggerDialog = ({
                     className="space-y-4"
                 >
                     <FieldGroup>
-                        <FieldLabel htmlFor="message">Run input</FieldLabel>
+                        <FieldLabel htmlFor="message">{t("dialog.trigger.runInput")}</FieldLabel>
                         <Field>
                             <Textarea
                                 id="message"
@@ -163,7 +165,7 @@ export const ManualTriggerDialog = ({
                             />
                         </Field>
                         <FieldDescription>
-                            This is sent only with the current run as <code>{"trigger.body.message"}</code>.
+                            {t("dialog.trigger.runInputDescription")} <code>{"trigger.body.message"}</code>.
                         </FieldDescription>
                         <FieldError errors={[form.formState.errors.message]} />
                     </FieldGroup>
@@ -171,10 +173,9 @@ export const ManualTriggerDialog = ({
                     <FieldGroup className="rounded-xl border border-border/70 bg-muted/20 p-4">
                         <div className="flex items-start justify-between gap-3">
                             <div className="space-y-1">
-                                <FieldLabel>Write to memory</FieldLabel>
+                                <FieldLabel>{t("dialog.ai.writeMemory")}</FieldLabel>
                                 <FieldDescription>
-                                    Persist selected values from the trigger into execution memory.
-                                    Useful templates: <code>{"{{current.output.body}}"}</code>,{" "}
+                                    {t("dialog.trigger.writeMemoryDescription")} <code>{"{{current.output.body}}"}</code>,{" "}
                                     <code>{"{{trigger.body}}"}</code>,{" "}
                                     <code>{"{{execution.id}}"}</code>.
                                 </FieldDescription>
@@ -186,14 +187,14 @@ export const ManualTriggerDialog = ({
                                 onClick={() => appendMemoryWrite(createDefaultExecutionMemoryWriteConfig())}
                             >
                                 <PlusIcon className="size-4" />
-                                Add
+                                {t("common.add")}
                             </Button>
                         </div>
 
                         <div className="space-y-4">
                             {memoryWriteFields.length === 0 ? (
                                 <p className="text-sm text-muted-foreground">
-                                    No custom memory writes yet.
+                                    {t("common.noCustomMemoryWrites")}
                                 </p>
                             ) : (
                                 memoryWriteFields.map((field, index) => (
@@ -203,7 +204,7 @@ export const ManualTriggerDialog = ({
                                     >
                                         <div className="flex items-center justify-between gap-3">
                                             <div className="text-sm font-medium text-foreground">
-                                                Memory write {index + 1}
+                                                {t("common.memoryWrite", { count: index + 1 })}
                                             </div>
                                             <Button
                                                 type="button"
@@ -212,13 +213,13 @@ export const ManualTriggerDialog = ({
                                                 onClick={() => removeMemoryWrite(index)}
                                             >
                                                 <Trash2Icon className="size-4" />
-                                                Remove
+                                                {t("common.remove")}
                                             </Button>
                                         </div>
 
                                         <div className="grid gap-3 md:grid-cols-2">
                                             <FieldGroup>
-                                                <FieldLabel>Scope</FieldLabel>
+                                                <FieldLabel>{t("common.scopeLabel")}</FieldLabel>
                                                 <Select
                                                     defaultValue={field.scope}
                                                     onValueChange={(value: "SHARED" | "NODE") =>
@@ -229,17 +230,17 @@ export const ManualTriggerDialog = ({
                                                     }
                                                 >
                                                     <SelectTrigger className="w-full">
-                                                        <SelectValue placeholder="Select scope" />
+                                                        <SelectValue placeholder={t("common.selectScope")} />
                                                     </SelectTrigger>
                                                     <SelectContent>
-                                                        <SelectItem value="SHARED">Shared</SelectItem>
-                                                        <SelectItem value="NODE">Node private</SelectItem>
+                                                        <SelectItem value="SHARED">{t("common.shared")}</SelectItem>
+                                                        <SelectItem value="NODE">{t("common.nodePrivate")}</SelectItem>
                                                     </SelectContent>
                                                 </Select>
                                             </FieldGroup>
 
                                             <FieldGroup>
-                                                <FieldLabel>Mode</FieldLabel>
+                                                <FieldLabel>{t("common.modeLabel")}</FieldLabel>
                                                 <Select
                                                     defaultValue={field.mode}
                                                     onValueChange={(value: "REPLACE" | "MERGE" | "APPEND") =>
@@ -250,12 +251,12 @@ export const ManualTriggerDialog = ({
                                                     }
                                                 >
                                                     <SelectTrigger className="w-full">
-                                                        <SelectValue placeholder="Select mode" />
+                                                        <SelectValue placeholder={t("common.selectMode")} />
                                                     </SelectTrigger>
                                                     <SelectContent>
-                                                        <SelectItem value="REPLACE">Replace</SelectItem>
-                                                        <SelectItem value="MERGE">Merge</SelectItem>
-                                                        <SelectItem value="APPEND">Append</SelectItem>
+                                                        <SelectItem value="REPLACE">{t("common.replace")}</SelectItem>
+                                                        <SelectItem value="MERGE">{t("common.merge")}</SelectItem>
+                                                        <SelectItem value="APPEND">{t("common.append")}</SelectItem>
                                                     </SelectContent>
                                                 </Select>
                                             </FieldGroup>
@@ -263,7 +264,7 @@ export const ManualTriggerDialog = ({
 
                                         <div className="grid gap-3 md:grid-cols-2">
                                             <FieldGroup>
-                                                <FieldLabel>Namespace</FieldLabel>
+                                                <FieldLabel>{t("common.namespace")}</FieldLabel>
                                                 <Field>
                                                     <Input
                                                         {...form.register(`memoryWrites.${index}.namespace`)}
@@ -276,7 +277,7 @@ export const ManualTriggerDialog = ({
                                             </FieldGroup>
 
                                             <FieldGroup>
-                                                <FieldLabel>Key</FieldLabel>
+                                                <FieldLabel>{t("common.key")}</FieldLabel>
                                                 <Field>
                                                     <Input
                                                         {...form.register(`memoryWrites.${index}.key`)}
@@ -291,13 +292,13 @@ export const ManualTriggerDialog = ({
 
                                         <FieldGroup>
                                             <div className="flex items-center justify-between gap-3">
-                                                <FieldLabel>Value template</FieldLabel>
+                                                <FieldLabel>{t("common.valueTemplate")}</FieldLabel>
                                                 <TemplateVariablePicker
                                                     options={templateVariables}
                                                     onSelect={(value) =>
                                                         insertMemoryWriteTemplate(index, value)
                                                     }
-                                                    label="Insert"
+                                                    label={t("common.insert")}
                                                 />
                                             </div>
                                             <Field>
@@ -314,7 +315,7 @@ export const ManualTriggerDialog = ({
                                         </FieldGroup>
 
                                         <FieldGroup>
-                                            <FieldLabel>Visibility</FieldLabel>
+                                            <FieldLabel>{t("common.visibilityLabel")}</FieldLabel>
                                             <Select
                                                 defaultValue={field.visibility}
                                                 onValueChange={(value: "PUBLIC" | "PRIVATE") =>
@@ -325,11 +326,11 @@ export const ManualTriggerDialog = ({
                                                 }
                                             >
                                                 <SelectTrigger className="w-full">
-                                                    <SelectValue placeholder="Select visibility" />
+                                                    <SelectValue placeholder={t("common.selectVisibility")} />
                                                 </SelectTrigger>
                                                 <SelectContent>
-                                                    <SelectItem value="PUBLIC">Public</SelectItem>
-                                                    <SelectItem value="PRIVATE">Private</SelectItem>
+                                                    <SelectItem value="PUBLIC">{t("common.public")}</SelectItem>
+                                                    <SelectItem value="PRIVATE">{t("common.private")}</SelectItem>
                                                 </SelectContent>
                                             </Select>
                                         </FieldGroup>
@@ -347,7 +348,7 @@ export const ManualTriggerDialog = ({
                         disabled={disabled || isPending}
                     >
                         <SaveIcon className="mr-2 h-4 w-4" />
-                        Save settings
+                        {t("common.saveSettings")}
                     </Button>
                     <Button
                         type="submit"
@@ -355,7 +356,7 @@ export const ManualTriggerDialog = ({
                         disabled={disabled || isPending}
                     >
                         <PlayIcon className="mr-2 h-4 w-4" />
-                        {isPending ? pendingLabel || "Running..." : "立即触发"}
+                        {isPending ? pendingLabel || t("common.running") : t("common.runNow")}
                     </Button>
                 </DialogFooter>
                 </form>

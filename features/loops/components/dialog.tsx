@@ -37,6 +37,7 @@ import {
 import { TemplateVariablePicker } from "@/features/executions/components/template-variable-picker";
 import type { TemplateVariableOption } from "@/features/executions/components/template-variables";
 import { loopNodeSchema } from "../shared";
+import { useI18n } from "@/features/i18n/provider";
 
 const EMPTY_MEMORY_WRITES: ExecutionMemoryWriteConfig[] = [];
 
@@ -59,6 +60,7 @@ export function LoopDialog({
   defaultMemoryWrites,
   templateVariables = [],
 }: Props) {
+  const { t } = useI18n();
   const initialMemoryWritesKey = JSON.stringify(
     defaultMemoryWrites ?? EMPTY_MEMORY_WRITES,
   );
@@ -112,11 +114,9 @@ export function LoopDialog({
               <RotateCwIcon className="h-5 w-5 text-primary" />
             </div>
             <div>
-              <DialogTitle>Configure Loop Scope</DialogTitle>
+              <DialogTitle>{t("dialog.loop.title")}</DialogTitle>
               <DialogDescription className="pt-2">
-                One loop node controls one closed cyclic region. The enclosed
-                body repeats up to the configured limit, then the workflow
-                continues to downstream nodes exactly once.
+                {t("dialog.loop.description")}
               </DialogDescription>
             </div>
           </div>
@@ -128,17 +128,17 @@ export function LoopDialog({
         >
           <div className="rounded-xl border border-border/70 bg-muted/20 p-4">
               <div className="text-sm font-medium text-foreground">
-                How to use this loop
+                {t("dialog.loop.howToUse")}
               </div>
               <ol className="mt-2 space-y-1.5 text-sm leading-6 text-muted-foreground">
-                <li>1. Put exactly one Loop node inside the section you want to repeat.</li>
-                <li>2. Connect the Loop node to the first repeated node, then connect the last repeated node back into Loop.</li>
-                <li>3. Keep upstream and downstream flow on the body nodes. They stay on normal edges and run only once outside the repeated cycle.</li>
+                <li>1. {t("dialog.loop.step1")}</li>
+                <li>2. {t("dialog.loop.step2")}</li>
+                <li>3. {t("dialog.loop.step3")}</li>
               </ol>
             </div>
 
           <FieldGroup>
-            <FieldLabel htmlFor="maxIterations">Scope iteration limit</FieldLabel>
+            <FieldLabel htmlFor="maxIterations">{t("dialog.loop.iterationLimit")}</FieldLabel>
             <Field>
               <Input
                 id="maxIterations"
@@ -149,7 +149,7 @@ export function LoopDialog({
               />
             </Field>
             <FieldDescription>
-              The enclosed loop body can repeat up to this many times.
+              {t("dialog.loop.iterationLimitDescription")}
             </FieldDescription>
             <FieldError errors={[form.formState.errors.maxIterations]} />
           </FieldGroup>
@@ -157,9 +157,9 @@ export function LoopDialog({
           <FieldGroup className="rounded-xl border border-border/70 bg-muted/20 p-4">
             <div className="flex items-start justify-between gap-3">
               <div className="space-y-1">
-                <FieldLabel>Write to memory</FieldLabel>
+                <FieldLabel>{t("dialog.ai.writeMemory")}</FieldLabel>
                 <FieldDescription>
-                  Persist scope state into execution memory. Useful templates:{" "}
+                  {t("dialog.loop.writeMemoryDescription")}{" "}
                   <code>{"{{current.attempt}}"}</code>,{" "}
                   <code>{"{{current.output.value}}"}</code>,{" "}
                   <code>{"{{input}}"}</code>.
@@ -174,14 +174,14 @@ export function LoopDialog({
                 }
               >
                 <PlusIcon className="size-4" />
-                Add
+                {t("common.add")}
               </Button>
             </div>
 
             <div className="space-y-4">
               {memoryWriteFields.length === 0 ? (
                 <p className="text-sm text-muted-foreground">
-                  No custom memory writes yet.
+                  {t("common.noCustomMemoryWrites")}
                 </p>
               ) : (
                 memoryWriteFields.map((field, index) => (
@@ -191,7 +191,7 @@ export function LoopDialog({
                   >
                     <div className="flex items-center justify-between gap-3">
                       <div className="text-sm font-medium text-foreground">
-                        Memory write {index + 1}
+                        {t("common.memoryWrite", { count: index + 1 })}
                       </div>
                       <Button
                         type="button"
@@ -200,13 +200,13 @@ export function LoopDialog({
                         onClick={() => removeMemoryWrite(index)}
                       >
                         <Trash2Icon className="size-4" />
-                        Remove
+                        {t("common.remove")}
                       </Button>
                     </div>
 
                     <div className="grid gap-3 md:grid-cols-2">
                       <FieldGroup>
-                        <FieldLabel>Scope</FieldLabel>
+                        <FieldLabel>{t("common.scopeLabel")}</FieldLabel>
                         <Select
                           defaultValue={field.scope}
                           onValueChange={(value: "SHARED" | "NODE") =>
@@ -217,17 +217,17 @@ export function LoopDialog({
                           }
                         >
                           <SelectTrigger className="w-full">
-                            <SelectValue placeholder="Select scope" />
+                            <SelectValue placeholder={t("common.selectScope")} />
                           </SelectTrigger>
                           <SelectContent>
-                            <SelectItem value="SHARED">Shared</SelectItem>
-                            <SelectItem value="NODE">Node private</SelectItem>
+                            <SelectItem value="SHARED">{t("common.shared")}</SelectItem>
+                            <SelectItem value="NODE">{t("common.nodePrivate")}</SelectItem>
                           </SelectContent>
                         </Select>
                       </FieldGroup>
 
                       <FieldGroup>
-                        <FieldLabel>Mode</FieldLabel>
+                        <FieldLabel>{t("common.modeLabel")}</FieldLabel>
                         <Select
                           defaultValue={field.mode}
                           onValueChange={(value: "REPLACE" | "MERGE" | "APPEND") =>
@@ -238,12 +238,12 @@ export function LoopDialog({
                           }
                         >
                           <SelectTrigger className="w-full">
-                            <SelectValue placeholder="Select mode" />
+                            <SelectValue placeholder={t("common.selectMode")} />
                           </SelectTrigger>
                           <SelectContent>
-                            <SelectItem value="REPLACE">Replace</SelectItem>
-                            <SelectItem value="MERGE">Merge</SelectItem>
-                            <SelectItem value="APPEND">Append</SelectItem>
+                            <SelectItem value="REPLACE">{t("common.replace")}</SelectItem>
+                            <SelectItem value="MERGE">{t("common.merge")}</SelectItem>
+                            <SelectItem value="APPEND">{t("common.append")}</SelectItem>
                           </SelectContent>
                         </Select>
                       </FieldGroup>
@@ -251,7 +251,7 @@ export function LoopDialog({
 
                     <div className="grid gap-3 md:grid-cols-2">
                       <FieldGroup>
-                        <FieldLabel>Namespace</FieldLabel>
+                        <FieldLabel>{t("common.namespace")}</FieldLabel>
                         <Field>
                           <Input
                             {...form.register(`memoryWrites.${index}.namespace`)}
@@ -264,7 +264,7 @@ export function LoopDialog({
                       </FieldGroup>
 
                       <FieldGroup>
-                        <FieldLabel>Key</FieldLabel>
+                        <FieldLabel>{t("common.key")}</FieldLabel>
                         <Field>
                           <Input
                             {...form.register(`memoryWrites.${index}.key`)}
@@ -279,13 +279,13 @@ export function LoopDialog({
 
                     <FieldGroup>
                       <div className="flex items-center justify-between gap-3">
-                        <FieldLabel>Value template</FieldLabel>
+                        <FieldLabel>{t("common.valueTemplate")}</FieldLabel>
                         <TemplateVariablePicker
                           options={templateVariables}
                           onSelect={(value) =>
                             insertMemoryWriteTemplate(index, value)
                           }
-                          label="Insert"
+                          label={t("common.insert")}
                         />
                       </div>
                       <Field>
@@ -302,7 +302,7 @@ export function LoopDialog({
                     </FieldGroup>
 
                     <FieldGroup>
-                      <FieldLabel>Visibility</FieldLabel>
+                      <FieldLabel>{t("common.visibilityLabel")}</FieldLabel>
                       <Select
                         defaultValue={field.visibility}
                         onValueChange={(value: "PUBLIC" | "PRIVATE") =>
@@ -317,11 +317,11 @@ export function LoopDialog({
                         }
                       >
                         <SelectTrigger className="w-full">
-                          <SelectValue placeholder="Select visibility" />
+                          <SelectValue placeholder={t("common.selectVisibility")} />
                         </SelectTrigger>
                         <SelectContent>
-                          <SelectItem value="PUBLIC">Public</SelectItem>
-                          <SelectItem value="PRIVATE">Private</SelectItem>
+                          <SelectItem value="PUBLIC">{t("common.public")}</SelectItem>
+                          <SelectItem value="PRIVATE">{t("common.private")}</SelectItem>
                         </SelectContent>
                       </Select>
                     </FieldGroup>
@@ -333,7 +333,7 @@ export function LoopDialog({
 
           <DialogFooter className="gap-2 sm:justify-end">
             <Button type="submit" disabled={form.formState.isSubmitting}>
-              {form.formState.isSubmitting ? "Saving..." : "Save"}
+              {form.formState.isSubmitting ? t("common.running") : t("common.save")}
             </Button>
           </DialogFooter>
         </form>

@@ -33,6 +33,48 @@ export const messages: Record<AppLocale, TranslationDictionary> = {
     "common.missing": "Missing",
     "common.active": "Active",
     "common.inactive": "Inactive",
+    "common.add": "Add",
+    "common.insert": "Insert",
+    "common.copyUrl": "Copy URL",
+    "common.saveSettings": "Save settings",
+    "common.runNow": "Run now",
+    "common.running": "Running...",
+    "common.enabled": "Enabled",
+    "common.off": "Off",
+    "common.chooseLater": "Choose later",
+    "common.noCredential": "No credential",
+    "common.selectProvider": "Select provider",
+    "common.selectCredential": "Select credential",
+    "common.selectScope": "Select scope",
+    "common.selectMode": "Select mode",
+    "common.selectVisibility": "Select visibility",
+    "common.selectMethod": "Select method",
+    "common.selectAuthType": "Select auth type",
+    "common.selectServer": "Select server",
+    "common.selectTool": "Select tool",
+    "common.scopeLabel": "Scope",
+    "common.modeLabel": "Mode",
+    "common.visibilityLabel": "Visibility",
+    "common.namespace": "Namespace",
+    "common.key": "Key",
+    "common.valueTemplate": "Value template",
+    "common.noCustomMemoryWrites": "No custom memory writes yet.",
+    "common.memoryWrite": "Memory write {{count}}",
+    "common.shared": "Shared",
+    "common.nodePrivate": "Node private",
+    "common.replace": "Replace",
+    "common.merge": "Merge",
+    "common.append": "Append",
+    "common.public": "Public",
+    "common.private": "Private",
+    "common.workflow": "Workflow",
+    "common.user": "User",
+    "common.internalRuntime": "Internal runtime",
+    "common.mcpServer": "MCP server",
+    "common.openclawAdapter": "OpenClaw adapter",
+    "common.feishuAdapter": "Feishu adapter",
+    "common.internalBrowser": "Internal browser",
+    "common.mcpReadySlot": "MCP-ready slot",
     "sidebar.workflows": "Workflows",
     "sidebar.credentials": "Credentials",
     "sidebar.executions": "Executions",
@@ -164,6 +206,130 @@ export const messages: Record<AppLocale, TranslationDictionary> = {
       "Describe a workflow on the left. The generated draft will stay editable here before it replaces the current canvas.",
     "workflowGenerator.addCredential":
       "Add a {{provider}} credential first to use AI workflow generation.",
+    "dialog.ai.title": "Configure AI Text",
+    "dialog.ai.description":
+      "Generate text with Gemini, OpenAI, Anthropic, DeepSeek, or MiniMax. Prompt and system fields support workflow templates.",
+    "dialog.ai.provider": "Provider",
+    "dialog.ai.model": "Model",
+    "dialog.ai.credential": "Credential",
+    "dialog.ai.secretField": "Secret JSON field",
+    "dialog.ai.suggestedDefault": "Suggested default:",
+    "dialog.ai.researchContext": "Research context",
+    "dialog.ai.researchContextDescription":
+      "Gather page context before generation. This keeps AI Text deterministic while giving it an intentional browser-powered research step.",
+    "dialog.ai.researchSlotDescription":
+      "This first version uses the internal page reader. The same panel can later host MCP browser tools without changing the AI node shape.",
+    "dialog.ai.browserTool": "Browser tool",
+    "dialog.ai.selectBrowserTool": "Select browser tool",
+    "dialog.ai.noBrowserTools":
+      "No browser tools are available yet. Add one in the tool registry before enabling research context.",
+    "dialog.ai.chooseBrowserTool":
+      "Choose which browser-style tool should gather context before the model responds.",
+    "dialog.ai.browserToolArguments": "Browser tool arguments",
+    "dialog.ai.browserResultAppended":
+      "The browser result is appended to the prompt as structured research context before generation runs.",
+    "dialog.ai.persistentRecall": "Persistent memory recall",
+    "dialog.ai.persistentRecallDescription":
+      "Pull workflow or user memory back into the prompt with semantic retrieval. This uses embeddings when available and falls back to lexical recall otherwise.",
+    "dialog.ai.recallScope": "Recall scope",
+    "dialog.ai.recallQuery": "Recall query",
+    "dialog.ai.recallQueryDescription":
+      "Query text used to retrieve prior memories. Useful examples:",
+    "dialog.ai.writeMemory": "Write to memory",
+    "dialog.ai.writeMemoryDescription":
+      "Persist selected values into execution memory. Useful templates:",
+    "dialog.ai.persistBeyondRun": "Persist beyond this run",
+    "dialog.ai.persistBeyondRunDescription":
+      "Store this memory as long-term context.",
+    "dialog.ai.semanticIndex": "Semantic index",
+    "dialog.ai.semanticIndexDescription":
+      "Generate embeddings for later recall.",
+    "dialog.ai.persistentScope": "Persistent scope",
+    "dialog.http.title": "Configure HTTP Request",
+    "dialog.http.description":
+      "Configure the endpoint, method, and request body. You can also bind a credential and inject it as Bearer auth or a custom header.",
+    "dialog.http.endpoint": "Endpoint URL",
+    "dialog.http.method": "Request method",
+    "dialog.http.body": "Request body",
+    "dialog.http.credential": "Credential",
+    "dialog.http.authType": "Auth type",
+    "dialog.http.headerName": "Header name",
+    "dialog.http.selectCredential": "Select credential",
+    "dialog.http.writeMemoryDescription":
+      "Persist selected values into execution memory. Useful templates:",
+    "dialog.trigger.manualTitle": "Manually trigger workflow",
+    "dialog.trigger.manualDescription":
+      "Run this workflow immediately with an optional one-off input payload.",
+    "dialog.trigger.runInput": "Run input",
+    "dialog.trigger.runInputDescription":
+      "This is sent only with the current run as",
+    "dialog.trigger.writeMemoryDescription":
+      "Persist selected values from the trigger into execution memory. Useful templates:",
+    "dialog.trigger.webhookTitle": "Webhook Trigger",
+    "dialog.trigger.webhookDescription":
+      "Send a POST request to this endpoint to start the workflow. The request body becomes the workflow trigger payload.",
+    "dialog.trigger.examplePayload": "Example payload:",
+    "dialog.trigger.webhookCopied": "Webhook URL copied",
+    "dialog.trigger.settingsSaved": "Webhook trigger settings saved",
+    "dialog.loop.title": "Configure Loop Scope",
+    "dialog.loop.description":
+      "One loop node controls one closed cyclic region. The enclosed body repeats up to the configured limit, then the workflow continues to downstream nodes exactly once.",
+    "dialog.loop.howToUse": "How to use this loop",
+    "dialog.loop.step1":
+      "Put exactly one Loop node inside the section you want to repeat.",
+    "dialog.loop.step2":
+      "Connect the Loop node to the first repeated node, then connect the last repeated node back into Loop.",
+    "dialog.loop.step3":
+      "Keep upstream and downstream flow on the body nodes. They stay on normal edges and run only once outside the repeated cycle.",
+    "dialog.loop.iterationLimit": "Scope iteration limit",
+    "dialog.loop.iterationLimitDescription":
+      "The enclosed loop body can repeat up to this many times.",
+    "dialog.loop.writeMemoryDescription":
+      "Persist scope state into execution memory. Useful templates:",
+    "dialog.tool.title": "Configure Tool",
+    "dialog.tool.description":
+      "Select an internal tool, an MCP server tool, or an OpenClaw/Feishu adapter. Argument templates support workflow variables.",
+    "dialog.tool.source": "Tool source",
+    "dialog.tool.sourceFallback": "Choose where this tool comes from.",
+    "dialog.tool.provider": "Provider",
+    "dialog.tool.server": "MCP server",
+    "dialog.tool.tool": "Tool",
+    "dialog.tool.noMcpServers":
+      "No MCP servers configured yet. Add MCP_SERVERS_JSON first.",
+    "dialog.tool.chooseMcpServer":
+      "Choose which MCP server should own this tool call.",
+    "dialog.tool.mcpTypeLater":
+      "Tool discovery is scaffolded. You can type a future MCP tool id now.",
+    "dialog.tool.openclawLater":
+      "OpenClaw plugin tools will appear here once the adapter is wired.",
+    "dialog.tool.feishuLater":
+      "Feishu tools will appear here once the adapter is wired.",
+    "dialog.tool.selectBuiltIn": "Select one of the built-in runtime tools.",
+    "dialog.tool.selectedDetails": "Selected tool details",
+    "dialog.tool.dangerous": "Dangerous",
+    "dialog.tool.argumentsJson": "Arguments JSON",
+    "dialog.tool.argumentsDescription":
+      "Store the tool arguments as JSON or a single template value. The runtime adapter will parse this payload later.",
+    "dialog.tool.writeMemoryDescription":
+      "Persist tool outputs into execution memory when runtime adapters are wired. Useful templates:",
+    "dialog.slack.title": "Configure Slack Message",
+    "dialog.slack.description":
+      "Send a templated message to a Slack webhook credential. The message field supports workflow templates.",
+    "dialog.slack.credential": "Slack credential",
+    "dialog.slack.selectCredential": "Select Slack credential",
+    "dialog.slack.secretField": "Secret JSON field",
+    "dialog.slack.message": "Message",
+    "dialog.slack.writeMemoryDescription":
+      "Persist selected values into execution memory. Useful templates:",
+    "dialog.discord.title": "Configure Discord Message",
+    "dialog.discord.description":
+      "Send a templated message to a Discord webhook credential. The message field supports workflow templates.",
+    "dialog.discord.credential": "Discord credential",
+    "dialog.discord.selectCredential": "Select Discord credential",
+    "dialog.discord.secretField": "Secret JSON field",
+    "dialog.discord.message": "Message",
+    "dialog.discord.writeMemoryDescription":
+      "Persist selected values into execution memory. Useful templates:",
     "upgrade.badgeProActive": "Pro active",
     "upgrade.badgeLocalUpgrade": "Local upgrade",
     "upgrade.badgeNoCharge": "No real charge",
@@ -292,6 +458,48 @@ export const messages: Record<AppLocale, TranslationDictionary> = {
     "common.missing": "缺失",
     "common.active": "已启用",
     "common.inactive": "未启用",
+    "common.add": "添加",
+    "common.insert": "插入",
+    "common.copyUrl": "复制链接",
+    "common.saveSettings": "保存设置",
+    "common.runNow": "立即运行",
+    "common.running": "运行中...",
+    "common.enabled": "已启用",
+    "common.off": "关闭",
+    "common.chooseLater": "稍后再选",
+    "common.noCredential": "不使用凭据",
+    "common.selectProvider": "选择提供商",
+    "common.selectCredential": "选择凭据",
+    "common.selectScope": "选择范围",
+    "common.selectMode": "选择模式",
+    "common.selectVisibility": "选择可见性",
+    "common.selectMethod": "选择方法",
+    "common.selectAuthType": "选择鉴权方式",
+    "common.selectServer": "选择服务",
+    "common.selectTool": "选择工具",
+    "common.scopeLabel": "范围",
+    "common.modeLabel": "模式",
+    "common.visibilityLabel": "可见性",
+    "common.namespace": "命名空间",
+    "common.key": "键",
+    "common.valueTemplate": "值模板",
+    "common.noCustomMemoryWrites": "还没有自定义 memory 写入。",
+    "common.memoryWrite": "Memory 写入 {{count}}",
+    "common.shared": "共享",
+    "common.nodePrivate": "节点私有",
+    "common.replace": "替换",
+    "common.merge": "合并",
+    "common.append": "追加",
+    "common.public": "公开",
+    "common.private": "私有",
+    "common.workflow": "工作流",
+    "common.user": "用户",
+    "common.internalRuntime": "内置运行时",
+    "common.mcpServer": "MCP 服务",
+    "common.openclawAdapter": "OpenClaw 适配器",
+    "common.feishuAdapter": "飞书适配器",
+    "common.internalBrowser": "内置浏览器",
+    "common.mcpReadySlot": "MCP 预留位",
     "sidebar.workflows": "工作流",
     "sidebar.credentials": "凭据",
     "sidebar.executions": "执行记录",
@@ -415,6 +623,128 @@ export const messages: Record<AppLocale, TranslationDictionary> = {
     "workflowGenerator.applyToCanvas": "应用到画布",
     "workflowGenerator.describeWorkflow": "先在左侧描述流程。生成后的草稿会在这里保持可编辑，再决定是否替换当前画布。",
     "workflowGenerator.addCredential": "请先添加一个 {{provider}} 凭据，再使用 AI 生成工作流。",
+    "dialog.ai.title": "配置 AI 文本",
+    "dialog.ai.description":
+      "使用 Gemini、OpenAI、Anthropic、DeepSeek 或 MiniMax 生成文本。Prompt 和 System 字段支持工作流模板变量。",
+    "dialog.ai.provider": "提供商",
+    "dialog.ai.model": "模型",
+    "dialog.ai.credential": "凭据",
+    "dialog.ai.secretField": "Secret JSON 字段",
+    "dialog.ai.suggestedDefault": "建议默认值：",
+    "dialog.ai.researchContext": "研究上下文",
+    "dialog.ai.researchContextDescription":
+      "在生成前先抓取页面上下文。这样既能保持 AI Text 节点的确定性，也能显式加入浏览器研究步骤。",
+    "dialog.ai.researchSlotDescription":
+      "当前版本先使用内置页面读取器。后续接 MCP 浏览器工具时，可以继续沿用这个面板。",
+    "dialog.ai.browserTool": "浏览器工具",
+    "dialog.ai.selectBrowserTool": "选择浏览器工具",
+    "dialog.ai.noBrowserTools":
+      "当前还没有可用的浏览器工具。请先在工具注册表里添加，再开启研究上下文。",
+    "dialog.ai.chooseBrowserTool":
+      "选择在模型响应前负责抓取上下文的浏览器类工具。",
+    "dialog.ai.browserToolArguments": "浏览器工具参数",
+    "dialog.ai.browserResultAppended":
+      "浏览器工具结果会作为结构化研究上下文追加到 Prompt 中，再执行生成。",
+    "dialog.ai.persistentRecall": "持久化记忆召回",
+    "dialog.ai.persistentRecallDescription":
+      "把工作流或用户级记忆召回到 Prompt 中。有 embedding 时走语义召回，没有时回退到词法匹配。",
+    "dialog.ai.recallScope": "召回范围",
+    "dialog.ai.recallQuery": "召回查询",
+    "dialog.ai.recallQueryDescription": "用于检索历史记忆的查询文本，常见示例：",
+    "dialog.ai.writeMemory": "写入 memory",
+    "dialog.ai.writeMemoryDescription":
+      "把选定结果写入执行 memory。常用模板：",
+    "dialog.ai.persistBeyondRun": "持久化到本次运行之外",
+    "dialog.ai.persistBeyondRunDescription":
+      "把这条 memory 存成长期上下文。",
+    "dialog.ai.semanticIndex": "语义索引",
+    "dialog.ai.semanticIndexDescription":
+      "为后续召回生成 embedding。",
+    "dialog.ai.persistentScope": "持久化范围",
+    "dialog.http.title": "配置 HTTP 请求",
+    "dialog.http.description":
+      "配置端点、请求方法和请求体。也可以绑定凭据并注入为 Bearer 或自定义 Header。",
+    "dialog.http.endpoint": "端点 URL",
+    "dialog.http.method": "请求方法",
+    "dialog.http.body": "请求体",
+    "dialog.http.credential": "凭据",
+    "dialog.http.authType": "鉴权方式",
+    "dialog.http.headerName": "Header 名称",
+    "dialog.http.selectCredential": "选择凭据",
+    "dialog.http.writeMemoryDescription":
+      "把选定结果写入执行 memory。常用模板：",
+    "dialog.trigger.manualTitle": "手动触发工作流",
+    "dialog.trigger.manualDescription":
+      "立即运行这个工作流，并可附带一次性输入内容。",
+    "dialog.trigger.runInput": "运行输入",
+    "dialog.trigger.runInputDescription":
+      "这段内容只会随本次运行发送，路径为",
+    "dialog.trigger.writeMemoryDescription":
+      "把触发器中的选定值写入执行 memory。常用模板：",
+    "dialog.trigger.webhookTitle": "Webhook 触发器",
+    "dialog.trigger.webhookDescription":
+      "向这个端点发送 POST 请求即可启动工作流，请求体会成为工作流触发 payload。",
+    "dialog.trigger.examplePayload": "示例 payload：",
+    "dialog.trigger.webhookCopied": "Webhook 地址已复制",
+    "dialog.trigger.settingsSaved": "Webhook 触发器设置已保存",
+    "dialog.loop.title": "配置 Loop 作用域",
+    "dialog.loop.description":
+      "一个 Loop 节点控制一个闭环作用域。包裹在其中的节点会按配置次数重复执行，随后工作流只向下游继续一次。",
+    "dialog.loop.howToUse": "如何使用这个 Loop",
+    "dialog.loop.step1": "在你想重复的那一段中，只放一个 Loop 节点。",
+    "dialog.loop.step2":
+      "把 Loop 连到循环体的第一个节点，再把循环体最后一个节点连回 Loop。",
+    "dialog.loop.step3":
+      "上游和下游流程仍然挂在循环体节点上，保持普通连线，它们只会在循环外执行一次。",
+    "dialog.loop.iterationLimit": "作用域迭代上限",
+    "dialog.loop.iterationLimitDescription":
+      "这个循环体最多可重复执行这么多次。",
+    "dialog.loop.writeMemoryDescription":
+      "把作用域状态写入执行 memory。常用模板：",
+    "dialog.tool.title": "配置工具节点",
+    "dialog.tool.description":
+      "选择内置工具、MCP 服务工具或 OpenClaw/飞书适配器。参数模板支持工作流变量。",
+    "dialog.tool.source": "工具来源",
+    "dialog.tool.sourceFallback": "选择这个工具来自哪里。",
+    "dialog.tool.provider": "提供商",
+    "dialog.tool.server": "MCP 服务",
+    "dialog.tool.tool": "工具",
+    "dialog.tool.noMcpServers":
+      "当前还没有配置 MCP 服务。请先补 MCP_SERVERS_JSON。",
+    "dialog.tool.chooseMcpServer":
+      "选择由哪个 MCP 服务来承接这次工具调用。",
+    "dialog.tool.mcpTypeLater":
+      "工具发现还只是脚手架阶段。你现在也可以先手填未来的 MCP 工具 ID。",
+    "dialog.tool.openclawLater":
+      "OpenClaw 插件工具会在适配器接通后出现在这里。",
+    "dialog.tool.feishuLater":
+      "飞书工具会在适配器接通后出现在这里。",
+    "dialog.tool.selectBuiltIn": "选择一个内置运行时工具。",
+    "dialog.tool.selectedDetails": "当前工具详情",
+    "dialog.tool.dangerous": "高风险",
+    "dialog.tool.argumentsJson": "参数 JSON",
+    "dialog.tool.argumentsDescription":
+      "把工具参数保存为 JSON 或单个模板值，运行时适配器会解析这个 payload。",
+    "dialog.tool.writeMemoryDescription":
+      "当运行时适配器接通后，把工具输出写入执行 memory。常用模板：",
+    "dialog.slack.title": "配置 Slack 消息",
+    "dialog.slack.description":
+      "向 Slack webhook 凭据发送模板化消息。消息字段支持工作流模板变量。",
+    "dialog.slack.credential": "Slack 凭据",
+    "dialog.slack.selectCredential": "选择 Slack 凭据",
+    "dialog.slack.secretField": "Secret JSON 字段",
+    "dialog.slack.message": "消息内容",
+    "dialog.slack.writeMemoryDescription":
+      "把选定结果写入执行 memory。常用模板：",
+    "dialog.discord.title": "配置 Discord 消息",
+    "dialog.discord.description":
+      "向 Discord webhook 凭据发送模板化消息。消息字段支持工作流模板变量。",
+    "dialog.discord.credential": "Discord 凭据",
+    "dialog.discord.selectCredential": "选择 Discord 凭据",
+    "dialog.discord.secretField": "Secret JSON 字段",
+    "dialog.discord.message": "消息内容",
+    "dialog.discord.writeMemoryDescription":
+      "把选定结果写入执行 memory。常用模板：",
     "upgrade.badgeProActive": "Pro 已启用",
     "upgrade.badgeLocalUpgrade": "本地升级",
     "upgrade.badgeNoCharge": "不会真实扣费",

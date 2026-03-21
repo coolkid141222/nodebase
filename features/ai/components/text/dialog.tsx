@@ -46,6 +46,7 @@ import {
 import { TemplateVariablePicker } from "@/features/executions/components/template-variable-picker";
 import type { TemplateVariableOption } from "@/features/executions/components/template-variables";
 import { Switch } from "@/components/switch";
+import { useI18n } from "@/features/i18n/provider";
 
 const formSchema = aiTextNodeSchema.safeExtend({
   system: z.string().optional(),
@@ -102,6 +103,7 @@ export const AITextDialog = ({
   defaultMemoryWrites,
   templateVariables = [],
 }: Props) => {
+  const { t } = useI18n();
   const trpc = useTRPC();
   const credentialsQuery = useQuery(trpc.credentials.getMany.queryOptions());
   const registryQuery = useQuery(trpc.tools.getRegistry.queryOptions());
@@ -303,14 +305,12 @@ export const AITextDialog = ({
               <BotIcon className="h-5 w-5 text-primary" />
             </div>
             <div>
-              <DialogTitle>Configure AI Text</DialogTitle>
+              <DialogTitle>{t("dialog.ai.title")}</DialogTitle>
               <DialogDescription className="pt-2">
-                Generate text with Gemini, OpenAI, Anthropic, DeepSeek, or
-                MiniMax. Prompt and system fields support workflow templates
-                like <code>{"{{input}}"}</code>,{" "}
-                <code>{"{{inputRaw.body.message}}"}</code>, and{" "}
+                {t("dialog.ai.description")} <code>{"{{input}}"}</code>,{" "}
+                <code>{"{{inputRaw.body.message}}"}</code>,{" "}
                 <code>{"{{memory.shared.nodesById.NODE_ID.output}}"}</code>,{" "}
-                <code>{"{{memory.node.run.output}}"}</code>, and{" "}
+                <code>{"{{memory.node.run.output}}"}</code>,{" "}
                 <code>{"{{steps.NODE_ID.output.body}}"}</code>.
               </DialogDescription>
             </div>
@@ -322,7 +322,7 @@ export const AITextDialog = ({
           className="space-y-4"
         >
           <FieldGroup>
-            <FieldLabel htmlFor="provider">Provider</FieldLabel>
+            <FieldLabel htmlFor="provider">{t("dialog.ai.provider")}</FieldLabel>
             <Select
               value={provider}
               onValueChange={(value: z.infer<typeof aiTextProviderSchema>) => {
@@ -341,7 +341,7 @@ export const AITextDialog = ({
               }}
             >
               <SelectTrigger className="w-full">
-                <SelectValue placeholder="Select provider" />
+                <SelectValue placeholder={t("common.selectProvider")} />
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="GOOGLE">Google Gemini</SelectItem>
@@ -354,7 +354,7 @@ export const AITextDialog = ({
           </FieldGroup>
 
           <FieldGroup>
-            <FieldLabel htmlFor="model">Model</FieldLabel>
+            <FieldLabel htmlFor="model">{t("dialog.ai.model")}</FieldLabel>
             <Field>
               <Input
                 id="model"
@@ -363,13 +363,13 @@ export const AITextDialog = ({
                />
              </Field>
              <FieldDescription>
-               Suggested default: <code>{getDefaultAITextModel(selectedProvider)}</code>
+               {t("dialog.ai.suggestedDefault")} <code>{getDefaultAITextModel(selectedProvider)}</code>
              </FieldDescription>
             <FieldError errors={[form.formState.errors.model]} />
           </FieldGroup>
 
           <FieldGroup>
-            <FieldLabel htmlFor="credentialId">Credential</FieldLabel>
+            <FieldLabel htmlFor="credentialId">{t("dialog.ai.credential")}</FieldLabel>
             <Select
               value={credentialId}
               onValueChange={(value) =>
@@ -377,7 +377,7 @@ export const AITextDialog = ({
               }
             >
               <SelectTrigger className="w-full">
-                <SelectValue placeholder={`Select ${selectedProvider} credential`} />
+                <SelectValue placeholder={`${t("common.selectCredential")} ${selectedProvider}`} />
               </SelectTrigger>
               <SelectContent>
                 {credentials.map((credential) => (
@@ -391,7 +391,7 @@ export const AITextDialog = ({
           </FieldGroup>
 
           <FieldGroup>
-            <FieldLabel htmlFor="credentialField">Secret JSON field</FieldLabel>
+            <FieldLabel htmlFor="credentialField">{t("dialog.ai.secretField")}</FieldLabel>
             <Field>
               <Input
                 id="credentialField"
@@ -447,17 +447,15 @@ export const AITextDialog = ({
               <div className="space-y-1">
                 <div className="flex items-center gap-2">
                   <SparklesIcon className="size-4 text-primary" />
-                  <FieldLabel>Research context</FieldLabel>
+                  <FieldLabel>{t("dialog.ai.researchContext")}</FieldLabel>
                 </div>
                 <FieldDescription>
-                  Gather page context before generation. This keeps AI Text
-                  deterministic while giving it an intentional browser-powered
-                  research step.
+                  {t("dialog.ai.researchContextDescription")}
                 </FieldDescription>
               </div>
               <div className="flex items-center gap-3">
                 <span className="text-xs uppercase tracking-[0.18em] text-muted-foreground">
-                  {toolEnabled ? "Enabled" : "Off"}
+                  {toolEnabled ? t("common.enabled") : t("common.off")}
                 </span>
                 <Switch
                   checked={toolEnabled}
@@ -476,21 +474,19 @@ export const AITextDialog = ({
                 <FieldGroup className="rounded-xl border border-border/70 bg-background/80 p-4">
                   <div className="flex flex-wrap items-center gap-2">
                     <span className="rounded-full border border-emerald-500/20 bg-emerald-500/10 px-2 py-1 text-[11px] uppercase tracking-[0.16em] text-emerald-700">
-                      Internal browser
+                      {t("common.internalBrowser")}
                     </span>
                     <span className="rounded-full border border-border/70 px-2 py-1 text-[11px] uppercase tracking-[0.16em] text-muted-foreground">
-                      MCP-ready slot
+                      {t("common.mcpReadySlot")}
                     </span>
                   </div>
                   <FieldDescription>
-                    This first version uses the internal page reader. The same
-                    panel can later host MCP browser tools without changing the
-                    AI node shape.
+                    {t("dialog.ai.researchSlotDescription")}
                   </FieldDescription>
                 </FieldGroup>
 
                 <FieldGroup>
-                  <FieldLabel htmlFor="toolId">Browser tool</FieldLabel>
+                  <FieldLabel htmlFor="toolId">{t("dialog.ai.browserTool")}</FieldLabel>
                   <Select
                     value={toolId || "none"}
                     onValueChange={(value) => {
@@ -514,10 +510,10 @@ export const AITextDialog = ({
                     }}
                   >
                     <SelectTrigger className="w-full">
-                      <SelectValue placeholder="Select browser tool" />
+                      <SelectValue placeholder={t("dialog.ai.selectBrowserTool")} />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="none">Choose later</SelectItem>
+                      <SelectItem value="none">{t("common.chooseLater")}</SelectItem>
                       {browserTools.map((tool) => (
                         <SelectItem key={tool.id} value={tool.id}>
                           {tool.displayName}
@@ -527,9 +523,9 @@ export const AITextDialog = ({
                   </Select>
                   <FieldDescription>
                     {browserTools.length === 0
-                      ? "No browser tools are available yet. Add one in the tool registry before enabling research context."
+                      ? t("dialog.ai.noBrowserTools")
                       : selectedBrowserTool?.description ??
-                        "Choose which browser-style tool should gather context before the model responds."}
+                        t("dialog.ai.chooseBrowserTool")}
                   </FieldDescription>
                   <FieldError errors={[form.formState.errors.toolId]} />
                 </FieldGroup>
@@ -537,12 +533,12 @@ export const AITextDialog = ({
                 <FieldGroup>
                   <div className="flex items-center justify-between gap-3">
                     <FieldLabel htmlFor="toolArgumentsJson">
-                      Browser tool arguments
+                      {t("dialog.ai.browserToolArguments")}
                     </FieldLabel>
                     <TemplateVariablePicker
                       options={templateVariables}
                       onSelect={insertToolArgumentTemplate}
-                      label="Insert"
+                      label={t("common.insert")}
                     />
                   </div>
                   <Field>
@@ -557,8 +553,7 @@ export const AITextDialog = ({
                     />
                   </Field>
                   <FieldDescription>
-                    The browser result is appended to the prompt as structured
-                    research context before generation runs.
+                    {t("dialog.ai.browserResultAppended")}
                   </FieldDescription>
                 </FieldGroup>
               </div>
@@ -570,17 +565,15 @@ export const AITextDialog = ({
               <div className="space-y-1">
                 <div className="flex items-center gap-2">
                   <SparklesIcon className="size-4 text-primary" />
-                  <FieldLabel>Persistent memory recall</FieldLabel>
+                  <FieldLabel>{t("dialog.ai.persistentRecall")}</FieldLabel>
                 </div>
                 <FieldDescription>
-                  Pull workflow or user memory back into the prompt with
-                  semantic retrieval. This uses embeddings when available and
-                  falls back to lexical recall otherwise.
+                  {t("dialog.ai.persistentRecallDescription")}
                 </FieldDescription>
               </div>
               <div className="flex items-center gap-3">
                 <span className="text-xs uppercase tracking-[0.18em] text-muted-foreground">
-                  {memoryContextEnabled ? "Enabled" : "Off"}
+                  {memoryContextEnabled ? t("common.enabled") : t("common.off")}
                 </span>
                 <Switch
                   checked={memoryContextEnabled}
@@ -598,7 +591,7 @@ export const AITextDialog = ({
               <div className="space-y-4">
                 <div className="grid gap-3 md:grid-cols-[1fr_120px]">
                   <FieldGroup>
-                    <FieldLabel>Recall scope</FieldLabel>
+                    <FieldLabel>{t("dialog.ai.recallScope")}</FieldLabel>
                     <Select
                       value={memoryContextScope}
                       onValueChange={(value: "WORKFLOW" | "USER") =>
@@ -609,11 +602,11 @@ export const AITextDialog = ({
                       }
                     >
                       <SelectTrigger className="w-full">
-                        <SelectValue placeholder="Select scope" />
+                        <SelectValue placeholder={t("common.selectScope")} />
                       </SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="WORKFLOW">Workflow</SelectItem>
-                        <SelectItem value="USER">User</SelectItem>
+                        <SelectItem value="WORKFLOW">{t("common.workflow")}</SelectItem>
+                        <SelectItem value="USER">{t("common.user")}</SelectItem>
                       </SelectContent>
                     </Select>
                   </FieldGroup>
@@ -639,7 +632,7 @@ export const AITextDialog = ({
 
                 <FieldGroup>
                   <div className="flex items-center justify-between gap-3">
-                    <FieldLabel htmlFor="memoryContextQuery">Recall query</FieldLabel>
+                    <FieldLabel htmlFor="memoryContextQuery">{t("dialog.ai.recallQuery")}</FieldLabel>
                     <TemplateVariablePicker
                       options={templateVariables}
                       onSelect={(value) => {
@@ -653,7 +646,7 @@ export const AITextDialog = ({
                           shouldValidate: true,
                         });
                       }}
-                      label="Insert"
+                      label={t("common.insert")}
                     />
                   </div>
                   <Field>
@@ -666,7 +659,7 @@ export const AITextDialog = ({
                     />
                   </Field>
                   <FieldDescription>
-                    Query text used to retrieve prior memories. Useful examples:
+                    {t("dialog.ai.recallQueryDescription")}
                     <code>{" {{input}}"}</code>,{" "}
                     <code>{"{{memory.shared.problem.task}}"}</code>,{" "}
                     <code>{"{{trigger.body.message}}"}</code>.
@@ -682,10 +675,9 @@ export const AITextDialog = ({
           <FieldGroup className="rounded-xl border border-border/70 bg-muted/20 p-4">
             <div className="flex items-start justify-between gap-3">
               <div className="space-y-1">
-                <FieldLabel>Write to memory</FieldLabel>
+                <FieldLabel>{t("dialog.ai.writeMemory")}</FieldLabel>
                 <FieldDescription>
-                  Persist selected values into execution memory. Useful
-                  templates: <code>{"{{current.output}}"}</code>,{" "}
+                  {t("dialog.ai.writeMemoryDescription")} <code>{"{{current.output}}"}</code>,{" "}
                   <code>{"{{current.output.text}}"}</code>,{" "}
                   <code>{"{{memory.shared.run.trigger}}"}</code>.
                 </FieldDescription>
@@ -697,14 +689,14 @@ export const AITextDialog = ({
                 onClick={() => appendMemoryWrite(createDefaultExecutionMemoryWriteConfig())}
               >
                 <PlusIcon className="size-4" />
-                Add
+                {t("common.add")}
               </Button>
             </div>
 
             <div className="space-y-4">
               {memoryWriteFields.length === 0 ? (
                 <p className="text-sm text-muted-foreground">
-                  No custom memory writes yet.
+                  {t("common.noCustomMemoryWrites")}
                 </p>
               ) : (
                 memoryWriteFields.map((field, index) => (
@@ -714,7 +706,7 @@ export const AITextDialog = ({
                   >
                     <div className="flex items-center justify-between gap-3">
                       <div className="text-sm font-medium text-foreground">
-                        Memory write {index + 1}
+                        {t("common.memoryWrite", { count: index + 1 })}
                       </div>
                       <Button
                         type="button"
@@ -723,13 +715,13 @@ export const AITextDialog = ({
                         onClick={() => removeMemoryWrite(index)}
                       >
                         <Trash2Icon className="size-4" />
-                        Remove
+                        {t("common.remove")}
                       </Button>
                     </div>
 
                     <div className="grid gap-3 md:grid-cols-2">
                       <FieldGroup>
-                        <FieldLabel>Scope</FieldLabel>
+                        <FieldLabel>{t("common.scopeLabel")}</FieldLabel>
                         <Select
                           defaultValue={field.scope}
                           onValueChange={(value: "SHARED" | "NODE") =>
@@ -740,17 +732,17 @@ export const AITextDialog = ({
                           }
                         >
                           <SelectTrigger className="w-full">
-                            <SelectValue placeholder="Select scope" />
+                            <SelectValue placeholder={t("common.selectScope")} />
                           </SelectTrigger>
                           <SelectContent>
-                            <SelectItem value="SHARED">Shared</SelectItem>
-                            <SelectItem value="NODE">Node private</SelectItem>
+                            <SelectItem value="SHARED">{t("common.shared")}</SelectItem>
+                            <SelectItem value="NODE">{t("common.nodePrivate")}</SelectItem>
                           </SelectContent>
                         </Select>
                       </FieldGroup>
 
                       <FieldGroup>
-                        <FieldLabel>Mode</FieldLabel>
+                        <FieldLabel>{t("common.modeLabel")}</FieldLabel>
                         <Select
                           defaultValue={field.mode}
                           onValueChange={(value: "REPLACE" | "MERGE" | "APPEND") =>
@@ -761,12 +753,12 @@ export const AITextDialog = ({
                           }
                         >
                           <SelectTrigger className="w-full">
-                            <SelectValue placeholder="Select mode" />
+                            <SelectValue placeholder={t("common.selectMode")} />
                           </SelectTrigger>
                           <SelectContent>
-                            <SelectItem value="REPLACE">Replace</SelectItem>
-                            <SelectItem value="MERGE">Merge</SelectItem>
-                            <SelectItem value="APPEND">Append</SelectItem>
+                            <SelectItem value="REPLACE">{t("common.replace")}</SelectItem>
+                            <SelectItem value="MERGE">{t("common.merge")}</SelectItem>
+                            <SelectItem value="APPEND">{t("common.append")}</SelectItem>
                           </SelectContent>
                         </Select>
                       </FieldGroup>
@@ -774,7 +766,7 @@ export const AITextDialog = ({
 
                     <div className="grid gap-3 md:grid-cols-2">
                       <FieldGroup>
-                        <FieldLabel>Namespace</FieldLabel>
+                        <FieldLabel>{t("common.namespace")}</FieldLabel>
                         <Field>
                           <Input
                             {...form.register(`memoryWrites.${index}.namespace`)}
@@ -787,7 +779,7 @@ export const AITextDialog = ({
                       </FieldGroup>
 
                       <FieldGroup>
-                        <FieldLabel>Key</FieldLabel>
+                        <FieldLabel>{t("common.key")}</FieldLabel>
                         <Field>
                           <Input
                             {...form.register(`memoryWrites.${index}.key`)}
@@ -802,13 +794,13 @@ export const AITextDialog = ({
 
                     <FieldGroup>
                       <div className="flex items-center justify-between gap-3">
-                        <FieldLabel>Value template</FieldLabel>
+                        <FieldLabel>{t("common.valueTemplate")}</FieldLabel>
                         <TemplateVariablePicker
                           options={templateVariables}
                           onSelect={(value) =>
                             insertMemoryWriteTemplate(index, value)
                           }
-                          label="Insert"
+                          label={t("common.insert")}
                         />
                       </div>
                       <Field>
@@ -825,7 +817,7 @@ export const AITextDialog = ({
                     </FieldGroup>
 
                     <FieldGroup>
-                      <FieldLabel>Visibility</FieldLabel>
+                      <FieldLabel>{t("common.visibilityLabel")}</FieldLabel>
                       <Select
                         defaultValue={field.visibility}
                         onValueChange={(value: "PUBLIC" | "PRIVATE") =>
@@ -840,11 +832,11 @@ export const AITextDialog = ({
                         }
                       >
                         <SelectTrigger className="w-full">
-                          <SelectValue placeholder="Select visibility" />
+                          <SelectValue placeholder={t("common.selectVisibility")} />
                         </SelectTrigger>
                         <SelectContent>
-                          <SelectItem value="PUBLIC">Public</SelectItem>
-                          <SelectItem value="PRIVATE">Private</SelectItem>
+                          <SelectItem value="PUBLIC">{t("common.public")}</SelectItem>
+                          <SelectItem value="PRIVATE">{t("common.private")}</SelectItem>
                         </SelectContent>
                       </Select>
                     </FieldGroup>
@@ -853,9 +845,9 @@ export const AITextDialog = ({
                       <FieldGroup className="rounded-lg border border-border/70 bg-muted/15 p-3">
                         <div className="flex items-center justify-between gap-3">
                           <div>
-                            <FieldLabel>Persist beyond this run</FieldLabel>
+                            <FieldLabel>{t("dialog.ai.persistBeyondRun")}</FieldLabel>
                             <FieldDescription>
-                              Store this memory as long-term context.
+                              {t("dialog.ai.persistBeyondRunDescription")}
                             </FieldDescription>
                           </div>
                           <Switch
@@ -873,9 +865,9 @@ export const AITextDialog = ({
                       <FieldGroup className="rounded-lg border border-border/70 bg-muted/15 p-3">
                         <div className="flex items-center justify-between gap-3">
                           <div>
-                            <FieldLabel>Semantic index</FieldLabel>
+                            <FieldLabel>{t("dialog.ai.semanticIndex")}</FieldLabel>
                             <FieldDescription>
-                              Generate embeddings for later recall.
+                              {t("dialog.ai.semanticIndexDescription")}
                             </FieldDescription>
                           </div>
                           <Switch
@@ -895,7 +887,7 @@ export const AITextDialog = ({
 
                     {watchedMemoryWrites?.[index]?.persist ? (
                       <FieldGroup>
-                        <FieldLabel>Persistent scope</FieldLabel>
+                        <FieldLabel>{t("dialog.ai.persistentScope")}</FieldLabel>
                         <Select
                           defaultValue={field.persistenceScope}
                           onValueChange={(value: "WORKFLOW" | "USER") =>
@@ -906,11 +898,11 @@ export const AITextDialog = ({
                           }
                         >
                           <SelectTrigger className="w-full">
-                            <SelectValue placeholder="Select persistent scope" />
+                            <SelectValue placeholder={t("common.selectScope")} />
                           </SelectTrigger>
                           <SelectContent>
-                            <SelectItem value="WORKFLOW">Workflow</SelectItem>
-                            <SelectItem value="USER">User</SelectItem>
+                            <SelectItem value="WORKFLOW">{t("common.workflow")}</SelectItem>
+                            <SelectItem value="USER">{t("common.user")}</SelectItem>
                           </SelectContent>
                         </Select>
                       </FieldGroup>
@@ -923,7 +915,7 @@ export const AITextDialog = ({
 
           <DialogFooter className="gap-2 sm:justify-end">
             <Button type="submit" disabled={form.formState.isSubmitting}>
-              {form.formState.isSubmitting ? "Saving..." : "Save"}
+              {form.formState.isSubmitting ? t("common.running") : t("common.save")}
             </Button>
           </DialogFooter>
         </form>

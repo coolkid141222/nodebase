@@ -39,6 +39,7 @@ import {
 } from "@/features/executions/memory/shared";
 import { TemplateVariablePicker } from "@/features/executions/components/template-variable-picker";
 import type { TemplateVariableOption } from "@/features/executions/components/template-variables";
+import { useI18n } from "@/features/i18n/provider";
 
 const EMPTY_MEMORY_WRITES: ExecutionMemoryWriteConfig[] = [];
 
@@ -65,6 +66,7 @@ export const SlackMessageDialog = ({
   defaultMemoryWrites,
   templateVariables = [],
 }: Props) => {
+  const { t } = useI18n();
   const trpc = useTRPC();
   const credentialsQuery = useQuery(trpc.credentials.getMany.queryOptions());
   const initialMemoryWritesKey = JSON.stringify(
@@ -155,10 +157,9 @@ export const SlackMessageDialog = ({
               <MessageSquareIcon className="h-5 w-5 text-primary" />
             </div>
             <div>
-              <DialogTitle>Configure Slack Message</DialogTitle>
+              <DialogTitle>{t("dialog.slack.title")}</DialogTitle>
               <DialogDescription className="pt-2">
-                Send a templated message to a Slack webhook credential. The
-                message field supports workflow templates like{" "}
+                {t("dialog.slack.description")}{" "}
                 <code>{"{{steps.NODE_ID.output.text}}"}</code>.
               </DialogDescription>
             </div>
@@ -170,7 +171,7 @@ export const SlackMessageDialog = ({
           className="space-y-4"
         >
           <FieldGroup>
-            <FieldLabel htmlFor="credentialId">Slack credential</FieldLabel>
+            <FieldLabel htmlFor="credentialId">{t("dialog.slack.credential")}</FieldLabel>
             <Select
               value={credentialId}
               onValueChange={(value) =>
@@ -181,7 +182,7 @@ export const SlackMessageDialog = ({
               }
             >
               <SelectTrigger className="w-full">
-                <SelectValue placeholder="Select Slack credential" />
+                <SelectValue placeholder={t("dialog.slack.selectCredential")} />
               </SelectTrigger>
               <SelectContent>
                 {slackCredentials.map((credential) => (
@@ -195,7 +196,7 @@ export const SlackMessageDialog = ({
           </FieldGroup>
 
           <FieldGroup>
-            <FieldLabel htmlFor="credentialField">Secret JSON field</FieldLabel>
+            <FieldLabel htmlFor="credentialField">{t("dialog.slack.secretField")}</FieldLabel>
             <Field>
               <Input
                 id="credentialField"
@@ -208,7 +209,7 @@ export const SlackMessageDialog = ({
 
           <FieldGroup>
             <div className="flex items-center justify-between gap-3">
-              <FieldLabel htmlFor="content">Message</FieldLabel>
+              <FieldLabel htmlFor="content">{t("dialog.slack.message")}</FieldLabel>
               <TemplateVariablePicker
                 options={templateVariables}
                 onSelect={(value) => insertIntoField("content", value)}
@@ -229,9 +230,9 @@ export const SlackMessageDialog = ({
           <FieldGroup className="rounded-xl border border-border/70 bg-muted/20 p-4">
             <div className="flex items-start justify-between gap-3">
               <div className="space-y-1">
-                <FieldLabel>Write to memory</FieldLabel>
+                <FieldLabel>{t("dialog.ai.writeMemory")}</FieldLabel>
                 <FieldDescription>
-                  Persist selected values into execution memory. Useful templates:
+                  {t("dialog.slack.writeMemoryDescription")}
                   {" "}
                   <code>{"{{current.output}}"}</code>
                   {" "}、
@@ -247,14 +248,14 @@ export const SlackMessageDialog = ({
                 onClick={() => appendMemoryWrite(createDefaultExecutionMemoryWriteConfig())}
               >
                 <PlusIcon className="size-4" />
-                Add
+                {t("common.add")}
               </Button>
             </div>
 
             <div className="space-y-4">
               {memoryWriteFields.length === 0 ? (
                 <p className="text-sm text-muted-foreground">
-                  No custom memory writes yet.
+                  {t("common.noCustomMemoryWrites")}
                 </p>
               ) : (
                 memoryWriteFields.map((field, index) => (
@@ -264,7 +265,7 @@ export const SlackMessageDialog = ({
                   >
                     <div className="flex items-center justify-between gap-3">
                       <div className="text-sm font-medium text-foreground">
-                        Memory write {index + 1}
+                        {t("common.memoryWrite", { count: index + 1 })}
                       </div>
                       <Button
                         type="button"
@@ -273,13 +274,13 @@ export const SlackMessageDialog = ({
                         onClick={() => removeMemoryWrite(index)}
                       >
                         <Trash2Icon className="size-4" />
-                        Remove
+                        {t("common.remove")}
                       </Button>
                     </div>
 
                     <div className="grid gap-3 md:grid-cols-2">
                       <FieldGroup>
-                        <FieldLabel>Scope</FieldLabel>
+                        <FieldLabel>{t("common.scopeLabel")}</FieldLabel>
                         <Select
                           defaultValue={field.scope}
                           onValueChange={(value: "SHARED" | "NODE") =>
@@ -290,17 +291,17 @@ export const SlackMessageDialog = ({
                           }
                         >
                           <SelectTrigger className="w-full">
-                            <SelectValue placeholder="Select scope" />
+                            <SelectValue placeholder={t("common.selectScope")} />
                           </SelectTrigger>
                           <SelectContent>
-                            <SelectItem value="SHARED">Shared</SelectItem>
-                            <SelectItem value="NODE">Node private</SelectItem>
+                            <SelectItem value="SHARED">{t("common.shared")}</SelectItem>
+                            <SelectItem value="NODE">{t("common.nodePrivate")}</SelectItem>
                           </SelectContent>
                         </Select>
                       </FieldGroup>
 
                       <FieldGroup>
-                        <FieldLabel>Mode</FieldLabel>
+                        <FieldLabel>{t("common.modeLabel")}</FieldLabel>
                         <Select
                           defaultValue={field.mode}
                           onValueChange={(value: "REPLACE" | "MERGE" | "APPEND") =>
@@ -311,12 +312,12 @@ export const SlackMessageDialog = ({
                           }
                         >
                           <SelectTrigger className="w-full">
-                            <SelectValue placeholder="Select mode" />
+                            <SelectValue placeholder={t("common.selectMode")} />
                           </SelectTrigger>
                           <SelectContent>
-                            <SelectItem value="REPLACE">Replace</SelectItem>
-                            <SelectItem value="MERGE">Merge</SelectItem>
-                            <SelectItem value="APPEND">Append</SelectItem>
+                            <SelectItem value="REPLACE">{t("common.replace")}</SelectItem>
+                            <SelectItem value="MERGE">{t("common.merge")}</SelectItem>
+                            <SelectItem value="APPEND">{t("common.append")}</SelectItem>
                           </SelectContent>
                         </Select>
                       </FieldGroup>
@@ -324,7 +325,7 @@ export const SlackMessageDialog = ({
 
                     <div className="grid gap-3 md:grid-cols-2">
                       <FieldGroup>
-                        <FieldLabel>Namespace</FieldLabel>
+                        <FieldLabel>{t("common.namespace")}</FieldLabel>
                         <Field>
                           <Input
                             {...form.register(`memoryWrites.${index}.namespace`)}
@@ -337,7 +338,7 @@ export const SlackMessageDialog = ({
                       </FieldGroup>
 
                       <FieldGroup>
-                        <FieldLabel>Key</FieldLabel>
+                        <FieldLabel>{t("common.key")}</FieldLabel>
                         <Field>
                           <Input
                             {...form.register(`memoryWrites.${index}.key`)}
@@ -352,13 +353,13 @@ export const SlackMessageDialog = ({
 
                     <FieldGroup>
                       <div className="flex items-center justify-between gap-3">
-                        <FieldLabel>Value template</FieldLabel>
+                        <FieldLabel>{t("common.valueTemplate")}</FieldLabel>
                         <TemplateVariablePicker
                           options={templateVariables}
                           onSelect={(value) =>
                             insertMemoryWriteTemplate(index, value)
                           }
-                          label="Insert"
+                          label={t("common.insert")}
                         />
                       </div>
                       <Field>
@@ -375,7 +376,7 @@ export const SlackMessageDialog = ({
                     </FieldGroup>
 
                     <FieldGroup>
-                      <FieldLabel>Visibility</FieldLabel>
+                      <FieldLabel>{t("common.visibilityLabel")}</FieldLabel>
                       <Select
                         defaultValue={field.visibility}
                         onValueChange={(value: "PUBLIC" | "PRIVATE") =>
@@ -386,11 +387,11 @@ export const SlackMessageDialog = ({
                         }
                       >
                         <SelectTrigger className="w-full">
-                          <SelectValue placeholder="Select visibility" />
+                          <SelectValue placeholder={t("common.selectVisibility")} />
                         </SelectTrigger>
                         <SelectContent>
-                          <SelectItem value="PUBLIC">Public</SelectItem>
-                          <SelectItem value="PRIVATE">Private</SelectItem>
+                          <SelectItem value="PUBLIC">{t("common.public")}</SelectItem>
+                          <SelectItem value="PRIVATE">{t("common.private")}</SelectItem>
                         </SelectContent>
                       </Select>
                     </FieldGroup>
@@ -402,7 +403,7 @@ export const SlackMessageDialog = ({
 
           <DialogFooter className="gap-2 sm:justify-end">
             <Button type="submit" disabled={form.formState.isSubmitting}>
-              {form.formState.isSubmitting ? "Saving..." : "Save"}
+              {form.formState.isSubmitting ? t("common.running") : t("common.save")}
             </Button>
           </DialogFooter>
         </form>
