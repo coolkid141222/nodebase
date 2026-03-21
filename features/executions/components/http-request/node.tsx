@@ -9,15 +9,21 @@ import { HttpRequestDialog } from "./dialog"
 import { FormType } from "./dialog"
 import type { HttpRequestNodeData } from "../../http-request/shared"
 import { useWorkflowNodeStatus } from "../workflow-execution-status-context"
+import { buildTemplateVariableOptions } from "../template-variables"
 
 export const HttpRequestNode = memo((props: NodeProps) => {
-    const { setNodes } = useReactFlow()
+    const { setNodes, getNodes, getEdges } = useReactFlow()
     const nodeData = props.data as HttpRequestNodeData
     const nodeStatus = useWorkflowNodeStatus(props.id)
     const description = nodeData?.endpoint
         ? `${nodeData.method || "GET"} : ${nodeData.endpoint}${nodeData.credentialId ? " · credential" : ""}`
         : "Not configured"
     const [dialogOpen, setDialogOpen] = useState(false);
+    const templateVariables = buildTemplateVariableOptions({
+        currentNodeId: props.id,
+        nodes: getNodes(),
+        edges: getEdges(),
+    });
     const handleOpenSettings = () => setDialogOpen(true);
 
     const handleSubmit = (values: FormType) => {
@@ -67,6 +73,7 @@ export const HttpRequestNode = memo((props: NodeProps) => {
                 defaultAuthType={nodeData.authType}
                 defaultHeaderName={nodeData.headerName}
                 defaultMemoryWrites={nodeData.memoryWrites}
+                templateVariables={templateVariables}
             />
             )}
             <BaseExcutionNode

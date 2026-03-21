@@ -41,6 +41,8 @@ import {
   createDefaultExecutionMemoryWriteConfig,
   type ExecutionMemoryWriteConfig,
 } from "@/features/executions/memory/shared";
+import { TemplateVariablePicker } from "@/features/executions/components/template-variable-picker";
+import type { TemplateVariableOption } from "@/features/executions/components/template-variables";
 
 const formSchema = aiTextNodeSchema.extend({
   system: z.string().optional(),
@@ -61,6 +63,7 @@ type Props = {
   defaultCredentialId?: string;
   defaultCredentialField?: string;
   defaultMemoryWrites?: ExecutionMemoryWriteConfig[];
+  templateVariables?: TemplateVariableOption[];
 };
 
 export const AITextDialog = ({
@@ -74,6 +77,7 @@ export const AITextDialog = ({
   defaultCredentialId = "",
   defaultCredentialField = "apiKey",
   defaultMemoryWrites,
+  templateVariables = [],
 }: Props) => {
   const trpc = useTRPC();
   const credentialsQuery = useQuery(trpc.credentials.getMany.queryOptions());
@@ -141,6 +145,35 @@ export const AITextDialog = ({
     initialMemoryWrites,
     form,
   ]);
+
+  const insertIntoField = (
+    field: "system" | "prompt",
+    template: string,
+    joiner = "\n\n",
+  ) => {
+    const currentValue = form.getValues(field) ?? "";
+    const nextValue = currentValue.trim()
+      ? `${currentValue}${joiner}${template}`
+      : template;
+
+    form.setValue(field, nextValue, {
+      shouldDirty: true,
+      shouldValidate: true,
+    });
+  };
+
+  const insertMemoryWriteTemplate = (index: number, template: string) => {
+    const field = `memoryWrites.${index}.value` as const;
+    const currentValue = form.getValues(field) ?? "";
+    const nextValue = currentValue.trim()
+      ? `${currentValue}\n${template}`
+      : template;
+
+    form.setValue(field, nextValue, {
+      shouldDirty: true,
+      shouldValidate: true,
+    });
+  };
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -251,7 +284,13 @@ export const AITextDialog = ({
           </FieldGroup>
 
           <FieldGroup>
-            <FieldLabel htmlFor="system">System prompt</FieldLabel>
+            <div className="flex items-center justify-between gap-3">
+              <FieldLabel htmlFor="system">System prompt</FieldLabel>
+              <TemplateVariablePicker
+                options={templateVariables}
+                onSelect={(value) => insertIntoField("system", value, "\n")}
+              />
+            </div>
             <Field>
               <Textarea
                 id="system"
@@ -265,7 +304,13 @@ export const AITextDialog = ({
           </FieldGroup>
 
           <FieldGroup>
-            <FieldLabel htmlFor="prompt">Prompt</FieldLabel>
+            <div className="flex items-center justify-between gap-3">
+              <FieldLabel htmlFor="prompt">Prompt</FieldLabel>
+              <TemplateVariablePicker
+                options={templateVariables}
+                onSelect={(value) => insertIntoField("prompt", value)}
+              />
+            </div>
             <Field>
               <Textarea
                 id="prompt"
@@ -400,7 +445,16 @@ export const AITextDialog = ({
                     </div>
 
                     <FieldGroup>
-                      <FieldLabel>Value template</FieldLabel>
+                      <div className="flex items-center justify-between gap-3">
+                        <FieldLabel>Value template</FieldLabel>
+                        <TemplateVariablePicker
+                          options={templateVariables}
+                          onSelect={(value) =>
+                            insertMemoryWriteTemplate(index, value)
+                          }
+                          label="Insert"
+                        />
+                      </div>
                       <Field>
                         <Textarea
                           rows={3}

@@ -11,9 +11,10 @@ import {
   type AITextNodeData,
 } from "../../text/shared";
 import { useWorkflowNodeStatus } from "@/features/executions/components/workflow-execution-status-context";
+import { buildTemplateVariableOptions } from "@/features/executions/components/template-variables";
 
 export const AITextNode = memo((props: NodeProps) => {
-  const { setNodes } = useReactFlow();
+  const { setNodes, getNodes, getEdges } = useReactFlow();
   const nodeData = props.data as AITextNodeData;
   const nodeStatus = useWorkflowNodeStatus(props.id);
   const [dialogOpen, setDialogOpen] = useState(false);
@@ -27,6 +28,11 @@ export const AITextNode = memo((props: NodeProps) => {
   } as const;
   const providerLabel = providerLabelMap[provider];
   const model = nodeData.model || getDefaultAITextModel(provider);
+  const templateVariables = buildTemplateVariableOptions({
+    currentNodeId: props.id,
+    nodes: getNodes(),
+    edges: getEdges(),
+  });
 
   const description = nodeData?.prompt
     ? `${providerLabel} · ${model} · ${nodeData.prompt.slice(0, 36)}${nodeData.prompt.length > 36 ? "..." : ""}`
@@ -69,6 +75,7 @@ export const AITextNode = memo((props: NodeProps) => {
           defaultCredentialId={nodeData.credentialId}
           defaultCredentialField={nodeData.credentialField}
           defaultMemoryWrites={nodeData.memoryWrites}
+          templateVariables={templateVariables}
         />
       )}
       <BaseExcutionNode

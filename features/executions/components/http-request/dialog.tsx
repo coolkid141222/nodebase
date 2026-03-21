@@ -38,6 +38,8 @@ import {
   createDefaultExecutionMemoryWriteConfig,
   type ExecutionMemoryWriteConfig,
 } from "../../memory/shared";
+import { TemplateVariablePicker } from "../template-variable-picker";
+import type { TemplateVariableOption } from "../template-variables";
 
 const EMPTY_MEMORY_WRITES: ExecutionMemoryWriteConfig[] = [];
 
@@ -87,6 +89,7 @@ interface Props {
     defaultAuthType?: "NONE" | "BEARER" | "HEADER";
     defaultHeaderName?: string;
     defaultMemoryWrites?: ExecutionMemoryWriteConfig[];
+    templateVariables?: TemplateVariableOption[];
 }
 
 export const HttpRequestDialog = ({
@@ -101,6 +104,7 @@ export const HttpRequestDialog = ({
     defaultAuthType = "NONE",
     defaultHeaderName = "",
     defaultMemoryWrites,
+    templateVariables = [],
 }: Props) => {
     const trpc = useTRPC();
     const credentialsQuery = useQuery(trpc.credentials.getMany.queryOptions());
@@ -183,6 +187,35 @@ export const HttpRequestDialog = ({
         }
     }, [authType, form, hasCredential])
 
+    const insertIntoField = (
+        field: "endpoint" | "body",
+        template: string,
+        joiner = "\n",
+    ) => {
+        const currentValue = form.getValues(field) ?? "";
+        const nextValue = currentValue.trim()
+            ? `${currentValue}${joiner}${template}`
+            : template;
+
+        form.setValue(field, nextValue, {
+            shouldDirty: true,
+            shouldValidate: true,
+        });
+    };
+
+    const insertMemoryWriteTemplate = (index: number, template: string) => {
+        const field = `memoryWrites.${index}.value` as const;
+        const currentValue = form.getValues(field) ?? "";
+        const nextValue = currentValue.trim()
+            ? `${currentValue}\n${template}`
+            : template;
+
+        form.setValue(field, nextValue, {
+            shouldDirty: true,
+            shouldValidate: true,
+        });
+    };
+
     return (
         <Dialog open={open} onOpenChange={onOpenChange}>
             <DialogContent className="sm:max-w-[500px]">
@@ -222,7 +255,13 @@ export const HttpRequestDialog = ({
                     <div className="space-y-4">
                         {/* Endpoint */}
                         <FieldGroup>
-                            <FieldLabel htmlFor="endpoint">端点 URL</FieldLabel>
+                            <div className="flex items-center justify-between gap-3">
+                                <FieldLabel htmlFor="endpoint">端点 URL</FieldLabel>
+                                <TemplateVariablePicker
+                                    options={templateVariables}
+                                    onSelect={(value) => insertIntoField("endpoint", value, "")}
+                                />
+                            </div>
                             <Field>
                                 <input
                                     id="endpoint"
@@ -257,7 +296,13 @@ export const HttpRequestDialog = ({
 
                         {/* Body */}
                         <FieldGroup>
-                            <FieldLabel htmlFor="body">请求体</FieldLabel>
+                            <div className="flex items-center justify-between gap-3">
+                                <FieldLabel htmlFor="body">请求体</FieldLabel>
+                                <TemplateVariablePicker
+                                    options={templateVariables}
+                                    onSelect={(value) => insertIntoField("body", value)}
+                                />
+                            </div>
                             <Field>
                                 <Textarea
                                     id="body"
@@ -476,7 +521,16 @@ export const HttpRequestDialog = ({
                                             </div>
 
                                             <FieldGroup>
-                                                <FieldLabel>Value template</FieldLabel>
+                                                <div className="flex items-center justify-between gap-3">
+                                                    <FieldLabel>Value template</FieldLabel>
+                                                    <TemplateVariablePicker
+                                                        options={templateVariables}
+                                                        onSelect={(value) =>
+                                                            insertMemoryWriteTemplate(index, value)
+                                                        }
+                                                        label="Insert"
+                                                    />
+                                                </div>
                                                 <Field>
                                                     <Textarea
                                                         rows={3}
