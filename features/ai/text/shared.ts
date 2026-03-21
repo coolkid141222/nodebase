@@ -41,6 +41,14 @@ export const aiTextNodeSchema = z.object({
   toolDisplayName: z.string().trim().default(""),
   toolArgumentsJson: z.string().default("{}"),
   memoryWrites: executionMemoryWriteConfigListSchema,
+}).superRefine((value, ctx) => {
+  if (value.toolEnabled && !value.toolId.trim()) {
+    ctx.addIssue({
+      code: z.ZodIssueCode.custom,
+      path: ["toolId"],
+      message: "Choose a browser tool before enabling research context.",
+    });
+  }
 });
 
 export type AITextNodeData = {

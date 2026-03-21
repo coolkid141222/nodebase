@@ -1066,6 +1066,13 @@ function normalizeAITextNodeData(
   }
 
   if (data.toolEnabled) {
+    if (!data.toolId?.trim()) {
+      throw new WorkflowExecutionError(
+        `AI Text node "${node.name}" has research context enabled but no browser tool selected.`,
+        "INVALID_AI_NODE_CONFIG",
+      );
+    }
+
     toolContext = normalizeToolNodeData(
       {
         ...node,

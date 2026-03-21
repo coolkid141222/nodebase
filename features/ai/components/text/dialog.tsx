@@ -196,6 +196,27 @@ export const AITextDialog = ({
     form,
   ]);
 
+  useEffect(() => {
+    if (!toolEnabled || toolId || browserTools.length === 0) {
+      return;
+    }
+
+    const defaultTool = browserTools[0];
+    form.setValue("toolProvider", "INTERNAL", {
+      shouldDirty: true,
+    });
+    form.setValue("toolServerId", "", {
+      shouldDirty: true,
+    });
+    form.setValue("toolId", defaultTool.id, {
+      shouldDirty: true,
+      shouldValidate: true,
+    });
+    form.setValue("toolDisplayName", defaultTool.displayName, {
+      shouldDirty: true,
+    });
+  }, [browserTools, form, toolEnabled, toolId]);
+
   const insertIntoField = (
     field: "system" | "prompt",
     template: string,
@@ -469,9 +490,12 @@ export const AITextDialog = ({
                     </SelectContent>
                   </Select>
                   <FieldDescription>
-                    {selectedBrowserTool?.description ??
-                      "Choose which browser-style tool should gather context before the model responds."}
+                    {browserTools.length === 0
+                      ? "No browser tools are available yet. Add one in the tool registry before enabling research context."
+                      : selectedBrowserTool?.description ??
+                        "Choose which browser-style tool should gather context before the model responds."}
                   </FieldDescription>
+                  <FieldError errors={[form.formState.errors.toolId]} />
                 </FieldGroup>
 
                 <FieldGroup>
