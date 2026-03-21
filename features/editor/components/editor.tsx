@@ -24,6 +24,7 @@ import { nodeComponents } from "@/config/node-components";
 import { AddNodeButton } from "./add-node-button";
 import { useSetAtom } from "jotai";
 import { editorAtom } from "../store/atoms";
+import { LoopScopeOverlays } from "@/features/loops/components/scope-overlays";
 
 export const EditorLoading = () => {
     return (
@@ -79,6 +80,7 @@ export const Editor = ({ workflowId }: { workflowId: string }) => {
                 }}
             >
                 <Background variant={BackgroundVariant.Dots} />
+                <LoopScopeOverlays nodes={nodes} edges={edges} />
                 <Controls />
                 <MiniMap />
                 <Panel position="top-right" className="p-4">
