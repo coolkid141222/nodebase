@@ -40,6 +40,8 @@ type SavedGeneratedWorkflowResult = GeneratedWorkflowResult & {
   webhookSecret: string;
 };
 
+type PreferredTriggerType = "MANUAL_TRIGGER" | "WEBHOOK_TRIGGER";
+
 const PROBLEM_SOLVING_PROMPT_PATTERN =
   /\b(solve|answer|analy[sz]e|debug|investigate|research|compare|plan|reason|question|issue|problem)\b|问题|分析|研究|排查|解决|比较|推理|调查/i;
 const RESEARCH_PROMPT_PATTERN =
@@ -1245,6 +1247,46 @@ function normalizeLoopDraft(draft: AIWorkflowDraft) {
   return workingDraft;
 }
 
+function normalizePreferredTriggerType(params: {
+  draft: AIWorkflowDraft;
+  preferredTriggerType?: PreferredTriggerType;
+}) {
+  const { preferredTriggerType } = params;
+
+  if (!preferredTriggerType) {
+    return params.draft;
+  }
+
+  const workingDraft: AIWorkflowDraft = structuredClone(params.draft);
+  let changed = false;
+
+  workingDraft.nodes = workingDraft.nodes.map((node) => {
+    if (
+      node.type === "MANUAL_TRIGGER" ||
+      node.type === "WEBHOOK_TRIGGER"
+    ) {
+      if (node.type !== preferredTriggerType) {
+        changed = true;
+      }
+
+      return {
+        ...node,
+        type: preferredTriggerType,
+      };
+    }
+
+    return node;
+  });
+
+  if (changed) {
+    workingDraft.notes.push(
+      `Normalized the trigger to ${preferredTriggerType} for the current channel.`,
+    );
+  }
+
+  return workingDraft;
+}
+
 function mapGeneratedDraftToCanvas(params: {
   draft: AIWorkflowDraft;
   credentials: UserCredentialSummary[];
@@ -1494,6 +1536,7 @@ function validateGeneratedDraft(draft: AIWorkflowDraft) {
 export async function generateWorkflowDraft(params: {
   userId: string;
   input: GenerateWorkflowGraphInput;
+  preferredTriggerType?: PreferredTriggerType;
 }): Promise<GeneratedWorkflowResult> {
   const credentials = await prisma.credential.findMany({
     where: {
@@ -1547,7 +1590,11 @@ export async function generateWorkflowDraft(params: {
     draft: promotedDraft,
     userPrompt: params.input.prompt,
   });
-  const normalizedDraft = normalizeLoopDraft(feishuNormalizedDraft);
+  const triggerNormalizedDraft = normalizePreferredTriggerType({
+    draft: feishuNormalizedDraft,
+    preferredTriggerType: params.preferredTriggerType,
+  });
+  const normalizedDraft = normalizeLoopDraft(triggerNormalizedDraft);
   validateGeneratedDraft(normalizedDraft);
 
   return mapGeneratedDraftToCanvas({
@@ -1559,6 +1606,7 @@ export async function generateWorkflowDraft(params: {
 export async function createGeneratedWorkflowDraft(params: {
   userId: string;
   input: GenerateWorkflowGraphInput;
+  preferredTriggerType?: PreferredTriggerType;
 }): Promise<SavedGeneratedWorkflowResult> {
   const generatedDraft = await generateWorkflowDraft(params);
   const workflow = await prisma.workflow.create({

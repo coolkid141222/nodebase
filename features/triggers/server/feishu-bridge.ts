@@ -606,6 +606,7 @@ async function createWorkflowDraftFromFeishu(prompt: string) {
       credentialId: generatorCredential.credentialId,
       credentialField: generatorCredential.credentialField,
     },
+    preferredTriggerType: "WEBHOOK_TRIGGER",
   });
 
   return {
