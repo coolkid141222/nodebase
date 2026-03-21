@@ -122,46 +122,16 @@ function getStepSummaryNote(
   return "Final step output for this run.";
 }
 
-function getDisplayExecutionStatus(execution: PreviewExecution): ExecutionStatus {
-  if (
-    execution.status !== ExecutionStatus.RUNNING &&
-    execution.status !== ExecutionStatus.PENDING
-  ) {
-    return execution.status;
-  }
-
-  if (execution.steps.some((step) => step.status === ExecutionStepStatus.FAILED)) {
-    return ExecutionStatus.FAILED;
-  }
-
-  if (execution.steps.some((step) => step.status === ExecutionStepStatus.RUNNING)) {
-    return ExecutionStatus.RUNNING;
-  }
-
-  if (
-    execution.steps.length > 0 &&
-    execution.steps.every(
-      (step) =>
-        step.status === ExecutionStepStatus.SUCCESS ||
-        step.status === ExecutionStepStatus.SKIPPED,
-    )
-  ) {
-    return ExecutionStatus.SUCCESS;
-  }
-
-  return execution.status;
-}
-
 function pickFocusedStep(
   execution: PreviewExecution,
-  displayStatus: ExecutionStatus,
+  executionStatus: ExecutionStatus,
 ) {
   const steps = execution.steps;
   const terminalSteps = [...steps].reverse();
 
   if (
-    displayStatus === ExecutionStatus.RUNNING ||
-    displayStatus === ExecutionStatus.PENDING
+    executionStatus === ExecutionStatus.RUNNING ||
+    executionStatus === ExecutionStatus.PENDING
   ) {
     return (
       steps.find((step) => step.status === ExecutionStepStatus.RUNNING) ??
@@ -192,7 +162,7 @@ function pickFocusedStep(
 
 function pickResultStep(
   execution: PreviewExecution,
-  displayStatus: ExecutionStatus,
+  executionStatus: ExecutionStatus,
   focusedStep:
     | PreviewExecution["steps"][number]
     | undefined,
@@ -200,8 +170,8 @@ function pickResultStep(
   const terminalSteps = [...execution.steps].reverse();
 
   if (
-    displayStatus === ExecutionStatus.RUNNING ||
-    displayStatus === ExecutionStatus.PENDING
+    executionStatus === ExecutionStatus.RUNNING ||
+    executionStatus === ExecutionStatus.PENDING
   ) {
     return (
       terminalSteps.find(
@@ -305,7 +275,7 @@ function pickLatestAITextStep(execution: PreviewExecution) {
 const ExecutionPreviewCard = memo(function ExecutionPreviewCard() {
   const execution = useWorkflowExecutionStatus();
   const {
-    displayStatus,
+    executionStatus,
     focusedStep,
     resultStep,
     aiTextPreview,
@@ -313,7 +283,7 @@ const ExecutionPreviewCard = memo(function ExecutionPreviewCard() {
   } = useMemo(() => {
     if (!execution) {
       return {
-        displayStatus: undefined,
+        executionStatus: undefined,
         focusedStep: undefined,
         resultStep: undefined,
         aiTextPreview: null,
@@ -321,17 +291,17 @@ const ExecutionPreviewCard = memo(function ExecutionPreviewCard() {
       };
     }
 
-    const nextDisplayStatus = getDisplayExecutionStatus(execution);
-    const nextFocusedStep = pickFocusedStep(execution, nextDisplayStatus);
+    const nextExecutionStatus = execution.status;
+    const nextFocusedStep = pickFocusedStep(execution, nextExecutionStatus);
     const nextResultStep = pickResultStep(
       execution,
-      nextDisplayStatus,
+      nextExecutionStatus,
       nextFocusedStep,
     );
     const aiTextStep = pickLatestAITextStep(execution);
 
     return {
-      displayStatus: nextDisplayStatus,
+      executionStatus: nextExecutionStatus,
       focusedStep: nextFocusedStep,
       resultStep: nextResultStep,
       aiTextPreview: aiTextStep
@@ -368,7 +338,7 @@ const ExecutionPreviewCard = memo(function ExecutionPreviewCard() {
 
   return (
     <Card className="flex h-full min-h-0 w-full min-w-0 flex-col overflow-hidden border-border/60 bg-background/95 shadow-sm">
-      <div className={`h-1 w-full ${getExecutionAccentClass(displayStatus ?? execution.status)}`} />
+      <div className={`h-1 w-full ${getExecutionAccentClass(executionStatus ?? execution.status)}`} />
       <div className="flex min-h-0 w-full min-w-0 flex-col overflow-y-auto overflow-x-hidden">
         <CardHeader className="space-y-3 pb-3">
           <div className="flex items-start justify-between gap-3 min-w-0">
@@ -377,7 +347,7 @@ const ExecutionPreviewCard = memo(function ExecutionPreviewCard() {
                 Run preview
               </CardDescription>
               <div className="flex flex-wrap items-center gap-2">
-                <StatusChip status={displayStatus ?? execution.status} />
+                <StatusChip status={executionStatus ?? execution.status} />
                 <span className="text-xs text-muted-foreground break-all">
                   {formatDistanceToNow(new Date(execution.createdAt), {
                     addSuffix: true,
@@ -396,8 +366,8 @@ const ExecutionPreviewCard = memo(function ExecutionPreviewCard() {
           {focusedStep && (
             <div className="rounded-xl border border-border/70 bg-muted/25 p-3">
               <div className="text-[11px] uppercase tracking-[0.16em] text-muted-foreground">
-                {(displayStatus ?? execution.status) === ExecutionStatus.RUNNING ||
-                (displayStatus ?? execution.status) === ExecutionStatus.PENDING
+                {(executionStatus ?? execution.status) === ExecutionStatus.RUNNING ||
+                (executionStatus ?? execution.status) === ExecutionStatus.PENDING
                   ? "Focused step"
                   : "Final step"}
               </div>
@@ -405,7 +375,7 @@ const ExecutionPreviewCard = memo(function ExecutionPreviewCard() {
                 {focusedStep.nodeName}
               </div>
               <div className="mt-1 text-xs leading-5 text-muted-foreground">
-                {getStepSummaryNote(displayStatus ?? execution.status, focusedStep.status)}
+                {getStepSummaryNote(executionStatus ?? execution.status, focusedStep.status)}
               </div>
             </div>
           )}
@@ -432,7 +402,7 @@ const ExecutionPreviewCard = memo(function ExecutionPreviewCard() {
           )}
           <div className="space-y-1">
             <div className="text-xs font-medium text-muted-foreground">
-              {getResultLabel(displayStatus ?? execution.status, resultStep?.status)}
+              {getResultLabel(executionStatus ?? execution.status, resultStep?.status)}
             </div>
             <div className="max-h-28 overflow-y-auto overflow-x-hidden break-words rounded-xl border border-border/70 bg-background p-3 text-sm leading-5">
               {previewResult || "No extractable result yet."}
