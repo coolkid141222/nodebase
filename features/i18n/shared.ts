@@ -303,7 +303,7 @@ export const messages: Record<AppLocale, TranslationDictionary> = {
     "dialog.tool.openclawLater":
       "OpenClaw plugin tools will appear here once the adapter is wired.",
     "dialog.tool.feishuLater":
-      "Feishu tools will appear here once the adapter is wired.",
+      "Configure FEISHU_BOT_WEBHOOK to unlock the native Feishu messaging tool.",
     "dialog.tool.selectBuiltIn": "Select one of the built-in runtime tools.",
     "dialog.tool.selectedDetails": "Selected tool details",
     "dialog.tool.dangerous": "Dangerous",
@@ -718,7 +718,7 @@ export const messages: Record<AppLocale, TranslationDictionary> = {
     "dialog.tool.openclawLater":
       "OpenClaw 插件工具会在适配器接通后出现在这里。",
     "dialog.tool.feishuLater":
-      "飞书工具会在适配器接通后出现在这里。",
+      "配置 FEISHU_BOT_WEBHOOK 后，就会启用原生飞书消息工具。",
     "dialog.tool.selectBuiltIn": "选择一个内置运行时工具。",
     "dialog.tool.selectedDetails": "当前工具详情",
     "dialog.tool.dangerous": "高风险",

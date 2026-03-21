@@ -37,7 +37,19 @@ Done in code:
 - registry exposes a Feishu provider summary
 - Tool dialog can show a Feishu adapter slot
 
-At this phase, execution is still adapter-required.
+### Phase 1.5: first executable tool
+
+Done in code:
+
+- `feishu.message.send` is registered through `provider = FEISHU`
+- the tool executes through the shared `TOOL` runtime path
+- it currently uses `FEISHU_BOT_WEBHOOK` from the server environment
+
+This keeps the OpenClaw-like shape:
+
+- provider registered in the registry
+- adapter owns the Feishu-specific request
+- workflow graph stays provider-agnostic
 
 ### Phase 2: auth and credentials
 
@@ -65,9 +77,8 @@ or
 
 ### Phase 3: first Feishu tools
 
-Recommended initial tool set:
+Recommended next tool set:
 
-- `feishu.message.send`
 - `feishu.docs.create`
 - `feishu.docs.append_blocks`
 - `feishu.sheet.append_rows`

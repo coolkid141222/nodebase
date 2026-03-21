@@ -68,6 +68,10 @@ export function getToolArgumentsPlaceholder(toolId?: string | null) {
   "key": "summary",
   "value": "{{input}}"
 }`;
+    case "feishu.message.send":
+      return `{
+  "text": "Final result:\\n{{input}}"
+}`;
     default:
       return `{"query":"{{input}}"}`;
   }
