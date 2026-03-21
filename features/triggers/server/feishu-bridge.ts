@@ -271,6 +271,43 @@ async function findExistingReceipt(receiptKeys: string[]) {
   });
 }
 
+async function claimReceipt(params: {
+  receiptKey: string | null;
+  messageId: string | null;
+  chatId: string | null;
+  commandType: BridgeCommand["type"];
+}) {
+  if (!params.receiptKey) {
+    return true;
+  }
+
+  try {
+    await prisma.feishuBridgeReceipt.create({
+      data: {
+        eventId: params.receiptKey,
+        messageId: params.messageId,
+        chatId: params.chatId,
+        commandType: params.commandType,
+        status: "processing",
+        replyText: null,
+      },
+    });
+
+    return true;
+  } catch (error) {
+    if (
+      error &&
+      typeof error === "object" &&
+      "code" in error &&
+      error.code === "P2002"
+    ) {
+      return false;
+    }
+
+    throw error;
+  }
+}
+
 async function persistReceipt(params: {
   receiptKey: string | null;
   messageId: string | null;
@@ -283,9 +320,11 @@ async function persistReceipt(params: {
   }
 
   try {
-    await prisma.feishuBridgeReceipt.create({
-      data: {
+    await prisma.feishuBridgeReceipt.update({
+      where: {
         eventId: params.receiptKey,
+      },
+      data: {
         messageId: params.messageId,
         chatId: params.chatId,
         commandType: params.commandType,
@@ -297,15 +336,6 @@ async function persistReceipt(params: {
       },
     });
   } catch (error) {
-    if (
-      error &&
-      typeof error === "object" &&
-      "code" in error &&
-      error.code === "P2002"
-    ) {
-      return;
-    }
-
     throw error;
   }
 }
@@ -754,6 +784,22 @@ export async function handleFeishuBridgeMessage(params: {
         executionId: existingReceipt.executionId,
         workflowId: existingReceipt.workflowId,
         draftWorkflowId: existingReceipt.draftWorkflowId,
+      } satisfies FeishuBridgeResult;
+    }
+  }
+
+  if (primaryReceiptKey) {
+    const claimed = await claimReceipt({
+      receiptKey: primaryReceiptKey,
+      messageId: message.messageId,
+      chatId: message.chatId,
+      commandType: command.type,
+    });
+
+    if (!claimed) {
+      return {
+        status: "ignored",
+        replyText: null,
       } satisfies FeishuBridgeResult;
     }
   }

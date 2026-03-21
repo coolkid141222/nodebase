@@ -2,9 +2,19 @@ import z from "zod";
 import type { Prisma } from "@/lib/prisma/client";
 import type { RegisteredTool, ToolProviderSummary } from "../../shared";
 
-const feishuMessageSendArgumentsSchema = z.object({
-  text: z.string().trim().min(1),
-});
+const feishuMessageSendArgumentsSchema = z.union([
+  z.string().trim().min(1).transform((text) => ({ text })),
+  z
+    .object({
+      text: z.string().trim().min(1).optional(),
+      message: z.string().trim().min(1).optional(),
+      content: z.string().trim().min(1).optional(),
+    })
+    .refine((value) => Boolean(value.text ?? value.message ?? value.content))
+    .transform((value) => ({
+      text: value.text ?? value.message ?? value.content ?? "",
+    })),
+]);
 
 function hasFeishuBotWebhook() {
   return Boolean(process.env.FEISHU_BOT_WEBHOOK?.trim());
@@ -54,7 +64,9 @@ export function parseFeishuMessageSendArguments(
   const parsed = feishuMessageSendArgumentsSchema.safeParse(value ?? {});
 
   if (!parsed.success) {
-    throw new Error("Feishu message tool expects a JSON object with a text field.");
+    throw new Error(
+      "Feishu message tool expects either a plain string or an object with a text field.",
+    );
   }
 
   return parsed.data;
