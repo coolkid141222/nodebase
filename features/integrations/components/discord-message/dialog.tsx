@@ -1,10 +1,10 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useMemo } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { MessageSquareIcon } from "lucide-react";
-import { useForm, useWatch } from "react-hook-form";
+import { MessageSquareIcon, PlusIcon, Trash2Icon } from "lucide-react";
+import { useFieldArray, useForm, useWatch } from "react-hook-form";
 import z from "zod";
 import { Button } from "@/components/button";
 import {
@@ -15,7 +15,13 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/dialog";
-import { Field, FieldError, FieldGroup, FieldLabel } from "@/components/field";
+import {
+  Field,
+  FieldDescription,
+  FieldError,
+  FieldGroup,
+  FieldLabel,
+} from "@/components/field";
 import { Input } from "@/components/input";
 import {
   Select,
@@ -27,6 +33,14 @@ import {
 import { Textarea } from "@/components/textarea";
 import { useTRPC } from "@/trpc/client";
 import { discordMessageNodeSchema } from "../../discord/shared";
+import {
+  createDefaultExecutionMemoryWriteConfig,
+  type ExecutionMemoryWriteConfig,
+} from "@/features/executions/memory/shared";
+import { TemplateVariablePicker } from "@/features/executions/components/template-variable-picker";
+import type { TemplateVariableOption } from "@/features/executions/components/template-variables";
+
+const EMPTY_MEMORY_WRITES: ExecutionMemoryWriteConfig[] = [];
 
 export type DiscordMessageFormValues = z.output<typeof discordMessageNodeSchema>;
 
@@ -37,6 +51,8 @@ type Props = {
   defaultCredentialId?: string;
   defaultCredentialField?: string;
   defaultContent?: string;
+  defaultMemoryWrites?: ExecutionMemoryWriteConfig[];
+  templateVariables?: TemplateVariableOption[];
 };
 
 export const DiscordMessageDialog = ({
@@ -46,9 +62,19 @@ export const DiscordMessageDialog = ({
   defaultCredentialId = "",
   defaultCredentialField = "webhookUrl",
   defaultContent = "",
+  defaultMemoryWrites,
+  templateVariables = [],
 }: Props) => {
   const trpc = useTRPC();
   const credentialsQuery = useQuery(trpc.credentials.getMany.queryOptions());
+  const initialMemoryWritesKey = JSON.stringify(
+    defaultMemoryWrites ?? EMPTY_MEMORY_WRITES,
+  );
+  const initialMemoryWrites = useMemo(
+    () =>
+      JSON.parse(initialMemoryWritesKey) as ExecutionMemoryWriteConfig[],
+    [initialMemoryWritesKey],
+  );
   const discordCredentials = (credentialsQuery.data ?? []).filter(
     (credential) => credential.provider === "DISCORD",
   );
@@ -63,6 +89,7 @@ export const DiscordMessageDialog = ({
       credentialId: defaultCredentialId,
       credentialField: defaultCredentialField,
       content: defaultContent,
+      memoryWrites: initialMemoryWrites,
     },
   });
   const credentialId = useWatch({
@@ -70,19 +97,54 @@ export const DiscordMessageDialog = ({
     name: "credentialId",
     defaultValue: defaultCredentialId,
   });
+  const {
+    fields: memoryWriteFields,
+    append: appendMemoryWrite,
+    remove: removeMemoryWrite,
+  } = useFieldArray({
+    control: form.control,
+    name: "memoryWrites",
+  });
 
   useEffect(() => {
     form.reset({
       credentialId: defaultCredentialId,
       credentialField: defaultCredentialField,
       content: defaultContent,
+      memoryWrites: initialMemoryWrites,
     });
   }, [
     defaultCredentialField,
     defaultCredentialId,
     defaultContent,
+    initialMemoryWrites,
     form,
   ]);
+
+  const insertIntoField = (field: "content", template: string) => {
+    const currentValue = form.getValues(field) ?? "";
+    const nextValue = currentValue.trim()
+      ? `${currentValue}\n${template}`
+      : template;
+
+    form.setValue(field, nextValue, {
+      shouldDirty: true,
+      shouldValidate: true,
+    });
+  };
+
+  const insertMemoryWriteTemplate = (index: number, template: string) => {
+    const field = `memoryWrites.${index}.value` as const;
+    const currentValue = form.getValues(field) ?? "";
+    const nextValue = currentValue.trim()
+      ? `${currentValue}\n${template}`
+      : template;
+
+    form.setValue(field, nextValue, {
+      shouldDirty: true,
+      shouldValidate: true,
+    });
+  };
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -145,7 +207,13 @@ export const DiscordMessageDialog = ({
           </FieldGroup>
 
           <FieldGroup>
-            <FieldLabel htmlFor="content">Message</FieldLabel>
+            <div className="flex items-center justify-between gap-3">
+              <FieldLabel htmlFor="content">Message</FieldLabel>
+              <TemplateVariablePicker
+                options={templateVariables}
+                onSelect={(value) => insertIntoField("content", value)}
+              />
+            </div>
             <Field>
               <Textarea
                 id="content"
@@ -156,6 +224,180 @@ export const DiscordMessageDialog = ({
               />
             </Field>
             <FieldError errors={[form.formState.errors.content]} />
+          </FieldGroup>
+
+          <FieldGroup className="rounded-xl border border-border/70 bg-muted/20 p-4">
+            <div className="flex items-start justify-between gap-3">
+              <div className="space-y-1">
+                <FieldLabel>Write to memory</FieldLabel>
+                <FieldDescription>
+                  Persist selected values into execution memory. Useful templates:
+                  {" "}
+                  <code>{"{{current.output}}"}</code>
+                  {" "}、
+                  <code>{"{{current.output.content}}"}</code>
+                  {" "}、
+                  <code>{"{{input}}"}</code>
+                </FieldDescription>
+              </div>
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                onClick={() => appendMemoryWrite(createDefaultExecutionMemoryWriteConfig())}
+              >
+                <PlusIcon className="size-4" />
+                Add
+              </Button>
+            </div>
+
+            <div className="space-y-4">
+              {memoryWriteFields.length === 0 ? (
+                <p className="text-sm text-muted-foreground">
+                  No custom memory writes yet.
+                </p>
+              ) : (
+                memoryWriteFields.map((field, index) => (
+                  <div
+                    key={field.id}
+                    className="space-y-3 rounded-lg border border-border/70 bg-background p-3"
+                  >
+                    <div className="flex items-center justify-between gap-3">
+                      <div className="text-sm font-medium text-foreground">
+                        Memory write {index + 1}
+                      </div>
+                      <Button
+                        type="button"
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => removeMemoryWrite(index)}
+                      >
+                        <Trash2Icon className="size-4" />
+                        Remove
+                      </Button>
+                    </div>
+
+                    <div className="grid gap-3 md:grid-cols-2">
+                      <FieldGroup>
+                        <FieldLabel>Scope</FieldLabel>
+                        <Select
+                          defaultValue={field.scope}
+                          onValueChange={(value: "SHARED" | "NODE") =>
+                            form.setValue(`memoryWrites.${index}.scope`, value, {
+                              shouldDirty: true,
+                              shouldValidate: true,
+                            })
+                          }
+                        >
+                          <SelectTrigger className="w-full">
+                            <SelectValue placeholder="Select scope" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="SHARED">Shared</SelectItem>
+                            <SelectItem value="NODE">Node private</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </FieldGroup>
+
+                      <FieldGroup>
+                        <FieldLabel>Mode</FieldLabel>
+                        <Select
+                          defaultValue={field.mode}
+                          onValueChange={(value: "REPLACE" | "MERGE" | "APPEND") =>
+                            form.setValue(`memoryWrites.${index}.mode`, value, {
+                              shouldDirty: true,
+                              shouldValidate: true,
+                            })
+                          }
+                        >
+                          <SelectTrigger className="w-full">
+                            <SelectValue placeholder="Select mode" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="REPLACE">Replace</SelectItem>
+                            <SelectItem value="MERGE">Merge</SelectItem>
+                            <SelectItem value="APPEND">Append</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </FieldGroup>
+                    </div>
+
+                    <div className="grid gap-3 md:grid-cols-2">
+                      <FieldGroup>
+                        <FieldLabel>Namespace</FieldLabel>
+                        <Field>
+                          <Input
+                            {...form.register(`memoryWrites.${index}.namespace`)}
+                            placeholder="results"
+                          />
+                        </Field>
+                        <FieldError
+                          errors={[form.formState.errors.memoryWrites?.[index]?.namespace]}
+                        />
+                      </FieldGroup>
+
+                      <FieldGroup>
+                        <FieldLabel>Key</FieldLabel>
+                        <Field>
+                          <Input
+                            {...form.register(`memoryWrites.${index}.key`)}
+                            placeholder="messageResult"
+                          />
+                        </Field>
+                        <FieldError
+                          errors={[form.formState.errors.memoryWrites?.[index]?.key]}
+                        />
+                      </FieldGroup>
+                    </div>
+
+                    <FieldGroup>
+                      <div className="flex items-center justify-between gap-3">
+                        <FieldLabel>Value template</FieldLabel>
+                        <TemplateVariablePicker
+                          options={templateVariables}
+                          onSelect={(value) =>
+                            insertMemoryWriteTemplate(index, value)
+                          }
+                          label="Insert"
+                        />
+                      </div>
+                      <Field>
+                        <Textarea
+                          rows={3}
+                          className="resize-none"
+                          {...form.register(`memoryWrites.${index}.value`)}
+                          placeholder='{{current.output.content}}'
+                        />
+                      </Field>
+                      <FieldError
+                        errors={[form.formState.errors.memoryWrites?.[index]?.value]}
+                      />
+                    </FieldGroup>
+
+                    <FieldGroup>
+                      <FieldLabel>Visibility</FieldLabel>
+                      <Select
+                        defaultValue={field.visibility}
+                        onValueChange={(value: "PUBLIC" | "PRIVATE") =>
+                          form.setValue(`memoryWrites.${index}.visibility`, value, {
+                            shouldDirty: true,
+                            shouldValidate: true,
+                          })
+                        }
+                      >
+                        <SelectTrigger className="w-full">
+                          <SelectValue placeholder="Select visibility" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="PUBLIC">Public</SelectItem>
+                          <SelectItem value="PRIVATE">Private</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </FieldGroup>
+                  </div>
+                ))
+              )}
+            </div>
           </FieldGroup>
 
           <DialogFooter className="gap-2 sm:justify-end">

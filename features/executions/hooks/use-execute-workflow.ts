@@ -1,12 +1,24 @@
 "use client";
 
 import { useAtomValue } from "jotai";
-import type { ReactFlowInstance } from "@xyflow/react";
+import type { Edge, Node, ReactFlowInstance } from "@xyflow/react";
 import { editorAtom } from "@/features/editor/store/atoms";
 import { useUpdateWorkflow } from "@/features/workflows/hooks/user-workflows";
 import { useManualWorkflowExecution } from "./use-manual-workflow-execution";
 
-const snapshotWorkflow = (editor: ReactFlowInstance | null) => {
+type WorkflowSnapshot = {
+  nodes: Node[];
+  edges: Edge[];
+};
+
+const snapshotWorkflow = (
+  editor: ReactFlowInstance | null,
+  override?: WorkflowSnapshot,
+) => {
+  if (override) {
+    return override;
+  }
+
   if (!editor) {
     return null;
   }
@@ -22,8 +34,8 @@ export const useExecuteWorkflow = (workflowId: string) => {
   const updateWorkflow = useUpdateWorkflow();
   const manualExecution = useManualWorkflowExecution();
 
-  const saveWorkflow = async () => {
-    const snapshot = snapshotWorkflow(editor);
+  const saveWorkflow = async (override?: WorkflowSnapshot) => {
+    const snapshot = snapshotWorkflow(editor, override);
 
     if (!snapshot) {
       return false;
@@ -40,8 +52,8 @@ export const useExecuteWorkflow = (workflowId: string) => {
     }
   };
 
-  const executeWorkflow = async () => {
-    const saved = await saveWorkflow();
+  const executeWorkflow = async (options?: { snapshot?: WorkflowSnapshot }) => {
+    const saved = await saveWorkflow(options?.snapshot);
 
     if (!saved) {
       return false;

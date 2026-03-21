@@ -11,12 +11,18 @@ import {
 } from "./dialog";
 import type { SlackMessageNodeData } from "../../slack/shared";
 import { useWorkflowNodeStatus } from "@/features/executions/components/workflow-execution-status-context";
+import { buildTemplateVariableOptions } from "@/features/executions/components/template-variables";
 
 export const SlackMessageNode = memo((props: NodeProps) => {
-  const { setNodes } = useReactFlow();
+  const { setNodes, getNodes, getEdges } = useReactFlow();
   const nodeData = props.data as SlackMessageNodeData;
   const nodeStatus = useWorkflowNodeStatus(props.id);
   const [dialogOpen, setDialogOpen] = useState(false);
+  const templateVariables = buildTemplateVariableOptions({
+    currentNodeId: props.id,
+    nodes: getNodes(),
+    edges: getEdges(),
+  });
 
   const description = nodeData.content
     ? `${nodeData.content.slice(0, 44)}${nodeData.content.length > 44 ? "..." : ""}${nodeData.credentialId ? " · credential" : ""}`
@@ -33,6 +39,7 @@ export const SlackMessageNode = memo((props: NodeProps) => {
                 credentialId: values.credentialId,
                 credentialField: values.credentialField.trim(),
                 content: values.content,
+                memoryWrites: values.memoryWrites,
               },
             }
           : node,
@@ -51,6 +58,8 @@ export const SlackMessageNode = memo((props: NodeProps) => {
           defaultCredentialId={nodeData.credentialId}
           defaultCredentialField={nodeData.credentialField}
           defaultContent={nodeData.content}
+          defaultMemoryWrites={nodeData.memoryWrites}
+          templateVariables={templateVariables}
         />
       )}
       <BaseExcutionNode
