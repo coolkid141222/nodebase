@@ -9,7 +9,7 @@ import {
   DialogTitle,
 } from "@/components/dialog"
 import { Button } from "@/components/button"
-import { PlayIcon } from "lucide-react"
+import { PlayIcon, PlusIcon, Trash2Icon } from "lucide-react"
 import z from "zod";
 import {
   Field,
@@ -27,26 +27,21 @@ import {
 } from "@/components/select"
 import { Textarea } from "@/components/textarea";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useForm, useWatch } from "react-hook-form";
-import { useEffect } from "react";
+import { useFieldArray, useForm, useWatch } from "react-hook-form";
+import { useEffect, useMemo } from "react";
 import { useTRPC } from "@/trpc/client";
 import { useQuery } from "@tanstack/react-query";
 import {
-  httpRequestAuthTypeSchema,
-  httpRequestMethodSchema,
+  httpRequestNodeSchema,
 } from "../../http-request/shared";
+import {
+  createDefaultExecutionMemoryWriteConfig,
+  type ExecutionMemoryWriteConfig,
+} from "../../memory/shared";
 
-const formSchema = z.object({
-    endpoint: z.url({ message: "Please enter a vaild url "}),
-    method: httpRequestMethodSchema,
-    body: z
-        .string()
-        .optional(),
-    credentialId: z.string().optional(),
-    authType: httpRequestAuthTypeSchema.default("NONE"),
-    credentialField: z.string().optional(),
-    headerName: z.string().optional(),
-}).superRefine((value, ctx) => {
+const EMPTY_MEMORY_WRITES: ExecutionMemoryWriteConfig[] = [];
+
+const formSchema = httpRequestNodeSchema.superRefine((value, ctx) => {
     const hasCredential = Boolean(value.credentialId && value.credentialId !== "none");
 
     if (!hasCredential) {
@@ -91,6 +86,7 @@ interface Props {
     defaultCredentialField?: string;
     defaultAuthType?: "NONE" | "BEARER" | "HEADER";
     defaultHeaderName?: string;
+    defaultMemoryWrites?: ExecutionMemoryWriteConfig[];
 }
 
 export const HttpRequestDialog = ({
@@ -104,9 +100,18 @@ export const HttpRequestDialog = ({
     defaultCredentialField = "",
     defaultAuthType = "NONE",
     defaultHeaderName = "",
+    defaultMemoryWrites,
 }: Props) => {
     const trpc = useTRPC();
     const credentialsQuery = useQuery(trpc.credentials.getMany.queryOptions());
+    const initialMemoryWritesKey = JSON.stringify(
+        defaultMemoryWrites ?? EMPTY_MEMORY_WRITES,
+    );
+    const initialMemoryWrites = useMemo(
+        () =>
+            JSON.parse(initialMemoryWritesKey) as ExecutionMemoryWriteConfig[],
+        [initialMemoryWritesKey],
+    );
     const form = useForm<z.input<typeof formSchema>, unknown, FormType>({
         resolver: zodResolver(formSchema),
         defaultValues: {
@@ -117,6 +122,7 @@ export const HttpRequestDialog = ({
             credentialField: defaultCredentialField,
             authType: defaultAuthType,
             headerName: defaultHeaderName,
+            memoryWrites: initialMemoryWrites,
         },
     })
     const method = useWatch({
@@ -132,6 +138,14 @@ export const HttpRequestDialog = ({
         name: "authType",
     });
     const hasCredential = Boolean(credentialId && credentialId !== "none");
+    const {
+        fields: memoryWriteFields,
+        append: appendMemoryWrite,
+        remove: removeMemoryWrite,
+    } = useFieldArray({
+        control: form.control,
+        name: "memoryWrites",
+    });
 
     useEffect(() => {
         form.reset({
@@ -142,6 +156,7 @@ export const HttpRequestDialog = ({
             credentialField: defaultCredentialField,
             authType: defaultAuthType,
             headerName: defaultHeaderName,
+            memoryWrites: initialMemoryWrites,
         })
     }, [
         defaultEndpoint,
@@ -151,6 +166,7 @@ export const HttpRequestDialog = ({
         defaultCredentialField,
         defaultAuthType,
         defaultHeaderName,
+        initialMemoryWrites,
         form,
     ])
 
@@ -332,6 +348,173 @@ export const HttpRequestDialog = ({
                                 )}
                             </>
                         )}
+
+                        <FieldGroup className="rounded-xl border border-border/70 bg-muted/20 p-4">
+                            <div className="flex items-start justify-between gap-3">
+                                <div className="space-y-1">
+                                    <FieldLabel>Write to memory</FieldLabel>
+                                    <p className="text-sm text-muted-foreground">
+                                        Persist selected values into execution memory. Useful templates:
+                                        {" "}
+                                        <code>{"{{current.output}}"}</code>
+                                        {" "}、
+                                        <code>{"{{current.output.body}}"}</code>
+                                        {" "}、
+                                        <code>{"{{memory.shared.run.trigger}}"}</code>
+                                    </p>
+                                </div>
+                                <Button
+                                    type="button"
+                                    variant="outline"
+                                    size="sm"
+                                    onClick={() => appendMemoryWrite(createDefaultExecutionMemoryWriteConfig())}
+                                >
+                                    <PlusIcon className="size-4" />
+                                    Add
+                                </Button>
+                            </div>
+
+                            <div className="space-y-4">
+                                {memoryWriteFields.length === 0 ? (
+                                    <p className="text-sm text-muted-foreground">
+                                        No custom memory writes yet.
+                                    </p>
+                                ) : (
+                                    memoryWriteFields.map((field, index) => (
+                                        <div
+                                            key={field.id}
+                                            className="space-y-3 rounded-lg border border-border/70 bg-background p-3"
+                                        >
+                                            <div className="flex items-center justify-between gap-3">
+                                                <div className="text-sm font-medium text-foreground">
+                                                    Memory write {index + 1}
+                                                </div>
+                                                <Button
+                                                    type="button"
+                                                    variant="ghost"
+                                                    size="sm"
+                                                    onClick={() => removeMemoryWrite(index)}
+                                                >
+                                                    <Trash2Icon className="size-4" />
+                                                    Remove
+                                                </Button>
+                                            </div>
+
+                                            <div className="grid gap-3 md:grid-cols-2">
+                                                <FieldGroup>
+                                                    <FieldLabel>Scope</FieldLabel>
+                                                    <Select
+                                                        defaultValue={field.scope}
+                                                        onValueChange={(value: "SHARED" | "NODE") =>
+                                                            form.setValue(`memoryWrites.${index}.scope`, value, {
+                                                                shouldDirty: true,
+                                                                shouldValidate: true,
+                                                            })
+                                                        }
+                                                    >
+                                                        <SelectTrigger className="w-full">
+                                                            <SelectValue placeholder="Select scope" />
+                                                        </SelectTrigger>
+                                                        <SelectContent>
+                                                            <SelectItem value="SHARED">Shared</SelectItem>
+                                                            <SelectItem value="NODE">Node private</SelectItem>
+                                                        </SelectContent>
+                                                    </Select>
+                                                </FieldGroup>
+
+                                                <FieldGroup>
+                                                    <FieldLabel>Mode</FieldLabel>
+                                                    <Select
+                                                        defaultValue={field.mode}
+                                                        onValueChange={(value: "REPLACE" | "MERGE" | "APPEND") =>
+                                                            form.setValue(`memoryWrites.${index}.mode`, value, {
+                                                                shouldDirty: true,
+                                                                shouldValidate: true,
+                                                            })
+                                                        }
+                                                    >
+                                                        <SelectTrigger className="w-full">
+                                                            <SelectValue placeholder="Select mode" />
+                                                        </SelectTrigger>
+                                                        <SelectContent>
+                                                            <SelectItem value="REPLACE">Replace</SelectItem>
+                                                            <SelectItem value="MERGE">Merge</SelectItem>
+                                                            <SelectItem value="APPEND">Append</SelectItem>
+                                                        </SelectContent>
+                                                    </Select>
+                                                </FieldGroup>
+                                            </div>
+
+                                            <div className="grid gap-3 md:grid-cols-2">
+                                                <FieldGroup>
+                                                    <FieldLabel>Namespace</FieldLabel>
+                                                    <Field>
+                                                        <input
+                                                            {...form.register(`memoryWrites.${index}.namespace`)}
+                                                            placeholder="results"
+                                                            className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+                                                        />
+                                                    </Field>
+                                                    <FieldError>
+                                                        {form.formState.errors.memoryWrites?.[index]?.namespace?.message}
+                                                    </FieldError>
+                                                </FieldGroup>
+
+                                                <FieldGroup>
+                                                    <FieldLabel>Key</FieldLabel>
+                                                    <Field>
+                                                        <input
+                                                            {...form.register(`memoryWrites.${index}.key`)}
+                                                            placeholder="response"
+                                                            className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+                                                        />
+                                                    </Field>
+                                                    <FieldError>
+                                                        {form.formState.errors.memoryWrites?.[index]?.key?.message}
+                                                    </FieldError>
+                                                </FieldGroup>
+                                            </div>
+
+                                            <FieldGroup>
+                                                <FieldLabel>Value template</FieldLabel>
+                                                <Field>
+                                                    <Textarea
+                                                        rows={3}
+                                                        className="resize-none"
+                                                        {...form.register(`memoryWrites.${index}.value`)}
+                                                        placeholder='{{current.output.body}}'
+                                                    />
+                                                </Field>
+                                                <FieldError>
+                                                    {form.formState.errors.memoryWrites?.[index]?.value?.message}
+                                                </FieldError>
+                                            </FieldGroup>
+
+                                            <FieldGroup>
+                                                <FieldLabel>Visibility</FieldLabel>
+                                                <Select
+                                                    defaultValue={field.visibility}
+                                                    onValueChange={(value: "PUBLIC" | "PRIVATE") =>
+                                                        form.setValue(`memoryWrites.${index}.visibility`, value, {
+                                                            shouldDirty: true,
+                                                            shouldValidate: true,
+                                                        })
+                                                    }
+                                                >
+                                                    <SelectTrigger className="w-full">
+                                                        <SelectValue placeholder="Select visibility" />
+                                                    </SelectTrigger>
+                                                    <SelectContent>
+                                                        <SelectItem value="PUBLIC">Public</SelectItem>
+                                                        <SelectItem value="PRIVATE">Private</SelectItem>
+                                                    </SelectContent>
+                                                </Select>
+                                            </FieldGroup>
+                                        </div>
+                                    ))
+                                )}
+                            </div>
+                        </FieldGroup>
                     </div>
 
                     <DialogFooter className="gap-2 sm:justify-end">

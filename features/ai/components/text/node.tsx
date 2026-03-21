@@ -46,6 +46,7 @@ export const AITextNode = memo((props: NodeProps) => {
                 system: values.system || "",
                 credentialId: values.credentialId,
                 credentialField: values.credentialField.trim(),
+                memoryWrites: values.memoryWrites,
               },
             }
           : node,
@@ -67,6 +68,7 @@ export const AITextNode = memo((props: NodeProps) => {
           defaultSystem={nodeData.system}
           defaultCredentialId={nodeData.credentialId}
           defaultCredentialField={nodeData.credentialField}
+          defaultMemoryWrites={nodeData.memoryWrites}
         />
       )}
       <BaseExcutionNode

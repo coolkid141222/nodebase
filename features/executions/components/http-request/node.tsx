@@ -43,6 +43,7 @@ export const HttpRequestNode = memo((props: NodeProps) => {
                               headerName: values.credentialId && values.credentialId !== "none" && values.authType === "HEADER"
                                   ? values.headerName?.trim() || undefined
                                   : undefined,
+                              memoryWrites: values.memoryWrites,
                           },
                       }
                     : node
@@ -62,10 +63,11 @@ export const HttpRequestNode = memo((props: NodeProps) => {
                     defaultMethod={nodeData.method}
                     defaultBody={nodeData.body}
                     defaultCredentialId={nodeData.credentialId}
-                    defaultCredentialField={nodeData.credentialField}
-                    defaultAuthType={nodeData.authType}
-                    defaultHeaderName={nodeData.headerName}
-                />
+                defaultCredentialField={nodeData.credentialField}
+                defaultAuthType={nodeData.authType}
+                defaultHeaderName={nodeData.headerName}
+                defaultMemoryWrites={nodeData.memoryWrites}
+            />
             )}
             <BaseExcutionNode
                 {...props}
