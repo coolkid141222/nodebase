@@ -10,6 +10,7 @@ import { NodeStatus } from "./react-flow/node-status-indicator"
 import { cn } from "@/lib/utils"
 interface BaseExcutionProps extends NodeProps {
     icon: LucideIcon | string;
+    iconClassName?: string;
     name: string;
     description?: string;
     children?: ReactNode;
@@ -26,6 +27,7 @@ export const BaseExcutionNode = memo((props: BaseExcutionProps) => {
     const { setNodes, setEdges } = useReactFlow();
     const {
         icon: Icon,
+        iconClassName,
         name,
         description,
         children,
@@ -67,7 +69,7 @@ export const BaseExcutionNode = memo((props: BaseExcutionProps) => {
                 {typeof Icon === "string" ? (
                     <Image src={Icon} alt={name} width={16} height={16}/>
                 ): (
-                    <Icon className="size-4 text-muted-foreground"/>
+                    <Icon className={cn("size-4 text-muted-foreground", iconClassName)}/>
                 )}
                 {children}
                 {hideDefaultHandles ? (

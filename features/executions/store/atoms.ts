@@ -82,21 +82,40 @@ function mapExecutionStepStatus(
   }
 }
 
-function buildNodeStatusMap(steps: WorkflowExecutionStepSnapshot[]) {
-  return steps.reduce<Record<string, NodeStatus>>((accumulator, step) => {
-    if (!step.nodeId) {
+function buildNodeStatusMap(execution: WorkflowExecutionSnapshot) {
+  const nodeStatuses = execution.steps.reduce<Record<string, NodeStatus>>(
+    (accumulator, step) => {
+      if (!step.nodeId) {
+        return accumulator;
+      }
+
+      const mappedStatus = mapExecutionStepStatus(step.status);
+
+      if (!mappedStatus) {
+        return accumulator;
+      }
+
+      accumulator[step.nodeId] = mappedStatus;
       return accumulator;
-    }
+    },
+    {},
+  );
 
-    const mappedStatus = mapExecutionStepStatus(step.status);
+  if (!isExecutionPendingOrRunning(execution.status)) {
+    return nodeStatuses;
+  }
 
-    if (!mappedStatus) {
-      return accumulator;
-    }
+  const activeLoopNodeIds = new Set(
+    execution.steps
+      .filter((step) => step.nodeId && step.nodeType === "LOOP")
+      .map((step) => step.nodeId as string),
+  );
 
-    accumulator[step.nodeId] = mappedStatus;
-    return accumulator;
-  }, {});
+  for (const loopNodeId of activeLoopNodeIds) {
+    nodeStatuses[loopNodeId] = "loading";
+  }
+
+  return nodeStatuses;
 }
 
 export function buildWorkflowExecutionState(
@@ -108,7 +127,7 @@ export function buildWorkflowExecutionState(
 
   return {
     execution,
-    nodeStatuses: buildNodeStatusMap(execution.steps),
+    nodeStatuses: buildNodeStatusMap(execution),
   };
 }
 

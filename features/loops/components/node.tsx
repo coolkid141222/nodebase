@@ -56,6 +56,7 @@ export const LoopNode = memo((props: NodeProps) => {
       <BaseExcutionNode
         {...props}
         icon={RotateCwIcon}
+        iconClassName={nodeStatus === "loading" ? "animate-spin text-blue-700" : undefined}
         name="Loop"
         status={nodeStatus}
         nodeClassName="h-[56px] min-w-[112px] rounded-xl border-dashed"
