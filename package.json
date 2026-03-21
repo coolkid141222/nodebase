@@ -5,6 +5,7 @@
   "scripts": {
     "dev": "prisma generate && next dev",
     "dev:webpack": "prisma generate && next dev --webpack",
+    "feishu:bridge": "tsx scripts/feishu-bridge.ts",
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
@@ -22,6 +23,7 @@
     "@ai-sdk/google": "^3.0.6",
     "@ai-sdk/openai": "^3.0.41",
     "@hookform/resolvers": "^5.2.2",
+    "@larksuiteoapi/node-sdk": "^1.59.0",
     "@paralleldrive/cuid2": "^3.3.0",
     "@prisma/client": "6.19.1",
     "@radix-ui/react-accordion": "^1.2.12",

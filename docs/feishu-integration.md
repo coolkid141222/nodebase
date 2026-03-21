@@ -77,6 +77,41 @@ Recommended event subscription setup:
   - URL verification
   - `im.message.receive_v1`
 
+### Phase 1.7: long-connection command bridge
+
+Done in code:
+
+- `npm run feishu:bridge` starts a persistent Feishu SDK worker
+- the worker uses `FEISHU_APP_ID + FEISHU_APP_SECRET`
+- it receives `im.message.receive_v1` through Feishu long connection
+- it routes simple commands to existing workflows instead of creating a new node type
+
+Current command surface:
+
+- `/help`
+- `/list`
+- `/run <workflow id or exact name> :: <message>`
+
+Optional env for safer routing:
+
+- `FEISHU_BRIDGE_OWNER_EMAIL`
+  - restrict workflow lookup to one owner account
+- `FEISHU_BRIDGE_DEFAULT_WORKFLOW`
+  - lets plain text or `/run <message>` target one default workflow
+- `FEISHU_BRIDGE_ALLOWED_CHAT_IDS`
+  - comma-separated chat ids that are allowed to trigger Nodebase
+
+Current product shape:
+
+- Feishu long connection is the inbound command surface
+- existing workflows remain the execution engine
+- `feishu.message.send` remains the outbound delivery tool
+
+This keeps the OpenClaw-like split:
+
+- persistent bridge process for inbound control
+- provider/tool adapter for outbound platform actions
+
 ### Phase 2: auth and credentials
 
 Add one or both credential styles:
