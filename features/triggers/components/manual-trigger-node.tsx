@@ -35,7 +35,7 @@ const ManualTriggerNodeComponent = (props: NodeProps) => {
             <BaseTriggerNode
                 {...props}
                 icon={MousePointerIcon}
-                name="When clicking 'Execute workflow'"
+                name="When manually triggered"
                 onSetting={handleOpenSettings}
                 status={nodeStatus}
             >

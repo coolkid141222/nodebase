@@ -1,7 +1,7 @@
 "use client";
 import { Button } from "@/components/button";
 import { SidebarTrigger } from "@/components/sidebar";
-import { PlayIcon, SaveIcon } from "lucide-react";
+import { SaveIcon } from "lucide-react";
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -115,21 +115,6 @@ export const EditorHeader = ({ workflowId }: { workflowId: string }) => {
             <div className="flex flex-row items-center justify-between gap-x-4 w-full">
                 <EditorBreadcrumbs workflowId={workflowId} />
                 <div className="flex items-center gap-2">
-                    <div className="ml-auto">
-                        <Button
-                            size="sm"
-                            variant="secondary"
-                            onClick={() => void workflowExecution.executeWorkflow()}
-                            disabled={workflowExecution.isPending || !workflowExecution.editorReady}
-                        >
-                            <PlayIcon className="size-4" />
-                            {workflowExecution.isRunning
-                                ? "Running"
-                                : workflowExecution.isSaving
-                                  ? "Saving..."
-                                  : "Execute workflow"}
-                        </Button>
-                    </div>
                     <Button
                         size="sm"
                         onClick={() => void workflowExecution.saveWorkflow()}
