@@ -66,8 +66,43 @@ export const toolProviderSummarySchema = z.object({
 });
 export type ToolProviderSummary = z.infer<typeof toolProviderSummarySchema>;
 
+export const mcpServerConfigSchema = z.object({
+  id: z.string().min(1),
+  displayName: z.string().min(1),
+  description: z.string().min(1).default("MCP server"),
+  transport: z.enum(["STDIO", "HTTP", "SSE"]),
+  enabled: z.boolean().default(true),
+  toolPrefix: z.string().min(1).optional(),
+  command: z.string().min(1).optional(),
+  args: z.array(z.string()).default([]),
+  url: z.string().url().optional(),
+  urlEnv: z.string().min(1).optional(),
+  headersEnv: z.array(z.string().min(1)).default([]),
+  workingDirectory: z.string().min(1).optional(),
+});
+export type MCPServerConfig = z.infer<typeof mcpServerConfigSchema>;
+
+export const mcpServerSummarySchema = z.object({
+  id: z.string().min(1),
+  displayName: z.string().min(1),
+  description: z.string().min(1),
+  transport: z.enum(["STDIO", "HTTP", "SSE"]),
+  enabled: z.boolean().default(true),
+  lifecycle: toolLifecycleSchema,
+  statusMessage: z.string().min(1),
+  toolPrefix: z.string().min(1),
+  command: z.string().min(1).optional(),
+  args: z.array(z.string()).default([]),
+  url: z.string().url().optional(),
+  urlEnv: z.string().min(1).optional(),
+  headersEnv: z.array(z.string().min(1)).default([]),
+  workingDirectory: z.string().min(1).optional(),
+});
+export type MCPServerSummary = z.infer<typeof mcpServerSummarySchema>;
+
 export const toolRegistrySnapshotSchema = z.object({
   providers: z.array(toolProviderSummarySchema),
   tools: z.array(registeredToolSchema),
+  mcpServers: z.array(mcpServerSummarySchema).default([]),
 });
 export type ToolRegistrySnapshot = z.infer<typeof toolRegistrySnapshotSchema>;

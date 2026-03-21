@@ -34,6 +34,7 @@ For this repo, the least-friction production path is:
 - `DEEPSEEK_API_KEY`
 - `OPENAI_API_KEY`
 - `ANTHROPIC_API_KEY`
+- `MCP_SERVERS_JSON`
 - `NEXT_PUBLIC_PADDLE_ENV`
 - `PADDLE_API_KEY`
 - `NEXT_PUBLIC_PADDLE_CLIENT_TOKEN`
@@ -65,6 +66,48 @@ Current legacy values in `.env` that are not used by the deployed code path:
 - `ZHIPU_BASE_URL`
 
 If you want a cleaner production setup, omit those legacy values from the Vercel project entirely.
+
+## MCP scaffold
+
+This repo now includes an MCP adapter scaffold. It does not execute MCP tools yet; it lets the app discover which MCP servers you intend to mount next.
+
+Use `MCP_SERVERS_JSON` with a JSON array of server configs.
+
+Example `stdio` server:
+
+```json
+[
+  {
+    "id": "filesystem",
+    "displayName": "Filesystem MCP",
+    "description": "Read and write files through MCP",
+    "transport": "STDIO",
+    "command": "npx",
+    "args": ["-y", "@modelcontextprotocol/server-filesystem", "E:/OneDrive/code/nodebase"]
+  }
+]
+```
+
+Example remote server with a URL secret stored separately:
+
+```json
+[
+  {
+    "id": "browser",
+    "displayName": "Remote Browser MCP",
+    "description": "Browser automation over remote MCP transport",
+    "transport": "SSE",
+    "urlEnv": "BROWSER_MCP_URL",
+    "headersEnv": ["BROWSER_MCP_TOKEN"]
+  }
+]
+```
+
+For security:
+
+- Keep secrets out of `MCP_SERVERS_JSON`
+- Put secret URLs/tokens in separate env vars
+- Use `urlEnv` and `headersEnv` to reference those names instead of hardcoding values
 
 ## Neon
 

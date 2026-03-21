@@ -1,6 +1,6 @@
 import type { ToolRegistrySnapshot, ToolProviderSummary } from "../shared";
 import { internalToolCatalog } from "./adapters/internal";
-import { mcpProviderSummary } from "./adapters/mcp";
+import { getConfiguredMcpServers, getMcpProviderSummary } from "./adapters/mcp";
 import { openClawProviderSummary } from "./adapters/openclaw";
 
 const internalProviderSummary: ToolProviderSummary = {
@@ -13,12 +13,15 @@ const internalProviderSummary: ToolProviderSummary = {
 };
 
 export function getToolRegistrySnapshot(): ToolRegistrySnapshot {
+  const mcpServers = getConfiguredMcpServers();
+
   return {
     providers: [
       internalProviderSummary,
-      mcpProviderSummary,
+      getMcpProviderSummary(),
       openClawProviderSummary,
     ],
     tools: internalToolCatalog,
+    mcpServers,
   };
 }
