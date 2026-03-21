@@ -33,6 +33,8 @@ export function getToolProviderLabel(
       return "MCP";
     case "OPENCLAW":
       return "OpenClaw";
+    case "FEISHU":
+      return "Feishu";
     case "INTERNAL":
     default:
       return "Internal";

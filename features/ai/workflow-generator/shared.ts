@@ -97,7 +97,7 @@ const toolSpecSchema = z.object({
   type: z.literal("TOOL"),
   ...workflowGeneratorPositionSchema.shape,
   config: z.object({
-    provider: z.enum(["INTERNAL", "MCP", "OPENCLAW"]).default("INTERNAL"),
+    provider: z.enum(["INTERNAL", "MCP", "OPENCLAW", "FEISHU"]).default("INTERNAL"),
     serverId: z.string().trim().max(120).optional(),
     toolId: z.string().trim().min(1).max(160),
     argumentsJson: z.string().trim().min(1).max(6_000),

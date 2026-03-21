@@ -1,6 +1,6 @@
 import { z } from "zod";
 
-export const toolProviderSchema = z.enum(["INTERNAL", "MCP", "OPENCLAW"]);
+export const toolProviderSchema = z.enum(["INTERNAL", "MCP", "OPENCLAW", "FEISHU"]);
 export type ToolProvider = z.infer<typeof toolProviderSchema>;
 
 export const toolTransportSchema = z.enum(["NONE", "STDIO", "HTTP", "SSE"]);

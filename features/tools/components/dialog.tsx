@@ -254,6 +254,7 @@ export const ToolDialog = ({
                 <SelectItem value="INTERNAL">Internal runtime</SelectItem>
                 <SelectItem value="MCP">MCP server</SelectItem>
                 <SelectItem value="OPENCLAW">OpenClaw adapter</SelectItem>
+                <SelectItem value="FEISHU">Feishu adapter</SelectItem>
               </SelectContent>
             </Select>
           </FieldGroup>
@@ -325,6 +326,8 @@ export const ToolDialog = ({
                       ? "server.tool_name"
                       : provider === "OPENCLAW"
                         ? "plugin.tool_name"
+                        : provider === "FEISHU"
+                          ? "feishu.tool_name"
                         : "internal.tool_id"
                   }
                 />
@@ -336,6 +339,8 @@ export const ToolDialog = ({
                   ? "Tool discovery is scaffolded. You can type a future MCP tool id now."
                   : provider === "OPENCLAW"
                     ? "OpenClaw plugin tools will appear here once the adapter is wired."
+                    : provider === "FEISHU"
+                      ? "Feishu tools will appear here once the adapter is wired."
                     : "Select one of the built-in runtime tools.")}
             </FieldDescription>
             <FieldError errors={[form.formState.errors.toolId]} />

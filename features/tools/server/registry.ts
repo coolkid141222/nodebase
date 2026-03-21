@@ -2,6 +2,7 @@ import type { ToolRegistrySnapshot, ToolProviderSummary } from "../shared";
 import { internalToolCatalog } from "./adapters/internal";
 import { getConfiguredMcpServers, getMcpProviderSummary } from "./adapters/mcp";
 import { openClawProviderSummary } from "./adapters/openclaw";
+import { feishuProviderSummary } from "./adapters/feishu";
 
 const internalProviderSummary: ToolProviderSummary = {
   id: "INTERNAL",
@@ -20,6 +21,7 @@ export function getToolRegistrySnapshot(): ToolRegistrySnapshot {
       internalProviderSummary,
       getMcpProviderSummary(),
       openClawProviderSummary,
+      feishuProviderSummary,
     ],
     tools: internalToolCatalog,
     mcpServers,

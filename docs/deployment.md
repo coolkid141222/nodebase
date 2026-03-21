@@ -35,6 +35,10 @@ For this repo, the least-friction production path is:
 - `OPENAI_API_KEY`
 - `ANTHROPIC_API_KEY`
 - `MINIMAX_BASE_URL` (optional override; this repo defaults MiniMax to the CN-compatible endpoint)
+- `FEISHU_APP_ID`
+- `FEISHU_APP_SECRET`
+- `FEISHU_BASE_URL`
+- `FEISHU_BOT_WEBHOOK`
 - `MCP_SERVERS_JSON`
 - `NEXT_PUBLIC_PADDLE_ENV`
 - `PADDLE_API_KEY`
@@ -110,6 +114,12 @@ For security:
 - Keep secrets out of `MCP_SERVERS_JSON`
 - Put secret URLs/tokens in separate env vars
 - Use `urlEnv` and `headersEnv` to reference those names instead of hardcoding values
+
+## Feishu scaffold
+
+This repo now includes a Feishu provider scaffold in the tool registry. It is not executable yet; it is there so Feishu can be attached through the same adapter pattern as OpenClaw instead of being treated as a one-off branch.
+
+See [Feishu integration notes](./feishu-integration.md).
 
 ## Neon
 

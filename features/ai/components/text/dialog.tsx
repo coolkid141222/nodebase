@@ -38,6 +38,7 @@ import {
   getDefaultAITextModel,
 } from "../../text/shared";
 import { getToolArgumentsPlaceholder } from "@/features/tools/node/shared";
+import { toolProviderSchema } from "@/features/tools/shared";
 import {
   createDefaultExecutionMemoryWriteConfig,
   type ExecutionMemoryWriteConfig,
@@ -65,7 +66,7 @@ type Props = {
   defaultCredentialId?: string;
   defaultCredentialField?: string;
   defaultToolEnabled?: boolean;
-  defaultToolProvider?: "INTERNAL" | "MCP" | "OPENCLAW";
+  defaultToolProvider?: z.infer<typeof toolProviderSchema>;
   defaultToolServerId?: string;
   defaultToolId?: string;
   defaultToolDisplayName?: string;
