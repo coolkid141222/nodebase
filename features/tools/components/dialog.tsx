@@ -38,7 +38,11 @@ import {
   createDefaultExecutionMemoryWriteConfig,
   type ExecutionMemoryWriteConfig,
 } from "@/features/executions/memory/shared";
-import { toolNodeSchema, getToolProviderLabel } from "../node/shared";
+import {
+  toolNodeSchema,
+  getToolArgumentsPlaceholder,
+  getToolProviderLabel,
+} from "../node/shared";
 import { toolProviderSchema } from "../shared";
 
 const EMPTY_MEMORY_WRITES: ExecutionMemoryWriteConfig[] = [];
@@ -383,7 +387,7 @@ export const ToolDialog = ({
                 rows={7}
                 className="resize-none font-mono text-sm"
                 {...form.register("argumentsJson")}
-                placeholder='{"query":"{{input}}"}'
+                placeholder={getToolArgumentsPlaceholder(selectedTool?.id ?? toolId)}
               />
             </Field>
             <FieldDescription>

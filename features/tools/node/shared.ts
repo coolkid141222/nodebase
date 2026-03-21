@@ -38,3 +38,35 @@ export function getToolProviderLabel(
       return "Internal";
   }
 }
+
+export function getToolArgumentsPlaceholder(toolId?: string | null) {
+  switch (toolId) {
+    case "internal.browser_page":
+      return `{
+  "url": "https://example.com",
+  "maxChars": 4000,
+  "includeLinks": true
+}`;
+    case "internal.http_request":
+      return `{
+  "url": "https://api.example.com/data",
+  "method": "GET",
+  "body": null
+}`;
+    case "internal.memory_read":
+      return `{
+  "scope": "SHARED",
+  "namespace": "results",
+  "key": "summary"
+}`;
+    case "internal.memory_write":
+      return `{
+  "scope": "SHARED",
+  "namespace": "results",
+  "key": "summary",
+  "value": "{{input}}"
+}`;
+    default:
+      return `{"query":"{{input}}"}`;
+  }
+}

@@ -47,6 +47,10 @@ import {
 import { loopNodeSchema } from "@/features/loops/shared";
 import { toolNodeSchema } from "@/features/tools/node/shared";
 import type { ToolProvider } from "@/features/tools/shared";
+import {
+  executeBrowserPageTool,
+  parseBrowserPageArguments,
+} from "@/features/tools/server/internal-browser";
 
 type WorkflowForExecution = Prisma.WorkflowGetPayload<{
   include: {
@@ -148,6 +152,7 @@ export class WorkflowExecutionError extends Error {
       | "INVALID_LOOP_CONFIG"
       | "INVALID_TOOL_CONFIG"
       | "UNSUPPORTED_NODE_TYPE"
+      | "TOOL_EXECUTION_FAILED"
       | "TOOL_ADAPTER_NOT_READY"
       | "INVALID_HTTP_REQUEST_CONFIG"
       | "INVALID_AI_NODE_CONFIG"
@@ -898,6 +903,46 @@ async function executeHttpRequestNode(
   };
 }
 
+async function executeToolNode(
+  input: ResolvedToolInput,
+): Promise<NodeExecutionResult> {
+  if (input.provider !== "INTERNAL") {
+    throw new WorkflowExecutionError(
+      `Tool provider "${input.provider}" is configured, but its runtime adapter is not wired yet.`,
+      "TOOL_ADAPTER_NOT_READY",
+    );
+  }
+
+  if (input.toolId === "internal.browser_page") {
+    const browserInput = parseBrowserPageArguments(input.arguments ?? {});
+    const output = await executeBrowserPageTool(browserInput);
+
+    if (!output.ok) {
+      throw new WorkflowExecutionError(
+        `Browser page tool failed with status ${output.status}.`,
+        "TOOL_EXECUTION_FAILED",
+      );
+    }
+
+    return {
+      status: ExecutionStepStatus.SUCCESS,
+      output: {
+        provider: input.provider,
+        toolId: input.toolId,
+        toolDisplayName: input.toolDisplayName,
+        serverId: input.serverId,
+        serverDisplayName: input.serverDisplayName,
+        ...output,
+      },
+    };
+  }
+
+  throw new WorkflowExecutionError(
+    `Internal tool "${input.toolId}" is registered but not executable yet.`,
+    "TOOL_ADAPTER_NOT_READY",
+  );
+}
+
 function normalizeDiscordMessageNodeData(
   node: WorkflowForExecution["nodes"][number],
   context: ExecutionTemplateContext,
@@ -1548,10 +1593,7 @@ async function executeNode(
         output: input as ResolvedLoopInput,
       };
     case NodeType.TOOL:
-      throw new WorkflowExecutionError(
-        `Tool node "${node.name}" selected "${(input as ResolvedToolInput).toolId}" from ${(input as ResolvedToolInput).provider}, but tool execution adapters are not wired into the runtime yet.`,
-        "TOOL_ADAPTER_NOT_READY",
-      );
+      return executeToolNode(input as ResolvedToolInput);
     case NodeType.DISCORD_MESSAGE:
       return executeDiscordMessageNode(
         execution,

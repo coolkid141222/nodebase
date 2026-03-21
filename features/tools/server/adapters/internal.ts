@@ -2,6 +2,42 @@ import type { RegisteredTool } from "../../shared";
 
 export const internalToolCatalog: RegisteredTool[] = [
   {
+    id: "internal.browser_page",
+    provider: "INTERNAL",
+    displayName: "Browser Page",
+    description:
+      "Fetch a public web page, extract the title, summary text, and top links.",
+    transport: "NONE",
+    lifecycle: "READY",
+    dangerous: true,
+    requiresApproval: false,
+    capabilities: ["BROWSER", "HTTP"],
+    parameters: [
+      {
+        key: "url",
+        label: "URL",
+        description: "Public page URL to visit.",
+        type: "string",
+        required: true,
+      },
+      {
+        key: "maxChars",
+        label: "Max chars",
+        description: "Maximum extracted text length to keep.",
+        type: "number",
+        required: false,
+      },
+      {
+        key: "includeLinks",
+        label: "Include links",
+        description: "Whether to return the top links found on the page.",
+        type: "boolean",
+        required: false,
+      },
+    ],
+    tags: ["browser", "research", "workflow-node"],
+  },
+  {
     id: "internal.http_request",
     provider: "INTERNAL",
     displayName: "HTTP Request",
