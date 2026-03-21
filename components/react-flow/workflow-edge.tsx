@@ -4,7 +4,7 @@ import { memo } from "react";
 import {
   BaseEdge,
   EdgeLabelRenderer,
-  getBezierPath,
+  getSmoothStepPath,
   type EdgeProps,
   useReactFlow,
 } from "@xyflow/react";
@@ -24,13 +24,15 @@ export const WorkflowEdge = memo((props: EdgeProps) => {
     selected,
   } = props;
   const { setEdges } = useReactFlow();
-  const [edgePath, labelX, labelY] = getBezierPath({
+  const [edgePath, labelX, labelY] = getSmoothStepPath({
     sourceX,
     sourceY,
     sourcePosition,
     targetX,
     targetY,
     targetPosition,
+    borderRadius: 18,
+    offset: 28,
   });
 
   return (
