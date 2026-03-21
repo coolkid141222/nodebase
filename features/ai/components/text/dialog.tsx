@@ -155,8 +155,8 @@ export const AITextDialog = ({
               <DialogDescription className="pt-2">
                 Generate text with Gemini, OpenAI, Anthropic, DeepSeek, or
                 MiniMax. Prompt and system fields support workflow templates
-                like <code>{"{{input.body.message}}"}</code>,{" "}
-                <code>{"{{inputs.main.text}}"}</code>, and{" "}
+                like <code>{"{{input}}"}</code>,{" "}
+                <code>{"{{inputRaw.body.message}}"}</code>, and{" "}
                 <code>{"{{memory.shared.nodesById.NODE_ID.output}}"}</code>,{" "}
                 <code>{"{{memory.node.run.output}}"}</code>, and{" "}
                 <code>{"{{steps.NODE_ID.output.body}}"}</code>.

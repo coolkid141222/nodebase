@@ -209,6 +209,34 @@ function parseJsonOrReturnText(value: string) {
   }
 }
 
+function containsTemplateExpression(value?: string | null) {
+  if (!value) {
+    return false;
+  }
+
+  return /\{\{\s*[^}]+\s*\}\}/.test(value);
+}
+
+function stringifyTemplateText(value: unknown) {
+  if (value == null) {
+    return "";
+  }
+
+  if (typeof value === "string") {
+    return value.trim();
+  }
+
+  if (typeof value === "number" || typeof value === "boolean") {
+    return String(value);
+  }
+
+  try {
+    return JSON.stringify(value, null, 2);
+  } catch {
+    return String(value);
+  }
+}
+
 function isJsonRecord(
   value: Prisma.JsonValue | Prisma.InputJsonValue | null,
 ): value is Record<string, Prisma.JsonValue | Prisma.InputJsonValue> {
@@ -866,12 +894,23 @@ function normalizeAITextNodeData(
   const resolvedSystem = data.system
     ? resolveTemplateString(data.system, context)
     : "";
-  const prompt = typeof resolvedPrompt === "string" ? resolvedPrompt.trim() : "";
-  const system = typeof resolvedSystem === "string" ? resolvedSystem.trim() : "";
+  const prompt = stringifyTemplateText(resolvedPrompt);
+  const system = stringifyTemplateText(resolvedSystem);
   const credentialId = data.credentialId?.trim();
   const credentialField = data.credentialField?.trim();
+  const shouldAutoAttachUpstreamInput =
+    !containsTemplateExpression(data.prompt) &&
+    context.input != null &&
+    context.upstream.some(
+      (item) => item.fromNodeType === NodeType.AI_TEXT && item.value != null,
+    );
+  const finalPrompt = shouldAutoAttachUpstreamInput
+    ? [prompt, stringifyTemplateText(context.input)]
+        .filter(Boolean)
+        .join("\n\nInput:\n")
+    : prompt;
 
-  if (!prompt) {
+  if (!finalPrompt) {
     throw new WorkflowExecutionError(
       `AI Text node "${node.name}" is missing a prompt.`,
       "INVALID_AI_NODE_CONFIG",
@@ -888,7 +927,7 @@ function normalizeAITextNodeData(
   return {
     provider,
     model,
-    prompt,
+    prompt: finalPrompt,
     system: system || null,
     credentialId,
     credentialField,
