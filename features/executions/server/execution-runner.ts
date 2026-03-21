@@ -23,6 +23,7 @@ import {
   type RuntimeExecutionMemoryState,
   type RuntimeExecutionMemoryWrite,
 } from "./memory";
+import type { ExecutionMemoryWriteConfig } from "../memory/shared";
 import { readCredentialSecret } from "@/features/credentials/server/payload";
 import type {
   HttpRequestAuthType,
@@ -213,6 +214,12 @@ function createExecutionTemplateContext(
   node: WorkflowForExecution["nodes"][number],
   completedSteps: Map<string, CompletedStepResult>,
   memoryState: RuntimeExecutionMemoryState,
+  current?: {
+    status?: string | null;
+    input?: Prisma.JsonValue | null;
+    output?: Prisma.JsonValue | null;
+    error?: Prisma.JsonValue | null;
+  },
 ): ExecutionTemplateContext {
   const upstream = buildNodeUpstreamContext(execution, node, completedSteps);
   const memory = buildExecutionMemoryTemplateSnapshot(memoryState, node.id);
@@ -229,6 +236,12 @@ function createExecutionTemplateContext(
     trigger: execution.triggerPayload as Prisma.JsonValue,
     input: upstream.input,
     inputs: upstream.inputs,
+    current: {
+      status: current?.status ?? null,
+      input: current?.input ?? null,
+      output: current?.output ?? null,
+      error: current?.error ?? null,
+    },
     memory,
     upstream: upstream.upstream,
     steps: Object.fromEntries(completedSteps.entries()),
@@ -319,6 +332,27 @@ function buildNodeMemoryWrites(params: {
   );
 
   return writes;
+}
+
+function buildConfiguredMemoryWrites(
+  node: WorkflowForExecution["nodes"][number],
+  context: ExecutionTemplateContext,
+) {
+  const nodeData = (node.data ?? {}) as {
+    memoryWrites?: ExecutionMemoryWriteConfig[];
+  };
+  const writes = nodeData.memoryWrites ?? [];
+
+  return writes
+    .filter((write) => write.key.trim() && write.value.trim())
+    .map<RuntimeExecutionMemoryWrite>((write) => ({
+      scope: write.scope,
+      namespace: write.namespace.trim(),
+      key: write.key.trim(),
+      value: resolveTemplateValue(write.value, context),
+      mode: write.mode,
+      visibility: write.visibility,
+    }));
 }
 
 function buildNodeUpstreamContext(
@@ -1400,6 +1434,18 @@ export async function runExecution(executionId: string) {
 
       try {
         const result = await executeNode(execution, node, input);
+        const successTemplateContext = createExecutionTemplateContext(
+          execution,
+          node,
+          completedSteps,
+          memoryState,
+          {
+            status: result.status,
+            input: (input ?? null) as Prisma.JsonValue | null,
+            output: (result.output ?? null) as Prisma.JsonValue | null,
+            error: null,
+          },
+        );
         const successWrites = [
           ...buildNodeMemoryWrites({
             execution,
@@ -1408,6 +1454,7 @@ export async function runExecution(executionId: string) {
             status: result.status,
             output: result.output,
           }),
+          ...buildConfiguredMemoryWrites(node, successTemplateContext),
           ...(result.memoryWrites ?? []),
         ];
 

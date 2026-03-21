@@ -1,4 +1,8 @@
 import z from "zod";
+import {
+  executionMemoryWriteConfigListSchema,
+  type ExecutionMemoryWriteConfig,
+} from "@/features/executions/memory/shared";
 
 export const aiTextProviderSchema = z.enum([
   "GOOGLE",
@@ -29,6 +33,7 @@ export const aiTextNodeSchema = z.object({
   system: z.string().optional(),
   credentialId: z.string().min(1),
   credentialField: z.string().min(1),
+  memoryWrites: executionMemoryWriteConfigListSchema,
 });
 
 export type AITextNodeData = {
@@ -38,4 +43,5 @@ export type AITextNodeData = {
   system?: string;
   credentialId?: string;
   credentialField?: string;
+  memoryWrites?: ExecutionMemoryWriteConfig[];
 };

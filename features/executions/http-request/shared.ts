@@ -1,4 +1,8 @@
 import z from "zod";
+import {
+  executionMemoryWriteConfigListSchema,
+  type ExecutionMemoryWriteConfig,
+} from "@/features/executions/memory/shared";
 
 export const httpRequestMethodSchema = z.enum([
   "GET",
@@ -31,4 +35,16 @@ export type HttpRequestNodeData = {
   credentialField?: string;
   authType?: HttpRequestAuthType;
   headerName?: string;
+  memoryWrites?: ExecutionMemoryWriteConfig[];
 };
+
+export const httpRequestNodeSchema = z.object({
+  endpoint: z.url(),
+  method: httpRequestMethodSchema,
+  body: z.string().optional(),
+  credentialId: z.string().optional(),
+  authType: httpRequestAuthTypeSchema.default("NONE"),
+  credentialField: z.string().optional(),
+  headerName: z.string().optional(),
+  memoryWrites: executionMemoryWriteConfigListSchema,
+});
