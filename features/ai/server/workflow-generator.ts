@@ -321,8 +321,8 @@ Memory rules:
   - research.context
   - answers.final
 - Good memoryWrites examples:
-  - {"scope":"SHARED","namespace":"problem","key":"task","value":"{{trigger.body.message}}","mode":"REPLACE","visibility":"PUBLIC","persist":true,"persistenceScope":"WORKFLOW","semanticIndex":true}
-  - {"scope":"SHARED","namespace":"research","key":"context","value":"{{current.output.result}}","mode":"REPLACE","visibility":"PUBLIC","persist":true,"persistenceScope":"WORKFLOW","semanticIndex":true}
+  - {"scope":"SHARED","namespace":"problem","key":"task","value":"{{trigger.body.message}}","mode":"REPLACE","visibility":"PUBLIC","persist":true,"persistenceScope":"WORKFLOW","semanticIndex":false}
+  - {"scope":"SHARED","namespace":"research","key":"context","value":"{{current.output.result}}","mode":"REPLACE","visibility":"PUBLIC","persist":true,"persistenceScope":"WORKFLOW","semanticIndex":false}
   - {"scope":"NODE","namespace":"analysis","key":"draft","value":"{{current.output.text}}","mode":"REPLACE","visibility":"PRIVATE","persist":false,"persistenceScope":"WORKFLOW","semanticIndex":false}
 
 Problem-solving rules:
@@ -388,7 +388,7 @@ Required JSON shape:
             "visibility": "PUBLIC",
             "persist": true,
             "persistenceScope": "WORKFLOW",
-            "semanticIndex": true
+            "semanticIndex": false
           }
         ]
       }
@@ -412,7 +412,7 @@ Required JSON shape:
             "visibility": "PUBLIC",
             "persist": true,
             "persistenceScope": "WORKFLOW",
-            "semanticIndex": true
+            "semanticIndex": false
           }
         ]
       }
@@ -468,7 +468,7 @@ Required JSON shape:
             "visibility": "PUBLIC",
             "persist": true,
             "persistenceScope": "WORKFLOW",
-            "semanticIndex": true
+            "semanticIndex": false
           }
         ]
       }
@@ -841,7 +841,7 @@ function promoteProblemSolvingDraft(params: {
           : "{{trigger.body}}",
       visibility: "PUBLIC",
       persist: true,
-      semanticIndex: true,
+      semanticIndex: false,
     });
   }
 
@@ -854,7 +854,7 @@ function promoteProblemSolvingDraft(params: {
       value: "{{current.output.result}}",
       visibility: "PUBLIC",
       persist: true,
-      semanticIndex: true,
+      semanticIndex: false,
     });
   }
 
@@ -878,7 +878,7 @@ function promoteProblemSolvingDraft(params: {
       value: "{{current.output.text}}",
       visibility: "PUBLIC",
       persist: true,
-      semanticIndex: true,
+      semanticIndex: false,
     });
   }
 

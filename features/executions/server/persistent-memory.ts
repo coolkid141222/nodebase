@@ -78,6 +78,9 @@ const DEFAULT_EMBEDDING_MODELS = {
   OPENAI: "text-embedding-3-small",
 } as const;
 
+const PERSISTENT_MEMORY_EMBEDDINGS_ENABLED =
+  process.env.ENABLE_PERSISTENT_MEMORY_EMBEDDINGS === "true";
+
 function createPersistentMemoryIdentity(entry: {
   scope: PersistentMemoryScope;
   ownerId: string;
@@ -301,6 +304,10 @@ function cosineSimilarity(left: number[], right: number[]) {
 async function resolveEmbeddingRuntime(
   userId: string,
 ): Promise<ResolvedEmbeddingRuntime | null> {
+  if (!PERSISTENT_MEMORY_EMBEDDINGS_ENABLED) {
+    return null;
+  }
+
   const credentials = await prisma.credential.findMany({
     where: {
       userId,
@@ -358,6 +365,10 @@ async function createEmbeddingVector(params: {
   value: string;
   taskType?: "RETRIEVAL_DOCUMENT" | "RETRIEVAL_QUERY";
 }) {
+  if (!PERSISTENT_MEMORY_EMBEDDINGS_ENABLED) {
+    return null;
+  }
+
   const text = params.value.trim();
 
   if (!text) {
