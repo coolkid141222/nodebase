@@ -21,7 +21,6 @@ export const LoopNode = memo((props: NodeProps) => {
     edges: getEdges(),
   });
   const maxIterations = nodeData.maxIterations ?? 3;
-  const description = `Scope controller · ${maxIterations}x`;
 
   const handleSubmit = (values: LoopFormValues) => {
     setNodes((nodes) =>
@@ -57,7 +56,6 @@ export const LoopNode = memo((props: NodeProps) => {
         {...props}
         icon={RotateCwIcon}
         name="Loop"
-        description={description}
         status={nodeStatus}
         nodeClassName="h-[56px] min-w-[112px] rounded-xl border-dashed"
         contentClassName="relative px-3"

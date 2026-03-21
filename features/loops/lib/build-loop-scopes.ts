@@ -30,7 +30,7 @@ const DEFAULT_NODE_WIDTH = 56;
 const DEFAULT_NODE_HEIGHT = 56;
 const LABEL_ALLOWANCE = 52;
 const SCOPE_PADDING_X = 34;
-const SCOPE_PADDING_TOP = 34;
+const SCOPE_PADDING_TOP = 18;
 const SCOPE_PADDING_BOTTOM = 46;
 
 function formatNodeDisplayName(node: MeasuredNode | undefined) {
