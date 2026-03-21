@@ -6,7 +6,8 @@ import {
     GlobeIcon,
     MessageSquareIcon,
     LinkIcon,
-    MousePointerIcon
+    MousePointerIcon,
+    RotateCwIcon,
 } from "lucide-react"
 import { useCallback } from "react"
 import { toast } from "sonner"
@@ -54,6 +55,12 @@ const executionNodes: NodeTypeOptions[] = [
         label: "AI TEXT",
         decription: "Generate text with an AI provider",
         icon: BotIcon
+    },
+    {
+        type: "LOOP",
+        label: "LOOP",
+        decription: "Repeat a local cyclic section of the workflow",
+        icon: RotateCwIcon
     },
     {
         type: "DISCORD_MESSAGE",

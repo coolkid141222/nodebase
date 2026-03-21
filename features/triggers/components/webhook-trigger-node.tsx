@@ -40,7 +40,6 @@ const WebhookTriggerNodeComponent = (props: NodeProps) => {
               ...node,
               data: {
               ...node.data,
-              maxIterations: values.maxIterations,
               memoryWrites: values.memoryWrites,
             },
           }
@@ -58,7 +57,6 @@ const WebhookTriggerNodeComponent = (props: NodeProps) => {
           workflowId={workflowId}
           webhookSecret={workflow.webhookSecret}
           onSave={handleSave}
-          defaultMaxIterations={nodeData.maxIterations}
           defaultMemoryWrites={nodeData.memoryWrites}
           templateVariables={templateVariables}
         />

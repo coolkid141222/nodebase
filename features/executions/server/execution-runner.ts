@@ -44,7 +44,7 @@ import {
   createMinimaxProvider,
   createOpenAIProvider,
 } from "@/lib/ai/proxy";
-import type { TriggerNodeData } from "@/features/triggers/shared";
+import { loopNodeSchema } from "@/features/loops/shared";
 
 type WorkflowForExecution = Prisma.WorkflowGetPayload<{
   include: {
@@ -106,6 +106,14 @@ type ResolvedSlackMessageInput = {
   content: string;
 };
 
+type ResolvedLoopInput = {
+  value: Prisma.InputJsonValue | null;
+  rawValue: Prisma.InputJsonValue | null;
+  attempt: number;
+  maxIterations: number;
+  isFinalAttempt: boolean;
+};
+
 type CompletedStepResult = {
   id: string;
   nodeId: string;
@@ -126,6 +134,7 @@ export class WorkflowExecutionError extends Error {
       | "MANUAL_TRIGGER_NOT_FOUND"
       | "WEBHOOK_TRIGGER_NOT_FOUND"
       | "WORKFLOW_HAS_CYCLE"
+      | "INVALID_LOOP_CONFIG"
       | "UNSUPPORTED_NODE_TYPE"
       | "INVALID_HTTP_REQUEST_CONFIG"
       | "INVALID_AI_NODE_CONFIG"
@@ -270,6 +279,10 @@ function extractNodeTransferValue(
 
   if (nodeType === NodeType.HTTP_REQUEST && output.body !== undefined) {
     return output.body as Prisma.JsonValue;
+  }
+
+  if (nodeType === NodeType.LOOP && output.value !== undefined) {
+    return output.value as Prisma.JsonValue;
   }
 
   if (
@@ -629,6 +642,30 @@ function normalizeHttpRequestNodeData(
     method,
     body,
     credential,
+  };
+}
+
+function normalizeLoopNodeData(
+  node: WorkflowForExecution["nodes"][number],
+  context: ExecutionTemplateContext,
+): ResolvedLoopInput {
+  const parsed = loopNodeSchema.safeParse(node.data ?? {});
+
+  if (!parsed.success) {
+    throw new WorkflowExecutionError(
+      `Loop node "${node.name}" has invalid configuration.`,
+      "INVALID_LOOP_CONFIG",
+    );
+  }
+
+  const attempt = context.current.attempt ?? 1;
+
+  return {
+    value: context.input as Prisma.InputJsonValue | null,
+    rawValue: context.inputRaw as Prisma.InputJsonValue | null,
+    attempt,
+    maxIterations: parsed.data.maxIterations,
+    isFinalAttempt: attempt >= parsed.data.maxIterations,
   };
 }
 
@@ -1198,13 +1235,6 @@ function buildTriggeredExecutionPlan(
     }
   }
   const triggerNodeIds = new Set(triggerNodes.map((node) => node.id));
-  const maxIterations = Math.max(
-    1,
-    ...triggerNodes.map((node) => {
-      const data = (node.data ?? {}) as TriggerNodeData;
-      return data.maxIterations ?? 1;
-    }),
-  );
   const indexMap = new Map<string, number>();
   const lowLinkMap = new Map<string, number>();
   const stack: string[] = [];
@@ -1362,7 +1392,44 @@ function buildTriggeredExecutionPlan(
       );
     }
 
-    const repeatCount = isCyclic ? maxIterations : 1;
+    let repeatCount = 1;
+
+    if (isCyclic) {
+      const loopNodes: WorkflowForExecution["nodes"][number][] = [];
+
+      for (const nodeId of component) {
+        const node = nodeById.get(nodeId);
+
+        if (node?.type === NodeType.LOOP) {
+          loopNodes.push(node);
+        }
+      }
+
+      if (loopNodes.length === 0) {
+        throw new WorkflowExecutionError(
+          "A cyclic workflow section must include a Loop node to control local repetition.",
+          "WORKFLOW_HAS_CYCLE",
+        );
+      }
+
+      if (loopNodes.length > 1) {
+        throw new WorkflowExecutionError(
+          "Each cyclic workflow section can contain only one Loop node.",
+          "WORKFLOW_HAS_CYCLE",
+        );
+      }
+
+      const loopConfig = loopNodeSchema.safeParse(loopNodes[0].data ?? {});
+
+      if (!loopConfig.success) {
+        throw new WorkflowExecutionError(
+          `Loop node "${loopNodes[0].name}" has invalid configuration.`,
+          "INVALID_LOOP_CONFIG",
+        );
+      }
+
+      repeatCount = loopConfig.data.maxIterations;
+    }
 
     for (let iteration = 0; iteration < repeatCount; iteration += 1) {
       for (const nodeId of component) {
@@ -1421,6 +1488,11 @@ async function executeNode(
       );
     case NodeType.AI_TEXT:
       return executeAITextNode(execution, input as ResolvedAITextInput);
+    case NodeType.LOOP:
+      return {
+        status: ExecutionStepStatus.SUCCESS,
+        output: input as ResolvedLoopInput,
+      };
     case NodeType.DISCORD_MESSAGE:
       return executeDiscordMessageNode(
         execution,
@@ -1454,6 +1526,8 @@ function resolveNodeInput(
       return normalizeHttpRequestNodeData(node, context);
     case NodeType.AI_TEXT:
       return normalizeAITextNodeData(node, context);
+    case NodeType.LOOP:
+      return normalizeLoopNodeData(node, context);
     case NodeType.DISCORD_MESSAGE:
       return normalizeDiscordMessageNodeData(node, context);
     case NodeType.SLACK_MESSAGE:

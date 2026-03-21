@@ -34,7 +34,6 @@ const ManualTriggerNodeComponent = (props: NodeProps) => {
                     ...node,
                     data: {
                         ...node.data,
-                        maxIterations: values.maxIterations,
                         memoryWrites: values.memoryWrites,
                     },
                 }
@@ -68,7 +67,6 @@ const ManualTriggerNodeComponent = (props: NodeProps) => {
                     disabled={workflowExecution.isPending || !workflowExecution.editorReady}
                     isPending={workflowExecution.isPending}
                     pendingLabel={workflowExecution.isSaving ? "Saving..." : "Running..."}
-                    defaultMaxIterations={nodeData.maxIterations}
                     defaultMemoryWrites={nodeData.memoryWrites}
                     templateVariables={templateVariables}
                 />
