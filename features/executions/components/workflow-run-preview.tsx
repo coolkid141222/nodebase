@@ -1,5 +1,6 @@
 "use client";
 
+import { memo, useMemo } from "react";
 import Link from "next/link";
 import { formatDistanceToNow } from "date-fns";
 import { Check, Clock3, X } from "lucide-react";
@@ -10,9 +11,7 @@ import {
   CardHeader,
 } from "@/components/card";
 import { ExecutionStatus, ExecutionStepStatus } from "@/lib/prisma/client";
-import {
-  useWorkflowExecutionStatus,
-} from "./workflow-execution-status-context";
+import { useWorkflowExecutionStatus } from "./workflow-execution-status-context";
 
 type StatusValue = ExecutionStatus | ExecutionStepStatus;
 type PreviewExecution = {
@@ -303,26 +302,46 @@ function pickLatestAITextStep(execution: PreviewExecution) {
   );
 }
 
-function ExecutionPreviewCard() {
-  const { execution } = useWorkflowExecutionStatus();
-  const displayStatus = execution
-    ? getDisplayExecutionStatus(execution)
-    : undefined;
-  const focusedStep =
-    execution && displayStatus
-      ? pickFocusedStep(execution, displayStatus)
-      : undefined;
-  const resultStep =
-    execution && displayStatus
-      ? pickResultStep(execution, displayStatus, focusedStep)
-      : undefined;
-  const aiTextStep = execution ? pickLatestAITextStep(execution) : undefined;
-  const aiTextPreview = aiTextStep
-    ? extractAITextPreview(aiTextStep.output)
-    : null;
-  const previewResult = extractPreviewResult(
-    resultStep?.output ?? resultStep?.error,
-  );
+const ExecutionPreviewCard = memo(function ExecutionPreviewCard() {
+  const execution = useWorkflowExecutionStatus();
+  const {
+    displayStatus,
+    focusedStep,
+    resultStep,
+    aiTextPreview,
+    previewResult,
+  } = useMemo(() => {
+    if (!execution) {
+      return {
+        displayStatus: undefined,
+        focusedStep: undefined,
+        resultStep: undefined,
+        aiTextPreview: null,
+        previewResult: "",
+      };
+    }
+
+    const nextDisplayStatus = getDisplayExecutionStatus(execution);
+    const nextFocusedStep = pickFocusedStep(execution, nextDisplayStatus);
+    const nextResultStep = pickResultStep(
+      execution,
+      nextDisplayStatus,
+      nextFocusedStep,
+    );
+    const aiTextStep = pickLatestAITextStep(execution);
+
+    return {
+      displayStatus: nextDisplayStatus,
+      focusedStep: nextFocusedStep,
+      resultStep: nextResultStep,
+      aiTextPreview: aiTextStep
+        ? extractAITextPreview(aiTextStep.output)
+        : null,
+      previewResult: extractPreviewResult(
+        nextResultStep?.output ?? nextResultStep?.error,
+      ),
+    };
+  }, [execution]);
 
   if (!execution) {
     return (
@@ -423,7 +442,7 @@ function ExecutionPreviewCard() {
       </div>
     </Card>
   );
-}
+});
 
 export function WorkflowRunPreviewSidebar() {
   return <ExecutionPreviewCard />;

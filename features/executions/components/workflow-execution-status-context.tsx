@@ -1,8 +1,8 @@
 "use client";
 
-import { useEffect, type ReactNode } from "react";
+import { useEffect, useMemo, type ReactNode } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { useSetAtom, useAtomValue } from "jotai";
+import { atom, useAtomValue, useSetAtom } from "jotai";
 import { usePathname } from "next/navigation";
 
 import { useTRPC } from "@/trpc/client";
@@ -11,9 +11,11 @@ import {
   emptyWorkflowExecutionState,
   isExecutionPendingOrRunning,
   isExecutionTerminal,
-  type WorkflowExecutionSnapshot,
   workflowExecutionActiveIdAtom,
+  workflowExecutionSnapshotAtom,
   workflowExecutionStateAtom,
+  workflowNodeStatusesAtom,
+  type WorkflowExecutionSnapshot,
 } from "../store/atoms";
 
 export function WorkflowExecutionStatusProvider({
@@ -149,10 +151,14 @@ export function WorkflowExecutionStatusScope({
 }
 
 export function useWorkflowExecutionStatus() {
-  return useAtomValue(workflowExecutionStateAtom);
+  return useAtomValue(workflowExecutionSnapshotAtom);
 }
 
 export function useWorkflowNodeStatus(nodeId: string) {
-  const { nodeStatuses } = useWorkflowExecutionStatus();
-  return nodeStatuses[nodeId];
+  const nodeStatusAtom = useMemo(
+    () => atom((get) => get(workflowNodeStatusesAtom)[nodeId]),
+    [nodeId],
+  );
+
+  return useAtomValue(nodeStatusAtom);
 }

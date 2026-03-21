@@ -41,6 +41,14 @@ export const workflowExecutionStateAtom = atom<WorkflowExecutionState>(
   emptyWorkflowExecutionState,
 );
 
+export const workflowExecutionSnapshotAtom = atom(
+  (get) => get(workflowExecutionStateAtom).execution,
+);
+
+export const workflowNodeStatusesAtom = atom(
+  (get) => get(workflowExecutionStateAtom).nodeStatuses,
+);
+
 export const workflowExecutionActiveIdAtom = atom<string | null>(null);
 
 export function isExecutionPendingOrRunning(
