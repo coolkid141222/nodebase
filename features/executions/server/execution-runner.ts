@@ -44,6 +44,7 @@ import {
   createMinimaxProvider,
   createOpenAIProvider,
 } from "@/lib/ai/proxy";
+import type { TriggerNodeData } from "@/features/triggers/shared";
 
 type WorkflowForExecution = Prisma.WorkflowGetPayload<{
   include: {
@@ -304,6 +305,7 @@ function createExecutionTemplateContext(
   completedSteps: Map<string, CompletedStepResult>,
   memoryState: RuntimeExecutionMemoryState,
   current?: {
+    attempt?: number | null;
     status?: string | null;
     input?: Prisma.JsonValue | null;
     output?: Prisma.JsonValue | null;
@@ -328,6 +330,7 @@ function createExecutionTemplateContext(
     inputs: upstream.inputs,
     inputsRaw: upstream.inputsRaw,
     current: {
+      attempt: current?.attempt ?? null,
       status: current?.status ?? null,
       input: current?.input ?? null,
       output: current?.output ?? null,
@@ -1194,67 +1197,199 @@ function buildTriggeredExecutionPlan(
       queue.push(nextNodeId);
     }
   }
+  const triggerNodeIds = new Set(triggerNodes.map((node) => node.id));
+  const maxIterations = Math.max(
+    1,
+    ...triggerNodes.map((node) => {
+      const data = (node.data ?? {}) as TriggerNodeData;
+      return data.maxIterations ?? 1;
+    }),
+  );
+  const indexMap = new Map<string, number>();
+  const lowLinkMap = new Map<string, number>();
+  const stack: string[] = [];
+  const onStack = new Set<string>();
+  const components: string[][] = [];
+  let nextIndex = 0;
 
-  const indegree = new Map<string, number>();
-  for (const nodeId of reachableNodeIds) {
-    indegree.set(nodeId, 0);
-  }
-
-  for (const connection of workflow.connections) {
-    if (
-      reachableNodeIds.has(connection.fromNodeId) &&
-      reachableNodeIds.has(connection.toNodeId)
-    ) {
-      indegree.set(
-        connection.toNodeId,
-        (indegree.get(connection.toNodeId) ?? 0) + 1,
-      );
-    }
-  }
-
-  const sortedQueue = Array.from(reachableNodeIds)
-    .filter((nodeId) => (indegree.get(nodeId) ?? 0) === 0)
-    .sort((left, right) => {
-      return (nodeOrder.get(left) ?? 0) - (nodeOrder.get(right) ?? 0);
-    });
-
-  const orderedNodes: WorkflowForExecution["nodes"] = [];
-
-  while (sortedQueue.length > 0) {
-    const nodeId = sortedQueue.shift();
-    if (!nodeId) {
-      continue;
-    }
-
-    const node = nodeById.get(nodeId);
-    if (!node) {
-      continue;
-    }
-
-    orderedNodes.push(node);
+  const visitNode = (nodeId: string) => {
+    indexMap.set(nodeId, nextIndex);
+    lowLinkMap.set(nodeId, nextIndex);
+    nextIndex += 1;
+    stack.push(nodeId);
+    onStack.add(nodeId);
 
     for (const nextNodeId of adjacency.get(nodeId) ?? []) {
       if (!reachableNodeIds.has(nextNodeId)) {
         continue;
       }
 
-      const nextIndegree = (indegree.get(nextNodeId) ?? 0) - 1;
-      indegree.set(nextNodeId, nextIndegree);
-
-      if (nextIndegree === 0) {
-        sortedQueue.push(nextNodeId);
-        sortedQueue.sort((left, right) => {
-          return (nodeOrder.get(left) ?? 0) - (nodeOrder.get(right) ?? 0);
-        });
+      if (!indexMap.has(nextNodeId)) {
+        visitNode(nextNodeId);
+        lowLinkMap.set(
+          nodeId,
+          Math.min(
+            lowLinkMap.get(nodeId) ?? 0,
+            lowLinkMap.get(nextNodeId) ?? 0,
+          ),
+        );
+        continue;
       }
+
+      if (onStack.has(nextNodeId)) {
+        lowLinkMap.set(
+          nodeId,
+          Math.min(
+            lowLinkMap.get(nodeId) ?? 0,
+            indexMap.get(nextNodeId) ?? 0,
+          ),
+        );
+      }
+    }
+
+    if ((lowLinkMap.get(nodeId) ?? 0) !== (indexMap.get(nodeId) ?? 0)) {
+      return;
+    }
+
+    const component: string[] = [];
+
+    while (stack.length > 0) {
+      const currentNodeId = stack.pop();
+      if (!currentNodeId) {
+        break;
+      }
+
+      onStack.delete(currentNodeId);
+      component.push(currentNodeId);
+
+      if (currentNodeId === nodeId) {
+        break;
+      }
+    }
+
+    components.push(component);
+  };
+
+  for (const nodeId of reachableNodeIds) {
+    if (!indexMap.has(nodeId)) {
+      visitNode(nodeId);
     }
   }
 
-  if (orderedNodes.length !== reachableNodeIds.size) {
-    throw new WorkflowExecutionError(
-      "Workflow execution currently supports acyclic graphs only.",
-      "WORKFLOW_HAS_CYCLE",
+  const componentIndexByNode = new Map<string, number>();
+  for (const [componentIndex, component] of components.entries()) {
+    for (const nodeId of component) {
+      componentIndexByNode.set(nodeId, componentIndex);
+    }
+  }
+
+  const componentAdjacency = new Map<number, Set<number>>();
+  const componentIndegree = new Map<number, number>();
+
+  for (let componentIndex = 0; componentIndex < components.length; componentIndex += 1) {
+    componentIndegree.set(componentIndex, 0);
+  }
+
+  for (const connection of workflow.connections) {
+    if (
+      !reachableNodeIds.has(connection.fromNodeId) ||
+      !reachableNodeIds.has(connection.toNodeId)
+    ) {
+      continue;
+    }
+
+    const fromComponentIndex = componentIndexByNode.get(connection.fromNodeId);
+    const toComponentIndex = componentIndexByNode.get(connection.toNodeId);
+
+    if (
+      fromComponentIndex == null ||
+      toComponentIndex == null ||
+      fromComponentIndex === toComponentIndex
+    ) {
+      continue;
+    }
+
+    const targets = componentAdjacency.get(fromComponentIndex) ?? new Set<number>();
+    if (targets.has(toComponentIndex)) {
+      componentAdjacency.set(fromComponentIndex, targets);
+      continue;
+    }
+
+    targets.add(toComponentIndex);
+    componentAdjacency.set(fromComponentIndex, targets);
+    componentIndegree.set(
+      toComponentIndex,
+      (componentIndegree.get(toComponentIndex) ?? 0) + 1,
     );
+  }
+
+  const sortedComponents = Array.from(componentIndegree.entries())
+    .filter(([, indegree]) => indegree === 0)
+    .map(([componentIndex]) => componentIndex)
+    .sort((left, right) => {
+      const leftOrder = Math.min(
+        ...components[left].map((nodeId) => nodeOrder.get(nodeId) ?? 0),
+      );
+      const rightOrder = Math.min(
+        ...components[right].map((nodeId) => nodeOrder.get(nodeId) ?? 0),
+      );
+      return leftOrder - rightOrder;
+    });
+
+  const orderedNodes: WorkflowForExecution["nodes"] = [];
+
+  while (sortedComponents.length > 0) {
+    const componentIndex = sortedComponents.shift();
+
+    if (componentIndex == null) {
+      continue;
+    }
+
+    const component = components[componentIndex]
+      .slice()
+      .sort((left, right) => {
+        return (nodeOrder.get(left) ?? 0) - (nodeOrder.get(right) ?? 0);
+      });
+    const hasSelfLoop = component.some((nodeId) =>
+      (adjacency.get(nodeId) ?? []).includes(nodeId),
+    );
+    const isCyclic = component.length > 1 || hasSelfLoop;
+
+    if (isCyclic && component.some((nodeId) => triggerNodeIds.has(nodeId))) {
+      throw new WorkflowExecutionError(
+        "Trigger nodes cannot participate in workflow loops.",
+        "WORKFLOW_HAS_CYCLE",
+      );
+    }
+
+    const repeatCount = isCyclic ? maxIterations : 1;
+
+    for (let iteration = 0; iteration < repeatCount; iteration += 1) {
+      for (const nodeId of component) {
+        const node = nodeById.get(nodeId);
+        if (node) {
+          orderedNodes.push(node);
+        }
+      }
+    }
+
+    for (const nextComponentIndex of componentAdjacency.get(componentIndex) ?? []) {
+      const nextIndegree = (componentIndegree.get(nextComponentIndex) ?? 0) - 1;
+      componentIndegree.set(nextComponentIndex, nextIndegree);
+
+      if (nextIndegree === 0) {
+        sortedComponents.push(nextComponentIndex);
+        sortedComponents.sort((left, right) => {
+          const leftOrder = Math.min(
+            ...components[left].map((nodeId) => nodeOrder.get(nodeId) ?? 0),
+          );
+          const rightOrder = Math.min(
+            ...components[right].map((nodeId) => nodeOrder.get(nodeId) ?? 0),
+          );
+          return leftOrder - rightOrder;
+        });
+      }
+    }
   }
 
   return { orderedNodes };
@@ -1515,6 +1650,7 @@ export async function runExecution(executionId: string) {
     );
     const completedSteps = new Map<string, CompletedStepResult>();
     const memoryState = createExecutionMemoryState(execution.memoryEntries);
+    const nodeAttempts = new Map<string, number>();
 
     await prisma.execution.update({
       where: {
@@ -1553,11 +1689,16 @@ export async function runExecution(executionId: string) {
     });
 
     for (const [index, node] of plan.orderedNodes.entries()) {
+      const attempt = (nodeAttempts.get(node.id) ?? 0) + 1;
+      nodeAttempts.set(node.id, attempt);
       const templateContext = createExecutionTemplateContext(
         execution,
         node,
         completedSteps,
         memoryState,
+        {
+          attempt,
+        },
       );
       const input = resolveNodeInput(execution, node, templateContext);
       const stepStartedAt = Date.now();
@@ -1568,6 +1709,7 @@ export async function runExecution(executionId: string) {
           nodeName: node.name,
           nodeType: node.type,
           position: index,
+          attempt,
           status: ExecutionStepStatus.RUNNING,
           startedAt: new Date(),
           input: input ?? {
@@ -1584,6 +1726,7 @@ export async function runExecution(executionId: string) {
           completedSteps,
           memoryState,
           {
+            attempt,
             status: result.status,
             input: (input ?? null) as Prisma.JsonValue | null,
             output: (result.output ?? null) as Prisma.JsonValue | null,

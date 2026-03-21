@@ -49,6 +49,7 @@ type Props = {
   workflowId: string;
   webhookSecret: string;
   onSave?: (values: WebhookTriggerFormValues) => Promise<void> | void;
+  defaultMaxIterations?: number;
   defaultMemoryWrites?: ExecutionMemoryWriteConfig[];
   templateVariables?: TemplateVariableOption[];
 };
@@ -59,6 +60,7 @@ export const WebhookTriggerDialog = ({
   workflowId,
   webhookSecret,
   onSave,
+  defaultMaxIterations = 1,
   defaultMemoryWrites,
   templateVariables = [],
 }: Props) => {
@@ -78,6 +80,7 @@ export const WebhookTriggerDialog = ({
   >({
     resolver: zodResolver(triggerNodeSchema),
     defaultValues: {
+      maxIterations: defaultMaxIterations,
       memoryWrites: initialMemoryWrites,
     },
   });
@@ -92,9 +95,10 @@ export const WebhookTriggerDialog = ({
 
   useEffect(() => {
     form.reset({
+      maxIterations: defaultMaxIterations,
       memoryWrites: initialMemoryWrites,
     });
-  }, [form, initialMemoryWrites]);
+  }, [defaultMaxIterations, form, initialMemoryWrites]);
 
   const handleCopy = async () => {
     await navigator.clipboard.writeText(
@@ -158,6 +162,22 @@ export const WebhookTriggerDialog = ({
             </pre>
           </div>
         </div>
+        <FieldGroup>
+          <FieldLabel htmlFor="maxIterations">Max iterations</FieldLabel>
+          <Field>
+            <Input
+              id="maxIterations"
+              type="number"
+              min={1}
+              max={25}
+              {...form.register("maxIterations", { valueAsNumber: true })}
+            />
+          </Field>
+          <FieldDescription>
+            1 means no loop repetition. Cyclic sections can repeat up to this many passes.
+          </FieldDescription>
+          <FieldError errors={[form.formState.errors.maxIterations]} />
+        </FieldGroup>
         <FieldGroup className="rounded-xl border border-border/70 bg-muted/20 p-4">
           <div className="flex items-start justify-between gap-3">
             <div className="space-y-1">

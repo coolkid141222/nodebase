@@ -15,6 +15,7 @@ export type ExecutionTemplateContext = {
   inputs: Record<string, Prisma.JsonValue | Prisma.JsonValue[] | null>;
   inputsRaw: Record<string, Prisma.JsonValue | Prisma.JsonValue[] | null>;
   current: {
+    attempt: number | null;
     status: string | null;
     input: Prisma.JsonValue | null;
     output: Prisma.JsonValue | null;

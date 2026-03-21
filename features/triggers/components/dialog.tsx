@@ -50,6 +50,7 @@ interface Props {
     disabled?: boolean;
     isPending?: boolean;
     pendingLabel?: string;
+    defaultMaxIterations?: number;
     defaultMemoryWrites?: ExecutionMemoryWriteConfig[];
     templateVariables?: TemplateVariableOption[];
 }
@@ -62,6 +63,7 @@ export const ManualTriggerDialog = ({
     disabled,
     isPending,
     pendingLabel,
+    defaultMaxIterations = 1,
     defaultMemoryWrites,
     templateVariables = [],
 }: Props) => {
@@ -80,6 +82,7 @@ export const ManualTriggerDialog = ({
     >({
         resolver: zodResolver(triggerNodeSchema),
         defaultValues: {
+            maxIterations: defaultMaxIterations,
             memoryWrites: initialMemoryWrites,
         },
     });
@@ -94,9 +97,10 @@ export const ManualTriggerDialog = ({
 
     useEffect(() => {
         form.reset({
+            maxIterations: defaultMaxIterations,
             memoryWrites: initialMemoryWrites,
         });
-    }, [form, initialMemoryWrites]);
+    }, [defaultMaxIterations, form, initialMemoryWrites]);
 
     const insertMemoryWriteTemplate = (index: number, template: string) => {
         const field = `memoryWrites.${index}.value` as const;
@@ -145,6 +149,23 @@ export const ManualTriggerDialog = ({
                     onSubmit={form.handleSubmit((values) => void handleTrigger(values))}
                     className="space-y-4"
                 >
+                    <FieldGroup>
+                        <FieldLabel htmlFor="maxIterations">Max iterations</FieldLabel>
+                        <Field>
+                            <Input
+                                id="maxIterations"
+                                type="number"
+                                min={1}
+                                max={25}
+                                {...form.register("maxIterations", { valueAsNumber: true })}
+                            />
+                        </Field>
+                        <FieldDescription>
+                            1 means no loop repetition. Cyclic sections can repeat up to this many passes.
+                        </FieldDescription>
+                        <FieldError errors={[form.formState.errors.maxIterations]} />
+                    </FieldGroup>
+
                     <FieldGroup className="rounded-xl border border-border/70 bg-muted/20 p-4">
                         <div className="flex items-start justify-between gap-3">
                             <div className="space-y-1">

@@ -177,6 +177,12 @@ export function buildTemplateVariableOptions(params: {
     },
     {
       group: "Run context",
+      label: "Current attempt",
+      value: "{{current.attempt}}",
+      hint: "The current execution count for this node inside the run.",
+    },
+    {
+      group: "Run context",
       label: "Trigger source",
       value: "{{trigger.source}}",
       hint: "The current trigger type or source marker.",
