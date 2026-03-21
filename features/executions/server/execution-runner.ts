@@ -209,6 +209,67 @@ function parseJsonOrReturnText(value: string) {
   }
 }
 
+function isJsonRecord(
+  value: Prisma.JsonValue | Prisma.InputJsonValue | null,
+): value is Record<string, Prisma.JsonValue | Prisma.InputJsonValue> {
+  return Boolean(value) && typeof value === "object" && !Array.isArray(value);
+}
+
+function extractNodeTransferValue(
+  nodeType: string | undefined,
+  output: Prisma.JsonValue | Prisma.InputJsonValue | null,
+): Prisma.JsonValue | null {
+  if (output == null) {
+    return null;
+  }
+
+  if (!isJsonRecord(output)) {
+    return output as Prisma.JsonValue;
+  }
+
+  if (
+    (nodeType === NodeType.MANUAL_TRIGGER ||
+      nodeType === NodeType.WEBHOOK_TRIGGER) &&
+    output.body !== undefined
+  ) {
+    return output.body as Prisma.JsonValue;
+  }
+
+  if (nodeType === NodeType.AI_TEXT && typeof output.text === "string") {
+    return output.text;
+  }
+
+  if (nodeType === NodeType.HTTP_REQUEST && output.body !== undefined) {
+    return output.body as Prisma.JsonValue;
+  }
+
+  if (
+    (nodeType === NodeType.DISCORD_MESSAGE ||
+      nodeType === NodeType.SLACK_MESSAGE) &&
+    typeof output.content === "string"
+  ) {
+    return output.content;
+  }
+
+  if (output.result !== undefined) {
+    return output.result as Prisma.JsonValue;
+  }
+
+  if (typeof output.text === "string") {
+    return output.text;
+  }
+
+  if (output.body !== undefined) {
+    return output.body as Prisma.JsonValue;
+  }
+
+  if (typeof output.content === "string") {
+    return output.content;
+  }
+
+  return output as Prisma.JsonValue;
+}
+
 function createExecutionTemplateContext(
   execution: ExecutionWithWorkflow,
   node: WorkflowForExecution["nodes"][number],
@@ -235,7 +296,9 @@ function createExecutionTemplateContext(
     },
     trigger: execution.triggerPayload as Prisma.JsonValue,
     input: upstream.input,
+    inputRaw: upstream.inputRaw,
     inputs: upstream.inputs,
+    inputsRaw: upstream.inputsRaw,
     current: {
       status: current?.status ?? null,
       input: current?.input ?? null,
@@ -266,6 +329,10 @@ function buildNodeMemoryWrites(params: {
 }) {
   const nodeNameKey = normalizeMemoryKey(params.node.name) || params.node.id;
   const writes: RuntimeExecutionMemoryWrite[] = [];
+  const resultValue = extractNodeTransferValue(
+    params.node.type,
+    (params.output ?? null) as Prisma.JsonValue | null,
+  );
 
   if (params.input != null) {
     writes.push({
@@ -297,6 +364,16 @@ function buildNodeMemoryWrites(params: {
     });
   }
 
+  if (resultValue != null) {
+    writes.push({
+      scope: ExecutionMemoryScope.NODE,
+      namespace: "run",
+      key: "result",
+      value: resultValue as Prisma.InputJsonValue,
+      visibility: ExecutionMemoryVisibility.PRIVATE,
+    });
+  }
+
   const sharedNodeValue: Prisma.InputJsonValue = {
     nodeId: params.node.id,
     nodeName: params.node.name,
@@ -304,6 +381,7 @@ function buildNodeMemoryWrites(params: {
     status: params.status,
     input: params.input,
     output: params.output ?? null,
+    result: resultValue,
     error: params.error ?? null,
   };
 
@@ -368,6 +446,10 @@ function buildNodeUpstreamContext(
     (connection) => {
       const sourceNode = nodeById.get(connection.fromNodeId);
       const completedStep = completedSteps.get(connection.fromNodeId);
+      const value = extractNodeTransferValue(
+        sourceNode?.type,
+        completedStep?.output ?? null,
+      );
 
       return {
         connectionId: connection.id,
@@ -380,6 +462,7 @@ function buildNodeUpstreamContext(
         status: completedStep?.status ?? null,
         input: completedStep?.input ?? null,
         output: completedStep?.output ?? null,
+        value,
         error: completedStep?.error ?? null,
       };
     },
@@ -392,8 +475,8 @@ function buildNodeUpstreamContext(
   const inputs = Object.fromEntries(
     groupedInputs.map((inputKey) => {
       const values = upstream
-        .filter((item) => item.toInput === inputKey && item.output !== null)
-        .map((item) => item.output as Prisma.JsonValue);
+        .filter((item) => item.toInput === inputKey && item.value !== null)
+        .map((item) => item.value as Prisma.JsonValue);
 
       if (values.length === 0) {
         return [inputKey, null];
@@ -403,7 +486,27 @@ function buildNodeUpstreamContext(
     }),
   ) as ExecutionTemplateContext["inputs"];
 
+  const inputsRaw = Object.fromEntries(
+    groupedInputs.map((inputKey) => {
+      const values = upstream
+        .filter((item) => item.toInput === inputKey && item.output !== null)
+        .map((item) => item.output as Prisma.JsonValue);
+
+      if (values.length === 0) {
+        return [inputKey, null];
+      }
+
+      return [inputKey, values.length === 1 ? values[0] : values];
+    }),
+  ) as ExecutionTemplateContext["inputsRaw"];
+
   const primaryInput =
+    upstream.find((item) => item.toInput === "main" && item.value !== null)
+      ?.value ??
+    upstream.find((item) => item.value !== null)?.value ??
+    null;
+
+  const primaryInputRaw =
     upstream.find((item) => item.toInput === "main" && item.output !== null)
       ?.output ??
     upstream.find((item) => item.output !== null)?.output ??
@@ -411,7 +514,9 @@ function buildNodeUpstreamContext(
 
   return {
     input: primaryInput,
+    inputRaw: primaryInputRaw,
     inputs,
+    inputsRaw,
     upstream,
   };
 }

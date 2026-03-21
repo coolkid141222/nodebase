@@ -11,7 +11,9 @@ export type ExecutionTemplateContext = {
   };
   trigger: Prisma.JsonValue;
   input: Prisma.JsonValue | null;
+  inputRaw: Prisma.JsonValue | null;
   inputs: Record<string, Prisma.JsonValue | Prisma.JsonValue[] | null>;
+  inputsRaw: Record<string, Prisma.JsonValue | Prisma.JsonValue[] | null>;
   current: {
     status: string | null;
     input: Prisma.JsonValue | null;
@@ -33,6 +35,7 @@ export type ExecutionTemplateContext = {
     status: string | null;
     input: Prisma.JsonValue | null;
     output: Prisma.JsonValue | null;
+    value: Prisma.JsonValue | null;
     error: Prisma.JsonValue | null;
   }>;
   steps: Record<
