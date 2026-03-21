@@ -181,6 +181,8 @@ enum CredentialProvider {
   OPENAI
   ANTHROPIC
   GOOGLE
+  DEEPSEEK
+  MINIMAX
   DISCORD
   SLACK
   STRIPE

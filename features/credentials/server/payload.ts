@@ -5,6 +5,8 @@ const providerLabels: Record<CredentialProvider, string> = {
   OPENAI: "OpenAI",
   ANTHROPIC: "Anthropic",
   GOOGLE: "Google",
+  DEEPSEEK: "DeepSeek",
+  MINIMAX: "MiniMax",
   DISCORD: "Discord",
   SLACK: "Slack",
   STRIPE: "Stripe",
