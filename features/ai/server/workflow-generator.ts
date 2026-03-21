@@ -35,6 +35,12 @@ type GeneratedWorkflowResult = {
   edges: Edge[];
 };
 
+const PROBLEM_SOLVING_PROMPT_PATTERN =
+  /\b(solve|answer|analy[sz]e|debug|investigate|research|compare|plan|reason|question|issue|problem)\b|问题|分析|研究|排查|解决|比较|推理|调查/i;
+const RESEARCH_PROMPT_PATTERN =
+  /\b(research|browse|browser|website|web page|page|url|link|docs?|documentation|source)\b|网页|页面|网址|链接|官网|文档|资料|来源/i;
+const URL_PATTERN = /https?:\/\/[^\s)]+/i;
+
 const WORKFLOW_NODE_X = 300;
 const WORKFLOW_NODE_Y = 210;
 const WORKFLOW_OFFSET_X = 120;
@@ -251,6 +257,9 @@ Problem-solving rules:
 - Prefer INTERNAL tool id "internal.browser_page" for public web research.
 - After a TOOL node, feed the extracted result into an AI_TEXT node with {{input}}.
 - Use LOOP only when iterative refinement is part of the strategy.
+- For non-trivial problem-solving prompts, use at least two processing nodes.
+- Prefer a structure like: gather context -> analyze -> final answer.
+- Do not collapse a research or investigation workflow into a single AI_TEXT node unless the user explicitly asks for the smallest possible flow.
 
 Loop rules:
 - A local loop uses exactly one LOOP node.
@@ -482,6 +491,150 @@ function buildEdgeHandles(params: {
         targetHandle: null,
       };
   }
+}
+
+function isProblemSolvingPrompt(prompt: string) {
+  return PROBLEM_SOLVING_PROMPT_PATTERN.test(prompt);
+}
+
+function wantsResearchTool(prompt: string) {
+  return RESEARCH_PROMPT_PATTERN.test(prompt) || URL_PATTERN.test(prompt);
+}
+
+function extractFirstUrl(prompt: string) {
+  return prompt.match(URL_PATTERN)?.[0] ?? null;
+}
+
+function createDraftNodeId(existingIds: Set<string>, base: string) {
+  let candidate = base;
+  let suffix = 2;
+
+  while (existingIds.has(candidate)) {
+    candidate = `${base}_${suffix}`;
+    suffix += 1;
+  }
+
+  existingIds.add(candidate);
+  return candidate;
+}
+
+function createAnalysisPrompt(userPrompt: string) {
+  return [
+    "Analyze the user's task and extract the key facts, constraints, and the best response strategy.",
+    "Keep the output concise and actionable so a downstream node can turn it into the final answer.",
+    "",
+    "User task:",
+    userPrompt,
+  ].join("\n");
+}
+
+function promoteProblemSolvingDraft(params: {
+  draft: AIWorkflowDraft;
+  userPrompt: string;
+}) {
+  const existingIds = new Set(params.draft.nodes.map((node) => node.id));
+  const workingDraft: AIWorkflowDraft = structuredClone(params.draft);
+
+  const aiNodes = workingDraft.nodes.filter((node) => node.type === "AI_TEXT");
+  const toolNodes = workingDraft.nodes.filter((node) => node.type === "TOOL");
+  const primaryAi = aiNodes[0];
+
+  if (!primaryAi) {
+    return workingDraft;
+  }
+
+  let firstProcessingNodeId = primaryAi.id;
+
+  if (isProblemSolvingPrompt(params.userPrompt) && aiNodes.length === 1) {
+    const analyzerId = createDraftNodeId(existingIds, "analyze_problem");
+    const analyzerNode: AIWorkflowDraft["nodes"][number] = {
+      id: analyzerId,
+      type: "AI_TEXT",
+      column: Math.max(primaryAi.column - 1, 1),
+      row: primaryAi.row,
+      config: {
+        provider: primaryAi.config.provider,
+        model: primaryAi.config.model,
+        credentialName: primaryAi.config.credentialName,
+        credentialField: primaryAi.config.credentialField,
+        system: "Return a concise analysis for the next node. No markdown bullets unless necessary.",
+        prompt: createAnalysisPrompt(params.userPrompt),
+      },
+    };
+
+    workingDraft.nodes.push(analyzerNode);
+    workingDraft.edges = workingDraft.edges.map((edge) => {
+      if (edge.role !== "DEFAULT" || edge.target !== primaryAi.id) {
+        return edge;
+      }
+
+      return {
+        ...edge,
+        target: analyzerId,
+      };
+    });
+    workingDraft.edges.push({
+      source: analyzerId,
+      target: primaryAi.id,
+      role: "DEFAULT",
+    });
+    workingDraft.notes.push(
+      "Added an analysis step so the workflow decomposes the problem before the final answer.",
+    );
+    firstProcessingNodeId = analyzerId;
+  }
+
+  if (wantsResearchTool(params.userPrompt) && toolNodes.length === 0) {
+    const url = extractFirstUrl(params.userPrompt);
+
+    if (url) {
+      const toolId = createDraftNodeId(existingIds, "research_page");
+      const firstProcessingNode = workingDraft.nodes.find(
+        (node) => node.id === firstProcessingNodeId,
+      );
+      const toolNode: AIWorkflowDraft["nodes"][number] = {
+        id: toolId,
+        type: "TOOL",
+        column: Math.max((firstProcessingNode?.column ?? 2) - 1, 1),
+        row: firstProcessingNode?.row ?? 1,
+        config: {
+          provider: "INTERNAL",
+          toolId: "internal.browser_page",
+          argumentsJson: JSON.stringify(
+            {
+              url,
+              maxChars: 4000,
+              includeLinks: true,
+            },
+            null,
+            2,
+          ),
+        },
+      };
+
+      workingDraft.nodes.push(toolNode);
+      workingDraft.edges = workingDraft.edges.map((edge) => {
+        if (edge.role !== "DEFAULT" || edge.target !== firstProcessingNodeId) {
+          return edge;
+        }
+
+        return {
+          ...edge,
+          target: toolId,
+        };
+      });
+      workingDraft.edges.push({
+        source: toolId,
+        target: firstProcessingNodeId,
+        role: "DEFAULT",
+      });
+      workingDraft.notes.push(
+        `Added a browser research tool for ${url} before the reasoning steps.`,
+      );
+    }
+  }
+
+  return workingDraft;
 }
 
 function mapGeneratedDraftToCanvas(params: {
@@ -776,10 +929,14 @@ export async function generateWorkflowDraft(params: {
 
   const parsedJson = extractJsonObject(result.text);
   const draft = aiWorkflowDraftSchema.parse(JSON.parse(parsedJson));
-  validateGeneratedDraft(draft);
+  const promotedDraft = promoteProblemSolvingDraft({
+    draft,
+    userPrompt: params.input.prompt,
+  });
+  validateGeneratedDraft(promotedDraft);
 
   return mapGeneratedDraftToCanvas({
-    draft,
+    draft: promotedDraft,
     credentials: userCredentials,
   });
 }
