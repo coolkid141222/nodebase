@@ -73,6 +73,16 @@ export type ExecutionMemoryEntry = $Result.DefaultSelection<Prisma.$ExecutionMem
  * 
  */
 export type ExecutionMemoryEvent = $Result.DefaultSelection<Prisma.$ExecutionMemoryEventPayload>
+/**
+ * Model PersistentMemoryEntry
+ * 
+ */
+export type PersistentMemoryEntry = $Result.DefaultSelection<Prisma.$PersistentMemoryEntryPayload>
+/**
+ * Model FeishuBridgeReceipt
+ * 
+ */
+export type FeishuBridgeReceipt = $Result.DefaultSelection<Prisma.$FeishuBridgeReceiptPayload>
 
 /**
  * Enums
@@ -192,6 +202,14 @@ export const ExecutionMemoryWriteMode: {
 
 export type ExecutionMemoryWriteMode = (typeof ExecutionMemoryWriteMode)[keyof typeof ExecutionMemoryWriteMode]
 
+
+export const PersistentMemoryScope: {
+  WORKFLOW: 'WORKFLOW',
+  USER: 'USER'
+};
+
+export type PersistentMemoryScope = (typeof PersistentMemoryScope)[keyof typeof PersistentMemoryScope]
+
 }
 
 export type BillingPlan = $Enums.BillingPlan
@@ -237,6 +255,10 @@ export const ExecutionMemoryVisibility: typeof $Enums.ExecutionMemoryVisibility
 export type ExecutionMemoryWriteMode = $Enums.ExecutionMemoryWriteMode
 
 export const ExecutionMemoryWriteMode: typeof $Enums.ExecutionMemoryWriteMode
+
+export type PersistentMemoryScope = $Enums.PersistentMemoryScope
+
+export const PersistentMemoryScope: typeof $Enums.PersistentMemoryScope
 
 /**
  * ##  Prisma Client ʲˢ
@@ -475,6 +497,26 @@ export class PrismaClient<
     * ```
     */
   get executionMemoryEvent(): Prisma.ExecutionMemoryEventDelegate<ExtArgs, ClientOptions>;
+
+  /**
+   * `prisma.persistentMemoryEntry`: Exposes CRUD operations for the **PersistentMemoryEntry** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more PersistentMemoryEntries
+    * const persistentMemoryEntries = await prisma.persistentMemoryEntry.findMany()
+    * ```
+    */
+  get persistentMemoryEntry(): Prisma.PersistentMemoryEntryDelegate<ExtArgs, ClientOptions>;
+
+  /**
+   * `prisma.feishuBridgeReceipt`: Exposes CRUD operations for the **FeishuBridgeReceipt** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more FeishuBridgeReceipts
+    * const feishuBridgeReceipts = await prisma.feishuBridgeReceipt.findMany()
+    * ```
+    */
+  get feishuBridgeReceipt(): Prisma.FeishuBridgeReceiptDelegate<ExtArgs, ClientOptions>;
 }
 
 export namespace Prisma {
@@ -927,7 +969,9 @@ export namespace Prisma {
     Execution: 'Execution',
     ExecutionStep: 'ExecutionStep',
     ExecutionMemoryEntry: 'ExecutionMemoryEntry',
-    ExecutionMemoryEvent: 'ExecutionMemoryEvent'
+    ExecutionMemoryEvent: 'ExecutionMemoryEvent',
+    PersistentMemoryEntry: 'PersistentMemoryEntry',
+    FeishuBridgeReceipt: 'FeishuBridgeReceipt'
   };
 
   export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -946,7 +990,7 @@ export namespace Prisma {
       omit: GlobalOmitOptions
     }
     meta: {
-      modelProps: "user" | "session" | "account" | "verification" | "workflow" | "node" | "connection" | "credential" | "execution" | "executionStep" | "executionMemoryEntry" | "executionMemoryEvent"
+      modelProps: "user" | "session" | "account" | "verification" | "workflow" | "node" | "connection" | "credential" | "execution" | "executionStep" | "executionMemoryEntry" | "executionMemoryEvent" | "persistentMemoryEntry" | "feishuBridgeReceipt"
       txIsolationLevel: Prisma.TransactionIsolationLevel
     }
     model: {
@@ -1838,6 +1882,154 @@ export namespace Prisma {
           }
         }
       }
+      PersistentMemoryEntry: {
+        payload: Prisma.$PersistentMemoryEntryPayload<ExtArgs>
+        fields: Prisma.PersistentMemoryEntryFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.PersistentMemoryEntryFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$PersistentMemoryEntryPayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.PersistentMemoryEntryFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$PersistentMemoryEntryPayload>
+          }
+          findFirst: {
+            args: Prisma.PersistentMemoryEntryFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$PersistentMemoryEntryPayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.PersistentMemoryEntryFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$PersistentMemoryEntryPayload>
+          }
+          findMany: {
+            args: Prisma.PersistentMemoryEntryFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$PersistentMemoryEntryPayload>[]
+          }
+          create: {
+            args: Prisma.PersistentMemoryEntryCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$PersistentMemoryEntryPayload>
+          }
+          createMany: {
+            args: Prisma.PersistentMemoryEntryCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          createManyAndReturn: {
+            args: Prisma.PersistentMemoryEntryCreateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$PersistentMemoryEntryPayload>[]
+          }
+          delete: {
+            args: Prisma.PersistentMemoryEntryDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$PersistentMemoryEntryPayload>
+          }
+          update: {
+            args: Prisma.PersistentMemoryEntryUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$PersistentMemoryEntryPayload>
+          }
+          deleteMany: {
+            args: Prisma.PersistentMemoryEntryDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.PersistentMemoryEntryUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateManyAndReturn: {
+            args: Prisma.PersistentMemoryEntryUpdateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$PersistentMemoryEntryPayload>[]
+          }
+          upsert: {
+            args: Prisma.PersistentMemoryEntryUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$PersistentMemoryEntryPayload>
+          }
+          aggregate: {
+            args: Prisma.PersistentMemoryEntryAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregatePersistentMemoryEntry>
+          }
+          groupBy: {
+            args: Prisma.PersistentMemoryEntryGroupByArgs<ExtArgs>
+            result: $Utils.Optional<PersistentMemoryEntryGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.PersistentMemoryEntryCountArgs<ExtArgs>
+            result: $Utils.Optional<PersistentMemoryEntryCountAggregateOutputType> | number
+          }
+        }
+      }
+      FeishuBridgeReceipt: {
+        payload: Prisma.$FeishuBridgeReceiptPayload<ExtArgs>
+        fields: Prisma.FeishuBridgeReceiptFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.FeishuBridgeReceiptFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$FeishuBridgeReceiptPayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.FeishuBridgeReceiptFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$FeishuBridgeReceiptPayload>
+          }
+          findFirst: {
+            args: Prisma.FeishuBridgeReceiptFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$FeishuBridgeReceiptPayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.FeishuBridgeReceiptFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$FeishuBridgeReceiptPayload>
+          }
+          findMany: {
+            args: Prisma.FeishuBridgeReceiptFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$FeishuBridgeReceiptPayload>[]
+          }
+          create: {
+            args: Prisma.FeishuBridgeReceiptCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$FeishuBridgeReceiptPayload>
+          }
+          createMany: {
+            args: Prisma.FeishuBridgeReceiptCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          createManyAndReturn: {
+            args: Prisma.FeishuBridgeReceiptCreateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$FeishuBridgeReceiptPayload>[]
+          }
+          delete: {
+            args: Prisma.FeishuBridgeReceiptDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$FeishuBridgeReceiptPayload>
+          }
+          update: {
+            args: Prisma.FeishuBridgeReceiptUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$FeishuBridgeReceiptPayload>
+          }
+          deleteMany: {
+            args: Prisma.FeishuBridgeReceiptDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.FeishuBridgeReceiptUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateManyAndReturn: {
+            args: Prisma.FeishuBridgeReceiptUpdateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$FeishuBridgeReceiptPayload>[]
+          }
+          upsert: {
+            args: Prisma.FeishuBridgeReceiptUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$FeishuBridgeReceiptPayload>
+          }
+          aggregate: {
+            args: Prisma.FeishuBridgeReceiptAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregateFeishuBridgeReceipt>
+          }
+          groupBy: {
+            args: Prisma.FeishuBridgeReceiptGroupByArgs<ExtArgs>
+            result: $Utils.Optional<FeishuBridgeReceiptGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.FeishuBridgeReceiptCountArgs<ExtArgs>
+            result: $Utils.Optional<FeishuBridgeReceiptCountAggregateOutputType> | number
+          }
+        }
+      }
     }
   } & {
     other: {
@@ -1946,6 +2138,8 @@ export namespace Prisma {
     executionStep?: ExecutionStepOmit
     executionMemoryEntry?: ExecutionMemoryEntryOmit
     executionMemoryEvent?: ExecutionMemoryEventOmit
+    persistentMemoryEntry?: PersistentMemoryEntryOmit
+    feishuBridgeReceipt?: FeishuBridgeReceiptOmit
   }
 
   /* Types for Logging */
@@ -2031,6 +2225,7 @@ export namespace Prisma {
     workflows: number
     credentials: number
     executions: number
+    persistentMemoryEntries: number
   }
 
   export type UserCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -2039,6 +2234,7 @@ export namespace Prisma {
     workflows?: boolean | UserCountOutputTypeCountWorkflowsArgs
     credentials?: boolean | UserCountOutputTypeCountCredentialsArgs
     executions?: boolean | UserCountOutputTypeCountExecutionsArgs
+    persistentMemoryEntries?: boolean | UserCountOutputTypeCountPersistentMemoryEntriesArgs
   }
 
   // Custom InputTypes
@@ -2087,6 +2283,13 @@ export namespace Prisma {
     where?: ExecutionWhereInput
   }
 
+  /**
+   * UserCountOutputType without action
+   */
+  export type UserCountOutputTypeCountPersistentMemoryEntriesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: PersistentMemoryEntryWhereInput
+  }
+
 
   /**
    * Count Type WorkflowCountOutputType
@@ -2096,12 +2299,14 @@ export namespace Prisma {
     nodes: number
     connections: number
     executions: number
+    persistentMemoryEntries: number
   }
 
   export type WorkflowCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     nodes?: boolean | WorkflowCountOutputTypeCountNodesArgs
     connections?: boolean | WorkflowCountOutputTypeCountConnectionsArgs
     executions?: boolean | WorkflowCountOutputTypeCountExecutionsArgs
+    persistentMemoryEntries?: boolean | WorkflowCountOutputTypeCountPersistentMemoryEntriesArgs
   }
 
   // Custom InputTypes
@@ -2134,6 +2339,13 @@ export namespace Prisma {
    */
   export type WorkflowCountOutputTypeCountExecutionsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     where?: ExecutionWhereInput
+  }
+
+  /**
+   * WorkflowCountOutputType without action
+   */
+  export type WorkflowCountOutputTypeCountPersistentMemoryEntriesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: PersistentMemoryEntryWhereInput
   }
 
 
@@ -2488,6 +2700,7 @@ export namespace Prisma {
     workflows?: boolean | User$workflowsArgs<ExtArgs>
     credentials?: boolean | User$credentialsArgs<ExtArgs>
     executions?: boolean | User$executionsArgs<ExtArgs>
+    persistentMemoryEntries?: boolean | User$persistentMemoryEntriesArgs<ExtArgs>
     _count?: boolean | UserCountOutputTypeDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["user"]>
 
@@ -2552,6 +2765,7 @@ export namespace Prisma {
     workflows?: boolean | User$workflowsArgs<ExtArgs>
     credentials?: boolean | User$credentialsArgs<ExtArgs>
     executions?: boolean | User$executionsArgs<ExtArgs>
+    persistentMemoryEntries?: boolean | User$persistentMemoryEntriesArgs<ExtArgs>
     _count?: boolean | UserCountOutputTypeDefaultArgs<ExtArgs>
   }
   export type UserIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {}
@@ -2565,6 +2779,7 @@ export namespace Prisma {
       workflows: Prisma.$WorkflowPayload<ExtArgs>[]
       credentials: Prisma.$CredentialPayload<ExtArgs>[]
       executions: Prisma.$ExecutionPayload<ExtArgs>[]
+      persistentMemoryEntries: Prisma.$PersistentMemoryEntryPayload<ExtArgs>[]
     }
     scalars: $Extensions.GetPayloadResult<{
       id: string
@@ -2981,6 +3196,7 @@ export namespace Prisma {
     workflows<T extends User$workflowsArgs<ExtArgs> = {}>(args?: Subset<T, User$workflowsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$WorkflowPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     credentials<T extends User$credentialsArgs<ExtArgs> = {}>(args?: Subset<T, User$credentialsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$CredentialPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     executions<T extends User$executionsArgs<ExtArgs> = {}>(args?: Subset<T, User$executionsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ExecutionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    persistentMemoryEntries<T extends User$persistentMemoryEntriesArgs<ExtArgs> = {}>(args?: Subset<T, User$persistentMemoryEntriesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$PersistentMemoryEntryPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -3530,6 +3746,30 @@ export namespace Prisma {
     take?: number
     skip?: number
     distinct?: ExecutionScalarFieldEnum | ExecutionScalarFieldEnum[]
+  }
+
+  /**
+   * User.persistentMemoryEntries
+   */
+  export type User$persistentMemoryEntriesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PersistentMemoryEntry
+     */
+    select?: PersistentMemoryEntrySelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the PersistentMemoryEntry
+     */
+    omit?: PersistentMemoryEntryOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PersistentMemoryEntryInclude<ExtArgs> | null
+    where?: PersistentMemoryEntryWhereInput
+    orderBy?: PersistentMemoryEntryOrderByWithRelationInput | PersistentMemoryEntryOrderByWithRelationInput[]
+    cursor?: PersistentMemoryEntryWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: PersistentMemoryEntryScalarFieldEnum | PersistentMemoryEntryScalarFieldEnum[]
   }
 
   /**
@@ -6993,6 +7233,7 @@ export namespace Prisma {
     nodes?: boolean | Workflow$nodesArgs<ExtArgs>
     connections?: boolean | Workflow$connectionsArgs<ExtArgs>
     executions?: boolean | Workflow$executionsArgs<ExtArgs>
+    persistentMemoryEntries?: boolean | Workflow$persistentMemoryEntriesArgs<ExtArgs>
     user?: boolean | UserDefaultArgs<ExtArgs>
     _count?: boolean | WorkflowCountOutputTypeDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["workflow"]>
@@ -7031,6 +7272,7 @@ export namespace Prisma {
     nodes?: boolean | Workflow$nodesArgs<ExtArgs>
     connections?: boolean | Workflow$connectionsArgs<ExtArgs>
     executions?: boolean | Workflow$executionsArgs<ExtArgs>
+    persistentMemoryEntries?: boolean | Workflow$persistentMemoryEntriesArgs<ExtArgs>
     user?: boolean | UserDefaultArgs<ExtArgs>
     _count?: boolean | WorkflowCountOutputTypeDefaultArgs<ExtArgs>
   }
@@ -7047,6 +7289,7 @@ export namespace Prisma {
       nodes: Prisma.$NodePayload<ExtArgs>[]
       connections: Prisma.$ConnectionPayload<ExtArgs>[]
       executions: Prisma.$ExecutionPayload<ExtArgs>[]
+      persistentMemoryEntries: Prisma.$PersistentMemoryEntryPayload<ExtArgs>[]
       user: Prisma.$UserPayload<ExtArgs>
     }
     scalars: $Extensions.GetPayloadResult<{
@@ -7453,6 +7696,7 @@ export namespace Prisma {
     nodes<T extends Workflow$nodesArgs<ExtArgs> = {}>(args?: Subset<T, Workflow$nodesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$NodePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     connections<T extends Workflow$connectionsArgs<ExtArgs> = {}>(args?: Subset<T, Workflow$connectionsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ConnectionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     executions<T extends Workflow$executionsArgs<ExtArgs> = {}>(args?: Subset<T, Workflow$executionsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ExecutionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    persistentMemoryEntries<T extends Workflow$persistentMemoryEntriesArgs<ExtArgs> = {}>(args?: Subset<T, Workflow$persistentMemoryEntriesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$PersistentMemoryEntryPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     user<T extends UserDefaultArgs<ExtArgs> = {}>(args?: Subset<T, UserDefaultArgs<ExtArgs>>): Prisma__UserClient<$Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
@@ -7954,6 +8198,30 @@ export namespace Prisma {
     take?: number
     skip?: number
     distinct?: ExecutionScalarFieldEnum | ExecutionScalarFieldEnum[]
+  }
+
+  /**
+   * Workflow.persistentMemoryEntries
+   */
+  export type Workflow$persistentMemoryEntriesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PersistentMemoryEntry
+     */
+    select?: PersistentMemoryEntrySelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the PersistentMemoryEntry
+     */
+    omit?: PersistentMemoryEntryOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PersistentMemoryEntryInclude<ExtArgs> | null
+    where?: PersistentMemoryEntryWhereInput
+    orderBy?: PersistentMemoryEntryOrderByWithRelationInput | PersistentMemoryEntryOrderByWithRelationInput[]
+    cursor?: PersistentMemoryEntryWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: PersistentMemoryEntryScalarFieldEnum | PersistentMemoryEntryScalarFieldEnum[]
   }
 
   /**
@@ -16186,6 +16454,2325 @@ export namespace Prisma {
 
 
   /**
+   * Model PersistentMemoryEntry
+   */
+
+  export type AggregatePersistentMemoryEntry = {
+    _count: PersistentMemoryEntryCountAggregateOutputType | null
+    _min: PersistentMemoryEntryMinAggregateOutputType | null
+    _max: PersistentMemoryEntryMaxAggregateOutputType | null
+  }
+
+  export type PersistentMemoryEntryMinAggregateOutputType = {
+    id: string | null
+    scope: $Enums.PersistentMemoryScope | null
+    ownerId: string | null
+    userId: string | null
+    workflowId: string | null
+    namespace: string | null
+    key: string | null
+    textValue: string | null
+    embeddingProvider: $Enums.CredentialProvider | null
+    embeddingModel: string | null
+    sourceExecutionId: string | null
+    sourceStepId: string | null
+    sourceNodeId: string | null
+    createdAt: Date | null
+    updatedAt: Date | null
+  }
+
+  export type PersistentMemoryEntryMaxAggregateOutputType = {
+    id: string | null
+    scope: $Enums.PersistentMemoryScope | null
+    ownerId: string | null
+    userId: string | null
+    workflowId: string | null
+    namespace: string | null
+    key: string | null
+    textValue: string | null
+    embeddingProvider: $Enums.CredentialProvider | null
+    embeddingModel: string | null
+    sourceExecutionId: string | null
+    sourceStepId: string | null
+    sourceNodeId: string | null
+    createdAt: Date | null
+    updatedAt: Date | null
+  }
+
+  export type PersistentMemoryEntryCountAggregateOutputType = {
+    id: number
+    scope: number
+    ownerId: number
+    userId: number
+    workflowId: number
+    namespace: number
+    key: number
+    value: number
+    textValue: number
+    embedding: number
+    embeddingProvider: number
+    embeddingModel: number
+    sourceExecutionId: number
+    sourceStepId: number
+    sourceNodeId: number
+    createdAt: number
+    updatedAt: number
+    _all: number
+  }
+
+
+  export type PersistentMemoryEntryMinAggregateInputType = {
+    id?: true
+    scope?: true
+    ownerId?: true
+    userId?: true
+    workflowId?: true
+    namespace?: true
+    key?: true
+    textValue?: true
+    embeddingProvider?: true
+    embeddingModel?: true
+    sourceExecutionId?: true
+    sourceStepId?: true
+    sourceNodeId?: true
+    createdAt?: true
+    updatedAt?: true
+  }
+
+  export type PersistentMemoryEntryMaxAggregateInputType = {
+    id?: true
+    scope?: true
+    ownerId?: true
+    userId?: true
+    workflowId?: true
+    namespace?: true
+    key?: true
+    textValue?: true
+    embeddingProvider?: true
+    embeddingModel?: true
+    sourceExecutionId?: true
+    sourceStepId?: true
+    sourceNodeId?: true
+    createdAt?: true
+    updatedAt?: true
+  }
+
+  export type PersistentMemoryEntryCountAggregateInputType = {
+    id?: true
+    scope?: true
+    ownerId?: true
+    userId?: true
+    workflowId?: true
+    namespace?: true
+    key?: true
+    value?: true
+    textValue?: true
+    embedding?: true
+    embeddingProvider?: true
+    embeddingModel?: true
+    sourceExecutionId?: true
+    sourceStepId?: true
+    sourceNodeId?: true
+    createdAt?: true
+    updatedAt?: true
+    _all?: true
+  }
+
+  export type PersistentMemoryEntryAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which PersistentMemoryEntry to aggregate.
+     */
+    where?: PersistentMemoryEntryWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of PersistentMemoryEntries to fetch.
+     */
+    orderBy?: PersistentMemoryEntryOrderByWithRelationInput | PersistentMemoryEntryOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: PersistentMemoryEntryWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` PersistentMemoryEntries from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` PersistentMemoryEntries.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned PersistentMemoryEntries
+    **/
+    _count?: true | PersistentMemoryEntryCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: PersistentMemoryEntryMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: PersistentMemoryEntryMaxAggregateInputType
+  }
+
+  export type GetPersistentMemoryEntryAggregateType<T extends PersistentMemoryEntryAggregateArgs> = {
+        [P in keyof T & keyof AggregatePersistentMemoryEntry]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregatePersistentMemoryEntry[P]>
+      : GetScalarType<T[P], AggregatePersistentMemoryEntry[P]>
+  }
+
+
+
+
+  export type PersistentMemoryEntryGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: PersistentMemoryEntryWhereInput
+    orderBy?: PersistentMemoryEntryOrderByWithAggregationInput | PersistentMemoryEntryOrderByWithAggregationInput[]
+    by: PersistentMemoryEntryScalarFieldEnum[] | PersistentMemoryEntryScalarFieldEnum
+    having?: PersistentMemoryEntryScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: PersistentMemoryEntryCountAggregateInputType | true
+    _min?: PersistentMemoryEntryMinAggregateInputType
+    _max?: PersistentMemoryEntryMaxAggregateInputType
+  }
+
+  export type PersistentMemoryEntryGroupByOutputType = {
+    id: string
+    scope: $Enums.PersistentMemoryScope
+    ownerId: string
+    userId: string
+    workflowId: string | null
+    namespace: string
+    key: string
+    value: JsonValue
+    textValue: string | null
+    embedding: JsonValue | null
+    embeddingProvider: $Enums.CredentialProvider | null
+    embeddingModel: string | null
+    sourceExecutionId: string | null
+    sourceStepId: string | null
+    sourceNodeId: string | null
+    createdAt: Date
+    updatedAt: Date
+    _count: PersistentMemoryEntryCountAggregateOutputType | null
+    _min: PersistentMemoryEntryMinAggregateOutputType | null
+    _max: PersistentMemoryEntryMaxAggregateOutputType | null
+  }
+
+  type GetPersistentMemoryEntryGroupByPayload<T extends PersistentMemoryEntryGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<PersistentMemoryEntryGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof PersistentMemoryEntryGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], PersistentMemoryEntryGroupByOutputType[P]>
+            : GetScalarType<T[P], PersistentMemoryEntryGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type PersistentMemoryEntrySelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    scope?: boolean
+    ownerId?: boolean
+    userId?: boolean
+    workflowId?: boolean
+    namespace?: boolean
+    key?: boolean
+    value?: boolean
+    textValue?: boolean
+    embedding?: boolean
+    embeddingProvider?: boolean
+    embeddingModel?: boolean
+    sourceExecutionId?: boolean
+    sourceStepId?: boolean
+    sourceNodeId?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+    user?: boolean | UserDefaultArgs<ExtArgs>
+    workflow?: boolean | PersistentMemoryEntry$workflowArgs<ExtArgs>
+  }, ExtArgs["result"]["persistentMemoryEntry"]>
+
+  export type PersistentMemoryEntrySelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    scope?: boolean
+    ownerId?: boolean
+    userId?: boolean
+    workflowId?: boolean
+    namespace?: boolean
+    key?: boolean
+    value?: boolean
+    textValue?: boolean
+    embedding?: boolean
+    embeddingProvider?: boolean
+    embeddingModel?: boolean
+    sourceExecutionId?: boolean
+    sourceStepId?: boolean
+    sourceNodeId?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+    user?: boolean | UserDefaultArgs<ExtArgs>
+    workflow?: boolean | PersistentMemoryEntry$workflowArgs<ExtArgs>
+  }, ExtArgs["result"]["persistentMemoryEntry"]>
+
+  export type PersistentMemoryEntrySelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    scope?: boolean
+    ownerId?: boolean
+    userId?: boolean
+    workflowId?: boolean
+    namespace?: boolean
+    key?: boolean
+    value?: boolean
+    textValue?: boolean
+    embedding?: boolean
+    embeddingProvider?: boolean
+    embeddingModel?: boolean
+    sourceExecutionId?: boolean
+    sourceStepId?: boolean
+    sourceNodeId?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+    user?: boolean | UserDefaultArgs<ExtArgs>
+    workflow?: boolean | PersistentMemoryEntry$workflowArgs<ExtArgs>
+  }, ExtArgs["result"]["persistentMemoryEntry"]>
+
+  export type PersistentMemoryEntrySelectScalar = {
+    id?: boolean
+    scope?: boolean
+    ownerId?: boolean
+    userId?: boolean
+    workflowId?: boolean
+    namespace?: boolean
+    key?: boolean
+    value?: boolean
+    textValue?: boolean
+    embedding?: boolean
+    embeddingProvider?: boolean
+    embeddingModel?: boolean
+    sourceExecutionId?: boolean
+    sourceStepId?: boolean
+    sourceNodeId?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+  }
+
+  export type PersistentMemoryEntryOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "scope" | "ownerId" | "userId" | "workflowId" | "namespace" | "key" | "value" | "textValue" | "embedding" | "embeddingProvider" | "embeddingModel" | "sourceExecutionId" | "sourceStepId" | "sourceNodeId" | "createdAt" | "updatedAt", ExtArgs["result"]["persistentMemoryEntry"]>
+  export type PersistentMemoryEntryInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    user?: boolean | UserDefaultArgs<ExtArgs>
+    workflow?: boolean | PersistentMemoryEntry$workflowArgs<ExtArgs>
+  }
+  export type PersistentMemoryEntryIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    user?: boolean | UserDefaultArgs<ExtArgs>
+    workflow?: boolean | PersistentMemoryEntry$workflowArgs<ExtArgs>
+  }
+  export type PersistentMemoryEntryIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    user?: boolean | UserDefaultArgs<ExtArgs>
+    workflow?: boolean | PersistentMemoryEntry$workflowArgs<ExtArgs>
+  }
+
+  export type $PersistentMemoryEntryPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "PersistentMemoryEntry"
+    objects: {
+      user: Prisma.$UserPayload<ExtArgs>
+      workflow: Prisma.$WorkflowPayload<ExtArgs> | null
+    }
+    scalars: $Extensions.GetPayloadResult<{
+      id: string
+      scope: $Enums.PersistentMemoryScope
+      ownerId: string
+      userId: string
+      workflowId: string | null
+      namespace: string
+      key: string
+      value: Prisma.JsonValue
+      textValue: string | null
+      embedding: Prisma.JsonValue | null
+      embeddingProvider: $Enums.CredentialProvider | null
+      embeddingModel: string | null
+      sourceExecutionId: string | null
+      sourceStepId: string | null
+      sourceNodeId: string | null
+      createdAt: Date
+      updatedAt: Date
+    }, ExtArgs["result"]["persistentMemoryEntry"]>
+    composites: {}
+  }
+
+  type PersistentMemoryEntryGetPayload<S extends boolean | null | undefined | PersistentMemoryEntryDefaultArgs> = $Result.GetResult<Prisma.$PersistentMemoryEntryPayload, S>
+
+  type PersistentMemoryEntryCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> =
+    Omit<PersistentMemoryEntryFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
+      select?: PersistentMemoryEntryCountAggregateInputType | true
+    }
+
+  export interface PersistentMemoryEntryDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['PersistentMemoryEntry'], meta: { name: 'PersistentMemoryEntry' } }
+    /**
+     * Find zero or one PersistentMemoryEntry that matches the filter.
+     * @param {PersistentMemoryEntryFindUniqueArgs} args - Arguments to find a PersistentMemoryEntry
+     * @example
+     * // Get one PersistentMemoryEntry
+     * const persistentMemoryEntry = await prisma.persistentMemoryEntry.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends PersistentMemoryEntryFindUniqueArgs>(args: SelectSubset<T, PersistentMemoryEntryFindUniqueArgs<ExtArgs>>): Prisma__PersistentMemoryEntryClient<$Result.GetResult<Prisma.$PersistentMemoryEntryPayload<ExtArgs>, T, "findUnique", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find one PersistentMemoryEntry that matches the filter or throw an error with `error.code='P2025'`
+     * if no matches were found.
+     * @param {PersistentMemoryEntryFindUniqueOrThrowArgs} args - Arguments to find a PersistentMemoryEntry
+     * @example
+     * // Get one PersistentMemoryEntry
+     * const persistentMemoryEntry = await prisma.persistentMemoryEntry.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends PersistentMemoryEntryFindUniqueOrThrowArgs>(args: SelectSubset<T, PersistentMemoryEntryFindUniqueOrThrowArgs<ExtArgs>>): Prisma__PersistentMemoryEntryClient<$Result.GetResult<Prisma.$PersistentMemoryEntryPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first PersistentMemoryEntry that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {PersistentMemoryEntryFindFirstArgs} args - Arguments to find a PersistentMemoryEntry
+     * @example
+     * // Get one PersistentMemoryEntry
+     * const persistentMemoryEntry = await prisma.persistentMemoryEntry.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends PersistentMemoryEntryFindFirstArgs>(args?: SelectSubset<T, PersistentMemoryEntryFindFirstArgs<ExtArgs>>): Prisma__PersistentMemoryEntryClient<$Result.GetResult<Prisma.$PersistentMemoryEntryPayload<ExtArgs>, T, "findFirst", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first PersistentMemoryEntry that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {PersistentMemoryEntryFindFirstOrThrowArgs} args - Arguments to find a PersistentMemoryEntry
+     * @example
+     * // Get one PersistentMemoryEntry
+     * const persistentMemoryEntry = await prisma.persistentMemoryEntry.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends PersistentMemoryEntryFindFirstOrThrowArgs>(args?: SelectSubset<T, PersistentMemoryEntryFindFirstOrThrowArgs<ExtArgs>>): Prisma__PersistentMemoryEntryClient<$Result.GetResult<Prisma.$PersistentMemoryEntryPayload<ExtArgs>, T, "findFirstOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find zero or more PersistentMemoryEntries that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {PersistentMemoryEntryFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all PersistentMemoryEntries
+     * const persistentMemoryEntries = await prisma.persistentMemoryEntry.findMany()
+     * 
+     * // Get first 10 PersistentMemoryEntries
+     * const persistentMemoryEntries = await prisma.persistentMemoryEntry.findMany({ take: 10 })
+     * 
+     * // Only select the `id`
+     * const persistentMemoryEntryWithIdOnly = await prisma.persistentMemoryEntry.findMany({ select: { id: true } })
+     * 
+     */
+    findMany<T extends PersistentMemoryEntryFindManyArgs>(args?: SelectSubset<T, PersistentMemoryEntryFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$PersistentMemoryEntryPayload<ExtArgs>, T, "findMany", GlobalOmitOptions>>
+
+    /**
+     * Create a PersistentMemoryEntry.
+     * @param {PersistentMemoryEntryCreateArgs} args - Arguments to create a PersistentMemoryEntry.
+     * @example
+     * // Create one PersistentMemoryEntry
+     * const PersistentMemoryEntry = await prisma.persistentMemoryEntry.create({
+     *   data: {
+     *     // ... data to create a PersistentMemoryEntry
+     *   }
+     * })
+     * 
+     */
+    create<T extends PersistentMemoryEntryCreateArgs>(args: SelectSubset<T, PersistentMemoryEntryCreateArgs<ExtArgs>>): Prisma__PersistentMemoryEntryClient<$Result.GetResult<Prisma.$PersistentMemoryEntryPayload<ExtArgs>, T, "create", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Create many PersistentMemoryEntries.
+     * @param {PersistentMemoryEntryCreateManyArgs} args - Arguments to create many PersistentMemoryEntries.
+     * @example
+     * // Create many PersistentMemoryEntries
+     * const persistentMemoryEntry = await prisma.persistentMemoryEntry.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends PersistentMemoryEntryCreateManyArgs>(args?: SelectSubset<T, PersistentMemoryEntryCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create many PersistentMemoryEntries and returns the data saved in the database.
+     * @param {PersistentMemoryEntryCreateManyAndReturnArgs} args - Arguments to create many PersistentMemoryEntries.
+     * @example
+     * // Create many PersistentMemoryEntries
+     * const persistentMemoryEntry = await prisma.persistentMemoryEntry.createManyAndReturn({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Create many PersistentMemoryEntries and only return the `id`
+     * const persistentMemoryEntryWithIdOnly = await prisma.persistentMemoryEntry.createManyAndReturn({
+     *   select: { id: true },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    createManyAndReturn<T extends PersistentMemoryEntryCreateManyAndReturnArgs>(args?: SelectSubset<T, PersistentMemoryEntryCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$PersistentMemoryEntryPayload<ExtArgs>, T, "createManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Delete a PersistentMemoryEntry.
+     * @param {PersistentMemoryEntryDeleteArgs} args - Arguments to delete one PersistentMemoryEntry.
+     * @example
+     * // Delete one PersistentMemoryEntry
+     * const PersistentMemoryEntry = await prisma.persistentMemoryEntry.delete({
+     *   where: {
+     *     // ... filter to delete one PersistentMemoryEntry
+     *   }
+     * })
+     * 
+     */
+    delete<T extends PersistentMemoryEntryDeleteArgs>(args: SelectSubset<T, PersistentMemoryEntryDeleteArgs<ExtArgs>>): Prisma__PersistentMemoryEntryClient<$Result.GetResult<Prisma.$PersistentMemoryEntryPayload<ExtArgs>, T, "delete", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Update one PersistentMemoryEntry.
+     * @param {PersistentMemoryEntryUpdateArgs} args - Arguments to update one PersistentMemoryEntry.
+     * @example
+     * // Update one PersistentMemoryEntry
+     * const persistentMemoryEntry = await prisma.persistentMemoryEntry.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends PersistentMemoryEntryUpdateArgs>(args: SelectSubset<T, PersistentMemoryEntryUpdateArgs<ExtArgs>>): Prisma__PersistentMemoryEntryClient<$Result.GetResult<Prisma.$PersistentMemoryEntryPayload<ExtArgs>, T, "update", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Delete zero or more PersistentMemoryEntries.
+     * @param {PersistentMemoryEntryDeleteManyArgs} args - Arguments to filter PersistentMemoryEntries to delete.
+     * @example
+     * // Delete a few PersistentMemoryEntries
+     * const { count } = await prisma.persistentMemoryEntry.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends PersistentMemoryEntryDeleteManyArgs>(args?: SelectSubset<T, PersistentMemoryEntryDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more PersistentMemoryEntries.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {PersistentMemoryEntryUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many PersistentMemoryEntries
+     * const persistentMemoryEntry = await prisma.persistentMemoryEntry.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends PersistentMemoryEntryUpdateManyArgs>(args: SelectSubset<T, PersistentMemoryEntryUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more PersistentMemoryEntries and returns the data updated in the database.
+     * @param {PersistentMemoryEntryUpdateManyAndReturnArgs} args - Arguments to update many PersistentMemoryEntries.
+     * @example
+     * // Update many PersistentMemoryEntries
+     * const persistentMemoryEntry = await prisma.persistentMemoryEntry.updateManyAndReturn({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Update zero or more PersistentMemoryEntries and only return the `id`
+     * const persistentMemoryEntryWithIdOnly = await prisma.persistentMemoryEntry.updateManyAndReturn({
+     *   select: { id: true },
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    updateManyAndReturn<T extends PersistentMemoryEntryUpdateManyAndReturnArgs>(args: SelectSubset<T, PersistentMemoryEntryUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$PersistentMemoryEntryPayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Create or update one PersistentMemoryEntry.
+     * @param {PersistentMemoryEntryUpsertArgs} args - Arguments to update or create a PersistentMemoryEntry.
+     * @example
+     * // Update or create a PersistentMemoryEntry
+     * const persistentMemoryEntry = await prisma.persistentMemoryEntry.upsert({
+     *   create: {
+     *     // ... data to create a PersistentMemoryEntry
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the PersistentMemoryEntry we want to update
+     *   }
+     * })
+     */
+    upsert<T extends PersistentMemoryEntryUpsertArgs>(args: SelectSubset<T, PersistentMemoryEntryUpsertArgs<ExtArgs>>): Prisma__PersistentMemoryEntryClient<$Result.GetResult<Prisma.$PersistentMemoryEntryPayload<ExtArgs>, T, "upsert", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+
+    /**
+     * Count the number of PersistentMemoryEntries.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {PersistentMemoryEntryCountArgs} args - Arguments to filter PersistentMemoryEntries to count.
+     * @example
+     * // Count the number of PersistentMemoryEntries
+     * const count = await prisma.persistentMemoryEntry.count({
+     *   where: {
+     *     // ... the filter for the PersistentMemoryEntries we want to count
+     *   }
+     * })
+    **/
+    count<T extends PersistentMemoryEntryCountArgs>(
+      args?: Subset<T, PersistentMemoryEntryCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], PersistentMemoryEntryCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a PersistentMemoryEntry.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {PersistentMemoryEntryAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends PersistentMemoryEntryAggregateArgs>(args: Subset<T, PersistentMemoryEntryAggregateArgs>): Prisma.PrismaPromise<GetPersistentMemoryEntryAggregateType<T>>
+
+    /**
+     * Group by PersistentMemoryEntry.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {PersistentMemoryEntryGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends PersistentMemoryEntryGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: PersistentMemoryEntryGroupByArgs['orderBy'] }
+        : { orderBy?: PersistentMemoryEntryGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, PersistentMemoryEntryGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetPersistentMemoryEntryGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the PersistentMemoryEntry model
+   */
+  readonly fields: PersistentMemoryEntryFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for PersistentMemoryEntry.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__PersistentMemoryEntryClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    user<T extends UserDefaultArgs<ExtArgs> = {}>(args?: Subset<T, UserDefaultArgs<ExtArgs>>): Prisma__UserClient<$Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+    workflow<T extends PersistentMemoryEntry$workflowArgs<ExtArgs> = {}>(args?: Subset<T, PersistentMemoryEntry$workflowArgs<ExtArgs>>): Prisma__WorkflowClient<$Result.GetResult<Prisma.$WorkflowPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the PersistentMemoryEntry model
+   */
+  interface PersistentMemoryEntryFieldRefs {
+    readonly id: FieldRef<"PersistentMemoryEntry", 'String'>
+    readonly scope: FieldRef<"PersistentMemoryEntry", 'PersistentMemoryScope'>
+    readonly ownerId: FieldRef<"PersistentMemoryEntry", 'String'>
+    readonly userId: FieldRef<"PersistentMemoryEntry", 'String'>
+    readonly workflowId: FieldRef<"PersistentMemoryEntry", 'String'>
+    readonly namespace: FieldRef<"PersistentMemoryEntry", 'String'>
+    readonly key: FieldRef<"PersistentMemoryEntry", 'String'>
+    readonly value: FieldRef<"PersistentMemoryEntry", 'Json'>
+    readonly textValue: FieldRef<"PersistentMemoryEntry", 'String'>
+    readonly embedding: FieldRef<"PersistentMemoryEntry", 'Json'>
+    readonly embeddingProvider: FieldRef<"PersistentMemoryEntry", 'CredentialProvider'>
+    readonly embeddingModel: FieldRef<"PersistentMemoryEntry", 'String'>
+    readonly sourceExecutionId: FieldRef<"PersistentMemoryEntry", 'String'>
+    readonly sourceStepId: FieldRef<"PersistentMemoryEntry", 'String'>
+    readonly sourceNodeId: FieldRef<"PersistentMemoryEntry", 'String'>
+    readonly createdAt: FieldRef<"PersistentMemoryEntry", 'DateTime'>
+    readonly updatedAt: FieldRef<"PersistentMemoryEntry", 'DateTime'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * PersistentMemoryEntry findUnique
+   */
+  export type PersistentMemoryEntryFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PersistentMemoryEntry
+     */
+    select?: PersistentMemoryEntrySelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the PersistentMemoryEntry
+     */
+    omit?: PersistentMemoryEntryOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PersistentMemoryEntryInclude<ExtArgs> | null
+    /**
+     * Filter, which PersistentMemoryEntry to fetch.
+     */
+    where: PersistentMemoryEntryWhereUniqueInput
+  }
+
+  /**
+   * PersistentMemoryEntry findUniqueOrThrow
+   */
+  export type PersistentMemoryEntryFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PersistentMemoryEntry
+     */
+    select?: PersistentMemoryEntrySelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the PersistentMemoryEntry
+     */
+    omit?: PersistentMemoryEntryOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PersistentMemoryEntryInclude<ExtArgs> | null
+    /**
+     * Filter, which PersistentMemoryEntry to fetch.
+     */
+    where: PersistentMemoryEntryWhereUniqueInput
+  }
+
+  /**
+   * PersistentMemoryEntry findFirst
+   */
+  export type PersistentMemoryEntryFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PersistentMemoryEntry
+     */
+    select?: PersistentMemoryEntrySelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the PersistentMemoryEntry
+     */
+    omit?: PersistentMemoryEntryOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PersistentMemoryEntryInclude<ExtArgs> | null
+    /**
+     * Filter, which PersistentMemoryEntry to fetch.
+     */
+    where?: PersistentMemoryEntryWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of PersistentMemoryEntries to fetch.
+     */
+    orderBy?: PersistentMemoryEntryOrderByWithRelationInput | PersistentMemoryEntryOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for PersistentMemoryEntries.
+     */
+    cursor?: PersistentMemoryEntryWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` PersistentMemoryEntries from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` PersistentMemoryEntries.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of PersistentMemoryEntries.
+     */
+    distinct?: PersistentMemoryEntryScalarFieldEnum | PersistentMemoryEntryScalarFieldEnum[]
+  }
+
+  /**
+   * PersistentMemoryEntry findFirstOrThrow
+   */
+  export type PersistentMemoryEntryFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PersistentMemoryEntry
+     */
+    select?: PersistentMemoryEntrySelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the PersistentMemoryEntry
+     */
+    omit?: PersistentMemoryEntryOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PersistentMemoryEntryInclude<ExtArgs> | null
+    /**
+     * Filter, which PersistentMemoryEntry to fetch.
+     */
+    where?: PersistentMemoryEntryWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of PersistentMemoryEntries to fetch.
+     */
+    orderBy?: PersistentMemoryEntryOrderByWithRelationInput | PersistentMemoryEntryOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for PersistentMemoryEntries.
+     */
+    cursor?: PersistentMemoryEntryWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` PersistentMemoryEntries from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` PersistentMemoryEntries.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of PersistentMemoryEntries.
+     */
+    distinct?: PersistentMemoryEntryScalarFieldEnum | PersistentMemoryEntryScalarFieldEnum[]
+  }
+
+  /**
+   * PersistentMemoryEntry findMany
+   */
+  export type PersistentMemoryEntryFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PersistentMemoryEntry
+     */
+    select?: PersistentMemoryEntrySelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the PersistentMemoryEntry
+     */
+    omit?: PersistentMemoryEntryOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PersistentMemoryEntryInclude<ExtArgs> | null
+    /**
+     * Filter, which PersistentMemoryEntries to fetch.
+     */
+    where?: PersistentMemoryEntryWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of PersistentMemoryEntries to fetch.
+     */
+    orderBy?: PersistentMemoryEntryOrderByWithRelationInput | PersistentMemoryEntryOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing PersistentMemoryEntries.
+     */
+    cursor?: PersistentMemoryEntryWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` PersistentMemoryEntries from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` PersistentMemoryEntries.
+     */
+    skip?: number
+    distinct?: PersistentMemoryEntryScalarFieldEnum | PersistentMemoryEntryScalarFieldEnum[]
+  }
+
+  /**
+   * PersistentMemoryEntry create
+   */
+  export type PersistentMemoryEntryCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PersistentMemoryEntry
+     */
+    select?: PersistentMemoryEntrySelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the PersistentMemoryEntry
+     */
+    omit?: PersistentMemoryEntryOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PersistentMemoryEntryInclude<ExtArgs> | null
+    /**
+     * The data needed to create a PersistentMemoryEntry.
+     */
+    data: XOR<PersistentMemoryEntryCreateInput, PersistentMemoryEntryUncheckedCreateInput>
+  }
+
+  /**
+   * PersistentMemoryEntry createMany
+   */
+  export type PersistentMemoryEntryCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many PersistentMemoryEntries.
+     */
+    data: PersistentMemoryEntryCreateManyInput | PersistentMemoryEntryCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * PersistentMemoryEntry createManyAndReturn
+   */
+  export type PersistentMemoryEntryCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PersistentMemoryEntry
+     */
+    select?: PersistentMemoryEntrySelectCreateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the PersistentMemoryEntry
+     */
+    omit?: PersistentMemoryEntryOmit<ExtArgs> | null
+    /**
+     * The data used to create many PersistentMemoryEntries.
+     */
+    data: PersistentMemoryEntryCreateManyInput | PersistentMemoryEntryCreateManyInput[]
+    skipDuplicates?: boolean
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PersistentMemoryEntryIncludeCreateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * PersistentMemoryEntry update
+   */
+  export type PersistentMemoryEntryUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PersistentMemoryEntry
+     */
+    select?: PersistentMemoryEntrySelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the PersistentMemoryEntry
+     */
+    omit?: PersistentMemoryEntryOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PersistentMemoryEntryInclude<ExtArgs> | null
+    /**
+     * The data needed to update a PersistentMemoryEntry.
+     */
+    data: XOR<PersistentMemoryEntryUpdateInput, PersistentMemoryEntryUncheckedUpdateInput>
+    /**
+     * Choose, which PersistentMemoryEntry to update.
+     */
+    where: PersistentMemoryEntryWhereUniqueInput
+  }
+
+  /**
+   * PersistentMemoryEntry updateMany
+   */
+  export type PersistentMemoryEntryUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update PersistentMemoryEntries.
+     */
+    data: XOR<PersistentMemoryEntryUpdateManyMutationInput, PersistentMemoryEntryUncheckedUpdateManyInput>
+    /**
+     * Filter which PersistentMemoryEntries to update
+     */
+    where?: PersistentMemoryEntryWhereInput
+    /**
+     * Limit how many PersistentMemoryEntries to update.
+     */
+    limit?: number
+  }
+
+  /**
+   * PersistentMemoryEntry updateManyAndReturn
+   */
+  export type PersistentMemoryEntryUpdateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PersistentMemoryEntry
+     */
+    select?: PersistentMemoryEntrySelectUpdateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the PersistentMemoryEntry
+     */
+    omit?: PersistentMemoryEntryOmit<ExtArgs> | null
+    /**
+     * The data used to update PersistentMemoryEntries.
+     */
+    data: XOR<PersistentMemoryEntryUpdateManyMutationInput, PersistentMemoryEntryUncheckedUpdateManyInput>
+    /**
+     * Filter which PersistentMemoryEntries to update
+     */
+    where?: PersistentMemoryEntryWhereInput
+    /**
+     * Limit how many PersistentMemoryEntries to update.
+     */
+    limit?: number
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PersistentMemoryEntryIncludeUpdateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * PersistentMemoryEntry upsert
+   */
+  export type PersistentMemoryEntryUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PersistentMemoryEntry
+     */
+    select?: PersistentMemoryEntrySelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the PersistentMemoryEntry
+     */
+    omit?: PersistentMemoryEntryOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PersistentMemoryEntryInclude<ExtArgs> | null
+    /**
+     * The filter to search for the PersistentMemoryEntry to update in case it exists.
+     */
+    where: PersistentMemoryEntryWhereUniqueInput
+    /**
+     * In case the PersistentMemoryEntry found by the `where` argument doesn't exist, create a new PersistentMemoryEntry with this data.
+     */
+    create: XOR<PersistentMemoryEntryCreateInput, PersistentMemoryEntryUncheckedCreateInput>
+    /**
+     * In case the PersistentMemoryEntry was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<PersistentMemoryEntryUpdateInput, PersistentMemoryEntryUncheckedUpdateInput>
+  }
+
+  /**
+   * PersistentMemoryEntry delete
+   */
+  export type PersistentMemoryEntryDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PersistentMemoryEntry
+     */
+    select?: PersistentMemoryEntrySelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the PersistentMemoryEntry
+     */
+    omit?: PersistentMemoryEntryOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PersistentMemoryEntryInclude<ExtArgs> | null
+    /**
+     * Filter which PersistentMemoryEntry to delete.
+     */
+    where: PersistentMemoryEntryWhereUniqueInput
+  }
+
+  /**
+   * PersistentMemoryEntry deleteMany
+   */
+  export type PersistentMemoryEntryDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which PersistentMemoryEntries to delete
+     */
+    where?: PersistentMemoryEntryWhereInput
+    /**
+     * Limit how many PersistentMemoryEntries to delete.
+     */
+    limit?: number
+  }
+
+  /**
+   * PersistentMemoryEntry.workflow
+   */
+  export type PersistentMemoryEntry$workflowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Workflow
+     */
+    select?: WorkflowSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Workflow
+     */
+    omit?: WorkflowOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: WorkflowInclude<ExtArgs> | null
+    where?: WorkflowWhereInput
+  }
+
+  /**
+   * PersistentMemoryEntry without action
+   */
+  export type PersistentMemoryEntryDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PersistentMemoryEntry
+     */
+    select?: PersistentMemoryEntrySelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the PersistentMemoryEntry
+     */
+    omit?: PersistentMemoryEntryOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PersistentMemoryEntryInclude<ExtArgs> | null
+  }
+
+
+  /**
+   * Model FeishuBridgeReceipt
+   */
+
+  export type AggregateFeishuBridgeReceipt = {
+    _count: FeishuBridgeReceiptCountAggregateOutputType | null
+    _min: FeishuBridgeReceiptMinAggregateOutputType | null
+    _max: FeishuBridgeReceiptMaxAggregateOutputType | null
+  }
+
+  export type FeishuBridgeReceiptMinAggregateOutputType = {
+    id: string | null
+    eventId: string | null
+    messageId: string | null
+    chatId: string | null
+    commandType: string | null
+    status: string | null
+    replyText: string | null
+    workflowId: string | null
+    executionId: string | null
+    draftWorkflowId: string | null
+    createdAt: Date | null
+    updatedAt: Date | null
+  }
+
+  export type FeishuBridgeReceiptMaxAggregateOutputType = {
+    id: string | null
+    eventId: string | null
+    messageId: string | null
+    chatId: string | null
+    commandType: string | null
+    status: string | null
+    replyText: string | null
+    workflowId: string | null
+    executionId: string | null
+    draftWorkflowId: string | null
+    createdAt: Date | null
+    updatedAt: Date | null
+  }
+
+  export type FeishuBridgeReceiptCountAggregateOutputType = {
+    id: number
+    eventId: number
+    messageId: number
+    chatId: number
+    commandType: number
+    status: number
+    replyText: number
+    workflowId: number
+    executionId: number
+    draftWorkflowId: number
+    createdAt: number
+    updatedAt: number
+    _all: number
+  }
+
+
+  export type FeishuBridgeReceiptMinAggregateInputType = {
+    id?: true
+    eventId?: true
+    messageId?: true
+    chatId?: true
+    commandType?: true
+    status?: true
+    replyText?: true
+    workflowId?: true
+    executionId?: true
+    draftWorkflowId?: true
+    createdAt?: true
+    updatedAt?: true
+  }
+
+  export type FeishuBridgeReceiptMaxAggregateInputType = {
+    id?: true
+    eventId?: true
+    messageId?: true
+    chatId?: true
+    commandType?: true
+    status?: true
+    replyText?: true
+    workflowId?: true
+    executionId?: true
+    draftWorkflowId?: true
+    createdAt?: true
+    updatedAt?: true
+  }
+
+  export type FeishuBridgeReceiptCountAggregateInputType = {
+    id?: true
+    eventId?: true
+    messageId?: true
+    chatId?: true
+    commandType?: true
+    status?: true
+    replyText?: true
+    workflowId?: true
+    executionId?: true
+    draftWorkflowId?: true
+    createdAt?: true
+    updatedAt?: true
+    _all?: true
+  }
+
+  export type FeishuBridgeReceiptAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which FeishuBridgeReceipt to aggregate.
+     */
+    where?: FeishuBridgeReceiptWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of FeishuBridgeReceipts to fetch.
+     */
+    orderBy?: FeishuBridgeReceiptOrderByWithRelationInput | FeishuBridgeReceiptOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: FeishuBridgeReceiptWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` FeishuBridgeReceipts from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` FeishuBridgeReceipts.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned FeishuBridgeReceipts
+    **/
+    _count?: true | FeishuBridgeReceiptCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: FeishuBridgeReceiptMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: FeishuBridgeReceiptMaxAggregateInputType
+  }
+
+  export type GetFeishuBridgeReceiptAggregateType<T extends FeishuBridgeReceiptAggregateArgs> = {
+        [P in keyof T & keyof AggregateFeishuBridgeReceipt]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateFeishuBridgeReceipt[P]>
+      : GetScalarType<T[P], AggregateFeishuBridgeReceipt[P]>
+  }
+
+
+
+
+  export type FeishuBridgeReceiptGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: FeishuBridgeReceiptWhereInput
+    orderBy?: FeishuBridgeReceiptOrderByWithAggregationInput | FeishuBridgeReceiptOrderByWithAggregationInput[]
+    by: FeishuBridgeReceiptScalarFieldEnum[] | FeishuBridgeReceiptScalarFieldEnum
+    having?: FeishuBridgeReceiptScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: FeishuBridgeReceiptCountAggregateInputType | true
+    _min?: FeishuBridgeReceiptMinAggregateInputType
+    _max?: FeishuBridgeReceiptMaxAggregateInputType
+  }
+
+  export type FeishuBridgeReceiptGroupByOutputType = {
+    id: string
+    eventId: string
+    messageId: string | null
+    chatId: string | null
+    commandType: string | null
+    status: string
+    replyText: string | null
+    workflowId: string | null
+    executionId: string | null
+    draftWorkflowId: string | null
+    createdAt: Date
+    updatedAt: Date
+    _count: FeishuBridgeReceiptCountAggregateOutputType | null
+    _min: FeishuBridgeReceiptMinAggregateOutputType | null
+    _max: FeishuBridgeReceiptMaxAggregateOutputType | null
+  }
+
+  type GetFeishuBridgeReceiptGroupByPayload<T extends FeishuBridgeReceiptGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<FeishuBridgeReceiptGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof FeishuBridgeReceiptGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], FeishuBridgeReceiptGroupByOutputType[P]>
+            : GetScalarType<T[P], FeishuBridgeReceiptGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type FeishuBridgeReceiptSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    eventId?: boolean
+    messageId?: boolean
+    chatId?: boolean
+    commandType?: boolean
+    status?: boolean
+    replyText?: boolean
+    workflowId?: boolean
+    executionId?: boolean
+    draftWorkflowId?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+  }, ExtArgs["result"]["feishuBridgeReceipt"]>
+
+  export type FeishuBridgeReceiptSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    eventId?: boolean
+    messageId?: boolean
+    chatId?: boolean
+    commandType?: boolean
+    status?: boolean
+    replyText?: boolean
+    workflowId?: boolean
+    executionId?: boolean
+    draftWorkflowId?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+  }, ExtArgs["result"]["feishuBridgeReceipt"]>
+
+  export type FeishuBridgeReceiptSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    eventId?: boolean
+    messageId?: boolean
+    chatId?: boolean
+    commandType?: boolean
+    status?: boolean
+    replyText?: boolean
+    workflowId?: boolean
+    executionId?: boolean
+    draftWorkflowId?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+  }, ExtArgs["result"]["feishuBridgeReceipt"]>
+
+  export type FeishuBridgeReceiptSelectScalar = {
+    id?: boolean
+    eventId?: boolean
+    messageId?: boolean
+    chatId?: boolean
+    commandType?: boolean
+    status?: boolean
+    replyText?: boolean
+    workflowId?: boolean
+    executionId?: boolean
+    draftWorkflowId?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+  }
+
+  export type FeishuBridgeReceiptOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "eventId" | "messageId" | "chatId" | "commandType" | "status" | "replyText" | "workflowId" | "executionId" | "draftWorkflowId" | "createdAt" | "updatedAt", ExtArgs["result"]["feishuBridgeReceipt"]>
+
+  export type $FeishuBridgeReceiptPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "FeishuBridgeReceipt"
+    objects: {}
+    scalars: $Extensions.GetPayloadResult<{
+      id: string
+      eventId: string
+      messageId: string | null
+      chatId: string | null
+      commandType: string | null
+      status: string
+      replyText: string | null
+      workflowId: string | null
+      executionId: string | null
+      draftWorkflowId: string | null
+      createdAt: Date
+      updatedAt: Date
+    }, ExtArgs["result"]["feishuBridgeReceipt"]>
+    composites: {}
+  }
+
+  type FeishuBridgeReceiptGetPayload<S extends boolean | null | undefined | FeishuBridgeReceiptDefaultArgs> = $Result.GetResult<Prisma.$FeishuBridgeReceiptPayload, S>
+
+  type FeishuBridgeReceiptCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> =
+    Omit<FeishuBridgeReceiptFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
+      select?: FeishuBridgeReceiptCountAggregateInputType | true
+    }
+
+  export interface FeishuBridgeReceiptDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['FeishuBridgeReceipt'], meta: { name: 'FeishuBridgeReceipt' } }
+    /**
+     * Find zero or one FeishuBridgeReceipt that matches the filter.
+     * @param {FeishuBridgeReceiptFindUniqueArgs} args - Arguments to find a FeishuBridgeReceipt
+     * @example
+     * // Get one FeishuBridgeReceipt
+     * const feishuBridgeReceipt = await prisma.feishuBridgeReceipt.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends FeishuBridgeReceiptFindUniqueArgs>(args: SelectSubset<T, FeishuBridgeReceiptFindUniqueArgs<ExtArgs>>): Prisma__FeishuBridgeReceiptClient<$Result.GetResult<Prisma.$FeishuBridgeReceiptPayload<ExtArgs>, T, "findUnique", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find one FeishuBridgeReceipt that matches the filter or throw an error with `error.code='P2025'`
+     * if no matches were found.
+     * @param {FeishuBridgeReceiptFindUniqueOrThrowArgs} args - Arguments to find a FeishuBridgeReceipt
+     * @example
+     * // Get one FeishuBridgeReceipt
+     * const feishuBridgeReceipt = await prisma.feishuBridgeReceipt.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends FeishuBridgeReceiptFindUniqueOrThrowArgs>(args: SelectSubset<T, FeishuBridgeReceiptFindUniqueOrThrowArgs<ExtArgs>>): Prisma__FeishuBridgeReceiptClient<$Result.GetResult<Prisma.$FeishuBridgeReceiptPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first FeishuBridgeReceipt that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {FeishuBridgeReceiptFindFirstArgs} args - Arguments to find a FeishuBridgeReceipt
+     * @example
+     * // Get one FeishuBridgeReceipt
+     * const feishuBridgeReceipt = await prisma.feishuBridgeReceipt.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends FeishuBridgeReceiptFindFirstArgs>(args?: SelectSubset<T, FeishuBridgeReceiptFindFirstArgs<ExtArgs>>): Prisma__FeishuBridgeReceiptClient<$Result.GetResult<Prisma.$FeishuBridgeReceiptPayload<ExtArgs>, T, "findFirst", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first FeishuBridgeReceipt that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {FeishuBridgeReceiptFindFirstOrThrowArgs} args - Arguments to find a FeishuBridgeReceipt
+     * @example
+     * // Get one FeishuBridgeReceipt
+     * const feishuBridgeReceipt = await prisma.feishuBridgeReceipt.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends FeishuBridgeReceiptFindFirstOrThrowArgs>(args?: SelectSubset<T, FeishuBridgeReceiptFindFirstOrThrowArgs<ExtArgs>>): Prisma__FeishuBridgeReceiptClient<$Result.GetResult<Prisma.$FeishuBridgeReceiptPayload<ExtArgs>, T, "findFirstOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find zero or more FeishuBridgeReceipts that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {FeishuBridgeReceiptFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all FeishuBridgeReceipts
+     * const feishuBridgeReceipts = await prisma.feishuBridgeReceipt.findMany()
+     * 
+     * // Get first 10 FeishuBridgeReceipts
+     * const feishuBridgeReceipts = await prisma.feishuBridgeReceipt.findMany({ take: 10 })
+     * 
+     * // Only select the `id`
+     * const feishuBridgeReceiptWithIdOnly = await prisma.feishuBridgeReceipt.findMany({ select: { id: true } })
+     * 
+     */
+    findMany<T extends FeishuBridgeReceiptFindManyArgs>(args?: SelectSubset<T, FeishuBridgeReceiptFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$FeishuBridgeReceiptPayload<ExtArgs>, T, "findMany", GlobalOmitOptions>>
+
+    /**
+     * Create a FeishuBridgeReceipt.
+     * @param {FeishuBridgeReceiptCreateArgs} args - Arguments to create a FeishuBridgeReceipt.
+     * @example
+     * // Create one FeishuBridgeReceipt
+     * const FeishuBridgeReceipt = await prisma.feishuBridgeReceipt.create({
+     *   data: {
+     *     // ... data to create a FeishuBridgeReceipt
+     *   }
+     * })
+     * 
+     */
+    create<T extends FeishuBridgeReceiptCreateArgs>(args: SelectSubset<T, FeishuBridgeReceiptCreateArgs<ExtArgs>>): Prisma__FeishuBridgeReceiptClient<$Result.GetResult<Prisma.$FeishuBridgeReceiptPayload<ExtArgs>, T, "create", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Create many FeishuBridgeReceipts.
+     * @param {FeishuBridgeReceiptCreateManyArgs} args - Arguments to create many FeishuBridgeReceipts.
+     * @example
+     * // Create many FeishuBridgeReceipts
+     * const feishuBridgeReceipt = await prisma.feishuBridgeReceipt.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends FeishuBridgeReceiptCreateManyArgs>(args?: SelectSubset<T, FeishuBridgeReceiptCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create many FeishuBridgeReceipts and returns the data saved in the database.
+     * @param {FeishuBridgeReceiptCreateManyAndReturnArgs} args - Arguments to create many FeishuBridgeReceipts.
+     * @example
+     * // Create many FeishuBridgeReceipts
+     * const feishuBridgeReceipt = await prisma.feishuBridgeReceipt.createManyAndReturn({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Create many FeishuBridgeReceipts and only return the `id`
+     * const feishuBridgeReceiptWithIdOnly = await prisma.feishuBridgeReceipt.createManyAndReturn({
+     *   select: { id: true },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    createManyAndReturn<T extends FeishuBridgeReceiptCreateManyAndReturnArgs>(args?: SelectSubset<T, FeishuBridgeReceiptCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$FeishuBridgeReceiptPayload<ExtArgs>, T, "createManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Delete a FeishuBridgeReceipt.
+     * @param {FeishuBridgeReceiptDeleteArgs} args - Arguments to delete one FeishuBridgeReceipt.
+     * @example
+     * // Delete one FeishuBridgeReceipt
+     * const FeishuBridgeReceipt = await prisma.feishuBridgeReceipt.delete({
+     *   where: {
+     *     // ... filter to delete one FeishuBridgeReceipt
+     *   }
+     * })
+     * 
+     */
+    delete<T extends FeishuBridgeReceiptDeleteArgs>(args: SelectSubset<T, FeishuBridgeReceiptDeleteArgs<ExtArgs>>): Prisma__FeishuBridgeReceiptClient<$Result.GetResult<Prisma.$FeishuBridgeReceiptPayload<ExtArgs>, T, "delete", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Update one FeishuBridgeReceipt.
+     * @param {FeishuBridgeReceiptUpdateArgs} args - Arguments to update one FeishuBridgeReceipt.
+     * @example
+     * // Update one FeishuBridgeReceipt
+     * const feishuBridgeReceipt = await prisma.feishuBridgeReceipt.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends FeishuBridgeReceiptUpdateArgs>(args: SelectSubset<T, FeishuBridgeReceiptUpdateArgs<ExtArgs>>): Prisma__FeishuBridgeReceiptClient<$Result.GetResult<Prisma.$FeishuBridgeReceiptPayload<ExtArgs>, T, "update", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Delete zero or more FeishuBridgeReceipts.
+     * @param {FeishuBridgeReceiptDeleteManyArgs} args - Arguments to filter FeishuBridgeReceipts to delete.
+     * @example
+     * // Delete a few FeishuBridgeReceipts
+     * const { count } = await prisma.feishuBridgeReceipt.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends FeishuBridgeReceiptDeleteManyArgs>(args?: SelectSubset<T, FeishuBridgeReceiptDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more FeishuBridgeReceipts.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {FeishuBridgeReceiptUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many FeishuBridgeReceipts
+     * const feishuBridgeReceipt = await prisma.feishuBridgeReceipt.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends FeishuBridgeReceiptUpdateManyArgs>(args: SelectSubset<T, FeishuBridgeReceiptUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more FeishuBridgeReceipts and returns the data updated in the database.
+     * @param {FeishuBridgeReceiptUpdateManyAndReturnArgs} args - Arguments to update many FeishuBridgeReceipts.
+     * @example
+     * // Update many FeishuBridgeReceipts
+     * const feishuBridgeReceipt = await prisma.feishuBridgeReceipt.updateManyAndReturn({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Update zero or more FeishuBridgeReceipts and only return the `id`
+     * const feishuBridgeReceiptWithIdOnly = await prisma.feishuBridgeReceipt.updateManyAndReturn({
+     *   select: { id: true },
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    updateManyAndReturn<T extends FeishuBridgeReceiptUpdateManyAndReturnArgs>(args: SelectSubset<T, FeishuBridgeReceiptUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$FeishuBridgeReceiptPayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Create or update one FeishuBridgeReceipt.
+     * @param {FeishuBridgeReceiptUpsertArgs} args - Arguments to update or create a FeishuBridgeReceipt.
+     * @example
+     * // Update or create a FeishuBridgeReceipt
+     * const feishuBridgeReceipt = await prisma.feishuBridgeReceipt.upsert({
+     *   create: {
+     *     // ... data to create a FeishuBridgeReceipt
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the FeishuBridgeReceipt we want to update
+     *   }
+     * })
+     */
+    upsert<T extends FeishuBridgeReceiptUpsertArgs>(args: SelectSubset<T, FeishuBridgeReceiptUpsertArgs<ExtArgs>>): Prisma__FeishuBridgeReceiptClient<$Result.GetResult<Prisma.$FeishuBridgeReceiptPayload<ExtArgs>, T, "upsert", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+
+    /**
+     * Count the number of FeishuBridgeReceipts.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {FeishuBridgeReceiptCountArgs} args - Arguments to filter FeishuBridgeReceipts to count.
+     * @example
+     * // Count the number of FeishuBridgeReceipts
+     * const count = await prisma.feishuBridgeReceipt.count({
+     *   where: {
+     *     // ... the filter for the FeishuBridgeReceipts we want to count
+     *   }
+     * })
+    **/
+    count<T extends FeishuBridgeReceiptCountArgs>(
+      args?: Subset<T, FeishuBridgeReceiptCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], FeishuBridgeReceiptCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a FeishuBridgeReceipt.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {FeishuBridgeReceiptAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends FeishuBridgeReceiptAggregateArgs>(args: Subset<T, FeishuBridgeReceiptAggregateArgs>): Prisma.PrismaPromise<GetFeishuBridgeReceiptAggregateType<T>>
+
+    /**
+     * Group by FeishuBridgeReceipt.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {FeishuBridgeReceiptGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends FeishuBridgeReceiptGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: FeishuBridgeReceiptGroupByArgs['orderBy'] }
+        : { orderBy?: FeishuBridgeReceiptGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, FeishuBridgeReceiptGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetFeishuBridgeReceiptGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the FeishuBridgeReceipt model
+   */
+  readonly fields: FeishuBridgeReceiptFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for FeishuBridgeReceipt.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__FeishuBridgeReceiptClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the FeishuBridgeReceipt model
+   */
+  interface FeishuBridgeReceiptFieldRefs {
+    readonly id: FieldRef<"FeishuBridgeReceipt", 'String'>
+    readonly eventId: FieldRef<"FeishuBridgeReceipt", 'String'>
+    readonly messageId: FieldRef<"FeishuBridgeReceipt", 'String'>
+    readonly chatId: FieldRef<"FeishuBridgeReceipt", 'String'>
+    readonly commandType: FieldRef<"FeishuBridgeReceipt", 'String'>
+    readonly status: FieldRef<"FeishuBridgeReceipt", 'String'>
+    readonly replyText: FieldRef<"FeishuBridgeReceipt", 'String'>
+    readonly workflowId: FieldRef<"FeishuBridgeReceipt", 'String'>
+    readonly executionId: FieldRef<"FeishuBridgeReceipt", 'String'>
+    readonly draftWorkflowId: FieldRef<"FeishuBridgeReceipt", 'String'>
+    readonly createdAt: FieldRef<"FeishuBridgeReceipt", 'DateTime'>
+    readonly updatedAt: FieldRef<"FeishuBridgeReceipt", 'DateTime'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * FeishuBridgeReceipt findUnique
+   */
+  export type FeishuBridgeReceiptFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the FeishuBridgeReceipt
+     */
+    select?: FeishuBridgeReceiptSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the FeishuBridgeReceipt
+     */
+    omit?: FeishuBridgeReceiptOmit<ExtArgs> | null
+    /**
+     * Filter, which FeishuBridgeReceipt to fetch.
+     */
+    where: FeishuBridgeReceiptWhereUniqueInput
+  }
+
+  /**
+   * FeishuBridgeReceipt findUniqueOrThrow
+   */
+  export type FeishuBridgeReceiptFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the FeishuBridgeReceipt
+     */
+    select?: FeishuBridgeReceiptSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the FeishuBridgeReceipt
+     */
+    omit?: FeishuBridgeReceiptOmit<ExtArgs> | null
+    /**
+     * Filter, which FeishuBridgeReceipt to fetch.
+     */
+    where: FeishuBridgeReceiptWhereUniqueInput
+  }
+
+  /**
+   * FeishuBridgeReceipt findFirst
+   */
+  export type FeishuBridgeReceiptFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the FeishuBridgeReceipt
+     */
+    select?: FeishuBridgeReceiptSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the FeishuBridgeReceipt
+     */
+    omit?: FeishuBridgeReceiptOmit<ExtArgs> | null
+    /**
+     * Filter, which FeishuBridgeReceipt to fetch.
+     */
+    where?: FeishuBridgeReceiptWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of FeishuBridgeReceipts to fetch.
+     */
+    orderBy?: FeishuBridgeReceiptOrderByWithRelationInput | FeishuBridgeReceiptOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for FeishuBridgeReceipts.
+     */
+    cursor?: FeishuBridgeReceiptWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` FeishuBridgeReceipts from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` FeishuBridgeReceipts.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of FeishuBridgeReceipts.
+     */
+    distinct?: FeishuBridgeReceiptScalarFieldEnum | FeishuBridgeReceiptScalarFieldEnum[]
+  }
+
+  /**
+   * FeishuBridgeReceipt findFirstOrThrow
+   */
+  export type FeishuBridgeReceiptFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the FeishuBridgeReceipt
+     */
+    select?: FeishuBridgeReceiptSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the FeishuBridgeReceipt
+     */
+    omit?: FeishuBridgeReceiptOmit<ExtArgs> | null
+    /**
+     * Filter, which FeishuBridgeReceipt to fetch.
+     */
+    where?: FeishuBridgeReceiptWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of FeishuBridgeReceipts to fetch.
+     */
+    orderBy?: FeishuBridgeReceiptOrderByWithRelationInput | FeishuBridgeReceiptOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for FeishuBridgeReceipts.
+     */
+    cursor?: FeishuBridgeReceiptWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` FeishuBridgeReceipts from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` FeishuBridgeReceipts.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of FeishuBridgeReceipts.
+     */
+    distinct?: FeishuBridgeReceiptScalarFieldEnum | FeishuBridgeReceiptScalarFieldEnum[]
+  }
+
+  /**
+   * FeishuBridgeReceipt findMany
+   */
+  export type FeishuBridgeReceiptFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the FeishuBridgeReceipt
+     */
+    select?: FeishuBridgeReceiptSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the FeishuBridgeReceipt
+     */
+    omit?: FeishuBridgeReceiptOmit<ExtArgs> | null
+    /**
+     * Filter, which FeishuBridgeReceipts to fetch.
+     */
+    where?: FeishuBridgeReceiptWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of FeishuBridgeReceipts to fetch.
+     */
+    orderBy?: FeishuBridgeReceiptOrderByWithRelationInput | FeishuBridgeReceiptOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing FeishuBridgeReceipts.
+     */
+    cursor?: FeishuBridgeReceiptWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` FeishuBridgeReceipts from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` FeishuBridgeReceipts.
+     */
+    skip?: number
+    distinct?: FeishuBridgeReceiptScalarFieldEnum | FeishuBridgeReceiptScalarFieldEnum[]
+  }
+
+  /**
+   * FeishuBridgeReceipt create
+   */
+  export type FeishuBridgeReceiptCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the FeishuBridgeReceipt
+     */
+    select?: FeishuBridgeReceiptSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the FeishuBridgeReceipt
+     */
+    omit?: FeishuBridgeReceiptOmit<ExtArgs> | null
+    /**
+     * The data needed to create a FeishuBridgeReceipt.
+     */
+    data: XOR<FeishuBridgeReceiptCreateInput, FeishuBridgeReceiptUncheckedCreateInput>
+  }
+
+  /**
+   * FeishuBridgeReceipt createMany
+   */
+  export type FeishuBridgeReceiptCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many FeishuBridgeReceipts.
+     */
+    data: FeishuBridgeReceiptCreateManyInput | FeishuBridgeReceiptCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * FeishuBridgeReceipt createManyAndReturn
+   */
+  export type FeishuBridgeReceiptCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the FeishuBridgeReceipt
+     */
+    select?: FeishuBridgeReceiptSelectCreateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the FeishuBridgeReceipt
+     */
+    omit?: FeishuBridgeReceiptOmit<ExtArgs> | null
+    /**
+     * The data used to create many FeishuBridgeReceipts.
+     */
+    data: FeishuBridgeReceiptCreateManyInput | FeishuBridgeReceiptCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * FeishuBridgeReceipt update
+   */
+  export type FeishuBridgeReceiptUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the FeishuBridgeReceipt
+     */
+    select?: FeishuBridgeReceiptSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the FeishuBridgeReceipt
+     */
+    omit?: FeishuBridgeReceiptOmit<ExtArgs> | null
+    /**
+     * The data needed to update a FeishuBridgeReceipt.
+     */
+    data: XOR<FeishuBridgeReceiptUpdateInput, FeishuBridgeReceiptUncheckedUpdateInput>
+    /**
+     * Choose, which FeishuBridgeReceipt to update.
+     */
+    where: FeishuBridgeReceiptWhereUniqueInput
+  }
+
+  /**
+   * FeishuBridgeReceipt updateMany
+   */
+  export type FeishuBridgeReceiptUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update FeishuBridgeReceipts.
+     */
+    data: XOR<FeishuBridgeReceiptUpdateManyMutationInput, FeishuBridgeReceiptUncheckedUpdateManyInput>
+    /**
+     * Filter which FeishuBridgeReceipts to update
+     */
+    where?: FeishuBridgeReceiptWhereInput
+    /**
+     * Limit how many FeishuBridgeReceipts to update.
+     */
+    limit?: number
+  }
+
+  /**
+   * FeishuBridgeReceipt updateManyAndReturn
+   */
+  export type FeishuBridgeReceiptUpdateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the FeishuBridgeReceipt
+     */
+    select?: FeishuBridgeReceiptSelectUpdateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the FeishuBridgeReceipt
+     */
+    omit?: FeishuBridgeReceiptOmit<ExtArgs> | null
+    /**
+     * The data used to update FeishuBridgeReceipts.
+     */
+    data: XOR<FeishuBridgeReceiptUpdateManyMutationInput, FeishuBridgeReceiptUncheckedUpdateManyInput>
+    /**
+     * Filter which FeishuBridgeReceipts to update
+     */
+    where?: FeishuBridgeReceiptWhereInput
+    /**
+     * Limit how many FeishuBridgeReceipts to update.
+     */
+    limit?: number
+  }
+
+  /**
+   * FeishuBridgeReceipt upsert
+   */
+  export type FeishuBridgeReceiptUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the FeishuBridgeReceipt
+     */
+    select?: FeishuBridgeReceiptSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the FeishuBridgeReceipt
+     */
+    omit?: FeishuBridgeReceiptOmit<ExtArgs> | null
+    /**
+     * The filter to search for the FeishuBridgeReceipt to update in case it exists.
+     */
+    where: FeishuBridgeReceiptWhereUniqueInput
+    /**
+     * In case the FeishuBridgeReceipt found by the `where` argument doesn't exist, create a new FeishuBridgeReceipt with this data.
+     */
+    create: XOR<FeishuBridgeReceiptCreateInput, FeishuBridgeReceiptUncheckedCreateInput>
+    /**
+     * In case the FeishuBridgeReceipt was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<FeishuBridgeReceiptUpdateInput, FeishuBridgeReceiptUncheckedUpdateInput>
+  }
+
+  /**
+   * FeishuBridgeReceipt delete
+   */
+  export type FeishuBridgeReceiptDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the FeishuBridgeReceipt
+     */
+    select?: FeishuBridgeReceiptSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the FeishuBridgeReceipt
+     */
+    omit?: FeishuBridgeReceiptOmit<ExtArgs> | null
+    /**
+     * Filter which FeishuBridgeReceipt to delete.
+     */
+    where: FeishuBridgeReceiptWhereUniqueInput
+  }
+
+  /**
+   * FeishuBridgeReceipt deleteMany
+   */
+  export type FeishuBridgeReceiptDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which FeishuBridgeReceipts to delete
+     */
+    where?: FeishuBridgeReceiptWhereInput
+    /**
+     * Limit how many FeishuBridgeReceipts to delete.
+     */
+    limit?: number
+  }
+
+  /**
+   * FeishuBridgeReceipt without action
+   */
+  export type FeishuBridgeReceiptDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the FeishuBridgeReceipt
+     */
+    select?: FeishuBridgeReceiptSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the FeishuBridgeReceipt
+     */
+    omit?: FeishuBridgeReceiptOmit<ExtArgs> | null
+  }
+
+
+  /**
    * Enums
    */
 
@@ -16396,6 +18983,47 @@ export namespace Prisma {
   };
 
   export type ExecutionMemoryEventScalarFieldEnum = (typeof ExecutionMemoryEventScalarFieldEnum)[keyof typeof ExecutionMemoryEventScalarFieldEnum]
+
+
+  export const PersistentMemoryEntryScalarFieldEnum: {
+    id: 'id',
+    scope: 'scope',
+    ownerId: 'ownerId',
+    userId: 'userId',
+    workflowId: 'workflowId',
+    namespace: 'namespace',
+    key: 'key',
+    value: 'value',
+    textValue: 'textValue',
+    embedding: 'embedding',
+    embeddingProvider: 'embeddingProvider',
+    embeddingModel: 'embeddingModel',
+    sourceExecutionId: 'sourceExecutionId',
+    sourceStepId: 'sourceStepId',
+    sourceNodeId: 'sourceNodeId',
+    createdAt: 'createdAt',
+    updatedAt: 'updatedAt'
+  };
+
+  export type PersistentMemoryEntryScalarFieldEnum = (typeof PersistentMemoryEntryScalarFieldEnum)[keyof typeof PersistentMemoryEntryScalarFieldEnum]
+
+
+  export const FeishuBridgeReceiptScalarFieldEnum: {
+    id: 'id',
+    eventId: 'eventId',
+    messageId: 'messageId',
+    chatId: 'chatId',
+    commandType: 'commandType',
+    status: 'status',
+    replyText: 'replyText',
+    workflowId: 'workflowId',
+    executionId: 'executionId',
+    draftWorkflowId: 'draftWorkflowId',
+    createdAt: 'createdAt',
+    updatedAt: 'updatedAt'
+  };
+
+  export type FeishuBridgeReceiptScalarFieldEnum = (typeof FeishuBridgeReceiptScalarFieldEnum)[keyof typeof FeishuBridgeReceiptScalarFieldEnum]
 
 
   export const SortOrder: {
@@ -16669,6 +19297,20 @@ export namespace Prisma {
 
 
   /**
+   * Reference to a field of type 'PersistentMemoryScope'
+   */
+  export type EnumPersistentMemoryScopeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'PersistentMemoryScope'>
+    
+
+
+  /**
+   * Reference to a field of type 'PersistentMemoryScope[]'
+   */
+  export type ListEnumPersistentMemoryScopeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'PersistentMemoryScope[]'>
+    
+
+
+  /**
    * Reference to a field of type 'Float'
    */
   export type FloatFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Float'>
@@ -16709,6 +19351,7 @@ export namespace Prisma {
     workflows?: WorkflowListRelationFilter
     credentials?: CredentialListRelationFilter
     executions?: ExecutionListRelationFilter
+    persistentMemoryEntries?: PersistentMemoryEntryListRelationFilter
   }
 
   export type UserOrderByWithRelationInput = {
@@ -16732,6 +19375,7 @@ export namespace Prisma {
     workflows?: WorkflowOrderByRelationAggregateInput
     credentials?: CredentialOrderByRelationAggregateInput
     executions?: ExecutionOrderByRelationAggregateInput
+    persistentMemoryEntries?: PersistentMemoryEntryOrderByRelationAggregateInput
   }
 
   export type UserWhereUniqueInput = Prisma.AtLeast<{
@@ -16758,6 +19402,7 @@ export namespace Prisma {
     workflows?: WorkflowListRelationFilter
     credentials?: CredentialListRelationFilter
     executions?: ExecutionListRelationFilter
+    persistentMemoryEntries?: PersistentMemoryEntryListRelationFilter
   }, "id" | "email">
 
   export type UserOrderByWithAggregationInput = {
@@ -17037,6 +19682,7 @@ export namespace Prisma {
     nodes?: NodeListRelationFilter
     connections?: ConnectionListRelationFilter
     executions?: ExecutionListRelationFilter
+    persistentMemoryEntries?: PersistentMemoryEntryListRelationFilter
     user?: XOR<UserScalarRelationFilter, UserWhereInput>
   }
 
@@ -17050,6 +19696,7 @@ export namespace Prisma {
     nodes?: NodeOrderByRelationAggregateInput
     connections?: ConnectionOrderByRelationAggregateInput
     executions?: ExecutionOrderByRelationAggregateInput
+    persistentMemoryEntries?: PersistentMemoryEntryOrderByRelationAggregateInput
     user?: UserOrderByWithRelationInput
   }
 
@@ -17066,6 +19713,7 @@ export namespace Prisma {
     nodes?: NodeListRelationFilter
     connections?: ConnectionListRelationFilter
     executions?: ExecutionListRelationFilter
+    persistentMemoryEntries?: PersistentMemoryEntryListRelationFilter
     user?: XOR<UserScalarRelationFilter, UserWhereInput>
   }, "id" | "webhookSecret">
 
@@ -17733,6 +20381,212 @@ export namespace Prisma {
     createdAt?: DateTimeWithAggregatesFilter<"ExecutionMemoryEvent"> | Date | string
   }
 
+  export type PersistentMemoryEntryWhereInput = {
+    AND?: PersistentMemoryEntryWhereInput | PersistentMemoryEntryWhereInput[]
+    OR?: PersistentMemoryEntryWhereInput[]
+    NOT?: PersistentMemoryEntryWhereInput | PersistentMemoryEntryWhereInput[]
+    id?: StringFilter<"PersistentMemoryEntry"> | string
+    scope?: EnumPersistentMemoryScopeFilter<"PersistentMemoryEntry"> | $Enums.PersistentMemoryScope
+    ownerId?: StringFilter<"PersistentMemoryEntry"> | string
+    userId?: StringFilter<"PersistentMemoryEntry"> | string
+    workflowId?: StringNullableFilter<"PersistentMemoryEntry"> | string | null
+    namespace?: StringFilter<"PersistentMemoryEntry"> | string
+    key?: StringFilter<"PersistentMemoryEntry"> | string
+    value?: JsonFilter<"PersistentMemoryEntry">
+    textValue?: StringNullableFilter<"PersistentMemoryEntry"> | string | null
+    embedding?: JsonNullableFilter<"PersistentMemoryEntry">
+    embeddingProvider?: EnumCredentialProviderNullableFilter<"PersistentMemoryEntry"> | $Enums.CredentialProvider | null
+    embeddingModel?: StringNullableFilter<"PersistentMemoryEntry"> | string | null
+    sourceExecutionId?: StringNullableFilter<"PersistentMemoryEntry"> | string | null
+    sourceStepId?: StringNullableFilter<"PersistentMemoryEntry"> | string | null
+    sourceNodeId?: StringNullableFilter<"PersistentMemoryEntry"> | string | null
+    createdAt?: DateTimeFilter<"PersistentMemoryEntry"> | Date | string
+    updatedAt?: DateTimeFilter<"PersistentMemoryEntry"> | Date | string
+    user?: XOR<UserScalarRelationFilter, UserWhereInput>
+    workflow?: XOR<WorkflowNullableScalarRelationFilter, WorkflowWhereInput> | null
+  }
+
+  export type PersistentMemoryEntryOrderByWithRelationInput = {
+    id?: SortOrder
+    scope?: SortOrder
+    ownerId?: SortOrder
+    userId?: SortOrder
+    workflowId?: SortOrderInput | SortOrder
+    namespace?: SortOrder
+    key?: SortOrder
+    value?: SortOrder
+    textValue?: SortOrderInput | SortOrder
+    embedding?: SortOrderInput | SortOrder
+    embeddingProvider?: SortOrderInput | SortOrder
+    embeddingModel?: SortOrderInput | SortOrder
+    sourceExecutionId?: SortOrderInput | SortOrder
+    sourceStepId?: SortOrderInput | SortOrder
+    sourceNodeId?: SortOrderInput | SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    user?: UserOrderByWithRelationInput
+    workflow?: WorkflowOrderByWithRelationInput
+  }
+
+  export type PersistentMemoryEntryWhereUniqueInput = Prisma.AtLeast<{
+    id?: string
+    scope_ownerId_namespace_key?: PersistentMemoryEntryScopeOwnerIdNamespaceKeyCompoundUniqueInput
+    AND?: PersistentMemoryEntryWhereInput | PersistentMemoryEntryWhereInput[]
+    OR?: PersistentMemoryEntryWhereInput[]
+    NOT?: PersistentMemoryEntryWhereInput | PersistentMemoryEntryWhereInput[]
+    scope?: EnumPersistentMemoryScopeFilter<"PersistentMemoryEntry"> | $Enums.PersistentMemoryScope
+    ownerId?: StringFilter<"PersistentMemoryEntry"> | string
+    userId?: StringFilter<"PersistentMemoryEntry"> | string
+    workflowId?: StringNullableFilter<"PersistentMemoryEntry"> | string | null
+    namespace?: StringFilter<"PersistentMemoryEntry"> | string
+    key?: StringFilter<"PersistentMemoryEntry"> | string
+    value?: JsonFilter<"PersistentMemoryEntry">
+    textValue?: StringNullableFilter<"PersistentMemoryEntry"> | string | null
+    embedding?: JsonNullableFilter<"PersistentMemoryEntry">
+    embeddingProvider?: EnumCredentialProviderNullableFilter<"PersistentMemoryEntry"> | $Enums.CredentialProvider | null
+    embeddingModel?: StringNullableFilter<"PersistentMemoryEntry"> | string | null
+    sourceExecutionId?: StringNullableFilter<"PersistentMemoryEntry"> | string | null
+    sourceStepId?: StringNullableFilter<"PersistentMemoryEntry"> | string | null
+    sourceNodeId?: StringNullableFilter<"PersistentMemoryEntry"> | string | null
+    createdAt?: DateTimeFilter<"PersistentMemoryEntry"> | Date | string
+    updatedAt?: DateTimeFilter<"PersistentMemoryEntry"> | Date | string
+    user?: XOR<UserScalarRelationFilter, UserWhereInput>
+    workflow?: XOR<WorkflowNullableScalarRelationFilter, WorkflowWhereInput> | null
+  }, "id" | "scope_ownerId_namespace_key">
+
+  export type PersistentMemoryEntryOrderByWithAggregationInput = {
+    id?: SortOrder
+    scope?: SortOrder
+    ownerId?: SortOrder
+    userId?: SortOrder
+    workflowId?: SortOrderInput | SortOrder
+    namespace?: SortOrder
+    key?: SortOrder
+    value?: SortOrder
+    textValue?: SortOrderInput | SortOrder
+    embedding?: SortOrderInput | SortOrder
+    embeddingProvider?: SortOrderInput | SortOrder
+    embeddingModel?: SortOrderInput | SortOrder
+    sourceExecutionId?: SortOrderInput | SortOrder
+    sourceStepId?: SortOrderInput | SortOrder
+    sourceNodeId?: SortOrderInput | SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    _count?: PersistentMemoryEntryCountOrderByAggregateInput
+    _max?: PersistentMemoryEntryMaxOrderByAggregateInput
+    _min?: PersistentMemoryEntryMinOrderByAggregateInput
+  }
+
+  export type PersistentMemoryEntryScalarWhereWithAggregatesInput = {
+    AND?: PersistentMemoryEntryScalarWhereWithAggregatesInput | PersistentMemoryEntryScalarWhereWithAggregatesInput[]
+    OR?: PersistentMemoryEntryScalarWhereWithAggregatesInput[]
+    NOT?: PersistentMemoryEntryScalarWhereWithAggregatesInput | PersistentMemoryEntryScalarWhereWithAggregatesInput[]
+    id?: StringWithAggregatesFilter<"PersistentMemoryEntry"> | string
+    scope?: EnumPersistentMemoryScopeWithAggregatesFilter<"PersistentMemoryEntry"> | $Enums.PersistentMemoryScope
+    ownerId?: StringWithAggregatesFilter<"PersistentMemoryEntry"> | string
+    userId?: StringWithAggregatesFilter<"PersistentMemoryEntry"> | string
+    workflowId?: StringNullableWithAggregatesFilter<"PersistentMemoryEntry"> | string | null
+    namespace?: StringWithAggregatesFilter<"PersistentMemoryEntry"> | string
+    key?: StringWithAggregatesFilter<"PersistentMemoryEntry"> | string
+    value?: JsonWithAggregatesFilter<"PersistentMemoryEntry">
+    textValue?: StringNullableWithAggregatesFilter<"PersistentMemoryEntry"> | string | null
+    embedding?: JsonNullableWithAggregatesFilter<"PersistentMemoryEntry">
+    embeddingProvider?: EnumCredentialProviderNullableWithAggregatesFilter<"PersistentMemoryEntry"> | $Enums.CredentialProvider | null
+    embeddingModel?: StringNullableWithAggregatesFilter<"PersistentMemoryEntry"> | string | null
+    sourceExecutionId?: StringNullableWithAggregatesFilter<"PersistentMemoryEntry"> | string | null
+    sourceStepId?: StringNullableWithAggregatesFilter<"PersistentMemoryEntry"> | string | null
+    sourceNodeId?: StringNullableWithAggregatesFilter<"PersistentMemoryEntry"> | string | null
+    createdAt?: DateTimeWithAggregatesFilter<"PersistentMemoryEntry"> | Date | string
+    updatedAt?: DateTimeWithAggregatesFilter<"PersistentMemoryEntry"> | Date | string
+  }
+
+  export type FeishuBridgeReceiptWhereInput = {
+    AND?: FeishuBridgeReceiptWhereInput | FeishuBridgeReceiptWhereInput[]
+    OR?: FeishuBridgeReceiptWhereInput[]
+    NOT?: FeishuBridgeReceiptWhereInput | FeishuBridgeReceiptWhereInput[]
+    id?: StringFilter<"FeishuBridgeReceipt"> | string
+    eventId?: StringFilter<"FeishuBridgeReceipt"> | string
+    messageId?: StringNullableFilter<"FeishuBridgeReceipt"> | string | null
+    chatId?: StringNullableFilter<"FeishuBridgeReceipt"> | string | null
+    commandType?: StringNullableFilter<"FeishuBridgeReceipt"> | string | null
+    status?: StringFilter<"FeishuBridgeReceipt"> | string
+    replyText?: StringNullableFilter<"FeishuBridgeReceipt"> | string | null
+    workflowId?: StringNullableFilter<"FeishuBridgeReceipt"> | string | null
+    executionId?: StringNullableFilter<"FeishuBridgeReceipt"> | string | null
+    draftWorkflowId?: StringNullableFilter<"FeishuBridgeReceipt"> | string | null
+    createdAt?: DateTimeFilter<"FeishuBridgeReceipt"> | Date | string
+    updatedAt?: DateTimeFilter<"FeishuBridgeReceipt"> | Date | string
+  }
+
+  export type FeishuBridgeReceiptOrderByWithRelationInput = {
+    id?: SortOrder
+    eventId?: SortOrder
+    messageId?: SortOrderInput | SortOrder
+    chatId?: SortOrderInput | SortOrder
+    commandType?: SortOrderInput | SortOrder
+    status?: SortOrder
+    replyText?: SortOrderInput | SortOrder
+    workflowId?: SortOrderInput | SortOrder
+    executionId?: SortOrderInput | SortOrder
+    draftWorkflowId?: SortOrderInput | SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type FeishuBridgeReceiptWhereUniqueInput = Prisma.AtLeast<{
+    id?: string
+    eventId?: string
+    AND?: FeishuBridgeReceiptWhereInput | FeishuBridgeReceiptWhereInput[]
+    OR?: FeishuBridgeReceiptWhereInput[]
+    NOT?: FeishuBridgeReceiptWhereInput | FeishuBridgeReceiptWhereInput[]
+    messageId?: StringNullableFilter<"FeishuBridgeReceipt"> | string | null
+    chatId?: StringNullableFilter<"FeishuBridgeReceipt"> | string | null
+    commandType?: StringNullableFilter<"FeishuBridgeReceipt"> | string | null
+    status?: StringFilter<"FeishuBridgeReceipt"> | string
+    replyText?: StringNullableFilter<"FeishuBridgeReceipt"> | string | null
+    workflowId?: StringNullableFilter<"FeishuBridgeReceipt"> | string | null
+    executionId?: StringNullableFilter<"FeishuBridgeReceipt"> | string | null
+    draftWorkflowId?: StringNullableFilter<"FeishuBridgeReceipt"> | string | null
+    createdAt?: DateTimeFilter<"FeishuBridgeReceipt"> | Date | string
+    updatedAt?: DateTimeFilter<"FeishuBridgeReceipt"> | Date | string
+  }, "id" | "eventId">
+
+  export type FeishuBridgeReceiptOrderByWithAggregationInput = {
+    id?: SortOrder
+    eventId?: SortOrder
+    messageId?: SortOrderInput | SortOrder
+    chatId?: SortOrderInput | SortOrder
+    commandType?: SortOrderInput | SortOrder
+    status?: SortOrder
+    replyText?: SortOrderInput | SortOrder
+    workflowId?: SortOrderInput | SortOrder
+    executionId?: SortOrderInput | SortOrder
+    draftWorkflowId?: SortOrderInput | SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    _count?: FeishuBridgeReceiptCountOrderByAggregateInput
+    _max?: FeishuBridgeReceiptMaxOrderByAggregateInput
+    _min?: FeishuBridgeReceiptMinOrderByAggregateInput
+  }
+
+  export type FeishuBridgeReceiptScalarWhereWithAggregatesInput = {
+    AND?: FeishuBridgeReceiptScalarWhereWithAggregatesInput | FeishuBridgeReceiptScalarWhereWithAggregatesInput[]
+    OR?: FeishuBridgeReceiptScalarWhereWithAggregatesInput[]
+    NOT?: FeishuBridgeReceiptScalarWhereWithAggregatesInput | FeishuBridgeReceiptScalarWhereWithAggregatesInput[]
+    id?: StringWithAggregatesFilter<"FeishuBridgeReceipt"> | string
+    eventId?: StringWithAggregatesFilter<"FeishuBridgeReceipt"> | string
+    messageId?: StringNullableWithAggregatesFilter<"FeishuBridgeReceipt"> | string | null
+    chatId?: StringNullableWithAggregatesFilter<"FeishuBridgeReceipt"> | string | null
+    commandType?: StringNullableWithAggregatesFilter<"FeishuBridgeReceipt"> | string | null
+    status?: StringWithAggregatesFilter<"FeishuBridgeReceipt"> | string
+    replyText?: StringNullableWithAggregatesFilter<"FeishuBridgeReceipt"> | string | null
+    workflowId?: StringNullableWithAggregatesFilter<"FeishuBridgeReceipt"> | string | null
+    executionId?: StringNullableWithAggregatesFilter<"FeishuBridgeReceipt"> | string | null
+    draftWorkflowId?: StringNullableWithAggregatesFilter<"FeishuBridgeReceipt"> | string | null
+    createdAt?: DateTimeWithAggregatesFilter<"FeishuBridgeReceipt"> | Date | string
+    updatedAt?: DateTimeWithAggregatesFilter<"FeishuBridgeReceipt"> | Date | string
+  }
+
   export type UserCreateInput = {
     id: string
     name: string
@@ -17754,6 +20608,7 @@ export namespace Prisma {
     workflows?: WorkflowCreateNestedManyWithoutUserInput
     credentials?: CredentialCreateNestedManyWithoutUserInput
     executions?: ExecutionCreateNestedManyWithoutTriggeredByUserInput
+    persistentMemoryEntries?: PersistentMemoryEntryCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateInput = {
@@ -17777,6 +20632,7 @@ export namespace Prisma {
     workflows?: WorkflowUncheckedCreateNestedManyWithoutUserInput
     credentials?: CredentialUncheckedCreateNestedManyWithoutUserInput
     executions?: ExecutionUncheckedCreateNestedManyWithoutTriggeredByUserInput
+    persistentMemoryEntries?: PersistentMemoryEntryUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserUpdateInput = {
@@ -17800,6 +20656,7 @@ export namespace Prisma {
     workflows?: WorkflowUpdateManyWithoutUserNestedInput
     credentials?: CredentialUpdateManyWithoutUserNestedInput
     executions?: ExecutionUpdateManyWithoutTriggeredByUserNestedInput
+    persistentMemoryEntries?: PersistentMemoryEntryUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateInput = {
@@ -17823,6 +20680,7 @@ export namespace Prisma {
     workflows?: WorkflowUncheckedUpdateManyWithoutUserNestedInput
     credentials?: CredentialUncheckedUpdateManyWithoutUserNestedInput
     executions?: ExecutionUncheckedUpdateManyWithoutTriggeredByUserNestedInput
+    persistentMemoryEntries?: PersistentMemoryEntryUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type UserCreateManyInput = {
@@ -18138,6 +20996,7 @@ export namespace Prisma {
     nodes?: NodeCreateNestedManyWithoutWorkflowInput
     connections?: ConnectionCreateNestedManyWithoutWorkflowInput
     executions?: ExecutionCreateNestedManyWithoutWorkflowInput
+    persistentMemoryEntries?: PersistentMemoryEntryCreateNestedManyWithoutWorkflowInput
     user: UserCreateNestedOneWithoutWorkflowsInput
   }
 
@@ -18151,6 +21010,7 @@ export namespace Prisma {
     nodes?: NodeUncheckedCreateNestedManyWithoutWorkflowInput
     connections?: ConnectionUncheckedCreateNestedManyWithoutWorkflowInput
     executions?: ExecutionUncheckedCreateNestedManyWithoutWorkflowInput
+    persistentMemoryEntries?: PersistentMemoryEntryUncheckedCreateNestedManyWithoutWorkflowInput
   }
 
   export type WorkflowUpdateInput = {
@@ -18162,6 +21022,7 @@ export namespace Prisma {
     nodes?: NodeUpdateManyWithoutWorkflowNestedInput
     connections?: ConnectionUpdateManyWithoutWorkflowNestedInput
     executions?: ExecutionUpdateManyWithoutWorkflowNestedInput
+    persistentMemoryEntries?: PersistentMemoryEntryUpdateManyWithoutWorkflowNestedInput
     user?: UserUpdateOneRequiredWithoutWorkflowsNestedInput
   }
 
@@ -18175,6 +21036,7 @@ export namespace Prisma {
     nodes?: NodeUncheckedUpdateManyWithoutWorkflowNestedInput
     connections?: ConnectionUncheckedUpdateManyWithoutWorkflowNestedInput
     executions?: ExecutionUncheckedUpdateManyWithoutWorkflowNestedInput
+    persistentMemoryEntries?: PersistentMemoryEntryUncheckedUpdateManyWithoutWorkflowNestedInput
   }
 
   export type WorkflowCreateManyInput = {
@@ -18916,6 +21778,249 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
+  export type PersistentMemoryEntryCreateInput = {
+    id?: string
+    scope: $Enums.PersistentMemoryScope
+    ownerId: string
+    namespace?: string
+    key: string
+    value: JsonNullValueInput | InputJsonValue
+    textValue?: string | null
+    embedding?: NullableJsonNullValueInput | InputJsonValue
+    embeddingProvider?: $Enums.CredentialProvider | null
+    embeddingModel?: string | null
+    sourceExecutionId?: string | null
+    sourceStepId?: string | null
+    sourceNodeId?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    user: UserCreateNestedOneWithoutPersistentMemoryEntriesInput
+    workflow?: WorkflowCreateNestedOneWithoutPersistentMemoryEntriesInput
+  }
+
+  export type PersistentMemoryEntryUncheckedCreateInput = {
+    id?: string
+    scope: $Enums.PersistentMemoryScope
+    ownerId: string
+    userId: string
+    workflowId?: string | null
+    namespace?: string
+    key: string
+    value: JsonNullValueInput | InputJsonValue
+    textValue?: string | null
+    embedding?: NullableJsonNullValueInput | InputJsonValue
+    embeddingProvider?: $Enums.CredentialProvider | null
+    embeddingModel?: string | null
+    sourceExecutionId?: string | null
+    sourceStepId?: string | null
+    sourceNodeId?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type PersistentMemoryEntryUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    scope?: EnumPersistentMemoryScopeFieldUpdateOperationsInput | $Enums.PersistentMemoryScope
+    ownerId?: StringFieldUpdateOperationsInput | string
+    namespace?: StringFieldUpdateOperationsInput | string
+    key?: StringFieldUpdateOperationsInput | string
+    value?: JsonNullValueInput | InputJsonValue
+    textValue?: NullableStringFieldUpdateOperationsInput | string | null
+    embedding?: NullableJsonNullValueInput | InputJsonValue
+    embeddingProvider?: NullableEnumCredentialProviderFieldUpdateOperationsInput | $Enums.CredentialProvider | null
+    embeddingModel?: NullableStringFieldUpdateOperationsInput | string | null
+    sourceExecutionId?: NullableStringFieldUpdateOperationsInput | string | null
+    sourceStepId?: NullableStringFieldUpdateOperationsInput | string | null
+    sourceNodeId?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    user?: UserUpdateOneRequiredWithoutPersistentMemoryEntriesNestedInput
+    workflow?: WorkflowUpdateOneWithoutPersistentMemoryEntriesNestedInput
+  }
+
+  export type PersistentMemoryEntryUncheckedUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    scope?: EnumPersistentMemoryScopeFieldUpdateOperationsInput | $Enums.PersistentMemoryScope
+    ownerId?: StringFieldUpdateOperationsInput | string
+    userId?: StringFieldUpdateOperationsInput | string
+    workflowId?: NullableStringFieldUpdateOperationsInput | string | null
+    namespace?: StringFieldUpdateOperationsInput | string
+    key?: StringFieldUpdateOperationsInput | string
+    value?: JsonNullValueInput | InputJsonValue
+    textValue?: NullableStringFieldUpdateOperationsInput | string | null
+    embedding?: NullableJsonNullValueInput | InputJsonValue
+    embeddingProvider?: NullableEnumCredentialProviderFieldUpdateOperationsInput | $Enums.CredentialProvider | null
+    embeddingModel?: NullableStringFieldUpdateOperationsInput | string | null
+    sourceExecutionId?: NullableStringFieldUpdateOperationsInput | string | null
+    sourceStepId?: NullableStringFieldUpdateOperationsInput | string | null
+    sourceNodeId?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type PersistentMemoryEntryCreateManyInput = {
+    id?: string
+    scope: $Enums.PersistentMemoryScope
+    ownerId: string
+    userId: string
+    workflowId?: string | null
+    namespace?: string
+    key: string
+    value: JsonNullValueInput | InputJsonValue
+    textValue?: string | null
+    embedding?: NullableJsonNullValueInput | InputJsonValue
+    embeddingProvider?: $Enums.CredentialProvider | null
+    embeddingModel?: string | null
+    sourceExecutionId?: string | null
+    sourceStepId?: string | null
+    sourceNodeId?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type PersistentMemoryEntryUpdateManyMutationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    scope?: EnumPersistentMemoryScopeFieldUpdateOperationsInput | $Enums.PersistentMemoryScope
+    ownerId?: StringFieldUpdateOperationsInput | string
+    namespace?: StringFieldUpdateOperationsInput | string
+    key?: StringFieldUpdateOperationsInput | string
+    value?: JsonNullValueInput | InputJsonValue
+    textValue?: NullableStringFieldUpdateOperationsInput | string | null
+    embedding?: NullableJsonNullValueInput | InputJsonValue
+    embeddingProvider?: NullableEnumCredentialProviderFieldUpdateOperationsInput | $Enums.CredentialProvider | null
+    embeddingModel?: NullableStringFieldUpdateOperationsInput | string | null
+    sourceExecutionId?: NullableStringFieldUpdateOperationsInput | string | null
+    sourceStepId?: NullableStringFieldUpdateOperationsInput | string | null
+    sourceNodeId?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type PersistentMemoryEntryUncheckedUpdateManyInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    scope?: EnumPersistentMemoryScopeFieldUpdateOperationsInput | $Enums.PersistentMemoryScope
+    ownerId?: StringFieldUpdateOperationsInput | string
+    userId?: StringFieldUpdateOperationsInput | string
+    workflowId?: NullableStringFieldUpdateOperationsInput | string | null
+    namespace?: StringFieldUpdateOperationsInput | string
+    key?: StringFieldUpdateOperationsInput | string
+    value?: JsonNullValueInput | InputJsonValue
+    textValue?: NullableStringFieldUpdateOperationsInput | string | null
+    embedding?: NullableJsonNullValueInput | InputJsonValue
+    embeddingProvider?: NullableEnumCredentialProviderFieldUpdateOperationsInput | $Enums.CredentialProvider | null
+    embeddingModel?: NullableStringFieldUpdateOperationsInput | string | null
+    sourceExecutionId?: NullableStringFieldUpdateOperationsInput | string | null
+    sourceStepId?: NullableStringFieldUpdateOperationsInput | string | null
+    sourceNodeId?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type FeishuBridgeReceiptCreateInput = {
+    id?: string
+    eventId: string
+    messageId?: string | null
+    chatId?: string | null
+    commandType?: string | null
+    status: string
+    replyText?: string | null
+    workflowId?: string | null
+    executionId?: string | null
+    draftWorkflowId?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type FeishuBridgeReceiptUncheckedCreateInput = {
+    id?: string
+    eventId: string
+    messageId?: string | null
+    chatId?: string | null
+    commandType?: string | null
+    status: string
+    replyText?: string | null
+    workflowId?: string | null
+    executionId?: string | null
+    draftWorkflowId?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type FeishuBridgeReceiptUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    eventId?: StringFieldUpdateOperationsInput | string
+    messageId?: NullableStringFieldUpdateOperationsInput | string | null
+    chatId?: NullableStringFieldUpdateOperationsInput | string | null
+    commandType?: NullableStringFieldUpdateOperationsInput | string | null
+    status?: StringFieldUpdateOperationsInput | string
+    replyText?: NullableStringFieldUpdateOperationsInput | string | null
+    workflowId?: NullableStringFieldUpdateOperationsInput | string | null
+    executionId?: NullableStringFieldUpdateOperationsInput | string | null
+    draftWorkflowId?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type FeishuBridgeReceiptUncheckedUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    eventId?: StringFieldUpdateOperationsInput | string
+    messageId?: NullableStringFieldUpdateOperationsInput | string | null
+    chatId?: NullableStringFieldUpdateOperationsInput | string | null
+    commandType?: NullableStringFieldUpdateOperationsInput | string | null
+    status?: StringFieldUpdateOperationsInput | string
+    replyText?: NullableStringFieldUpdateOperationsInput | string | null
+    workflowId?: NullableStringFieldUpdateOperationsInput | string | null
+    executionId?: NullableStringFieldUpdateOperationsInput | string | null
+    draftWorkflowId?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type FeishuBridgeReceiptCreateManyInput = {
+    id?: string
+    eventId: string
+    messageId?: string | null
+    chatId?: string | null
+    commandType?: string | null
+    status: string
+    replyText?: string | null
+    workflowId?: string | null
+    executionId?: string | null
+    draftWorkflowId?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type FeishuBridgeReceiptUpdateManyMutationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    eventId?: StringFieldUpdateOperationsInput | string
+    messageId?: NullableStringFieldUpdateOperationsInput | string | null
+    chatId?: NullableStringFieldUpdateOperationsInput | string | null
+    commandType?: NullableStringFieldUpdateOperationsInput | string | null
+    status?: StringFieldUpdateOperationsInput | string
+    replyText?: NullableStringFieldUpdateOperationsInput | string | null
+    workflowId?: NullableStringFieldUpdateOperationsInput | string | null
+    executionId?: NullableStringFieldUpdateOperationsInput | string | null
+    draftWorkflowId?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type FeishuBridgeReceiptUncheckedUpdateManyInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    eventId?: StringFieldUpdateOperationsInput | string
+    messageId?: NullableStringFieldUpdateOperationsInput | string | null
+    chatId?: NullableStringFieldUpdateOperationsInput | string | null
+    commandType?: NullableStringFieldUpdateOperationsInput | string | null
+    status?: StringFieldUpdateOperationsInput | string
+    replyText?: NullableStringFieldUpdateOperationsInput | string | null
+    workflowId?: NullableStringFieldUpdateOperationsInput | string | null
+    executionId?: NullableStringFieldUpdateOperationsInput | string | null
+    draftWorkflowId?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
   export type StringFilter<$PrismaModel = never> = {
     equals?: string | StringFieldRefInput<$PrismaModel>
     in?: string[] | ListStringFieldRefInput<$PrismaModel>
@@ -19024,6 +22129,12 @@ export namespace Prisma {
     none?: ExecutionWhereInput
   }
 
+  export type PersistentMemoryEntryListRelationFilter = {
+    every?: PersistentMemoryEntryWhereInput
+    some?: PersistentMemoryEntryWhereInput
+    none?: PersistentMemoryEntryWhereInput
+  }
+
   export type SortOrderInput = {
     sort: SortOrder
     nulls?: NullsOrder
@@ -19046,6 +22157,10 @@ export namespace Prisma {
   }
 
   export type ExecutionOrderByRelationAggregateInput = {
+    _count?: SortOrder
+  }
+
+  export type PersistentMemoryEntryOrderByRelationAggregateInput = {
     _count?: SortOrder
   }
 
@@ -20014,6 +23129,153 @@ export namespace Prisma {
     _max?: NestedEnumExecutionMemoryWriteModeFilter<$PrismaModel>
   }
 
+  export type EnumPersistentMemoryScopeFilter<$PrismaModel = never> = {
+    equals?: $Enums.PersistentMemoryScope | EnumPersistentMemoryScopeFieldRefInput<$PrismaModel>
+    in?: $Enums.PersistentMemoryScope[] | ListEnumPersistentMemoryScopeFieldRefInput<$PrismaModel>
+    notIn?: $Enums.PersistentMemoryScope[] | ListEnumPersistentMemoryScopeFieldRefInput<$PrismaModel>
+    not?: NestedEnumPersistentMemoryScopeFilter<$PrismaModel> | $Enums.PersistentMemoryScope
+  }
+
+  export type EnumCredentialProviderNullableFilter<$PrismaModel = never> = {
+    equals?: $Enums.CredentialProvider | EnumCredentialProviderFieldRefInput<$PrismaModel> | null
+    in?: $Enums.CredentialProvider[] | ListEnumCredentialProviderFieldRefInput<$PrismaModel> | null
+    notIn?: $Enums.CredentialProvider[] | ListEnumCredentialProviderFieldRefInput<$PrismaModel> | null
+    not?: NestedEnumCredentialProviderNullableFilter<$PrismaModel> | $Enums.CredentialProvider | null
+  }
+
+  export type WorkflowNullableScalarRelationFilter = {
+    is?: WorkflowWhereInput | null
+    isNot?: WorkflowWhereInput | null
+  }
+
+  export type PersistentMemoryEntryScopeOwnerIdNamespaceKeyCompoundUniqueInput = {
+    scope: $Enums.PersistentMemoryScope
+    ownerId: string
+    namespace: string
+    key: string
+  }
+
+  export type PersistentMemoryEntryCountOrderByAggregateInput = {
+    id?: SortOrder
+    scope?: SortOrder
+    ownerId?: SortOrder
+    userId?: SortOrder
+    workflowId?: SortOrder
+    namespace?: SortOrder
+    key?: SortOrder
+    value?: SortOrder
+    textValue?: SortOrder
+    embedding?: SortOrder
+    embeddingProvider?: SortOrder
+    embeddingModel?: SortOrder
+    sourceExecutionId?: SortOrder
+    sourceStepId?: SortOrder
+    sourceNodeId?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type PersistentMemoryEntryMaxOrderByAggregateInput = {
+    id?: SortOrder
+    scope?: SortOrder
+    ownerId?: SortOrder
+    userId?: SortOrder
+    workflowId?: SortOrder
+    namespace?: SortOrder
+    key?: SortOrder
+    textValue?: SortOrder
+    embeddingProvider?: SortOrder
+    embeddingModel?: SortOrder
+    sourceExecutionId?: SortOrder
+    sourceStepId?: SortOrder
+    sourceNodeId?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type PersistentMemoryEntryMinOrderByAggregateInput = {
+    id?: SortOrder
+    scope?: SortOrder
+    ownerId?: SortOrder
+    userId?: SortOrder
+    workflowId?: SortOrder
+    namespace?: SortOrder
+    key?: SortOrder
+    textValue?: SortOrder
+    embeddingProvider?: SortOrder
+    embeddingModel?: SortOrder
+    sourceExecutionId?: SortOrder
+    sourceStepId?: SortOrder
+    sourceNodeId?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type EnumPersistentMemoryScopeWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: $Enums.PersistentMemoryScope | EnumPersistentMemoryScopeFieldRefInput<$PrismaModel>
+    in?: $Enums.PersistentMemoryScope[] | ListEnumPersistentMemoryScopeFieldRefInput<$PrismaModel>
+    notIn?: $Enums.PersistentMemoryScope[] | ListEnumPersistentMemoryScopeFieldRefInput<$PrismaModel>
+    not?: NestedEnumPersistentMemoryScopeWithAggregatesFilter<$PrismaModel> | $Enums.PersistentMemoryScope
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedEnumPersistentMemoryScopeFilter<$PrismaModel>
+    _max?: NestedEnumPersistentMemoryScopeFilter<$PrismaModel>
+  }
+
+  export type EnumCredentialProviderNullableWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: $Enums.CredentialProvider | EnumCredentialProviderFieldRefInput<$PrismaModel> | null
+    in?: $Enums.CredentialProvider[] | ListEnumCredentialProviderFieldRefInput<$PrismaModel> | null
+    notIn?: $Enums.CredentialProvider[] | ListEnumCredentialProviderFieldRefInput<$PrismaModel> | null
+    not?: NestedEnumCredentialProviderNullableWithAggregatesFilter<$PrismaModel> | $Enums.CredentialProvider | null
+    _count?: NestedIntNullableFilter<$PrismaModel>
+    _min?: NestedEnumCredentialProviderNullableFilter<$PrismaModel>
+    _max?: NestedEnumCredentialProviderNullableFilter<$PrismaModel>
+  }
+
+  export type FeishuBridgeReceiptCountOrderByAggregateInput = {
+    id?: SortOrder
+    eventId?: SortOrder
+    messageId?: SortOrder
+    chatId?: SortOrder
+    commandType?: SortOrder
+    status?: SortOrder
+    replyText?: SortOrder
+    workflowId?: SortOrder
+    executionId?: SortOrder
+    draftWorkflowId?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type FeishuBridgeReceiptMaxOrderByAggregateInput = {
+    id?: SortOrder
+    eventId?: SortOrder
+    messageId?: SortOrder
+    chatId?: SortOrder
+    commandType?: SortOrder
+    status?: SortOrder
+    replyText?: SortOrder
+    workflowId?: SortOrder
+    executionId?: SortOrder
+    draftWorkflowId?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type FeishuBridgeReceiptMinOrderByAggregateInput = {
+    id?: SortOrder
+    eventId?: SortOrder
+    messageId?: SortOrder
+    chatId?: SortOrder
+    commandType?: SortOrder
+    status?: SortOrder
+    replyText?: SortOrder
+    workflowId?: SortOrder
+    executionId?: SortOrder
+    draftWorkflowId?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
   export type SessionCreateNestedManyWithoutUserInput = {
     create?: XOR<SessionCreateWithoutUserInput, SessionUncheckedCreateWithoutUserInput> | SessionCreateWithoutUserInput[] | SessionUncheckedCreateWithoutUserInput[]
     connectOrCreate?: SessionCreateOrConnectWithoutUserInput | SessionCreateOrConnectWithoutUserInput[]
@@ -20049,6 +23311,13 @@ export namespace Prisma {
     connect?: ExecutionWhereUniqueInput | ExecutionWhereUniqueInput[]
   }
 
+  export type PersistentMemoryEntryCreateNestedManyWithoutUserInput = {
+    create?: XOR<PersistentMemoryEntryCreateWithoutUserInput, PersistentMemoryEntryUncheckedCreateWithoutUserInput> | PersistentMemoryEntryCreateWithoutUserInput[] | PersistentMemoryEntryUncheckedCreateWithoutUserInput[]
+    connectOrCreate?: PersistentMemoryEntryCreateOrConnectWithoutUserInput | PersistentMemoryEntryCreateOrConnectWithoutUserInput[]
+    createMany?: PersistentMemoryEntryCreateManyUserInputEnvelope
+    connect?: PersistentMemoryEntryWhereUniqueInput | PersistentMemoryEntryWhereUniqueInput[]
+  }
+
   export type SessionUncheckedCreateNestedManyWithoutUserInput = {
     create?: XOR<SessionCreateWithoutUserInput, SessionUncheckedCreateWithoutUserInput> | SessionCreateWithoutUserInput[] | SessionUncheckedCreateWithoutUserInput[]
     connectOrCreate?: SessionCreateOrConnectWithoutUserInput | SessionCreateOrConnectWithoutUserInput[]
@@ -20082,6 +23351,13 @@ export namespace Prisma {
     connectOrCreate?: ExecutionCreateOrConnectWithoutTriggeredByUserInput | ExecutionCreateOrConnectWithoutTriggeredByUserInput[]
     createMany?: ExecutionCreateManyTriggeredByUserInputEnvelope
     connect?: ExecutionWhereUniqueInput | ExecutionWhereUniqueInput[]
+  }
+
+  export type PersistentMemoryEntryUncheckedCreateNestedManyWithoutUserInput = {
+    create?: XOR<PersistentMemoryEntryCreateWithoutUserInput, PersistentMemoryEntryUncheckedCreateWithoutUserInput> | PersistentMemoryEntryCreateWithoutUserInput[] | PersistentMemoryEntryUncheckedCreateWithoutUserInput[]
+    connectOrCreate?: PersistentMemoryEntryCreateOrConnectWithoutUserInput | PersistentMemoryEntryCreateOrConnectWithoutUserInput[]
+    createMany?: PersistentMemoryEntryCreateManyUserInputEnvelope
+    connect?: PersistentMemoryEntryWhereUniqueInput | PersistentMemoryEntryWhereUniqueInput[]
   }
 
   export type StringFieldUpdateOperationsInput = {
@@ -20186,6 +23462,20 @@ export namespace Prisma {
     deleteMany?: ExecutionScalarWhereInput | ExecutionScalarWhereInput[]
   }
 
+  export type PersistentMemoryEntryUpdateManyWithoutUserNestedInput = {
+    create?: XOR<PersistentMemoryEntryCreateWithoutUserInput, PersistentMemoryEntryUncheckedCreateWithoutUserInput> | PersistentMemoryEntryCreateWithoutUserInput[] | PersistentMemoryEntryUncheckedCreateWithoutUserInput[]
+    connectOrCreate?: PersistentMemoryEntryCreateOrConnectWithoutUserInput | PersistentMemoryEntryCreateOrConnectWithoutUserInput[]
+    upsert?: PersistentMemoryEntryUpsertWithWhereUniqueWithoutUserInput | PersistentMemoryEntryUpsertWithWhereUniqueWithoutUserInput[]
+    createMany?: PersistentMemoryEntryCreateManyUserInputEnvelope
+    set?: PersistentMemoryEntryWhereUniqueInput | PersistentMemoryEntryWhereUniqueInput[]
+    disconnect?: PersistentMemoryEntryWhereUniqueInput | PersistentMemoryEntryWhereUniqueInput[]
+    delete?: PersistentMemoryEntryWhereUniqueInput | PersistentMemoryEntryWhereUniqueInput[]
+    connect?: PersistentMemoryEntryWhereUniqueInput | PersistentMemoryEntryWhereUniqueInput[]
+    update?: PersistentMemoryEntryUpdateWithWhereUniqueWithoutUserInput | PersistentMemoryEntryUpdateWithWhereUniqueWithoutUserInput[]
+    updateMany?: PersistentMemoryEntryUpdateManyWithWhereWithoutUserInput | PersistentMemoryEntryUpdateManyWithWhereWithoutUserInput[]
+    deleteMany?: PersistentMemoryEntryScalarWhereInput | PersistentMemoryEntryScalarWhereInput[]
+  }
+
   export type SessionUncheckedUpdateManyWithoutUserNestedInput = {
     create?: XOR<SessionCreateWithoutUserInput, SessionUncheckedCreateWithoutUserInput> | SessionCreateWithoutUserInput[] | SessionUncheckedCreateWithoutUserInput[]
     connectOrCreate?: SessionCreateOrConnectWithoutUserInput | SessionCreateOrConnectWithoutUserInput[]
@@ -20256,6 +23546,20 @@ export namespace Prisma {
     deleteMany?: ExecutionScalarWhereInput | ExecutionScalarWhereInput[]
   }
 
+  export type PersistentMemoryEntryUncheckedUpdateManyWithoutUserNestedInput = {
+    create?: XOR<PersistentMemoryEntryCreateWithoutUserInput, PersistentMemoryEntryUncheckedCreateWithoutUserInput> | PersistentMemoryEntryCreateWithoutUserInput[] | PersistentMemoryEntryUncheckedCreateWithoutUserInput[]
+    connectOrCreate?: PersistentMemoryEntryCreateOrConnectWithoutUserInput | PersistentMemoryEntryCreateOrConnectWithoutUserInput[]
+    upsert?: PersistentMemoryEntryUpsertWithWhereUniqueWithoutUserInput | PersistentMemoryEntryUpsertWithWhereUniqueWithoutUserInput[]
+    createMany?: PersistentMemoryEntryCreateManyUserInputEnvelope
+    set?: PersistentMemoryEntryWhereUniqueInput | PersistentMemoryEntryWhereUniqueInput[]
+    disconnect?: PersistentMemoryEntryWhereUniqueInput | PersistentMemoryEntryWhereUniqueInput[]
+    delete?: PersistentMemoryEntryWhereUniqueInput | PersistentMemoryEntryWhereUniqueInput[]
+    connect?: PersistentMemoryEntryWhereUniqueInput | PersistentMemoryEntryWhereUniqueInput[]
+    update?: PersistentMemoryEntryUpdateWithWhereUniqueWithoutUserInput | PersistentMemoryEntryUpdateWithWhereUniqueWithoutUserInput[]
+    updateMany?: PersistentMemoryEntryUpdateManyWithWhereWithoutUserInput | PersistentMemoryEntryUpdateManyWithWhereWithoutUserInput[]
+    deleteMany?: PersistentMemoryEntryScalarWhereInput | PersistentMemoryEntryScalarWhereInput[]
+  }
+
   export type UserCreateNestedOneWithoutSessionsInput = {
     create?: XOR<UserCreateWithoutSessionsInput, UserUncheckedCreateWithoutSessionsInput>
     connectOrCreate?: UserCreateOrConnectWithoutSessionsInput
@@ -20305,6 +23609,13 @@ export namespace Prisma {
     connect?: ExecutionWhereUniqueInput | ExecutionWhereUniqueInput[]
   }
 
+  export type PersistentMemoryEntryCreateNestedManyWithoutWorkflowInput = {
+    create?: XOR<PersistentMemoryEntryCreateWithoutWorkflowInput, PersistentMemoryEntryUncheckedCreateWithoutWorkflowInput> | PersistentMemoryEntryCreateWithoutWorkflowInput[] | PersistentMemoryEntryUncheckedCreateWithoutWorkflowInput[]
+    connectOrCreate?: PersistentMemoryEntryCreateOrConnectWithoutWorkflowInput | PersistentMemoryEntryCreateOrConnectWithoutWorkflowInput[]
+    createMany?: PersistentMemoryEntryCreateManyWorkflowInputEnvelope
+    connect?: PersistentMemoryEntryWhereUniqueInput | PersistentMemoryEntryWhereUniqueInput[]
+  }
+
   export type UserCreateNestedOneWithoutWorkflowsInput = {
     create?: XOR<UserCreateWithoutWorkflowsInput, UserUncheckedCreateWithoutWorkflowsInput>
     connectOrCreate?: UserCreateOrConnectWithoutWorkflowsInput
@@ -20330,6 +23641,13 @@ export namespace Prisma {
     connectOrCreate?: ExecutionCreateOrConnectWithoutWorkflowInput | ExecutionCreateOrConnectWithoutWorkflowInput[]
     createMany?: ExecutionCreateManyWorkflowInputEnvelope
     connect?: ExecutionWhereUniqueInput | ExecutionWhereUniqueInput[]
+  }
+
+  export type PersistentMemoryEntryUncheckedCreateNestedManyWithoutWorkflowInput = {
+    create?: XOR<PersistentMemoryEntryCreateWithoutWorkflowInput, PersistentMemoryEntryUncheckedCreateWithoutWorkflowInput> | PersistentMemoryEntryCreateWithoutWorkflowInput[] | PersistentMemoryEntryUncheckedCreateWithoutWorkflowInput[]
+    connectOrCreate?: PersistentMemoryEntryCreateOrConnectWithoutWorkflowInput | PersistentMemoryEntryCreateOrConnectWithoutWorkflowInput[]
+    createMany?: PersistentMemoryEntryCreateManyWorkflowInputEnvelope
+    connect?: PersistentMemoryEntryWhereUniqueInput | PersistentMemoryEntryWhereUniqueInput[]
   }
 
   export type NodeUpdateManyWithoutWorkflowNestedInput = {
@@ -20372,6 +23690,20 @@ export namespace Prisma {
     update?: ExecutionUpdateWithWhereUniqueWithoutWorkflowInput | ExecutionUpdateWithWhereUniqueWithoutWorkflowInput[]
     updateMany?: ExecutionUpdateManyWithWhereWithoutWorkflowInput | ExecutionUpdateManyWithWhereWithoutWorkflowInput[]
     deleteMany?: ExecutionScalarWhereInput | ExecutionScalarWhereInput[]
+  }
+
+  export type PersistentMemoryEntryUpdateManyWithoutWorkflowNestedInput = {
+    create?: XOR<PersistentMemoryEntryCreateWithoutWorkflowInput, PersistentMemoryEntryUncheckedCreateWithoutWorkflowInput> | PersistentMemoryEntryCreateWithoutWorkflowInput[] | PersistentMemoryEntryUncheckedCreateWithoutWorkflowInput[]
+    connectOrCreate?: PersistentMemoryEntryCreateOrConnectWithoutWorkflowInput | PersistentMemoryEntryCreateOrConnectWithoutWorkflowInput[]
+    upsert?: PersistentMemoryEntryUpsertWithWhereUniqueWithoutWorkflowInput | PersistentMemoryEntryUpsertWithWhereUniqueWithoutWorkflowInput[]
+    createMany?: PersistentMemoryEntryCreateManyWorkflowInputEnvelope
+    set?: PersistentMemoryEntryWhereUniqueInput | PersistentMemoryEntryWhereUniqueInput[]
+    disconnect?: PersistentMemoryEntryWhereUniqueInput | PersistentMemoryEntryWhereUniqueInput[]
+    delete?: PersistentMemoryEntryWhereUniqueInput | PersistentMemoryEntryWhereUniqueInput[]
+    connect?: PersistentMemoryEntryWhereUniqueInput | PersistentMemoryEntryWhereUniqueInput[]
+    update?: PersistentMemoryEntryUpdateWithWhereUniqueWithoutWorkflowInput | PersistentMemoryEntryUpdateWithWhereUniqueWithoutWorkflowInput[]
+    updateMany?: PersistentMemoryEntryUpdateManyWithWhereWithoutWorkflowInput | PersistentMemoryEntryUpdateManyWithWhereWithoutWorkflowInput[]
+    deleteMany?: PersistentMemoryEntryScalarWhereInput | PersistentMemoryEntryScalarWhereInput[]
   }
 
   export type UserUpdateOneRequiredWithoutWorkflowsNestedInput = {
@@ -20422,6 +23754,20 @@ export namespace Prisma {
     update?: ExecutionUpdateWithWhereUniqueWithoutWorkflowInput | ExecutionUpdateWithWhereUniqueWithoutWorkflowInput[]
     updateMany?: ExecutionUpdateManyWithWhereWithoutWorkflowInput | ExecutionUpdateManyWithWhereWithoutWorkflowInput[]
     deleteMany?: ExecutionScalarWhereInput | ExecutionScalarWhereInput[]
+  }
+
+  export type PersistentMemoryEntryUncheckedUpdateManyWithoutWorkflowNestedInput = {
+    create?: XOR<PersistentMemoryEntryCreateWithoutWorkflowInput, PersistentMemoryEntryUncheckedCreateWithoutWorkflowInput> | PersistentMemoryEntryCreateWithoutWorkflowInput[] | PersistentMemoryEntryUncheckedCreateWithoutWorkflowInput[]
+    connectOrCreate?: PersistentMemoryEntryCreateOrConnectWithoutWorkflowInput | PersistentMemoryEntryCreateOrConnectWithoutWorkflowInput[]
+    upsert?: PersistentMemoryEntryUpsertWithWhereUniqueWithoutWorkflowInput | PersistentMemoryEntryUpsertWithWhereUniqueWithoutWorkflowInput[]
+    createMany?: PersistentMemoryEntryCreateManyWorkflowInputEnvelope
+    set?: PersistentMemoryEntryWhereUniqueInput | PersistentMemoryEntryWhereUniqueInput[]
+    disconnect?: PersistentMemoryEntryWhereUniqueInput | PersistentMemoryEntryWhereUniqueInput[]
+    delete?: PersistentMemoryEntryWhereUniqueInput | PersistentMemoryEntryWhereUniqueInput[]
+    connect?: PersistentMemoryEntryWhereUniqueInput | PersistentMemoryEntryWhereUniqueInput[]
+    update?: PersistentMemoryEntryUpdateWithWhereUniqueWithoutWorkflowInput | PersistentMemoryEntryUpdateWithWhereUniqueWithoutWorkflowInput[]
+    updateMany?: PersistentMemoryEntryUpdateManyWithWhereWithoutWorkflowInput | PersistentMemoryEntryUpdateManyWithWhereWithoutWorkflowInput[]
+    deleteMany?: PersistentMemoryEntryScalarWhereInput | PersistentMemoryEntryScalarWhereInput[]
   }
 
   export type WorkflowCreateNestedOneWithoutNodesInput = {
@@ -20882,6 +24228,44 @@ export namespace Prisma {
     update?: XOR<XOR<ExecutionUpdateToOneWithWhereWithoutMemoryEventsInput, ExecutionUpdateWithoutMemoryEventsInput>, ExecutionUncheckedUpdateWithoutMemoryEventsInput>
   }
 
+  export type UserCreateNestedOneWithoutPersistentMemoryEntriesInput = {
+    create?: XOR<UserCreateWithoutPersistentMemoryEntriesInput, UserUncheckedCreateWithoutPersistentMemoryEntriesInput>
+    connectOrCreate?: UserCreateOrConnectWithoutPersistentMemoryEntriesInput
+    connect?: UserWhereUniqueInput
+  }
+
+  export type WorkflowCreateNestedOneWithoutPersistentMemoryEntriesInput = {
+    create?: XOR<WorkflowCreateWithoutPersistentMemoryEntriesInput, WorkflowUncheckedCreateWithoutPersistentMemoryEntriesInput>
+    connectOrCreate?: WorkflowCreateOrConnectWithoutPersistentMemoryEntriesInput
+    connect?: WorkflowWhereUniqueInput
+  }
+
+  export type EnumPersistentMemoryScopeFieldUpdateOperationsInput = {
+    set?: $Enums.PersistentMemoryScope
+  }
+
+  export type NullableEnumCredentialProviderFieldUpdateOperationsInput = {
+    set?: $Enums.CredentialProvider | null
+  }
+
+  export type UserUpdateOneRequiredWithoutPersistentMemoryEntriesNestedInput = {
+    create?: XOR<UserCreateWithoutPersistentMemoryEntriesInput, UserUncheckedCreateWithoutPersistentMemoryEntriesInput>
+    connectOrCreate?: UserCreateOrConnectWithoutPersistentMemoryEntriesInput
+    upsert?: UserUpsertWithoutPersistentMemoryEntriesInput
+    connect?: UserWhereUniqueInput
+    update?: XOR<XOR<UserUpdateToOneWithWhereWithoutPersistentMemoryEntriesInput, UserUpdateWithoutPersistentMemoryEntriesInput>, UserUncheckedUpdateWithoutPersistentMemoryEntriesInput>
+  }
+
+  export type WorkflowUpdateOneWithoutPersistentMemoryEntriesNestedInput = {
+    create?: XOR<WorkflowCreateWithoutPersistentMemoryEntriesInput, WorkflowUncheckedCreateWithoutPersistentMemoryEntriesInput>
+    connectOrCreate?: WorkflowCreateOrConnectWithoutPersistentMemoryEntriesInput
+    upsert?: WorkflowUpsertWithoutPersistentMemoryEntriesInput
+    disconnect?: WorkflowWhereInput | boolean
+    delete?: WorkflowWhereInput | boolean
+    connect?: WorkflowWhereUniqueInput
+    update?: XOR<XOR<WorkflowUpdateToOneWithWhereWithoutPersistentMemoryEntriesInput, WorkflowUpdateWithoutPersistentMemoryEntriesInput>, WorkflowUncheckedUpdateWithoutPersistentMemoryEntriesInput>
+  }
+
   export type NestedStringFilter<$PrismaModel = never> = {
     equals?: string | StringFieldRefInput<$PrismaModel>
     in?: string[] | ListStringFieldRefInput<$PrismaModel>
@@ -21316,6 +24700,40 @@ export namespace Prisma {
     _max?: NestedEnumExecutionMemoryWriteModeFilter<$PrismaModel>
   }
 
+  export type NestedEnumPersistentMemoryScopeFilter<$PrismaModel = never> = {
+    equals?: $Enums.PersistentMemoryScope | EnumPersistentMemoryScopeFieldRefInput<$PrismaModel>
+    in?: $Enums.PersistentMemoryScope[] | ListEnumPersistentMemoryScopeFieldRefInput<$PrismaModel>
+    notIn?: $Enums.PersistentMemoryScope[] | ListEnumPersistentMemoryScopeFieldRefInput<$PrismaModel>
+    not?: NestedEnumPersistentMemoryScopeFilter<$PrismaModel> | $Enums.PersistentMemoryScope
+  }
+
+  export type NestedEnumCredentialProviderNullableFilter<$PrismaModel = never> = {
+    equals?: $Enums.CredentialProvider | EnumCredentialProviderFieldRefInput<$PrismaModel> | null
+    in?: $Enums.CredentialProvider[] | ListEnumCredentialProviderFieldRefInput<$PrismaModel> | null
+    notIn?: $Enums.CredentialProvider[] | ListEnumCredentialProviderFieldRefInput<$PrismaModel> | null
+    not?: NestedEnumCredentialProviderNullableFilter<$PrismaModel> | $Enums.CredentialProvider | null
+  }
+
+  export type NestedEnumPersistentMemoryScopeWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: $Enums.PersistentMemoryScope | EnumPersistentMemoryScopeFieldRefInput<$PrismaModel>
+    in?: $Enums.PersistentMemoryScope[] | ListEnumPersistentMemoryScopeFieldRefInput<$PrismaModel>
+    notIn?: $Enums.PersistentMemoryScope[] | ListEnumPersistentMemoryScopeFieldRefInput<$PrismaModel>
+    not?: NestedEnumPersistentMemoryScopeWithAggregatesFilter<$PrismaModel> | $Enums.PersistentMemoryScope
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedEnumPersistentMemoryScopeFilter<$PrismaModel>
+    _max?: NestedEnumPersistentMemoryScopeFilter<$PrismaModel>
+  }
+
+  export type NestedEnumCredentialProviderNullableWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: $Enums.CredentialProvider | EnumCredentialProviderFieldRefInput<$PrismaModel> | null
+    in?: $Enums.CredentialProvider[] | ListEnumCredentialProviderFieldRefInput<$PrismaModel> | null
+    notIn?: $Enums.CredentialProvider[] | ListEnumCredentialProviderFieldRefInput<$PrismaModel> | null
+    not?: NestedEnumCredentialProviderNullableWithAggregatesFilter<$PrismaModel> | $Enums.CredentialProvider | null
+    _count?: NestedIntNullableFilter<$PrismaModel>
+    _min?: NestedEnumCredentialProviderNullableFilter<$PrismaModel>
+    _max?: NestedEnumCredentialProviderNullableFilter<$PrismaModel>
+  }
+
   export type SessionCreateWithoutUserInput = {
     id: string
     expiresAt: Date | string
@@ -21395,6 +24813,7 @@ export namespace Prisma {
     nodes?: NodeCreateNestedManyWithoutWorkflowInput
     connections?: ConnectionCreateNestedManyWithoutWorkflowInput
     executions?: ExecutionCreateNestedManyWithoutWorkflowInput
+    persistentMemoryEntries?: PersistentMemoryEntryCreateNestedManyWithoutWorkflowInput
   }
 
   export type WorkflowUncheckedCreateWithoutUserInput = {
@@ -21406,6 +24825,7 @@ export namespace Prisma {
     nodes?: NodeUncheckedCreateNestedManyWithoutWorkflowInput
     connections?: ConnectionUncheckedCreateNestedManyWithoutWorkflowInput
     executions?: ExecutionUncheckedCreateNestedManyWithoutWorkflowInput
+    persistentMemoryEntries?: PersistentMemoryEntryUncheckedCreateNestedManyWithoutWorkflowInput
   }
 
   export type WorkflowCreateOrConnectWithoutUserInput = {
@@ -21495,6 +24915,54 @@ export namespace Prisma {
 
   export type ExecutionCreateManyTriggeredByUserInputEnvelope = {
     data: ExecutionCreateManyTriggeredByUserInput | ExecutionCreateManyTriggeredByUserInput[]
+    skipDuplicates?: boolean
+  }
+
+  export type PersistentMemoryEntryCreateWithoutUserInput = {
+    id?: string
+    scope: $Enums.PersistentMemoryScope
+    ownerId: string
+    namespace?: string
+    key: string
+    value: JsonNullValueInput | InputJsonValue
+    textValue?: string | null
+    embedding?: NullableJsonNullValueInput | InputJsonValue
+    embeddingProvider?: $Enums.CredentialProvider | null
+    embeddingModel?: string | null
+    sourceExecutionId?: string | null
+    sourceStepId?: string | null
+    sourceNodeId?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    workflow?: WorkflowCreateNestedOneWithoutPersistentMemoryEntriesInput
+  }
+
+  export type PersistentMemoryEntryUncheckedCreateWithoutUserInput = {
+    id?: string
+    scope: $Enums.PersistentMemoryScope
+    ownerId: string
+    workflowId?: string | null
+    namespace?: string
+    key: string
+    value: JsonNullValueInput | InputJsonValue
+    textValue?: string | null
+    embedding?: NullableJsonNullValueInput | InputJsonValue
+    embeddingProvider?: $Enums.CredentialProvider | null
+    embeddingModel?: string | null
+    sourceExecutionId?: string | null
+    sourceStepId?: string | null
+    sourceNodeId?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type PersistentMemoryEntryCreateOrConnectWithoutUserInput = {
+    where: PersistentMemoryEntryWhereUniqueInput
+    create: XOR<PersistentMemoryEntryCreateWithoutUserInput, PersistentMemoryEntryUncheckedCreateWithoutUserInput>
+  }
+
+  export type PersistentMemoryEntryCreateManyUserInputEnvelope = {
+    data: PersistentMemoryEntryCreateManyUserInput | PersistentMemoryEntryCreateManyUserInput[]
     skipDuplicates?: boolean
   }
 
@@ -21658,6 +25126,45 @@ export namespace Prisma {
     updatedAt?: DateTimeFilter<"Execution"> | Date | string
   }
 
+  export type PersistentMemoryEntryUpsertWithWhereUniqueWithoutUserInput = {
+    where: PersistentMemoryEntryWhereUniqueInput
+    update: XOR<PersistentMemoryEntryUpdateWithoutUserInput, PersistentMemoryEntryUncheckedUpdateWithoutUserInput>
+    create: XOR<PersistentMemoryEntryCreateWithoutUserInput, PersistentMemoryEntryUncheckedCreateWithoutUserInput>
+  }
+
+  export type PersistentMemoryEntryUpdateWithWhereUniqueWithoutUserInput = {
+    where: PersistentMemoryEntryWhereUniqueInput
+    data: XOR<PersistentMemoryEntryUpdateWithoutUserInput, PersistentMemoryEntryUncheckedUpdateWithoutUserInput>
+  }
+
+  export type PersistentMemoryEntryUpdateManyWithWhereWithoutUserInput = {
+    where: PersistentMemoryEntryScalarWhereInput
+    data: XOR<PersistentMemoryEntryUpdateManyMutationInput, PersistentMemoryEntryUncheckedUpdateManyWithoutUserInput>
+  }
+
+  export type PersistentMemoryEntryScalarWhereInput = {
+    AND?: PersistentMemoryEntryScalarWhereInput | PersistentMemoryEntryScalarWhereInput[]
+    OR?: PersistentMemoryEntryScalarWhereInput[]
+    NOT?: PersistentMemoryEntryScalarWhereInput | PersistentMemoryEntryScalarWhereInput[]
+    id?: StringFilter<"PersistentMemoryEntry"> | string
+    scope?: EnumPersistentMemoryScopeFilter<"PersistentMemoryEntry"> | $Enums.PersistentMemoryScope
+    ownerId?: StringFilter<"PersistentMemoryEntry"> | string
+    userId?: StringFilter<"PersistentMemoryEntry"> | string
+    workflowId?: StringNullableFilter<"PersistentMemoryEntry"> | string | null
+    namespace?: StringFilter<"PersistentMemoryEntry"> | string
+    key?: StringFilter<"PersistentMemoryEntry"> | string
+    value?: JsonFilter<"PersistentMemoryEntry">
+    textValue?: StringNullableFilter<"PersistentMemoryEntry"> | string | null
+    embedding?: JsonNullableFilter<"PersistentMemoryEntry">
+    embeddingProvider?: EnumCredentialProviderNullableFilter<"PersistentMemoryEntry"> | $Enums.CredentialProvider | null
+    embeddingModel?: StringNullableFilter<"PersistentMemoryEntry"> | string | null
+    sourceExecutionId?: StringNullableFilter<"PersistentMemoryEntry"> | string | null
+    sourceStepId?: StringNullableFilter<"PersistentMemoryEntry"> | string | null
+    sourceNodeId?: StringNullableFilter<"PersistentMemoryEntry"> | string | null
+    createdAt?: DateTimeFilter<"PersistentMemoryEntry"> | Date | string
+    updatedAt?: DateTimeFilter<"PersistentMemoryEntry"> | Date | string
+  }
+
   export type UserCreateWithoutSessionsInput = {
     id: string
     name: string
@@ -21678,6 +25185,7 @@ export namespace Prisma {
     workflows?: WorkflowCreateNestedManyWithoutUserInput
     credentials?: CredentialCreateNestedManyWithoutUserInput
     executions?: ExecutionCreateNestedManyWithoutTriggeredByUserInput
+    persistentMemoryEntries?: PersistentMemoryEntryCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutSessionsInput = {
@@ -21700,6 +25208,7 @@ export namespace Prisma {
     workflows?: WorkflowUncheckedCreateNestedManyWithoutUserInput
     credentials?: CredentialUncheckedCreateNestedManyWithoutUserInput
     executions?: ExecutionUncheckedCreateNestedManyWithoutTriggeredByUserInput
+    persistentMemoryEntries?: PersistentMemoryEntryUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutSessionsInput = {
@@ -21738,6 +25247,7 @@ export namespace Prisma {
     workflows?: WorkflowUpdateManyWithoutUserNestedInput
     credentials?: CredentialUpdateManyWithoutUserNestedInput
     executions?: ExecutionUpdateManyWithoutTriggeredByUserNestedInput
+    persistentMemoryEntries?: PersistentMemoryEntryUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutSessionsInput = {
@@ -21760,6 +25270,7 @@ export namespace Prisma {
     workflows?: WorkflowUncheckedUpdateManyWithoutUserNestedInput
     credentials?: CredentialUncheckedUpdateManyWithoutUserNestedInput
     executions?: ExecutionUncheckedUpdateManyWithoutTriggeredByUserNestedInput
+    persistentMemoryEntries?: PersistentMemoryEntryUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type UserCreateWithoutAccountsInput = {
@@ -21782,6 +25293,7 @@ export namespace Prisma {
     workflows?: WorkflowCreateNestedManyWithoutUserInput
     credentials?: CredentialCreateNestedManyWithoutUserInput
     executions?: ExecutionCreateNestedManyWithoutTriggeredByUserInput
+    persistentMemoryEntries?: PersistentMemoryEntryCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutAccountsInput = {
@@ -21804,6 +25316,7 @@ export namespace Prisma {
     workflows?: WorkflowUncheckedCreateNestedManyWithoutUserInput
     credentials?: CredentialUncheckedCreateNestedManyWithoutUserInput
     executions?: ExecutionUncheckedCreateNestedManyWithoutTriggeredByUserInput
+    persistentMemoryEntries?: PersistentMemoryEntryUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutAccountsInput = {
@@ -21842,6 +25355,7 @@ export namespace Prisma {
     workflows?: WorkflowUpdateManyWithoutUserNestedInput
     credentials?: CredentialUpdateManyWithoutUserNestedInput
     executions?: ExecutionUpdateManyWithoutTriggeredByUserNestedInput
+    persistentMemoryEntries?: PersistentMemoryEntryUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutAccountsInput = {
@@ -21864,6 +25378,7 @@ export namespace Prisma {
     workflows?: WorkflowUncheckedUpdateManyWithoutUserNestedInput
     credentials?: CredentialUncheckedUpdateManyWithoutUserNestedInput
     executions?: ExecutionUncheckedUpdateManyWithoutTriggeredByUserNestedInput
+    persistentMemoryEntries?: PersistentMemoryEntryUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type NodeCreateWithoutWorkflowInput = {
@@ -21980,6 +25495,54 @@ export namespace Prisma {
     skipDuplicates?: boolean
   }
 
+  export type PersistentMemoryEntryCreateWithoutWorkflowInput = {
+    id?: string
+    scope: $Enums.PersistentMemoryScope
+    ownerId: string
+    namespace?: string
+    key: string
+    value: JsonNullValueInput | InputJsonValue
+    textValue?: string | null
+    embedding?: NullableJsonNullValueInput | InputJsonValue
+    embeddingProvider?: $Enums.CredentialProvider | null
+    embeddingModel?: string | null
+    sourceExecutionId?: string | null
+    sourceStepId?: string | null
+    sourceNodeId?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    user: UserCreateNestedOneWithoutPersistentMemoryEntriesInput
+  }
+
+  export type PersistentMemoryEntryUncheckedCreateWithoutWorkflowInput = {
+    id?: string
+    scope: $Enums.PersistentMemoryScope
+    ownerId: string
+    userId: string
+    namespace?: string
+    key: string
+    value: JsonNullValueInput | InputJsonValue
+    textValue?: string | null
+    embedding?: NullableJsonNullValueInput | InputJsonValue
+    embeddingProvider?: $Enums.CredentialProvider | null
+    embeddingModel?: string | null
+    sourceExecutionId?: string | null
+    sourceStepId?: string | null
+    sourceNodeId?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type PersistentMemoryEntryCreateOrConnectWithoutWorkflowInput = {
+    where: PersistentMemoryEntryWhereUniqueInput
+    create: XOR<PersistentMemoryEntryCreateWithoutWorkflowInput, PersistentMemoryEntryUncheckedCreateWithoutWorkflowInput>
+  }
+
+  export type PersistentMemoryEntryCreateManyWorkflowInputEnvelope = {
+    data: PersistentMemoryEntryCreateManyWorkflowInput | PersistentMemoryEntryCreateManyWorkflowInput[]
+    skipDuplicates?: boolean
+  }
+
   export type UserCreateWithoutWorkflowsInput = {
     id: string
     name: string
@@ -22000,6 +25563,7 @@ export namespace Prisma {
     accounts?: AccountCreateNestedManyWithoutUserInput
     credentials?: CredentialCreateNestedManyWithoutUserInput
     executions?: ExecutionCreateNestedManyWithoutTriggeredByUserInput
+    persistentMemoryEntries?: PersistentMemoryEntryCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutWorkflowsInput = {
@@ -22022,6 +25586,7 @@ export namespace Prisma {
     accounts?: AccountUncheckedCreateNestedManyWithoutUserInput
     credentials?: CredentialUncheckedCreateNestedManyWithoutUserInput
     executions?: ExecutionUncheckedCreateNestedManyWithoutTriggeredByUserInput
+    persistentMemoryEntries?: PersistentMemoryEntryUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutWorkflowsInput = {
@@ -22106,6 +25671,22 @@ export namespace Prisma {
     data: XOR<ExecutionUpdateManyMutationInput, ExecutionUncheckedUpdateManyWithoutWorkflowInput>
   }
 
+  export type PersistentMemoryEntryUpsertWithWhereUniqueWithoutWorkflowInput = {
+    where: PersistentMemoryEntryWhereUniqueInput
+    update: XOR<PersistentMemoryEntryUpdateWithoutWorkflowInput, PersistentMemoryEntryUncheckedUpdateWithoutWorkflowInput>
+    create: XOR<PersistentMemoryEntryCreateWithoutWorkflowInput, PersistentMemoryEntryUncheckedCreateWithoutWorkflowInput>
+  }
+
+  export type PersistentMemoryEntryUpdateWithWhereUniqueWithoutWorkflowInput = {
+    where: PersistentMemoryEntryWhereUniqueInput
+    data: XOR<PersistentMemoryEntryUpdateWithoutWorkflowInput, PersistentMemoryEntryUncheckedUpdateWithoutWorkflowInput>
+  }
+
+  export type PersistentMemoryEntryUpdateManyWithWhereWithoutWorkflowInput = {
+    where: PersistentMemoryEntryScalarWhereInput
+    data: XOR<PersistentMemoryEntryUpdateManyMutationInput, PersistentMemoryEntryUncheckedUpdateManyWithoutWorkflowInput>
+  }
+
   export type UserUpsertWithoutWorkflowsInput = {
     update: XOR<UserUpdateWithoutWorkflowsInput, UserUncheckedUpdateWithoutWorkflowsInput>
     create: XOR<UserCreateWithoutWorkflowsInput, UserUncheckedCreateWithoutWorkflowsInput>
@@ -22137,6 +25718,7 @@ export namespace Prisma {
     accounts?: AccountUpdateManyWithoutUserNestedInput
     credentials?: CredentialUpdateManyWithoutUserNestedInput
     executions?: ExecutionUpdateManyWithoutTriggeredByUserNestedInput
+    persistentMemoryEntries?: PersistentMemoryEntryUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutWorkflowsInput = {
@@ -22159,6 +25741,7 @@ export namespace Prisma {
     accounts?: AccountUncheckedUpdateManyWithoutUserNestedInput
     credentials?: CredentialUncheckedUpdateManyWithoutUserNestedInput
     executions?: ExecutionUncheckedUpdateManyWithoutTriggeredByUserNestedInput
+    persistentMemoryEntries?: PersistentMemoryEntryUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type WorkflowCreateWithoutNodesInput = {
@@ -22169,6 +25752,7 @@ export namespace Prisma {
     updatedAt?: Date | string
     connections?: ConnectionCreateNestedManyWithoutWorkflowInput
     executions?: ExecutionCreateNestedManyWithoutWorkflowInput
+    persistentMemoryEntries?: PersistentMemoryEntryCreateNestedManyWithoutWorkflowInput
     user: UserCreateNestedOneWithoutWorkflowsInput
   }
 
@@ -22181,6 +25765,7 @@ export namespace Prisma {
     userId: string
     connections?: ConnectionUncheckedCreateNestedManyWithoutWorkflowInput
     executions?: ExecutionUncheckedCreateNestedManyWithoutWorkflowInput
+    persistentMemoryEntries?: PersistentMemoryEntryUncheckedCreateNestedManyWithoutWorkflowInput
   }
 
   export type WorkflowCreateOrConnectWithoutNodesInput = {
@@ -22317,6 +25902,7 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     connections?: ConnectionUpdateManyWithoutWorkflowNestedInput
     executions?: ExecutionUpdateManyWithoutWorkflowNestedInput
+    persistentMemoryEntries?: PersistentMemoryEntryUpdateManyWithoutWorkflowNestedInput
     user?: UserUpdateOneRequiredWithoutWorkflowsNestedInput
   }
 
@@ -22329,6 +25915,7 @@ export namespace Prisma {
     userId?: StringFieldUpdateOperationsInput | string
     connections?: ConnectionUncheckedUpdateManyWithoutWorkflowNestedInput
     executions?: ExecutionUncheckedUpdateManyWithoutWorkflowNestedInput
+    persistentMemoryEntries?: PersistentMemoryEntryUncheckedUpdateManyWithoutWorkflowNestedInput
   }
 
   export type ConnectionUpsertWithWhereUniqueWithoutFromNodeInput = {
@@ -22409,6 +25996,7 @@ export namespace Prisma {
     updatedAt?: Date | string
     nodes?: NodeCreateNestedManyWithoutWorkflowInput
     executions?: ExecutionCreateNestedManyWithoutWorkflowInput
+    persistentMemoryEntries?: PersistentMemoryEntryCreateNestedManyWithoutWorkflowInput
     user: UserCreateNestedOneWithoutWorkflowsInput
   }
 
@@ -22421,6 +26009,7 @@ export namespace Prisma {
     userId: string
     nodes?: NodeUncheckedCreateNestedManyWithoutWorkflowInput
     executions?: ExecutionUncheckedCreateNestedManyWithoutWorkflowInput
+    persistentMemoryEntries?: PersistentMemoryEntryUncheckedCreateNestedManyWithoutWorkflowInput
   }
 
   export type WorkflowCreateOrConnectWithoutConnectionsInput = {
@@ -22509,6 +26098,7 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     nodes?: NodeUpdateManyWithoutWorkflowNestedInput
     executions?: ExecutionUpdateManyWithoutWorkflowNestedInput
+    persistentMemoryEntries?: PersistentMemoryEntryUpdateManyWithoutWorkflowNestedInput
     user?: UserUpdateOneRequiredWithoutWorkflowsNestedInput
   }
 
@@ -22521,6 +26111,7 @@ export namespace Prisma {
     userId?: StringFieldUpdateOperationsInput | string
     nodes?: NodeUncheckedUpdateManyWithoutWorkflowNestedInput
     executions?: ExecutionUncheckedUpdateManyWithoutWorkflowNestedInput
+    persistentMemoryEntries?: PersistentMemoryEntryUncheckedUpdateManyWithoutWorkflowNestedInput
   }
 
   export type NodeUpsertWithoutFromConnectionsInput = {
@@ -22617,6 +26208,7 @@ export namespace Prisma {
     accounts?: AccountCreateNestedManyWithoutUserInput
     workflows?: WorkflowCreateNestedManyWithoutUserInput
     executions?: ExecutionCreateNestedManyWithoutTriggeredByUserInput
+    persistentMemoryEntries?: PersistentMemoryEntryCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutCredentialsInput = {
@@ -22639,6 +26231,7 @@ export namespace Prisma {
     accounts?: AccountUncheckedCreateNestedManyWithoutUserInput
     workflows?: WorkflowUncheckedCreateNestedManyWithoutUserInput
     executions?: ExecutionUncheckedCreateNestedManyWithoutTriggeredByUserInput
+    persistentMemoryEntries?: PersistentMemoryEntryUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutCredentialsInput = {
@@ -22677,6 +26270,7 @@ export namespace Prisma {
     accounts?: AccountUpdateManyWithoutUserNestedInput
     workflows?: WorkflowUpdateManyWithoutUserNestedInput
     executions?: ExecutionUpdateManyWithoutTriggeredByUserNestedInput
+    persistentMemoryEntries?: PersistentMemoryEntryUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutCredentialsInput = {
@@ -22699,6 +26293,7 @@ export namespace Prisma {
     accounts?: AccountUncheckedUpdateManyWithoutUserNestedInput
     workflows?: WorkflowUncheckedUpdateManyWithoutUserNestedInput
     executions?: ExecutionUncheckedUpdateManyWithoutTriggeredByUserNestedInput
+    persistentMemoryEntries?: PersistentMemoryEntryUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type WorkflowCreateWithoutExecutionsInput = {
@@ -22709,6 +26304,7 @@ export namespace Prisma {
     updatedAt?: Date | string
     nodes?: NodeCreateNestedManyWithoutWorkflowInput
     connections?: ConnectionCreateNestedManyWithoutWorkflowInput
+    persistentMemoryEntries?: PersistentMemoryEntryCreateNestedManyWithoutWorkflowInput
     user: UserCreateNestedOneWithoutWorkflowsInput
   }
 
@@ -22721,6 +26317,7 @@ export namespace Prisma {
     userId: string
     nodes?: NodeUncheckedCreateNestedManyWithoutWorkflowInput
     connections?: ConnectionUncheckedCreateNestedManyWithoutWorkflowInput
+    persistentMemoryEntries?: PersistentMemoryEntryUncheckedCreateNestedManyWithoutWorkflowInput
   }
 
   export type WorkflowCreateOrConnectWithoutExecutionsInput = {
@@ -22748,6 +26345,7 @@ export namespace Prisma {
     accounts?: AccountCreateNestedManyWithoutUserInput
     workflows?: WorkflowCreateNestedManyWithoutUserInput
     credentials?: CredentialCreateNestedManyWithoutUserInput
+    persistentMemoryEntries?: PersistentMemoryEntryCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutExecutionsInput = {
@@ -22770,6 +26368,7 @@ export namespace Prisma {
     accounts?: AccountUncheckedCreateNestedManyWithoutUserInput
     workflows?: WorkflowUncheckedCreateNestedManyWithoutUserInput
     credentials?: CredentialUncheckedCreateNestedManyWithoutUserInput
+    persistentMemoryEntries?: PersistentMemoryEntryUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutExecutionsInput = {
@@ -22916,6 +26515,7 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     nodes?: NodeUpdateManyWithoutWorkflowNestedInput
     connections?: ConnectionUpdateManyWithoutWorkflowNestedInput
+    persistentMemoryEntries?: PersistentMemoryEntryUpdateManyWithoutWorkflowNestedInput
     user?: UserUpdateOneRequiredWithoutWorkflowsNestedInput
   }
 
@@ -22928,6 +26528,7 @@ export namespace Prisma {
     userId?: StringFieldUpdateOperationsInput | string
     nodes?: NodeUncheckedUpdateManyWithoutWorkflowNestedInput
     connections?: ConnectionUncheckedUpdateManyWithoutWorkflowNestedInput
+    persistentMemoryEntries?: PersistentMemoryEntryUncheckedUpdateManyWithoutWorkflowNestedInput
   }
 
   export type UserUpsertWithoutExecutionsInput = {
@@ -22961,6 +26562,7 @@ export namespace Prisma {
     accounts?: AccountUpdateManyWithoutUserNestedInput
     workflows?: WorkflowUpdateManyWithoutUserNestedInput
     credentials?: CredentialUpdateManyWithoutUserNestedInput
+    persistentMemoryEntries?: PersistentMemoryEntryUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutExecutionsInput = {
@@ -22983,6 +26585,7 @@ export namespace Prisma {
     accounts?: AccountUncheckedUpdateManyWithoutUserNestedInput
     workflows?: WorkflowUncheckedUpdateManyWithoutUserNestedInput
     credentials?: CredentialUncheckedUpdateManyWithoutUserNestedInput
+    persistentMemoryEntries?: PersistentMemoryEntryUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type ExecutionStepUpsertWithWhereUniqueWithoutExecutionInput = {
@@ -23400,6 +27003,178 @@ export namespace Prisma {
     memoryEntries?: ExecutionMemoryEntryUncheckedUpdateManyWithoutExecutionNestedInput
   }
 
+  export type UserCreateWithoutPersistentMemoryEntriesInput = {
+    id: string
+    name: string
+    email: string
+    emailVerified?: boolean
+    image?: string | null
+    plan?: $Enums.BillingPlan
+    billingProvider?: $Enums.BillingProvider | null
+    billingStatus?: $Enums.BillingStatus
+    billingCustomerId?: string | null
+    billingSubscriptionId?: string | null
+    billingCurrentPeriodEnd?: Date | string | null
+    billingLastEventId?: string | null
+    billingLastEventAt?: Date | string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    sessions?: SessionCreateNestedManyWithoutUserInput
+    accounts?: AccountCreateNestedManyWithoutUserInput
+    workflows?: WorkflowCreateNestedManyWithoutUserInput
+    credentials?: CredentialCreateNestedManyWithoutUserInput
+    executions?: ExecutionCreateNestedManyWithoutTriggeredByUserInput
+  }
+
+  export type UserUncheckedCreateWithoutPersistentMemoryEntriesInput = {
+    id: string
+    name: string
+    email: string
+    emailVerified?: boolean
+    image?: string | null
+    plan?: $Enums.BillingPlan
+    billingProvider?: $Enums.BillingProvider | null
+    billingStatus?: $Enums.BillingStatus
+    billingCustomerId?: string | null
+    billingSubscriptionId?: string | null
+    billingCurrentPeriodEnd?: Date | string | null
+    billingLastEventId?: string | null
+    billingLastEventAt?: Date | string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    sessions?: SessionUncheckedCreateNestedManyWithoutUserInput
+    accounts?: AccountUncheckedCreateNestedManyWithoutUserInput
+    workflows?: WorkflowUncheckedCreateNestedManyWithoutUserInput
+    credentials?: CredentialUncheckedCreateNestedManyWithoutUserInput
+    executions?: ExecutionUncheckedCreateNestedManyWithoutTriggeredByUserInput
+  }
+
+  export type UserCreateOrConnectWithoutPersistentMemoryEntriesInput = {
+    where: UserWhereUniqueInput
+    create: XOR<UserCreateWithoutPersistentMemoryEntriesInput, UserUncheckedCreateWithoutPersistentMemoryEntriesInput>
+  }
+
+  export type WorkflowCreateWithoutPersistentMemoryEntriesInput = {
+    id?: string
+    name: string
+    webhookSecret?: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    nodes?: NodeCreateNestedManyWithoutWorkflowInput
+    connections?: ConnectionCreateNestedManyWithoutWorkflowInput
+    executions?: ExecutionCreateNestedManyWithoutWorkflowInput
+    user: UserCreateNestedOneWithoutWorkflowsInput
+  }
+
+  export type WorkflowUncheckedCreateWithoutPersistentMemoryEntriesInput = {
+    id?: string
+    name: string
+    webhookSecret?: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    userId: string
+    nodes?: NodeUncheckedCreateNestedManyWithoutWorkflowInput
+    connections?: ConnectionUncheckedCreateNestedManyWithoutWorkflowInput
+    executions?: ExecutionUncheckedCreateNestedManyWithoutWorkflowInput
+  }
+
+  export type WorkflowCreateOrConnectWithoutPersistentMemoryEntriesInput = {
+    where: WorkflowWhereUniqueInput
+    create: XOR<WorkflowCreateWithoutPersistentMemoryEntriesInput, WorkflowUncheckedCreateWithoutPersistentMemoryEntriesInput>
+  }
+
+  export type UserUpsertWithoutPersistentMemoryEntriesInput = {
+    update: XOR<UserUpdateWithoutPersistentMemoryEntriesInput, UserUncheckedUpdateWithoutPersistentMemoryEntriesInput>
+    create: XOR<UserCreateWithoutPersistentMemoryEntriesInput, UserUncheckedCreateWithoutPersistentMemoryEntriesInput>
+    where?: UserWhereInput
+  }
+
+  export type UserUpdateToOneWithWhereWithoutPersistentMemoryEntriesInput = {
+    where?: UserWhereInput
+    data: XOR<UserUpdateWithoutPersistentMemoryEntriesInput, UserUncheckedUpdateWithoutPersistentMemoryEntriesInput>
+  }
+
+  export type UserUpdateWithoutPersistentMemoryEntriesInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    email?: StringFieldUpdateOperationsInput | string
+    emailVerified?: BoolFieldUpdateOperationsInput | boolean
+    image?: NullableStringFieldUpdateOperationsInput | string | null
+    plan?: EnumBillingPlanFieldUpdateOperationsInput | $Enums.BillingPlan
+    billingProvider?: NullableEnumBillingProviderFieldUpdateOperationsInput | $Enums.BillingProvider | null
+    billingStatus?: EnumBillingStatusFieldUpdateOperationsInput | $Enums.BillingStatus
+    billingCustomerId?: NullableStringFieldUpdateOperationsInput | string | null
+    billingSubscriptionId?: NullableStringFieldUpdateOperationsInput | string | null
+    billingCurrentPeriodEnd?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    billingLastEventId?: NullableStringFieldUpdateOperationsInput | string | null
+    billingLastEventAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    sessions?: SessionUpdateManyWithoutUserNestedInput
+    accounts?: AccountUpdateManyWithoutUserNestedInput
+    workflows?: WorkflowUpdateManyWithoutUserNestedInput
+    credentials?: CredentialUpdateManyWithoutUserNestedInput
+    executions?: ExecutionUpdateManyWithoutTriggeredByUserNestedInput
+  }
+
+  export type UserUncheckedUpdateWithoutPersistentMemoryEntriesInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    email?: StringFieldUpdateOperationsInput | string
+    emailVerified?: BoolFieldUpdateOperationsInput | boolean
+    image?: NullableStringFieldUpdateOperationsInput | string | null
+    plan?: EnumBillingPlanFieldUpdateOperationsInput | $Enums.BillingPlan
+    billingProvider?: NullableEnumBillingProviderFieldUpdateOperationsInput | $Enums.BillingProvider | null
+    billingStatus?: EnumBillingStatusFieldUpdateOperationsInput | $Enums.BillingStatus
+    billingCustomerId?: NullableStringFieldUpdateOperationsInput | string | null
+    billingSubscriptionId?: NullableStringFieldUpdateOperationsInput | string | null
+    billingCurrentPeriodEnd?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    billingLastEventId?: NullableStringFieldUpdateOperationsInput | string | null
+    billingLastEventAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    sessions?: SessionUncheckedUpdateManyWithoutUserNestedInput
+    accounts?: AccountUncheckedUpdateManyWithoutUserNestedInput
+    workflows?: WorkflowUncheckedUpdateManyWithoutUserNestedInput
+    credentials?: CredentialUncheckedUpdateManyWithoutUserNestedInput
+    executions?: ExecutionUncheckedUpdateManyWithoutTriggeredByUserNestedInput
+  }
+
+  export type WorkflowUpsertWithoutPersistentMemoryEntriesInput = {
+    update: XOR<WorkflowUpdateWithoutPersistentMemoryEntriesInput, WorkflowUncheckedUpdateWithoutPersistentMemoryEntriesInput>
+    create: XOR<WorkflowCreateWithoutPersistentMemoryEntriesInput, WorkflowUncheckedCreateWithoutPersistentMemoryEntriesInput>
+    where?: WorkflowWhereInput
+  }
+
+  export type WorkflowUpdateToOneWithWhereWithoutPersistentMemoryEntriesInput = {
+    where?: WorkflowWhereInput
+    data: XOR<WorkflowUpdateWithoutPersistentMemoryEntriesInput, WorkflowUncheckedUpdateWithoutPersistentMemoryEntriesInput>
+  }
+
+  export type WorkflowUpdateWithoutPersistentMemoryEntriesInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    webhookSecret?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    nodes?: NodeUpdateManyWithoutWorkflowNestedInput
+    connections?: ConnectionUpdateManyWithoutWorkflowNestedInput
+    executions?: ExecutionUpdateManyWithoutWorkflowNestedInput
+    user?: UserUpdateOneRequiredWithoutWorkflowsNestedInput
+  }
+
+  export type WorkflowUncheckedUpdateWithoutPersistentMemoryEntriesInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    webhookSecret?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    userId?: StringFieldUpdateOperationsInput | string
+    nodes?: NodeUncheckedUpdateManyWithoutWorkflowNestedInput
+    connections?: ConnectionUncheckedUpdateManyWithoutWorkflowNestedInput
+    executions?: ExecutionUncheckedUpdateManyWithoutWorkflowNestedInput
+  }
+
   export type SessionCreateManyUserInput = {
     id: string
     expiresAt: Date | string
@@ -23456,6 +27231,25 @@ export namespace Prisma {
     startedAt?: Date | string | null
     completedAt?: Date | string | null
     error?: NullableJsonNullValueInput | InputJsonValue
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type PersistentMemoryEntryCreateManyUserInput = {
+    id?: string
+    scope: $Enums.PersistentMemoryScope
+    ownerId: string
+    workflowId?: string | null
+    namespace?: string
+    key: string
+    value: JsonNullValueInput | InputJsonValue
+    textValue?: string | null
+    embedding?: NullableJsonNullValueInput | InputJsonValue
+    embeddingProvider?: $Enums.CredentialProvider | null
+    embeddingModel?: string | null
+    sourceExecutionId?: string | null
+    sourceStepId?: string | null
+    sourceNodeId?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
   }
@@ -23544,6 +27338,7 @@ export namespace Prisma {
     nodes?: NodeUpdateManyWithoutWorkflowNestedInput
     connections?: ConnectionUpdateManyWithoutWorkflowNestedInput
     executions?: ExecutionUpdateManyWithoutWorkflowNestedInput
+    persistentMemoryEntries?: PersistentMemoryEntryUpdateManyWithoutWorkflowNestedInput
   }
 
   export type WorkflowUncheckedUpdateWithoutUserInput = {
@@ -23555,6 +27350,7 @@ export namespace Prisma {
     nodes?: NodeUncheckedUpdateManyWithoutWorkflowNestedInput
     connections?: ConnectionUncheckedUpdateManyWithoutWorkflowNestedInput
     executions?: ExecutionUncheckedUpdateManyWithoutWorkflowNestedInput
+    persistentMemoryEntries?: PersistentMemoryEntryUncheckedUpdateManyWithoutWorkflowNestedInput
   }
 
   export type WorkflowUncheckedUpdateManyWithoutUserInput = {
@@ -23652,6 +27448,63 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
+  export type PersistentMemoryEntryUpdateWithoutUserInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    scope?: EnumPersistentMemoryScopeFieldUpdateOperationsInput | $Enums.PersistentMemoryScope
+    ownerId?: StringFieldUpdateOperationsInput | string
+    namespace?: StringFieldUpdateOperationsInput | string
+    key?: StringFieldUpdateOperationsInput | string
+    value?: JsonNullValueInput | InputJsonValue
+    textValue?: NullableStringFieldUpdateOperationsInput | string | null
+    embedding?: NullableJsonNullValueInput | InputJsonValue
+    embeddingProvider?: NullableEnumCredentialProviderFieldUpdateOperationsInput | $Enums.CredentialProvider | null
+    embeddingModel?: NullableStringFieldUpdateOperationsInput | string | null
+    sourceExecutionId?: NullableStringFieldUpdateOperationsInput | string | null
+    sourceStepId?: NullableStringFieldUpdateOperationsInput | string | null
+    sourceNodeId?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    workflow?: WorkflowUpdateOneWithoutPersistentMemoryEntriesNestedInput
+  }
+
+  export type PersistentMemoryEntryUncheckedUpdateWithoutUserInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    scope?: EnumPersistentMemoryScopeFieldUpdateOperationsInput | $Enums.PersistentMemoryScope
+    ownerId?: StringFieldUpdateOperationsInput | string
+    workflowId?: NullableStringFieldUpdateOperationsInput | string | null
+    namespace?: StringFieldUpdateOperationsInput | string
+    key?: StringFieldUpdateOperationsInput | string
+    value?: JsonNullValueInput | InputJsonValue
+    textValue?: NullableStringFieldUpdateOperationsInput | string | null
+    embedding?: NullableJsonNullValueInput | InputJsonValue
+    embeddingProvider?: NullableEnumCredentialProviderFieldUpdateOperationsInput | $Enums.CredentialProvider | null
+    embeddingModel?: NullableStringFieldUpdateOperationsInput | string | null
+    sourceExecutionId?: NullableStringFieldUpdateOperationsInput | string | null
+    sourceStepId?: NullableStringFieldUpdateOperationsInput | string | null
+    sourceNodeId?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type PersistentMemoryEntryUncheckedUpdateManyWithoutUserInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    scope?: EnumPersistentMemoryScopeFieldUpdateOperationsInput | $Enums.PersistentMemoryScope
+    ownerId?: StringFieldUpdateOperationsInput | string
+    workflowId?: NullableStringFieldUpdateOperationsInput | string | null
+    namespace?: StringFieldUpdateOperationsInput | string
+    key?: StringFieldUpdateOperationsInput | string
+    value?: JsonNullValueInput | InputJsonValue
+    textValue?: NullableStringFieldUpdateOperationsInput | string | null
+    embedding?: NullableJsonNullValueInput | InputJsonValue
+    embeddingProvider?: NullableEnumCredentialProviderFieldUpdateOperationsInput | $Enums.CredentialProvider | null
+    embeddingModel?: NullableStringFieldUpdateOperationsInput | string | null
+    sourceExecutionId?: NullableStringFieldUpdateOperationsInput | string | null
+    sourceStepId?: NullableStringFieldUpdateOperationsInput | string | null
+    sourceNodeId?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
   export type NodeCreateManyWorkflowInput = {
     id?: string
     name: string
@@ -23684,6 +27537,25 @@ export namespace Prisma {
     startedAt?: Date | string | null
     completedAt?: Date | string | null
     error?: NullableJsonNullValueInput | InputJsonValue
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type PersistentMemoryEntryCreateManyWorkflowInput = {
+    id?: string
+    scope: $Enums.PersistentMemoryScope
+    ownerId: string
+    userId: string
+    namespace?: string
+    key: string
+    value: JsonNullValueInput | InputJsonValue
+    textValue?: string | null
+    embedding?: NullableJsonNullValueInput | InputJsonValue
+    embeddingProvider?: $Enums.CredentialProvider | null
+    embeddingModel?: string | null
+    sourceExecutionId?: string | null
+    sourceStepId?: string | null
+    sourceNodeId?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
   }
@@ -23804,6 +27676,63 @@ export namespace Prisma {
     startedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     completedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     error?: NullableJsonNullValueInput | InputJsonValue
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type PersistentMemoryEntryUpdateWithoutWorkflowInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    scope?: EnumPersistentMemoryScopeFieldUpdateOperationsInput | $Enums.PersistentMemoryScope
+    ownerId?: StringFieldUpdateOperationsInput | string
+    namespace?: StringFieldUpdateOperationsInput | string
+    key?: StringFieldUpdateOperationsInput | string
+    value?: JsonNullValueInput | InputJsonValue
+    textValue?: NullableStringFieldUpdateOperationsInput | string | null
+    embedding?: NullableJsonNullValueInput | InputJsonValue
+    embeddingProvider?: NullableEnumCredentialProviderFieldUpdateOperationsInput | $Enums.CredentialProvider | null
+    embeddingModel?: NullableStringFieldUpdateOperationsInput | string | null
+    sourceExecutionId?: NullableStringFieldUpdateOperationsInput | string | null
+    sourceStepId?: NullableStringFieldUpdateOperationsInput | string | null
+    sourceNodeId?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    user?: UserUpdateOneRequiredWithoutPersistentMemoryEntriesNestedInput
+  }
+
+  export type PersistentMemoryEntryUncheckedUpdateWithoutWorkflowInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    scope?: EnumPersistentMemoryScopeFieldUpdateOperationsInput | $Enums.PersistentMemoryScope
+    ownerId?: StringFieldUpdateOperationsInput | string
+    userId?: StringFieldUpdateOperationsInput | string
+    namespace?: StringFieldUpdateOperationsInput | string
+    key?: StringFieldUpdateOperationsInput | string
+    value?: JsonNullValueInput | InputJsonValue
+    textValue?: NullableStringFieldUpdateOperationsInput | string | null
+    embedding?: NullableJsonNullValueInput | InputJsonValue
+    embeddingProvider?: NullableEnumCredentialProviderFieldUpdateOperationsInput | $Enums.CredentialProvider | null
+    embeddingModel?: NullableStringFieldUpdateOperationsInput | string | null
+    sourceExecutionId?: NullableStringFieldUpdateOperationsInput | string | null
+    sourceStepId?: NullableStringFieldUpdateOperationsInput | string | null
+    sourceNodeId?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type PersistentMemoryEntryUncheckedUpdateManyWithoutWorkflowInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    scope?: EnumPersistentMemoryScopeFieldUpdateOperationsInput | $Enums.PersistentMemoryScope
+    ownerId?: StringFieldUpdateOperationsInput | string
+    userId?: StringFieldUpdateOperationsInput | string
+    namespace?: StringFieldUpdateOperationsInput | string
+    key?: StringFieldUpdateOperationsInput | string
+    value?: JsonNullValueInput | InputJsonValue
+    textValue?: NullableStringFieldUpdateOperationsInput | string | null
+    embedding?: NullableJsonNullValueInput | InputJsonValue
+    embeddingProvider?: NullableEnumCredentialProviderFieldUpdateOperationsInput | $Enums.CredentialProvider | null
+    embeddingModel?: NullableStringFieldUpdateOperationsInput | string | null
+    sourceExecutionId?: NullableStringFieldUpdateOperationsInput | string | null
+    sourceStepId?: NullableStringFieldUpdateOperationsInput | string | null
+    sourceNodeId?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }

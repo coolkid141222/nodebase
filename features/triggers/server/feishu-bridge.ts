@@ -40,6 +40,7 @@ type WorkflowMatch = {
 };
 
 type FeishuBridgeMessage = {
+  eventId: string | null;
   chatId: string | null;
   chatType: string | null;
   messageId: string | null;
@@ -52,6 +53,9 @@ type FeishuBridgeMessage = {
 type FeishuBridgeResult = {
   replyText: string | null;
   status: "ignored" | "handled" | "error";
+  executionId?: string | null;
+  workflowId?: string | null;
+  draftWorkflowId?: string | null;
 };
 
 const RUN_DELIMITER = "::";
@@ -75,6 +79,7 @@ function getAllowedChatIds() {
 
 function getAppBaseUrl() {
   return (
+    process.env.FEISHU_BRIDGE_PUBLIC_BASE_URL?.trim() ||
     process.env.BETTER_AUTH_URL?.trim() ||
     process.env.NEXT_PUBLIC_BETTER_AUTH_URL?.trim() ||
     (process.env.VERCEL_PROJECT_PRODUCTION_URL
@@ -213,6 +218,7 @@ export function extractFeishuBridgeMessage(value: unknown): FeishuBridgeMessage 
       : null;
 
   return {
+    eventId: typeof record.event_id === "string" ? record.event_id : null,
     chatId: typeof message?.chat_id === "string" ? message.chat_id : null,
     chatType: typeof message?.chat_type === "string" ? message.chat_type : null,
     messageId:
@@ -226,6 +232,56 @@ export function extractFeishuBridgeMessage(value: unknown): FeishuBridgeMessage 
         : null,
     rawEvent: toInputJsonValue(value),
   };
+}
+
+async function findExistingReceipt(eventId: string) {
+  return prisma.feishuBridgeReceipt.findUnique({
+    where: {
+      eventId,
+    },
+    select: {
+      replyText: true,
+      status: true,
+      workflowId: true,
+      executionId: true,
+      draftWorkflowId: true,
+    },
+  });
+}
+
+async function persistReceipt(params: {
+  eventId: string;
+  messageId: string | null;
+  chatId: string | null;
+  commandType: BridgeCommand["type"];
+  result: FeishuBridgeResult;
+}) {
+  try {
+    await prisma.feishuBridgeReceipt.create({
+      data: {
+        eventId: params.eventId,
+        messageId: params.messageId,
+        chatId: params.chatId,
+        commandType: params.commandType,
+        status: params.result.status,
+        replyText: params.result.replyText,
+        workflowId: params.result.workflowId ?? null,
+        executionId: params.result.executionId ?? null,
+        draftWorkflowId: params.result.draftWorkflowId ?? null,
+      },
+    });
+  } catch (error) {
+    if (
+      error &&
+      typeof error === "object" &&
+      "code" in error &&
+      error.code === "P2002"
+    ) {
+      return;
+    }
+
+    throw error;
+  }
 }
 
 export function parseFeishuBridgeCommand(text: string): BridgeCommand {
@@ -593,67 +649,102 @@ export async function handleFeishuBridgeMessage(params: {
 
   const command = parseFeishuBridgeCommand(message.text);
 
+  if (message.eventId) {
+    const existingReceipt = await findExistingReceipt(message.eventId);
+
+    if (existingReceipt) {
+      return {
+        status:
+          existingReceipt.status === "error"
+            ? "error"
+            : existingReceipt.status === "ignored"
+              ? "ignored"
+              : "handled",
+        replyText: existingReceipt.replyText,
+        executionId: existingReceipt.executionId,
+        workflowId: existingReceipt.workflowId,
+        draftWorkflowId: existingReceipt.draftWorkflowId,
+      } satisfies FeishuBridgeResult;
+    }
+  }
+
+  const finalizeResult = async (result: FeishuBridgeResult) => {
+    if (message.eventId) {
+      await persistReceipt({
+        eventId: message.eventId,
+        messageId: message.messageId,
+        chatId: message.chatId,
+        commandType: command.type,
+        result,
+      });
+    }
+
+    return result;
+  };
+
   if (command.type === "help") {
-    return {
+    return finalizeResult({
       status: "handled",
       replyText: buildHelpReply(),
-    } satisfies FeishuBridgeResult;
+    } satisfies FeishuBridgeResult);
   }
 
   if (command.type === "list") {
     const workflows = await listAccessibleWorkflows();
 
-    return {
+    return finalizeResult({
       status: "handled",
       replyText: buildWorkflowListReply(workflows),
-    } satisfies FeishuBridgeResult;
+    } satisfies FeishuBridgeResult);
   }
 
   if (command.type === "draft") {
     try {
       const draftWorkflow = await createWorkflowDraftFromFeishu(command.prompt);
 
-      return {
+      return finalizeResult({
         status: "handled",
         replyText: [
           `Created draft workflow "${draftWorkflow.title}".`,
           draftWorkflow.summary,
           draftWorkflow.editorUrl,
         ].join("\n"),
-      } satisfies FeishuBridgeResult;
+        workflowId: draftWorkflow.workflowId,
+        draftWorkflowId: draftWorkflow.workflowId,
+      } satisfies FeishuBridgeResult);
     } catch (error) {
-      return {
+      return finalizeResult({
         status: "error",
         replyText:
           error instanceof Error
             ? error.message
             : "Failed to generate a workflow draft from Feishu.",
-      } satisfies FeishuBridgeResult;
+      } satisfies FeishuBridgeResult);
     }
   }
 
   if (command.type === "invalid") {
-    return {
+    return finalizeResult({
       status: "error",
       replyText: command.message,
-    } satisfies FeishuBridgeResult;
+    } satisfies FeishuBridgeResult);
   }
 
   const resolved = await resolveWorkflowReference(command.workflowRef);
 
   if (resolved.ambiguous) {
-    return {
+    return finalizeResult({
       status: "error",
       replyText:
         "More than one workflow matches that name. Use the workflow id instead.",
-    } satisfies FeishuBridgeResult;
+    } satisfies FeishuBridgeResult);
   }
 
   if (!resolved.workflow) {
-    return {
+    return finalizeResult({
       status: "error",
       replyText: `Workflow "${command.workflowRef}" was not found.`,
-    } satisfies FeishuBridgeResult;
+    } satisfies FeishuBridgeResult);
   }
 
   try {
@@ -667,12 +758,14 @@ export async function handleFeishuBridgeMessage(params: {
       rawEvent: message.rawEvent,
     });
 
-    return {
+    return finalizeResult({
       status: "handled",
       replyText: queuedExecution.queued
         ? `Queued workflow "${resolved.workflow.name}" (${queuedExecution.executionId}).`
         : `Started workflow "${resolved.workflow.name}" (${queuedExecution.executionId}).`,
-    } satisfies FeishuBridgeResult;
+      workflowId: resolved.workflow.id,
+      executionId: queuedExecution.executionId,
+    } satisfies FeishuBridgeResult);
   } catch (error) {
     const replyText =
       error instanceof WorkflowExecutionError
@@ -681,9 +774,10 @@ export async function handleFeishuBridgeMessage(params: {
           ? error.message
           : "Failed to trigger the workflow from Feishu.";
 
-    return {
+    return finalizeResult({
       status: "error",
       replyText,
-    } satisfies FeishuBridgeResult;
+      workflowId: resolved.workflow.id,
+    } satisfies FeishuBridgeResult);
   }
 }

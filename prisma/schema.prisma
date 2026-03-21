@@ -374,3 +374,22 @@ model PersistentMemoryEntry {
   @@index([workflowId, updatedAt])
   @@map("persistent_memory_entries")
 }
+
+model FeishuBridgeReceipt {
+  id              String   @id @default(cuid())
+  eventId         String   @unique
+  messageId       String?
+  chatId          String?
+  commandType     String?
+  status          String
+  replyText       String?
+  workflowId      String?
+  executionId     String?
+  draftWorkflowId String?
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  @@index([messageId])
+  @@index([chatId, createdAt])
+  @@map("feishu_bridge_receipts")
+}
