@@ -2,6 +2,8 @@ import { SidebarInset, SidebarProvider } from "@/components/sidebar";
 import { AppSidebar } from "../components/app-sidebar";
 import { WorkflowExecutionStatusScope } from "@/features/executions/components/workflow-execution-status-context";
 
+export const runtime = "nodejs";
+
 const Layout = ({ children }: { children: React.ReactNode }) => {
     return (
         <SidebarProvider defaultOpen={true}>
