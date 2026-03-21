@@ -21,7 +21,7 @@ export const LoopNode = memo((props: NodeProps) => {
     edges: getEdges(),
   });
   const maxIterations = nodeData.maxIterations ?? 3;
-  const description = `${maxIterations}x max iterations`;
+  const description = `Scope controller · ${maxIterations}x`;
 
   const handleSubmit = (values: LoopFormValues) => {
     setNodes((nodes) =>
@@ -59,7 +59,7 @@ export const LoopNode = memo((props: NodeProps) => {
         name="Loop"
         description={description}
         status={nodeStatus}
-        nodeClassName="h-[56px] min-w-[104px] rounded-xl border-dashed"
+        nodeClassName="h-[56px] min-w-[112px] rounded-xl border-dashed"
         contentClassName="relative px-3"
         onSetting={() => setDialogOpen(true)}
       >

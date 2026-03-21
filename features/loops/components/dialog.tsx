@@ -112,12 +112,11 @@ export function LoopDialog({
               <RotateCwIcon className="h-5 w-5 text-primary" />
             </div>
             <div>
-              <DialogTitle>Configure Loop</DialogTitle>
+              <DialogTitle>Configure Loop Scope</DialogTitle>
               <DialogDescription className="pt-2">
-                One loop node controls the entire enclosed scope. Everything
-                inside that cyclic region repeats up to the configured limit,
-                and downstream nodes continue only after the loop scope
-                finishes.
+                One loop node controls one closed cyclic region. The enclosed
+                body repeats up to the configured limit, then the workflow
+                continues to downstream nodes exactly once.
               </DialogDescription>
             </div>
           </div>
@@ -127,8 +126,19 @@ export function LoopDialog({
           onSubmit={form.handleSubmit((values) => onSubmit(values))}
           className="space-y-4"
         >
+          <div className="rounded-xl border border-border/70 bg-muted/20 p-4">
+            <div className="text-sm font-medium text-foreground">
+              How to use this loop
+            </div>
+            <ol className="mt-2 space-y-1.5 text-sm leading-6 text-muted-foreground">
+              <li>1. Put exactly one Loop node inside the section you want to repeat.</li>
+              <li>2. Connect a closed cycle through that section, for example <code>{"Loop -> AI Text -> Loop"}</code>.</li>
+              <li>3. Keep downstream nodes outside the cycle. They run only after the last iteration.</li>
+            </ol>
+          </div>
+
           <FieldGroup>
-            <FieldLabel htmlFor="maxIterations">Max iterations</FieldLabel>
+            <FieldLabel htmlFor="maxIterations">Scope iteration limit</FieldLabel>
             <Field>
               <Input
                 id="maxIterations"
@@ -139,7 +149,7 @@ export function LoopDialog({
               />
             </Field>
             <FieldDescription>
-              The loop body can repeat up to this many times.
+              The enclosed loop body can repeat up to this many times.
             </FieldDescription>
             <FieldError errors={[form.formState.errors.maxIterations]} />
           </FieldGroup>
@@ -149,7 +159,7 @@ export function LoopDialog({
               <div className="space-y-1">
                 <FieldLabel>Write to memory</FieldLabel>
                 <FieldDescription>
-                  Persist loop state into execution memory. Useful templates:{" "}
+                  Persist scope state into execution memory. Useful templates:{" "}
                   <code>{"{{current.attempt}}"}</code>,{" "}
                   <code>{"{{current.output.value}}"}</code>,{" "}
                   <code>{"{{input}}"}</code>.

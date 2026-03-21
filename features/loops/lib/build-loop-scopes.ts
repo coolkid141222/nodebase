@@ -1,6 +1,6 @@
 import type { Edge, Node } from "@xyflow/react";
 
-type LoopScope = {
+export type LoopScope = {
   id: string;
   nodeIds: string[];
   x: number;
@@ -9,6 +9,7 @@ type LoopScope = {
   height: number;
   maxIterations: number;
   bodyNodeCount: number;
+  bodyNodeNames: string[];
 };
 
 type MeasuredNode = Node & {
@@ -20,6 +21,7 @@ type MeasuredNode = Node & {
   };
   data?: {
     maxIterations?: number;
+    name?: string;
   };
 };
 
@@ -31,7 +33,28 @@ const SCOPE_PADDING_X = 34;
 const SCOPE_PADDING_TOP = 34;
 const SCOPE_PADDING_BOTTOM = 46;
 
-function getNodeVisualRect(node: MeasuredNode) {
+function formatNodeDisplayName(node: MeasuredNode | undefined) {
+  if (!node) {
+    return null;
+  }
+
+  const explicitName = node.data?.name?.trim();
+  if (explicitName) {
+    return explicitName;
+  }
+
+  if (typeof node.type === "string" && node.type.trim()) {
+    return node.type
+      .toLowerCase()
+      .split("_")
+      .map((part) => part.charAt(0).toUpperCase() + part.slice(1))
+      .join(" ");
+  }
+
+  return null;
+}
+
+export function getLoopNodeVisualRect(node: MeasuredNode) {
   const width =
     node.measured?.width ??
     node.width ??
@@ -151,7 +174,7 @@ export function buildLoopScopes(params: {
     const visualRects = component
       .map((nodeId) => nodeById.get(nodeId))
       .filter((node): node is MeasuredNode => Boolean(node))
-      .map(getNodeVisualRect);
+      .map(getLoopNodeVisualRect);
 
     if (visualRects.length === 0) {
       return [];
@@ -162,6 +185,10 @@ export function buildLoopScopes(params: {
     const maxX = Math.max(...visualRects.map((rect) => rect.x + rect.width));
     const maxY = Math.max(...visualRects.map((rect) => rect.y + rect.height));
     const primaryLoopNode = loopNodes[0];
+    const bodyNodeNames = component
+      .filter((nodeId) => nodeId !== primaryLoopNode.id)
+      .map((nodeId) => formatNodeDisplayName(nodeById.get(nodeId)))
+      .filter((name): name is string => Boolean(name));
 
     return [
       {
@@ -174,6 +201,7 @@ export function buildLoopScopes(params: {
         maxIterations: primaryLoopNode.data?.maxIterations ?? 3,
         bodyNodeCount: component.filter((nodeId) => nodeId !== primaryLoopNode.id)
           .length,
+        bodyNodeNames,
       },
     ];
   });
