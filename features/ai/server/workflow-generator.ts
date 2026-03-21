@@ -40,6 +40,8 @@ const PROBLEM_SOLVING_PROMPT_PATTERN =
 const RESEARCH_PROMPT_PATTERN =
   /\b(research|browse|browser|website|web page|page|url|link|docs?|documentation|source)\b|网页|页面|网址|链接|官网|文档|资料|来源/i;
 const URL_PATTERN = /https?:\/\/[^\s)]+/i;
+const FEISHU_PROMPT_PATTERN = /\b(feishu|lark|larksuite)\b|飞书/i;
+const FEISHU_WEBHOOK_PATTERN = /open\.feishu\.cn\/open-apis\/bot\/v2\/hook/i;
 
 const WORKFLOW_NODE_X = 300;
 const WORKFLOW_NODE_Y = 210;
@@ -279,14 +281,18 @@ function formatCredentialInventory(credentials: UserCredentialSummary[]) {
 
 function formatToolInventory() {
   const registry = getToolRegistrySnapshot();
-  const internalTools = registry.tools.filter((tool) => tool.provider === "INTERNAL");
+  const preferredTools = registry.tools.filter(
+    (tool) =>
+      (tool.provider === "INTERNAL" || tool.provider === "FEISHU") &&
+      tool.lifecycle === "READY",
+  );
 
-  if (internalTools.length === 0) {
+  if (preferredTools.length === 0) {
     return "No runtime tools are available.";
   }
 
-  return internalTools
-    .map((tool) => `- INTERNAL: ${tool.id} (${tool.description})`)
+  return preferredTools
+    .map((tool) => `- ${tool.provider}: ${tool.id} (${tool.description})`)
     .join("\n");
 }
 
@@ -328,6 +334,8 @@ Memory rules:
 Problem-solving rules:
 - When the request needs external information, create a TOOL node before AI reasoning.
 - Prefer INTERNAL tool id "internal.browser_page" for public web research.
+- If the user mentions Feishu, Lark, or 飞书, prefer a TOOL node with provider "FEISHU" and toolId "feishu.message.send".
+- Do not use HTTP_REQUEST for Feishu webhook delivery when the native Feishu tool is available.
 - After a TOOL node, feed the extracted result into an AI_TEXT node with {{input}}.
 - Use LOOP only when iterative refinement is part of the strategy.
 - For non-trivial problem-solving prompts, use at least two processing nodes.
@@ -358,6 +366,10 @@ Preferred tool usage:
 - internal.browser_page
   - Use for public web pages.
   - argumentsJson example: {"url":"https://example.com","maxChars":4000,"includeLinks":true}
+- feishu.message.send
+  - Use to send the final text result to Feishu / Lark.
+  - provider must be FEISHU.
+  - argumentsJson example: {"text":"{{input}}"}
 
 Important constraints:
 - Use exactly one trigger node.
@@ -639,6 +651,10 @@ function wantsResearchTool(prompt: string) {
   return RESEARCH_PROMPT_PATTERN.test(prompt) || URL_PATTERN.test(prompt);
 }
 
+function wantsFeishuDelivery(prompt: string) {
+  return FEISHU_PROMPT_PATTERN.test(prompt);
+}
+
 function extractFirstUrl(prompt: string) {
   return prompt.match(URL_PATTERN)?.[0] ?? null;
 }
@@ -664,6 +680,72 @@ function createAnalysisPrompt(userPrompt: string) {
     "User task:",
     userPrompt,
   ].join("\n");
+}
+
+function extractMessageTextTemplateFromJsonString(value?: string | null) {
+  if (!value?.trim()) {
+    return "{{input}}";
+  }
+
+  try {
+    const parsed = JSON.parse(value) as unknown;
+
+    if (
+      parsed &&
+      typeof parsed === "object" &&
+      !Array.isArray(parsed)
+    ) {
+      const directText = "text" in parsed ? parsed.text : undefined;
+      if (typeof directText === "string" && directText.trim()) {
+        return directText.trim();
+      }
+
+      const content = "content" in parsed ? parsed.content : undefined;
+      if (
+        content &&
+        typeof content === "object" &&
+        !Array.isArray(content) &&
+        "text" in content &&
+        typeof content.text === "string" &&
+        content.text.trim()
+      ) {
+        return content.text.trim();
+      }
+    }
+  } catch {
+    // Fall back to semantic input when the model emits invalid JSON.
+  }
+
+  return "{{input}}";
+}
+
+function createFeishuToolNodeFromTemplate(params: {
+  node:
+    | Extract<AIWorkflowDraft["nodes"][number], { type: "HTTP_REQUEST" }>
+    | Extract<AIWorkflowDraft["nodes"][number], { type: "SLACK_MESSAGE" }>
+    | Extract<AIWorkflowDraft["nodes"][number], { type: "DISCORD_MESSAGE" }>;
+  textTemplate: string;
+}): Extract<AIWorkflowDraft["nodes"][number], { type: "TOOL" }> {
+  const text = params.textTemplate.trim() || "{{input}}";
+
+  return {
+    id: params.node.id,
+    type: "TOOL",
+    column: params.node.column,
+    row: params.node.row,
+    config: {
+      provider: "FEISHU",
+      toolId: "feishu.message.send",
+      argumentsJson: JSON.stringify(
+        {
+          text,
+        },
+        null,
+        2,
+      ),
+      memoryWrites: params.node.config.memoryWrites ?? [],
+    },
+  };
 }
 
 function ensureNodeMemoryWrite(
@@ -845,8 +927,13 @@ function promoteProblemSolvingDraft(params: {
     });
   }
 
-  const updatedToolNodes = workingDraft.nodes.filter((node) => node.type === "TOOL");
-  for (const [index, toolNode] of updatedToolNodes.entries()) {
+  const researchToolNodes = workingDraft.nodes.filter(
+    (node) =>
+      node.type === "TOOL" &&
+      node.config.provider === "INTERNAL" &&
+      node.config.toolId === "internal.browser_page",
+  );
+  for (const [index, toolNode] of researchToolNodes.entries()) {
     ensureNodeMemoryWrite(toolNode, {
       scope: "SHARED",
       namespace: "research",
@@ -888,6 +975,118 @@ function promoteProblemSolvingDraft(params: {
       (node.config.content.trim() === "{{input}}" || node.config.content.trim() === "")
     ) {
       node.config.content = "{{memory.shared.answers.final}}";
+    }
+  }
+
+  return workingDraft;
+}
+
+function normalizeFeishuDeliveryDraft(params: {
+  draft: AIWorkflowDraft;
+  userPrompt: string;
+}) {
+  const workingDraft: AIWorkflowDraft = structuredClone(params.draft);
+
+  if (!wantsFeishuDelivery(params.userPrompt)) {
+    return workingDraft;
+  }
+
+  let normalizedExistingDelivery = false;
+  const hasNativeFeishuTool = workingDraft.nodes.some(
+    (node) =>
+      node.type === "TOOL" &&
+      node.config.provider === "FEISHU" &&
+      node.config.toolId === "feishu.message.send",
+  );
+
+  workingDraft.nodes = workingDraft.nodes.map((node) => {
+    if (
+      node.type === "HTTP_REQUEST" &&
+      (FEISHU_WEBHOOK_PATTERN.test(node.config.endpoint) ||
+        node.config.endpoint.includes("{webhookId}"))
+    ) {
+      normalizedExistingDelivery = true;
+      return createFeishuToolNodeFromTemplate({
+        node,
+        textTemplate: extractMessageTextTemplateFromJsonString(node.config.body),
+      });
+    }
+
+    if (
+      !hasNativeFeishuTool &&
+      (node.type === "SLACK_MESSAGE" || node.type === "DISCORD_MESSAGE")
+    ) {
+      normalizedExistingDelivery = true;
+      return createFeishuToolNodeFromTemplate({
+        node,
+        textTemplate: node.config.content,
+      });
+    }
+
+    return node;
+  });
+
+  const nowHasFeishuTool = workingDraft.nodes.some(
+    (node) =>
+      node.type === "TOOL" &&
+      node.config.provider === "FEISHU" &&
+      node.config.toolId === "feishu.message.send",
+  );
+
+  if (normalizedExistingDelivery) {
+    workingDraft.notes.push(
+      "Normalized the delivery step to the native Feishu tool node.",
+    );
+  }
+
+  if (!nowHasFeishuTool) {
+    const defaultEdges = workingDraft.edges.filter((edge) => edge.role === "DEFAULT");
+    const sourceNodeIds = new Set(defaultEdges.map((edge) => edge.source));
+    const terminalNode = [...workingDraft.nodes]
+      .filter(
+        (node) =>
+          node.type !== "MANUAL_TRIGGER" &&
+          node.type !== "WEBHOOK_TRIGGER" &&
+          node.type !== "LOOP" &&
+          !sourceNodeIds.has(node.id),
+      )
+      .sort((left, right) => {
+        if (right.column !== left.column) {
+          return right.column - left.column;
+        }
+
+        return right.row - left.row;
+      })[0];
+
+    if (terminalNode) {
+      const existingIds = new Set(workingDraft.nodes.map((node) => node.id));
+      const feishuNodeId = createDraftNodeId(existingIds, "feishu_message");
+      workingDraft.nodes.push({
+        id: feishuNodeId,
+        type: "TOOL",
+        column: terminalNode.column + 1,
+        row: terminalNode.row,
+        config: {
+          provider: "FEISHU",
+          toolId: "feishu.message.send",
+          argumentsJson: JSON.stringify(
+            {
+              text: "{{input}}",
+            },
+            null,
+            2,
+          ),
+          memoryWrites: [],
+        },
+      });
+      workingDraft.edges.push({
+        source: terminalNode.id,
+        target: feishuNodeId,
+        role: "DEFAULT",
+      });
+      workingDraft.notes.push(
+        "Added a native Feishu delivery node for the final answer.",
+      );
     }
   }
 
@@ -1339,7 +1538,11 @@ export async function generateWorkflowDraft(params: {
     draft,
     userPrompt: params.input.prompt,
   });
-  const normalizedDraft = normalizeLoopDraft(promotedDraft);
+  const feishuNormalizedDraft = normalizeFeishuDeliveryDraft({
+    draft: promotedDraft,
+    userPrompt: params.input.prompt,
+  });
+  const normalizedDraft = normalizeLoopDraft(feishuNormalizedDraft);
   validateGeneratedDraft(normalizedDraft);
 
   return mapGeneratedDraftToCanvas({
