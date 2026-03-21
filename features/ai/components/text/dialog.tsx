@@ -126,8 +126,10 @@ export const AITextDialog = ({
             <div>
               <DialogTitle>Configure AI Text</DialogTitle>
               <DialogDescription className="pt-2">
-                Generate text with Gemini, OpenAI, or Anthropic. Prompt and
-                system fields support workflow templates like{" "}
+                Generate text with Gemini, OpenAI, Anthropic, DeepSeek, or
+                MiniMax. Prompt and system fields support workflow templates
+                like <code>{"{{input.body.message}}"}</code>,{" "}
+                <code>{"{{inputs.main.text}}"}</code>, and{" "}
                 <code>{"{{steps.NODE_ID.output.body}}"}</code>.
               </DialogDescription>
             </div>
@@ -164,6 +166,8 @@ export const AITextDialog = ({
                 <SelectItem value="GOOGLE">Google Gemini</SelectItem>
                 <SelectItem value="OPENAI">OpenAI</SelectItem>
                 <SelectItem value="ANTHROPIC">Anthropic</SelectItem>
+                <SelectItem value="DEEPSEEK">DeepSeek</SelectItem>
+                <SelectItem value="MINIMAX">MiniMax</SelectItem>
               </SelectContent>
             </Select>
           </FieldGroup>

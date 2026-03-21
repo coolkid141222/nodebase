@@ -4,12 +4,16 @@ export const aiTextProviderSchema = z.enum([
   "GOOGLE",
   "OPENAI",
   "ANTHROPIC",
+  "DEEPSEEK",
+  "MINIMAX",
 ]);
 
 export const aiTextDefaultModels = {
   GOOGLE: "gemini-2.5-flash",
   OPENAI: "gpt-4o-mini",
   ANTHROPIC: "claude-3-5-haiku-latest",
+  DEEPSEEK: "deepseek-chat",
+  MINIMAX: "MiniMax-M2.1",
 } as const;
 
 export function getDefaultAITextModel(

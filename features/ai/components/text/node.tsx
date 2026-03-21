@@ -18,12 +18,14 @@ export const AITextNode = memo((props: NodeProps) => {
   const nodeStatus = useWorkflowNodeStatus(props.id);
   const [dialogOpen, setDialogOpen] = useState(false);
   const provider = nodeData.provider ?? "GOOGLE";
-  const providerLabel =
-    provider === "OPENAI"
-      ? "OpenAI"
-      : provider === "ANTHROPIC"
-        ? "Anthropic"
-        : "Gemini";
+  const providerLabelMap = {
+    GOOGLE: "Gemini",
+    OPENAI: "OpenAI",
+    ANTHROPIC: "Anthropic",
+    DEEPSEEK: "DeepSeek",
+    MINIMAX: "MiniMax",
+  } as const;
+  const providerLabel = providerLabelMap[provider];
   const model = nodeData.model || getDefaultAITextModel(provider);
 
   const description = nodeData?.prompt

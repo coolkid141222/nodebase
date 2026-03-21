@@ -88,6 +88,7 @@
     "tailwind-merge": "^3.4.0",
     "undici": "^7.18.2",
     "vaul": "^1.1.2",
+    "vercel-minimax-ai-provider": "^0.0.2",
     "zod": "^4.3.5"
   },
   "devDependencies": {

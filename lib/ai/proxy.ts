@@ -9,10 +9,20 @@ import {
   type GoogleGenerativeAIProviderSettings,
 } from "@ai-sdk/google";
 import {
+  createDeepSeek,
+  type DeepSeekProvider,
+  type DeepSeekProviderSettings,
+} from "@ai-sdk/deepseek";
+import {
   createOpenAI,
   type OpenAIProvider,
   type OpenAIProviderSettings,
 } from "@ai-sdk/openai";
+import {
+  createMinimax,
+  type MinimaxProvider,
+  type MinimaxProviderSettings,
+} from "vercel-minimax-ai-provider";
 import { ProxyAgent } from "undici";
 
 function isHostedRuntime() {
@@ -109,6 +119,26 @@ export const createAnthropicProvider = (
   createProviderWithProxy(
     createAnthropic,
     "ANTHROPIC_USE_PROXY",
+    "http://127.0.0.1:7897",
+    options,
+  );
+
+export const createDeepSeekProvider = (
+  options?: DeepSeekProviderSettings,
+): DeepSeekProvider =>
+  createProviderWithProxy(
+    createDeepSeek,
+    "DEEPSEEK_USE_PROXY",
+    "http://127.0.0.1:7897",
+    options,
+  );
+
+export const createMinimaxProvider = (
+  options?: MinimaxProviderSettings,
+): MinimaxProvider =>
+  createProviderWithProxy(
+    createMinimax,
+    "MINIMAX_USE_PROXY",
     "http://127.0.0.1:7897",
     options,
   );
