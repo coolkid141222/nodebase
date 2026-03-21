@@ -1,11 +1,12 @@
 import prisma from "@/lib/db";
-import type { Prisma } from "@/lib/prisma/client";
+import { CredentialProvider, type Prisma } from "@/lib/prisma/client";
 import { inngest } from "@/inngest/client";
 import {
   createWebhookExecution,
   runExecution,
   WorkflowExecutionError,
 } from "@/features/executions/server/execution-runner";
+import { createGeneratedWorkflowDraft } from "@/features/ai/server/workflow-generator";
 
 type BridgeCommand =
   | {
@@ -72,12 +73,93 @@ function getAllowedChatIds() {
   );
 }
 
+function getAppBaseUrl() {
+  return (
+    process.env.BETTER_AUTH_URL?.trim() ||
+    process.env.NEXT_PUBLIC_BETTER_AUTH_URL?.trim() ||
+    (process.env.VERCEL_PROJECT_PRODUCTION_URL
+      ? `https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}`
+      : null) ||
+    "http://localhost:3000"
+  );
+}
+
 function canUseInngestQueue() {
   return Boolean(process.env.INNGEST_EVENT_KEY?.trim());
 }
 
 function isLikelyWorkflowId(value: string) {
   return /^[a-z0-9]{20,}$/i.test(value.trim());
+}
+
+async function resolveBridgeOwnerUser() {
+  const ownerEmail = getBridgeOwnerEmail();
+
+  if (!ownerEmail) {
+    return null;
+  }
+
+  return prisma.user.findUnique({
+    where: {
+      email: ownerEmail,
+    },
+    select: {
+      id: true,
+      email: true,
+    },
+  });
+}
+
+async function resolveDefaultGeneratorCredential(userId: string) {
+  const providerPriority = [
+    CredentialProvider.MINIMAX,
+    CredentialProvider.DEEPSEEK,
+    CredentialProvider.GOOGLE,
+    CredentialProvider.OPENAI,
+    CredentialProvider.ANTHROPIC,
+  ];
+
+  for (const provider of providerPriority) {
+    const credential = await prisma.credential.findFirst({
+      where: {
+        userId,
+        provider,
+      },
+      select: {
+        id: true,
+        provider: true,
+        metadata: true,
+      },
+      orderBy: {
+        updatedAt: "desc",
+      },
+    });
+
+    if (!credential) {
+      continue;
+    }
+
+    const metadata =
+      credential.metadata &&
+      typeof credential.metadata === "object" &&
+      !Array.isArray(credential.metadata)
+        ? (credential.metadata as Record<string, unknown>)
+        : null;
+    const fields = Array.isArray(metadata?.fields)
+      ? metadata.fields.filter(
+          (value): value is string => typeof value === "string" && value.trim().length > 0,
+        )
+      : [];
+
+    return {
+      credentialId: credential.id,
+      credentialField:
+        fields.includes("apiKey") ? "apiKey" : fields[0] || "apiKey",
+      provider,
+    };
+  }
+
+  return null;
 }
 
 function parseMessageContent(content?: string | null) {
@@ -357,7 +439,7 @@ function buildHelpReply() {
     defaultWorkflowRef
       ? "/run <message>  (runs the default workflow)"
       : "/run <workflow id or exact name> :: <message>",
-    "/draft <workflow idea>  (not implemented yet)",
+    "/draft <workflow idea>",
   ].join("\n");
 }
 
@@ -434,6 +516,50 @@ async function queueWorkflowExecution(params: {
   };
 }
 
+async function createWorkflowDraftFromFeishu(prompt: string) {
+  const owner = await resolveBridgeOwnerUser();
+
+  if (!owner) {
+    throw new Error(
+      "FEISHU_BRIDGE_OWNER_EMAIL is not configured to a valid Nodebase user.",
+    );
+  }
+
+  const generatorCredential = await resolveDefaultGeneratorCredential(owner.id);
+
+  if (!generatorCredential) {
+    throw new Error(
+      "No AI credential is available for the bridge owner. Add a MiniMax, DeepSeek, Google, OpenAI, or Anthropic credential first.",
+    );
+  }
+
+  const draftWorkflow = await createGeneratedWorkflowDraft({
+    userId: owner.id,
+    input: {
+      prompt,
+      provider:
+        generatorCredential.provider === CredentialProvider.MINIMAX
+          ? "MINIMAX"
+          : generatorCredential.provider === CredentialProvider.DEEPSEEK
+            ? "DEEPSEEK"
+            : generatorCredential.provider === CredentialProvider.GOOGLE
+              ? "GOOGLE"
+              : generatorCredential.provider === CredentialProvider.OPENAI
+                ? "OPENAI"
+                : "ANTHROPIC",
+      credentialId: generatorCredential.credentialId,
+      credentialField: generatorCredential.credentialField,
+    },
+  });
+
+  return {
+    workflowId: draftWorkflow.workflowId,
+    title: draftWorkflow.title,
+    summary: draftWorkflow.summary,
+    editorUrl: `${getAppBaseUrl()}/workflows/${draftWorkflow.workflowId}`,
+  };
+}
+
 export async function handleFeishuBridgeMessage(params: {
   event: unknown;
 }) {
@@ -484,11 +610,26 @@ export async function handleFeishuBridgeMessage(params: {
   }
 
   if (command.type === "draft") {
-    return {
-      status: "handled",
-      replyText:
-        "Workflow draft generation from Feishu is not wired yet. Use `/run` for existing workflows first.",
-    } satisfies FeishuBridgeResult;
+    try {
+      const draftWorkflow = await createWorkflowDraftFromFeishu(command.prompt);
+
+      return {
+        status: "handled",
+        replyText: [
+          `Created draft workflow "${draftWorkflow.title}".`,
+          draftWorkflow.summary,
+          draftWorkflow.editorUrl,
+        ].join("\n"),
+      } satisfies FeishuBridgeResult;
+    } catch (error) {
+      return {
+        status: "error",
+        replyText:
+          error instanceof Error
+            ? error.message
+            : "Failed to generate a workflow draft from Feishu.",
+      } satisfies FeishuBridgeResult;
+    }
   }
 
   if (command.type === "invalid") {

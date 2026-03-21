@@ -1,7 +1,7 @@
 import { createId } from "@paralleldrive/cuid2";
 import { generateText } from "ai";
 import type { Edge, Node } from "@xyflow/react";
-import { CredentialProvider } from "@/lib/prisma/client";
+import { CredentialProvider, NodeType, Prisma } from "@/lib/prisma/client";
 import prisma from "@/lib/db";
 import {
   createAnthropicProvider,
@@ -33,6 +33,11 @@ type GeneratedWorkflowResult = {
   notes: string[];
   nodes: Node[];
   edges: Edge[];
+};
+
+type SavedGeneratedWorkflowResult = GeneratedWorkflowResult & {
+  workflowId: string;
+  webhookSecret: string;
 };
 
 const PROBLEM_SOLVING_PROMPT_PATTERN =
@@ -1549,4 +1554,55 @@ export async function generateWorkflowDraft(params: {
     draft: normalizedDraft,
     credentials: userCredentials,
   });
+}
+
+export async function createGeneratedWorkflowDraft(params: {
+  userId: string;
+  input: GenerateWorkflowGraphInput;
+}): Promise<SavedGeneratedWorkflowResult> {
+  const generatedDraft = await generateWorkflowDraft(params);
+  const workflow = await prisma.workflow.create({
+    data: {
+      userId: params.userId,
+      name: generatedDraft.title,
+    },
+    select: {
+      id: true,
+      webhookSecret: true,
+    },
+  });
+
+  if (generatedDraft.nodes.length > 0) {
+    await prisma.node.createMany({
+      data: generatedDraft.nodes.map((node) => ({
+        id: node.id,
+        workflowId: workflow.id,
+        name:
+          typeof node.type === "string" && node.type.length > 0
+            ? node.type
+            : "NODE",
+        type: node.type as NodeType,
+        position: node.position as Prisma.InputJsonValue,
+        data: ((node.data ?? {}) as Record<string, unknown>) as Prisma.InputJsonValue,
+      })),
+    });
+  }
+
+  if (generatedDraft.edges.length > 0) {
+    await prisma.connection.createMany({
+      data: generatedDraft.edges.map((edge) => ({
+        workflowId: workflow.id,
+        fromNodeId: edge.source,
+        toNodeId: edge.target,
+        fromOutput: edge.sourceHandle ?? "source-1",
+        toInput: edge.targetHandle ?? "target-1",
+      })),
+    });
+  }
+
+  return {
+    ...generatedDraft,
+    workflowId: workflow.id,
+    webhookSecret: workflow.webhookSecret,
+  };
 }
