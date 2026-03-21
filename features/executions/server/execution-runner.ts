@@ -98,6 +98,7 @@ type ResolvedAITextInput = {
   system: string | null;
   credentialId: string;
   credentialField: string;
+  toolContext: ResolvedToolInput | null;
 };
 
 type ResolvedDiscordMessageInput = {
@@ -1037,6 +1038,7 @@ function normalizeAITextNodeData(
   const system = stringifyTemplateText(resolvedSystem);
   const credentialId = data.credentialId?.trim();
   const credentialField = data.credentialField?.trim();
+  let toolContext: ResolvedToolInput | null = null;
   const shouldAutoAttachUpstreamInput =
     !containsTemplateExpression(data.prompt) &&
     context.input != null &&
@@ -1063,6 +1065,24 @@ function normalizeAITextNodeData(
     );
   }
 
+  if (data.toolEnabled) {
+    toolContext = normalizeToolNodeData(
+      {
+        ...node,
+        data: {
+          provider: data.toolProvider ?? "INTERNAL",
+          serverId: data.toolServerId ?? "",
+          serverDisplayName: "",
+          toolId: data.toolId ?? "",
+          toolDisplayName: data.toolDisplayName ?? "",
+          argumentsJson: data.toolArgumentsJson ?? "{}",
+          memoryWrites: [],
+        },
+      },
+      context,
+    );
+  }
+
   return {
     provider,
     model,
@@ -1070,7 +1090,68 @@ function normalizeAITextNodeData(
     system: system || null,
     credentialId,
     credentialField,
+    toolContext,
   };
+}
+
+function stringifyToolContext(toolOutput: Prisma.InputJsonValue | null) {
+  if (!toolOutput || typeof toolOutput !== "object" || Array.isArray(toolOutput)) {
+    return "";
+  }
+
+  const output = toolOutput as Record<string, Prisma.InputJsonValue>;
+  const lines: string[] = [];
+
+  if (typeof output.finalUrl === "string") {
+    lines.push(`Source URL: ${output.finalUrl}`);
+  }
+
+  if (typeof output.title === "string" && output.title.trim()) {
+    lines.push(`Title: ${output.title}`);
+  }
+
+  if (typeof output.description === "string" && output.description.trim()) {
+    lines.push(`Description: ${output.description}`);
+  }
+
+  if (typeof output.excerpt === "string" && output.excerpt.trim()) {
+    lines.push(`Excerpt: ${output.excerpt}`);
+  }
+
+  if (typeof output.text === "string" && output.text.trim()) {
+    lines.push(`Page text:\n${output.text}`);
+  }
+
+  if (Array.isArray(output.links) && output.links.length > 0) {
+    const topLinks = output.links
+      .slice(0, 5)
+      .map((item) => {
+        if (!item || typeof item !== "object") {
+          return null;
+        }
+
+        const href = "href" in item && typeof item.href === "string"
+          ? item.href
+          : null;
+        const text =
+          "text" in item && typeof item.text === "string"
+            ? item.text.trim()
+            : "";
+
+        if (!href) {
+          return null;
+        }
+
+        return text ? `- ${text}: ${href}` : `- ${href}`;
+      })
+      .filter(Boolean);
+
+    if (topLinks.length > 0) {
+      lines.push(`Top links:\n${topLinks.join("\n")}`);
+    }
+  }
+
+  return lines.join("\n\n").trim();
 }
 
 async function executeDiscordMessageNode(
@@ -1187,6 +1268,19 @@ async function executeAITextNode(
   execution: ExecutionWithWorkflow,
   input: ResolvedAITextInput,
 ): Promise<NodeExecutionResult> {
+  let toolOutput: Prisma.InputJsonValue | null = null;
+  let prompt = input.prompt;
+
+  if (input.toolContext) {
+    const toolResult = await executeToolNode(input.toolContext);
+    toolOutput = toolResult.output ?? null;
+    const toolContextText = stringifyToolContext(toolOutput);
+
+    if (toolContextText) {
+      prompt = `${input.prompt}\n\nResearch context:\n${toolContextText}`;
+    }
+  }
+
   let model: Parameters<typeof generateText>[0]["model"];
 
   switch (input.provider) {
@@ -1259,7 +1353,7 @@ async function executeAITextNode(
 
   const result = await generateText({
     model,
-    prompt: input.prompt,
+    prompt,
     system: input.system ?? undefined,
     temperature: 0.2,
     maxOutputTokens: 1024,
@@ -1284,6 +1378,7 @@ async function executeAITextNode(
       finishReason: result.finishReason,
       usage: result.usage,
       warnings: result.warnings,
+      toolContext: toolOutput,
     },
   };
 }

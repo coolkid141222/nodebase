@@ -35,7 +35,7 @@ export const AITextNode = memo((props: NodeProps) => {
   });
 
   const description = nodeData?.prompt
-    ? `${providerLabel} · ${model} · ${nodeData.prompt.slice(0, 36)}${nodeData.prompt.length > 36 ? "..." : ""}`
+    ? `${providerLabel} · ${model}${nodeData.toolEnabled && nodeData.toolId ? " · browser context" : ""} · ${nodeData.prompt.slice(0, 36)}${nodeData.prompt.length > 36 ? "..." : ""}`
     : "Not configured";
 
   const handleSubmit = (values: AITextFormValues) => {
@@ -52,6 +52,12 @@ export const AITextNode = memo((props: NodeProps) => {
                 system: values.system || "",
                 credentialId: values.credentialId,
                 credentialField: values.credentialField.trim(),
+                toolEnabled: values.toolEnabled,
+                toolProvider: values.toolProvider,
+                toolServerId: values.toolServerId,
+                toolId: values.toolId,
+                toolDisplayName: values.toolDisplayName,
+                toolArgumentsJson: values.toolArgumentsJson,
                 memoryWrites: values.memoryWrites,
               },
             }
@@ -74,6 +80,12 @@ export const AITextNode = memo((props: NodeProps) => {
           defaultSystem={nodeData.system}
           defaultCredentialId={nodeData.credentialId}
           defaultCredentialField={nodeData.credentialField}
+          defaultToolEnabled={nodeData.toolEnabled}
+          defaultToolProvider={nodeData.toolProvider}
+          defaultToolServerId={nodeData.toolServerId}
+          defaultToolId={nodeData.toolId}
+          defaultToolDisplayName={nodeData.toolDisplayName}
+          defaultToolArgumentsJson={nodeData.toolArgumentsJson}
           defaultMemoryWrites={nodeData.memoryWrites}
           templateVariables={templateVariables}
         />

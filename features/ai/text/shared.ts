@@ -3,6 +3,7 @@ import {
   executionMemoryWriteConfigListSchema,
   type ExecutionMemoryWriteConfig,
 } from "@/features/executions/memory/shared";
+import { toolProviderSchema } from "@/features/tools/shared";
 
 export const aiTextProviderSchema = z.enum([
   "GOOGLE",
@@ -33,6 +34,12 @@ export const aiTextNodeSchema = z.object({
   system: z.string().optional(),
   credentialId: z.string().min(1),
   credentialField: z.string().min(1),
+  toolEnabled: z.boolean().default(false),
+  toolProvider: toolProviderSchema.default("INTERNAL"),
+  toolServerId: z.string().trim().default(""),
+  toolId: z.string().trim().default(""),
+  toolDisplayName: z.string().trim().default(""),
+  toolArgumentsJson: z.string().default("{}"),
   memoryWrites: executionMemoryWriteConfigListSchema,
 });
 
@@ -43,5 +50,11 @@ export type AITextNodeData = {
   system?: string;
   credentialId?: string;
   credentialField?: string;
+  toolEnabled?: boolean;
+  toolProvider?: z.infer<typeof toolProviderSchema>;
+  toolServerId?: string;
+  toolId?: string;
+  toolDisplayName?: string;
+  toolArgumentsJson?: string;
   memoryWrites?: ExecutionMemoryWriteConfig[];
 };

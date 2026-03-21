@@ -3,7 +3,7 @@
 import { useEffect, useMemo } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { BotIcon, PlusIcon, Trash2Icon } from "lucide-react";
+import { BotIcon, PlusIcon, SparklesIcon, Trash2Icon } from "lucide-react";
 import { useFieldArray, useForm, useWatch } from "react-hook-form";
 import z from "zod";
 import { Button } from "@/components/button";
@@ -37,12 +37,14 @@ import {
   aiTextProviderSchema,
   getDefaultAITextModel,
 } from "../../text/shared";
+import { getToolArgumentsPlaceholder } from "@/features/tools/node/shared";
 import {
   createDefaultExecutionMemoryWriteConfig,
   type ExecutionMemoryWriteConfig,
 } from "@/features/executions/memory/shared";
 import { TemplateVariablePicker } from "@/features/executions/components/template-variable-picker";
 import type { TemplateVariableOption } from "@/features/executions/components/template-variables";
+import { Switch } from "@/components/switch";
 
 const formSchema = aiTextNodeSchema.extend({
   system: z.string().optional(),
@@ -62,6 +64,12 @@ type Props = {
   defaultSystem?: string;
   defaultCredentialId?: string;
   defaultCredentialField?: string;
+  defaultToolEnabled?: boolean;
+  defaultToolProvider?: "INTERNAL" | "MCP" | "OPENCLAW";
+  defaultToolServerId?: string;
+  defaultToolId?: string;
+  defaultToolDisplayName?: string;
+  defaultToolArgumentsJson?: string;
   defaultMemoryWrites?: ExecutionMemoryWriteConfig[];
   templateVariables?: TemplateVariableOption[];
 };
@@ -76,11 +84,18 @@ export const AITextDialog = ({
   defaultSystem = "",
   defaultCredentialId = "",
   defaultCredentialField = "apiKey",
+  defaultToolEnabled = false,
+  defaultToolProvider = "INTERNAL",
+  defaultToolServerId = "",
+  defaultToolId = "",
+  defaultToolDisplayName = "",
+  defaultToolArgumentsJson = "{}",
   defaultMemoryWrites,
   templateVariables = [],
 }: Props) => {
   const trpc = useTRPC();
   const credentialsQuery = useQuery(trpc.credentials.getMany.queryOptions());
+  const registryQuery = useQuery(trpc.tools.getRegistry.queryOptions());
   const initialMemoryWritesKey = JSON.stringify(
     defaultMemoryWrites ?? EMPTY_MEMORY_WRITES,
   );
@@ -99,6 +114,12 @@ export const AITextDialog = ({
       system: defaultSystem,
       credentialId: defaultCredentialId,
       credentialField: defaultCredentialField,
+      toolEnabled: defaultToolEnabled,
+      toolProvider: defaultToolProvider,
+      toolServerId: defaultToolServerId,
+      toolId: defaultToolId,
+      toolDisplayName: defaultToolDisplayName,
+      toolArgumentsJson: defaultToolArgumentsJson,
       memoryWrites: initialMemoryWrites,
     },
   });
@@ -113,9 +134,26 @@ export const AITextDialog = ({
     name: "credentialId",
     defaultValue: defaultCredentialId,
   });
+  const toolEnabled = useWatch({
+    control: form.control,
+    name: "toolEnabled",
+    defaultValue: defaultToolEnabled,
+  });
+  const toolId = useWatch({
+    control: form.control,
+    name: "toolId",
+    defaultValue: defaultToolId,
+  });
   const credentials = (credentialsQuery.data ?? []).filter(
     (credential) => credential.provider === selectedProvider,
   );
+  const browserTools = (registryQuery.data?.tools ?? []).filter(
+    (tool) =>
+      tool.provider === "INTERNAL" &&
+      tool.capabilities.includes("BROWSER") &&
+      tool.lifecycle === "READY",
+  );
+  const selectedBrowserTool = browserTools.find((tool) => tool.id === toolId);
   const {
     fields: memoryWriteFields,
     append: appendMemoryWrite,
@@ -133,6 +171,12 @@ export const AITextDialog = ({
       system: defaultSystem,
       credentialId: defaultCredentialId,
       credentialField: defaultCredentialField,
+      toolEnabled: defaultToolEnabled,
+      toolProvider: defaultToolProvider,
+      toolServerId: defaultToolServerId,
+      toolId: defaultToolId,
+      toolDisplayName: defaultToolDisplayName,
+      toolArgumentsJson: defaultToolArgumentsJson,
       memoryWrites: initialMemoryWrites,
     });
   }, [
@@ -142,6 +186,12 @@ export const AITextDialog = ({
     defaultSystem,
     defaultCredentialId,
     defaultCredentialField,
+    defaultToolEnabled,
+    defaultToolProvider,
+    defaultToolServerId,
+    defaultToolId,
+    defaultToolDisplayName,
+    defaultToolArgumentsJson,
     initialMemoryWrites,
     form,
   ]);
@@ -170,6 +220,18 @@ export const AITextDialog = ({
       : template;
 
     form.setValue(field, nextValue, {
+      shouldDirty: true,
+      shouldValidate: true,
+    });
+  };
+
+  const insertToolArgumentTemplate = (template: string) => {
+    const currentValue = form.getValues("toolArgumentsJson") ?? "";
+    const nextValue = currentValue.trim()
+      ? `${currentValue}\n${template}`
+      : template;
+
+    form.setValue("toolArgumentsJson", nextValue, {
       shouldDirty: true,
       shouldValidate: true,
     });
@@ -321,6 +383,126 @@ export const AITextDialog = ({
               />
             </Field>
             <FieldError errors={[form.formState.errors.prompt]} />
+          </FieldGroup>
+
+          <FieldGroup className="rounded-2xl border border-border/70 bg-gradient-to-br from-muted/35 via-background to-muted/10 p-4">
+            <div className="flex items-start justify-between gap-4">
+              <div className="space-y-1">
+                <div className="flex items-center gap-2">
+                  <SparklesIcon className="size-4 text-primary" />
+                  <FieldLabel>Research context</FieldLabel>
+                </div>
+                <FieldDescription>
+                  Gather page context before generation. This keeps AI Text
+                  deterministic while giving it an intentional browser-powered
+                  research step.
+                </FieldDescription>
+              </div>
+              <div className="flex items-center gap-3">
+                <span className="text-xs uppercase tracking-[0.18em] text-muted-foreground">
+                  {toolEnabled ? "Enabled" : "Off"}
+                </span>
+                <Switch
+                  checked={toolEnabled}
+                  onCheckedChange={(checked) =>
+                    form.setValue("toolEnabled", checked, {
+                      shouldDirty: true,
+                      shouldValidate: true,
+                    })
+                  }
+                />
+              </div>
+            </div>
+
+            {toolEnabled ? (
+              <div className="space-y-4">
+                <FieldGroup className="rounded-xl border border-border/70 bg-background/80 p-4">
+                  <div className="flex flex-wrap items-center gap-2">
+                    <span className="rounded-full border border-emerald-500/20 bg-emerald-500/10 px-2 py-1 text-[11px] uppercase tracking-[0.16em] text-emerald-700">
+                      Internal browser
+                    </span>
+                    <span className="rounded-full border border-border/70 px-2 py-1 text-[11px] uppercase tracking-[0.16em] text-muted-foreground">
+                      MCP-ready slot
+                    </span>
+                  </div>
+                  <FieldDescription>
+                    This first version uses the internal page reader. The same
+                    panel can later host MCP browser tools without changing the
+                    AI node shape.
+                  </FieldDescription>
+                </FieldGroup>
+
+                <FieldGroup>
+                  <FieldLabel htmlFor="toolId">Browser tool</FieldLabel>
+                  <Select
+                    value={toolId || "none"}
+                    onValueChange={(value) => {
+                      const nextToolId = value === "none" ? "" : value;
+                      const nextTool = browserTools.find(
+                        (tool) => tool.id === nextToolId,
+                      );
+                      form.setValue("toolProvider", "INTERNAL", {
+                        shouldDirty: true,
+                      });
+                      form.setValue("toolServerId", "", {
+                        shouldDirty: true,
+                      });
+                      form.setValue("toolId", nextToolId, {
+                        shouldDirty: true,
+                        shouldValidate: true,
+                      });
+                      form.setValue("toolDisplayName", nextTool?.displayName ?? "", {
+                        shouldDirty: true,
+                      });
+                    }}
+                  >
+                    <SelectTrigger className="w-full">
+                      <SelectValue placeholder="Select browser tool" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="none">Choose later</SelectItem>
+                      {browserTools.map((tool) => (
+                        <SelectItem key={tool.id} value={tool.id}>
+                          {tool.displayName}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                  <FieldDescription>
+                    {selectedBrowserTool?.description ??
+                      "Choose which browser-style tool should gather context before the model responds."}
+                  </FieldDescription>
+                </FieldGroup>
+
+                <FieldGroup>
+                  <div className="flex items-center justify-between gap-3">
+                    <FieldLabel htmlFor="toolArgumentsJson">
+                      Browser tool arguments
+                    </FieldLabel>
+                    <TemplateVariablePicker
+                      options={templateVariables}
+                      onSelect={insertToolArgumentTemplate}
+                      label="Insert"
+                    />
+                  </div>
+                  <Field>
+                    <Textarea
+                      id="toolArgumentsJson"
+                      rows={5}
+                      className="resize-none font-mono text-sm"
+                      {...form.register("toolArgumentsJson")}
+                      placeholder={getToolArgumentsPlaceholder(
+                        selectedBrowserTool?.id ?? toolId,
+                      )}
+                    />
+                  </Field>
+                  <FieldDescription>
+                    The browser result is appended to the prompt as structured
+                    research context before generation runs.
+                  </FieldDescription>
+                </FieldGroup>
+              </div>
+            ) : null}
           </FieldGroup>
 
           <FieldGroup className="rounded-xl border border-border/70 bg-muted/20 p-4">
