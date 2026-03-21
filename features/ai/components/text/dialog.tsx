@@ -130,6 +130,8 @@ export const AITextDialog = ({
                 MiniMax. Prompt and system fields support workflow templates
                 like <code>{"{{input.body.message}}"}</code>,{" "}
                 <code>{"{{inputs.main.text}}"}</code>, and{" "}
+                <code>{"{{memory.shared.nodesById.NODE_ID.output}}"}</code>,{" "}
+                <code>{"{{memory.node.run.output}}"}</code>, and{" "}
                 <code>{"{{steps.NODE_ID.output.body}}"}</code>.
               </DialogDescription>
             </div>

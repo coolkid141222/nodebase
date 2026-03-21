@@ -186,6 +186,10 @@ export const HttpRequestDialog = ({
                                 {" "}、
                                 <code>{"{{inputs.main.text}}"}</code>
                                 {" "}、
+                                <code>{"{{memory.shared.nodesById.NODE_ID.output}}"}</code>
+                                {" "}、
+                                <code>{"{{memory.node.run.output}}"}</code>
+                                {" "}、
                                 <code>{"{{trigger.source}}"}</code>
                                 {" "}、
                                 <code>{"{{steps.NODE_ID.output.body}}"}</code>

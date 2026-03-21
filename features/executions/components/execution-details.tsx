@@ -97,11 +97,51 @@ export const ExecutionDetails = ({ id }: { id: string }) => {
             <div>Started: {data.startedAt ? new Date(data.startedAt).toLocaleString() : "-"}</div>
             <div>Completed: {data.completedAt ? new Date(data.completedAt).toLocaleString() : "-"}</div>
             <div>Steps: {data.steps.length}</div>
+            <div>Memory entries: {data.memoryEntries.length}</div>
+            <div>Memory events: {data.memoryEvents.length}</div>
           </div>
           <div className="space-y-4">
             <JsonBlock title="Trigger Payload" value={data.triggerPayload} />
             <JsonBlock title="Execution Error" value={data.error} />
           </div>
+        </CardContent>
+      </Card>
+
+      <Card className="shadow-none">
+        <CardHeader>
+          <CardTitle className="text-base">Execution Memory</CardTitle>
+          <CardDescription>
+            Shared memory is visible across the current run. Node memory is private to the owner node.
+          </CardDescription>
+        </CardHeader>
+        <CardContent className="grid gap-4 lg:grid-cols-2">
+          <JsonBlock
+            title="Memory Entries"
+            value={data.memoryEntries.map((entry) => ({
+              scope: entry.scope,
+              visibility: entry.visibility,
+              ownerNodeId: entry.ownerNodeId || null,
+              namespace: entry.namespace,
+              key: entry.key,
+              sourceStepId: entry.sourceStepId,
+              value: entry.value,
+            }))}
+          />
+          <JsonBlock
+            title="Memory Events"
+            value={data.memoryEvents.map((event) => ({
+              stepId: event.stepId,
+              nodeId: event.nodeId || null,
+              scope: event.scope,
+              visibility: event.visibility,
+              ownerNodeId: event.ownerNodeId || null,
+              namespace: event.namespace,
+              key: event.key,
+              mode: event.mode,
+              value: event.value,
+              createdAt: event.createdAt,
+            }))}
+          />
         </CardContent>
       </Card>
 
