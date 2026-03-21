@@ -35,6 +35,7 @@ model User {
   workflows     Workflow[]
   credentials   Credential[]
   executions    Execution[] @relation("TriggeredByUser")
+  persistentMemoryEntries PersistentMemoryEntry[]
 
   @@unique([email])
   @@map("user")
@@ -111,6 +112,7 @@ model Workflow {
   nodes         Node[]
   connections   Connection[]
   executions    Execution[]
+  persistentMemoryEntries PersistentMemoryEntry[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -300,6 +302,11 @@ enum ExecutionMemoryWriteMode {
   APPEND
 }
 
+enum PersistentMemoryScope {
+  WORKFLOW
+  USER
+}
+
 model ExecutionMemoryEntry {
   id         String                    @id @default(cuid())
   executionId String
@@ -339,4 +346,31 @@ model ExecutionMemoryEvent {
   @@index([stepId])
   @@index([nodeId, createdAt])
   @@map("execution_memory_events")
+}
+
+model PersistentMemoryEntry {
+  id               String               @id @default(cuid())
+  scope            PersistentMemoryScope
+  ownerId          String
+  userId           String
+  user             User                 @relation(fields: [userId], references: [id], onDelete: Cascade)
+  workflowId       String?
+  workflow         Workflow?            @relation(fields: [workflowId], references: [id], onDelete: Cascade)
+  namespace        String               @default("default")
+  key              String
+  value            Json
+  textValue        String?
+  embedding        Json?
+  embeddingProvider CredentialProvider?
+  embeddingModel   String?
+  sourceExecutionId String?
+  sourceStepId     String?
+  sourceNodeId     String?
+  createdAt        DateTime             @default(now())
+  updatedAt        DateTime             @updatedAt
+
+  @@unique([scope, ownerId, namespace, key])
+  @@index([userId, scope, ownerId, updatedAt])
+  @@index([workflowId, updatedAt])
+  @@map("persistent_memory_entries")
 }
