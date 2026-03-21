@@ -28,7 +28,9 @@ import type { DiscordMessageNodeData } from "@/features/integrations/discord/sha
 import type { SlackMessageNodeData } from "@/features/integrations/slack/shared";
 import {
   createAnthropicProvider,
+  createDeepSeekProvider,
   createGoogleProvider,
+  createMinimaxProvider,
   createOpenAIProvider,
 } from "@/lib/ai/proxy";
 
@@ -70,7 +72,7 @@ type ResolvedHttpRequestInput = {
 };
 
 type ResolvedAITextInput = {
-  provider: "GOOGLE" | "OPENAI" | "ANTHROPIC";
+  provider: "GOOGLE" | "OPENAI" | "ANTHROPIC" | "DEEPSEEK" | "MINIMAX";
   model: string;
   prompt: string;
   system: string | null;
@@ -100,6 +102,8 @@ type CompletedStepResult = {
   output: Prisma.JsonValue | null;
   error: Prisma.JsonValue | null;
 };
+
+type TemplateUpstreamEntry = ExecutionTemplateContext["upstream"][number];
 
 export class WorkflowExecutionError extends Error {
   constructor(
@@ -194,8 +198,11 @@ function parseJsonOrReturnText(value: string) {
 
 function createExecutionTemplateContext(
   execution: ExecutionWithWorkflow,
+  node: WorkflowForExecution["nodes"][number],
   completedSteps: Map<string, CompletedStepResult>,
 ): ExecutionTemplateContext {
+  const upstream = buildNodeUpstreamContext(execution, node, completedSteps);
+
   return {
     execution: {
       id: execution.id,
@@ -206,7 +213,71 @@ function createExecutionTemplateContext(
       name: execution.workflow.name,
     },
     trigger: execution.triggerPayload as Prisma.JsonValue,
+    input: upstream.input,
+    inputs: upstream.inputs,
+    upstream: upstream.upstream,
     steps: Object.fromEntries(completedSteps.entries()),
+  };
+}
+
+function buildNodeUpstreamContext(
+  execution: ExecutionWithWorkflow,
+  node: WorkflowForExecution["nodes"][number],
+  completedSteps: Map<string, CompletedStepResult>,
+) {
+  const nodeById = new Map(execution.workflow.nodes.map((item) => [item.id, item]));
+  const incomingConnections = execution.workflow.connections.filter(
+    (connection) => connection.toNodeId === node.id,
+  );
+  const upstream: TemplateUpstreamEntry[] = incomingConnections.map(
+    (connection) => {
+      const sourceNode = nodeById.get(connection.fromNodeId);
+      const completedStep = completedSteps.get(connection.fromNodeId);
+
+      return {
+        connectionId: connection.id,
+        fromNodeId: connection.fromNodeId,
+        fromNodeName: sourceNode?.name ?? connection.fromNodeId,
+        fromNodeType: sourceNode?.type ?? "UNKNOWN",
+        fromOutput: connection.fromOutput,
+        toInput: connection.toInput,
+        data: (connection.data ?? null) as Prisma.JsonValue | null,
+        status: completedStep?.status ?? null,
+        input: completedStep?.input ?? null,
+        output: completedStep?.output ?? null,
+        error: completedStep?.error ?? null,
+      };
+    },
+  );
+
+  const groupedInputs = Array.from(
+    new Set(incomingConnections.map((connection) => connection.toInput || "main")),
+  );
+
+  const inputs = Object.fromEntries(
+    groupedInputs.map((inputKey) => {
+      const values = upstream
+        .filter((item) => item.toInput === inputKey && item.output !== null)
+        .map((item) => item.output as Prisma.JsonValue);
+
+      if (values.length === 0) {
+        return [inputKey, null];
+      }
+
+      return [inputKey, values.length === 1 ? values[0] : values];
+    }),
+  ) as ExecutionTemplateContext["inputs"];
+
+  const primaryInput =
+    upstream.find((item) => item.toInput === "main" && item.output !== null)
+      ?.output ??
+    upstream.find((item) => item.output !== null)?.output ??
+    null;
+
+  return {
+    input: primaryInput,
+    inputs,
+    upstream,
   };
 }
 
@@ -737,6 +808,30 @@ async function executeAITextNode(
       model = anthropic(input.model);
       break;
     }
+    case "DEEPSEEK": {
+      const apiKey = await resolveCredentialStringValue({
+        execution,
+        credentialId: input.credentialId,
+        field: input.credentialField,
+        provider: CredentialProvider.DEEPSEEK,
+      });
+
+      const deepseek = createDeepSeekProvider({ apiKey });
+      model = deepseek(input.model);
+      break;
+    }
+    case "MINIMAX": {
+      const apiKey = await resolveCredentialStringValue({
+        execution,
+        credentialId: input.credentialId,
+        field: input.credentialField,
+        provider: CredentialProvider.MINIMAX,
+      });
+
+      const minimax = createMinimaxProvider({ apiKey });
+      model = minimax(input.model);
+      break;
+    }
     default:
       throw new WorkflowExecutionError(
         `AI Text provider "${input.provider}" is not supported yet.`,
@@ -899,12 +994,12 @@ async function executeNode(
           reason: "INITIAL is a canvas placeholder node.",
         },
       };
-      case NodeType.MANUAL_TRIGGER:
-      case NodeType.WEBHOOK_TRIGGER:
-        return {
-          status: ExecutionStepStatus.SUCCESS,
-          output: execution.triggerPayload as Prisma.InputJsonValue,
-        };
+    case NodeType.MANUAL_TRIGGER:
+    case NodeType.WEBHOOK_TRIGGER:
+      return {
+        status: ExecutionStepStatus.SUCCESS,
+        output: execution.triggerPayload as Prisma.InputJsonValue,
+      };
     case NodeType.HTTP_REQUEST:
       return executeHttpRequestNode(
         execution,
@@ -936,11 +1031,11 @@ function resolveNodeInput(
   context: ExecutionTemplateContext,
 ): Prisma.InputJsonValue | null {
   switch (node.type) {
-      case NodeType.INITIAL:
-        return null;
-      case NodeType.MANUAL_TRIGGER:
-      case NodeType.WEBHOOK_TRIGGER:
-        return execution.triggerPayload as Prisma.InputJsonValue;
+    case NodeType.INITIAL:
+      return null;
+    case NodeType.MANUAL_TRIGGER:
+    case NodeType.WEBHOOK_TRIGGER:
+      return execution.triggerPayload as Prisma.InputJsonValue;
     case NodeType.HTTP_REQUEST:
       return normalizeHttpRequestNodeData(node, context);
     case NodeType.AI_TEXT:
@@ -1155,6 +1250,7 @@ export async function runExecution(executionId: string) {
     for (const [index, node] of plan.orderedNodes.entries()) {
       const templateContext = createExecutionTemplateContext(
         execution,
+        node,
         completedSteps,
       );
       const input = resolveNodeInput(execution, node, templateContext);

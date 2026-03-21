@@ -10,6 +10,21 @@ export type ExecutionTemplateContext = {
     name: string;
   };
   trigger: Prisma.JsonValue;
+  input: Prisma.JsonValue | null;
+  inputs: Record<string, Prisma.JsonValue | Prisma.JsonValue[] | null>;
+  upstream: Array<{
+    connectionId: string;
+    fromNodeId: string;
+    fromNodeName: string;
+    fromNodeType: string;
+    fromOutput: string;
+    toInput: string;
+    data: Prisma.JsonValue | null;
+    status: string | null;
+    input: Prisma.JsonValue | null;
+    output: Prisma.JsonValue | null;
+    error: Prisma.JsonValue | null;
+  }>;
   steps: Record<
     string,
     {
