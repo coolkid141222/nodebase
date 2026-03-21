@@ -894,6 +894,156 @@ function promoteProblemSolvingDraft(params: {
   return workingDraft;
 }
 
+function normalizeLoopDraft(draft: AIWorkflowDraft) {
+  const workingDraft: AIWorkflowDraft = structuredClone(draft);
+  const nodeTypeById = new Map(
+    workingDraft.nodes.map((node) => [node.id, node.type] as const),
+  );
+  const loopNodes = workingDraft.nodes.filter((node) => node.type === "LOOP");
+
+  for (const loopNode of loopNodes) {
+    const loopId = loopNode.id;
+    const incomingDefaults = workingDraft.edges.filter(
+      (edge) =>
+        edge.role === "DEFAULT" &&
+        edge.target === loopId &&
+        nodeTypeById.get(edge.source) !== "LOOP",
+    );
+    const outgoingDefaults = workingDraft.edges.filter(
+      (edge) =>
+        edge.role === "DEFAULT" &&
+        edge.source === loopId &&
+        nodeTypeById.get(edge.target) !== "LOOP",
+    );
+
+    workingDraft.edges = workingDraft.edges.map((edge) => {
+      if (edge.source === loopId) {
+        return {
+          ...edge,
+          role: "LOOP_BODY",
+        };
+      }
+
+      if (edge.target === loopId) {
+        return {
+          ...edge,
+          role: "LOOP_BACK",
+        };
+      }
+
+      return edge;
+    });
+
+    const bodyEdge = workingDraft.edges.find(
+      (edge) =>
+        edge.role === "LOOP_BODY" &&
+        edge.source === loopId &&
+        nodeTypeById.get(edge.target) !== "LOOP",
+    );
+    const backEdge = workingDraft.edges.find(
+      (edge) =>
+        edge.role === "LOOP_BACK" &&
+        edge.target === loopId &&
+        nodeTypeById.get(edge.source) !== "LOOP",
+    );
+    const bodyStartId = bodyEdge?.target;
+    const bodyEndId = backEdge?.source;
+
+    for (const edge of incomingDefaults) {
+      if (!bodyStartId || edge.source === bodyStartId) {
+        continue;
+      }
+
+      const exists = workingDraft.edges.some(
+        (candidate) =>
+          candidate.role === "DEFAULT" &&
+          candidate.source === edge.source &&
+          candidate.target === bodyStartId,
+      );
+
+      if (!exists) {
+        workingDraft.edges.push({
+          source: edge.source,
+          target: bodyStartId,
+          role: "DEFAULT",
+        });
+      }
+    }
+
+    for (const edge of outgoingDefaults) {
+      if (!bodyEndId || edge.target === bodyEndId) {
+        continue;
+      }
+
+      const exists = workingDraft.edges.some(
+        (candidate) =>
+          candidate.role === "DEFAULT" &&
+          candidate.source === bodyEndId &&
+          candidate.target === edge.target,
+      );
+
+      if (!exists) {
+        workingDraft.edges.push({
+          source: bodyEndId,
+          target: edge.target,
+          role: "DEFAULT",
+        });
+      }
+    }
+
+    let seenBodyEdge = false;
+    let seenBackEdge = false;
+
+    workingDraft.edges = workingDraft.edges.filter((edge) => {
+      if (edge.source === loopId) {
+        if (edge.role !== "LOOP_BODY") {
+          return false;
+        }
+
+        if (seenBodyEdge) {
+          return false;
+        }
+
+        seenBodyEdge = true;
+        return true;
+      }
+
+      if (edge.target === loopId) {
+        if (edge.role !== "LOOP_BACK") {
+          return false;
+        }
+
+        if (seenBackEdge) {
+          return false;
+        }
+
+        seenBackEdge = true;
+        return true;
+      }
+
+      return true;
+    });
+
+    if (incomingDefaults.length > 0 || outgoingDefaults.length > 0) {
+      workingDraft.notes.push(
+        `Normalized loop "${loopId}" to body/back wiring so saved connections stay stable.`,
+      );
+    }
+  }
+
+  const dedupedEdges = new Map<string, AIWorkflowDraft["edges"][number]>();
+  for (const edge of workingDraft.edges) {
+    const key = `${edge.source}:${edge.target}:${edge.role}`;
+    if (!dedupedEdges.has(key)) {
+      dedupedEdges.set(key, edge);
+    }
+  }
+
+  workingDraft.edges = Array.from(dedupedEdges.values());
+
+  return workingDraft;
+}
+
 function mapGeneratedDraftToCanvas(params: {
   draft: AIWorkflowDraft;
   credentials: UserCredentialSummary[];
@@ -1120,12 +1270,15 @@ function validateGeneratedDraft(draft: AIWorkflowDraft) {
       throw new Error("Generated workflow contains an edge that references a missing node.");
     }
 
-    if (edge.role === "DEFAULT") {
-      continue;
-    }
-
     const sourceType = nodeTypeById.get(edge.source);
     const targetType = nodeTypeById.get(edge.target);
+
+    if (edge.role === "DEFAULT") {
+      if (sourceType === "LOOP" || targetType === "LOOP") {
+        throw new Error("DEFAULT edges cannot start from or end at a LOOP node.");
+      }
+      continue;
+    }
 
     if (edge.role === "LOOP_BODY" && sourceType !== "LOOP") {
       throw new Error("LOOP_BODY edges must start from a LOOP node.");
@@ -1189,10 +1342,11 @@ export async function generateWorkflowDraft(params: {
     draft,
     userPrompt: params.input.prompt,
   });
-  validateGeneratedDraft(promotedDraft);
+  const normalizedDraft = normalizeLoopDraft(promotedDraft);
+  validateGeneratedDraft(normalizedDraft);
 
   return mapGeneratedDraftToCanvas({
-    draft: promotedDraft,
+    draft: normalizedDraft,
     credentials: userCredentials,
   });
 }

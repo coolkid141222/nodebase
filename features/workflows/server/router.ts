@@ -101,6 +101,9 @@ export const workflowsRouter = createTRPCRouter({
             const nextNodes = nodes.filter(
                 (node) => node.type !== null && node.type !== undefined,
             )
+            const nextNodeTypeById = new Map(
+                nextNodes.map((node) => [node.id, node.type!] as const),
+            )
             const nextNodeIds = new Set(nextNodes.map((node) => node.id))
             const existingNodeIds = new Set(workflow.nodes.map((node) => node.id))
             const removedNodeIds = workflow.nodes
@@ -157,13 +160,22 @@ export const workflowsRouter = createTRPCRouter({
             if (edges.length > 0) {
                 operations.push(
                     prisma.connection.createMany({
-                        data: edges.map((edge) => ({
-                            workflowId: id,
-                            fromNodeId: edge.source,
-                            toNodeId: edge.target,
-                            fromOutput: edge.sourceHandle || "main",
-                            toInput: edge.targetHandle || "main",
-                        })),
+                        data: edges.map((edge) => {
+                            const sourceType = nextNodeTypeById.get(edge.source)
+                            const targetType = nextNodeTypeById.get(edge.target)
+
+                            return {
+                                workflowId: id,
+                                fromNodeId: edge.source,
+                                toNodeId: edge.target,
+                                fromOutput:
+                                    edge.sourceHandle ||
+                                    (sourceType === "LOOP" ? "source-main" : "main"),
+                                toInput:
+                                    edge.targetHandle ||
+                                    (targetType === "LOOP" ? "target-main" : "main"),
+                            }
+                        }),
                     }),
                 )
             }
