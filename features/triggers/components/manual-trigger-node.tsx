@@ -20,10 +20,9 @@ const ManualTriggerNodeComponent = (props: NodeProps) => {
     const handleTrigger = async () => {
         return workflowExecution.executeWorkflow();
     };
-    const dialogClose = false;
     return (
         <>
-            {dialogClose && (
+            {dialogOpen && (
                 <ManualTriggerDialog 
                     open={dialogOpen}
                     onOpenChange={setDialogOpen}

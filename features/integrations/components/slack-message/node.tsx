@@ -43,14 +43,16 @@ export const SlackMessageNode = memo((props: NodeProps) => {
 
   return (
     <>
-      <SlackMessageDialog
-        open={dialogOpen}
-        onOpenChange={setDialogOpen}
-        onSubmit={handleSubmit}
-        defaultCredentialId={nodeData.credentialId}
-        defaultCredentialField={nodeData.credentialField}
-        defaultContent={nodeData.content}
-      />
+      {dialogOpen && (
+        <SlackMessageDialog
+          open={dialogOpen}
+          onOpenChange={setDialogOpen}
+          onSubmit={handleSubmit}
+          defaultCredentialId={nodeData.credentialId}
+          defaultCredentialField={nodeData.credentialField}
+          defaultContent={nodeData.content}
+        />
+      )}
       <BaseExcutionNode
         {...props}
         icon={MessageSquareIcon}

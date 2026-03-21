@@ -22,12 +22,14 @@ const WebhookTriggerNodeComponent = (props: NodeProps) => {
 
   return (
     <>
-      <WebhookTriggerDialog
-        open={dialogOpen}
-        onOpenChange={setDialogOpen}
-        workflowId={workflowId}
-        webhookSecret={workflow.webhookSecret}
-      />
+      {dialogOpen && (
+        <WebhookTriggerDialog
+          open={dialogOpen}
+          onOpenChange={setDialogOpen}
+          workflowId={workflowId}
+          webhookSecret={workflow.webhookSecret}
+        />
+      )}
       <BaseTriggerNode
         {...props}
         icon={LinkIcon}

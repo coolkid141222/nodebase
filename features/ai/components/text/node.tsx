@@ -56,17 +56,19 @@ export const AITextNode = memo((props: NodeProps) => {
 
   return (
     <>
-      <AITextDialog
-        open={dialogOpen}
-        onOpenChange={setDialogOpen}
-        onSubmit={handleSubmit}
-        defaultProvider={nodeData.provider}
-        defaultModel={nodeData.model}
-        defaultPrompt={nodeData.prompt}
-        defaultSystem={nodeData.system}
-        defaultCredentialId={nodeData.credentialId}
-        defaultCredentialField={nodeData.credentialField}
-      />
+      {dialogOpen && (
+        <AITextDialog
+          open={dialogOpen}
+          onOpenChange={setDialogOpen}
+          onSubmit={handleSubmit}
+          defaultProvider={nodeData.provider}
+          defaultModel={nodeData.model}
+          defaultPrompt={nodeData.prompt}
+          defaultSystem={nodeData.system}
+          defaultCredentialId={nodeData.credentialId}
+          defaultCredentialField={nodeData.credentialField}
+        />
+      )}
       <BaseExcutionNode
         {...props}
         icon={BotIcon}

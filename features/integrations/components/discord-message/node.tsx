@@ -43,14 +43,16 @@ export const DiscordMessageNode = memo((props: NodeProps) => {
 
   return (
     <>
-      <DiscordMessageDialog
-        open={dialogOpen}
-        onOpenChange={setDialogOpen}
-        onSubmit={handleSubmit}
-        defaultCredentialId={nodeData.credentialId}
-        defaultCredentialField={nodeData.credentialField}
-        defaultContent={nodeData.content}
-      />
+      {dialogOpen && (
+        <DiscordMessageDialog
+          open={dialogOpen}
+          onOpenChange={setDialogOpen}
+          onSubmit={handleSubmit}
+          defaultCredentialId={nodeData.credentialId}
+          defaultCredentialField={nodeData.credentialField}
+          defaultContent={nodeData.content}
+        />
+      )}
       <BaseExcutionNode
         {...props}
         icon={MessageSquareIcon}

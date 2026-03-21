@@ -53,18 +53,20 @@ export const HttpRequestNode = memo((props: NodeProps) => {
 
     return (
         <>
-            <HttpRequestDialog
-                open={dialogOpen}
-                onOpenChange={setDialogOpen}
-                onSubmit={handleSubmit}
-                defaultEndpoint={nodeData.endpoint}
-                defaultMethod={nodeData.method}
-                defaultBody={nodeData.body}
-                defaultCredentialId={nodeData.credentialId}
-                defaultCredentialField={nodeData.credentialField}
-                defaultAuthType={nodeData.authType}
-                defaultHeaderName={nodeData.headerName}
-            />
+            {dialogOpen && (
+                <HttpRequestDialog
+                    open={dialogOpen}
+                    onOpenChange={setDialogOpen}
+                    onSubmit={handleSubmit}
+                    defaultEndpoint={nodeData.endpoint}
+                    defaultMethod={nodeData.method}
+                    defaultBody={nodeData.body}
+                    defaultCredentialId={nodeData.credentialId}
+                    defaultCredentialField={nodeData.credentialField}
+                    defaultAuthType={nodeData.authType}
+                    defaultHeaderName={nodeData.headerName}
+                />
+            )}
             <BaseExcutionNode
                 {...props}
                 icon={GlobeIcon}
