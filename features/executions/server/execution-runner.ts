@@ -1986,6 +1986,7 @@ export async function createWebhookExecution(params: {
   workflowId: string;
   webhookSecret: string;
   triggerPayload: Prisma.InputJsonValue;
+  triggerSource?: string;
 }) {
   const workflow = await findWorkflowForExecution({
     workflowId: params.workflowId,
@@ -2009,7 +2010,7 @@ export async function createWebhookExecution(params: {
       status: ExecutionStatus.PENDING,
       triggeredByUserId: workflow.userId,
       triggerPayload: {
-        source: "webhook",
+        source: params.triggerSource ?? "webhook",
         body: params.triggerPayload,
       },
       workflowSnapshot: createWorkflowSnapshot(workflow),

@@ -270,6 +270,12 @@ export const messages: Record<AppLocale, TranslationDictionary> = {
       "Send a POST request to this endpoint to start the workflow. The request body becomes the workflow trigger payload.",
     "dialog.trigger.examplePayload": "Example payload:",
     "dialog.trigger.webhookCopied": "Webhook URL copied",
+    "dialog.trigger.feishuTitle": "Feishu callback",
+    "dialog.trigger.feishuDescription":
+      "Subscribe a Feishu app event callback to this URL to trigger the workflow from incoming chat messages.",
+    "dialog.trigger.feishuInstructions":
+      "Use this callback URL in Feishu event subscriptions, disable Encrypt Key for now, and subscribe to im.message.receive_v1 plus URL verification.",
+    "dialog.trigger.feishuCopied": "Feishu callback URL copied",
     "dialog.trigger.settingsSaved": "Webhook trigger settings saved",
     "dialog.loop.title": "Configure Loop Scope",
     "dialog.loop.description":
@@ -686,6 +692,12 @@ export const messages: Record<AppLocale, TranslationDictionary> = {
       "向这个端点发送 POST 请求即可启动工作流，请求体会成为工作流触发 payload。",
     "dialog.trigger.examplePayload": "示例 payload：",
     "dialog.trigger.webhookCopied": "Webhook 地址已复制",
+    "dialog.trigger.feishuTitle": "飞书回调地址",
+    "dialog.trigger.feishuDescription":
+      "把这个地址配置到飞书应用事件订阅中，就可以用群消息触发当前工作流。",
+    "dialog.trigger.feishuInstructions":
+      "在飞书事件订阅里使用这个回调地址，先关闭 Encrypt Key，并订阅 URL 校验和 im.message.receive_v1 事件。",
+    "dialog.trigger.feishuCopied": "飞书回调地址已复制",
     "dialog.trigger.settingsSaved": "Webhook 触发器设置已保存",
     "dialog.loop.title": "配置 Loop 作用域",
     "dialog.loop.description":

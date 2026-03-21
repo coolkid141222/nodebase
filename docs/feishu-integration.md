@@ -51,6 +51,32 @@ This keeps the OpenClaw-like shape:
 - adapter owns the Feishu-specific request
 - workflow graph stays provider-agnostic
 
+### Phase 1.6: inbound trigger bridge
+
+Done in code:
+
+- existing `Webhook Trigger` nodes now expose a Feishu callback URL
+- Feishu can trigger an existing workflow through `/api/feishu/:workflowId?token=...`
+- current support is intentionally narrow:
+  - `url_verification`
+  - `im.message.receive_v1`
+  - plain text extraction from message content
+
+Current product shape:
+
+- Feishu is an inbound task surface
+- Nodebase workflows remain the execution engine
+- the callback creates a normal workflow execution with `trigger.source = "feishu"`
+
+Recommended event subscription setup:
+
+- callback URL: `https://your-domain/api/feishu/<workflowId>?token=<workflowSecret>`
+- disable Encrypt Key for the first version
+- optionally set `FEISHU_EVENT_VERIFICATION_TOKEN` and use the same token in Feishu
+- subscribe to:
+  - URL verification
+  - `im.message.receive_v1`
+
 ### Phase 2: auth and credentials
 
 Add one or both credential styles:

@@ -65,6 +65,7 @@ export const WebhookTriggerDialog = ({
 }: Props) => {
   const { t } = useI18n();
   const endpointPath = `/api/webhooks/${workflowId}?token=${webhookSecret}`;
+  const feishuEndpointPath = `/api/feishu/${workflowId}?token=${webhookSecret}`;
   const initialMemoryWritesKey = JSON.stringify(
     defaultMemoryWrites ?? EMPTY_MEMORY_WRITES,
   );
@@ -98,11 +99,9 @@ export const WebhookTriggerDialog = ({
     });
   }, [form, initialMemoryWrites]);
 
-  const handleCopy = async () => {
-    await navigator.clipboard.writeText(
-      `${window.location.origin}${endpointPath}`,
-    );
-    toast.success(t("dialog.trigger.webhookCopied"));
+  const handleCopy = async (path: string, successKey: string) => {
+    await navigator.clipboard.writeText(`${window.location.origin}${path}`);
+    toast.success(t(successKey));
   };
 
   const handleSave = async (values: WebhookTriggerFormValues) => {
@@ -146,17 +145,58 @@ export const WebhookTriggerDialog = ({
           className="space-y-4"
         >
         <div className="space-y-3">
-          <div className="rounded-lg border bg-muted/30 p-3 font-mono text-xs break-all">
-            {endpointPath}
-          </div>
-          <div className="text-sm text-muted-foreground">
-            {t("dialog.trigger.examplePayload")}
-            <pre className="mt-2 overflow-x-auto rounded-md border bg-background p-3 text-xs">
+          <div className="space-y-3 rounded-xl border border-border/70 bg-muted/20 p-4">
+            <div className="space-y-1">
+              <FieldLabel>{t("dialog.trigger.webhookTitle")}</FieldLabel>
+              <FieldDescription>
+                {t("dialog.trigger.webhookDescription")}
+              </FieldDescription>
+            </div>
+            <div className="rounded-lg border bg-muted/30 p-3 font-mono text-xs break-all">
+              {endpointPath}
+            </div>
+            <div className="text-sm text-muted-foreground">
+              {t("dialog.trigger.examplePayload")}
+              <pre className="mt-2 overflow-x-auto rounded-md border bg-background p-3 text-xs">
 {`{
   "source": "webhook",
   "body": { "message": "hello" }
 }`}
-            </pre>
+              </pre>
+            </div>
+            <Button
+              type="button"
+              variant="outline"
+              size="sm"
+              onClick={() => void handleCopy(endpointPath, "dialog.trigger.webhookCopied")}
+            >
+              <ClipboardCopyIcon className="size-4" />
+              {t("common.copyUrl")}
+            </Button>
+          </div>
+
+          <div className="space-y-3 rounded-xl border border-border/70 bg-muted/20 p-4">
+            <div className="space-y-1">
+              <FieldLabel>{t("dialog.trigger.feishuTitle")}</FieldLabel>
+              <FieldDescription>
+                {t("dialog.trigger.feishuDescription")}
+              </FieldDescription>
+            </div>
+            <div className="rounded-lg border bg-muted/30 p-3 font-mono text-xs break-all">
+              {feishuEndpointPath}
+            </div>
+            <div className="text-sm text-muted-foreground">
+              {t("dialog.trigger.feishuInstructions")}
+            </div>
+            <Button
+              type="button"
+              variant="outline"
+              size="sm"
+              onClick={() => void handleCopy(feishuEndpointPath, "dialog.trigger.feishuCopied")}
+            >
+              <ClipboardCopyIcon className="size-4" />
+              {t("common.copyUrl")}
+            </Button>
           </div>
         </div>
         <FieldGroup className="rounded-xl border border-border/70 bg-muted/20 p-4">
@@ -328,10 +368,6 @@ export const WebhookTriggerDialog = ({
         </FieldGroup>
 
         <DialogFooter className="gap-2 sm:justify-end">
-          <Button variant="outline" onClick={handleCopy}>
-            <ClipboardCopyIcon className="size-4" />
-            {t("common.copyUrl")}
-          </Button>
           <Button type="submit">
             <SaveIcon className="size-4" />
             {t("common.save")}
