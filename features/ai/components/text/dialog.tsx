@@ -70,6 +70,10 @@ type Props = {
   defaultToolId?: string;
   defaultToolDisplayName?: string;
   defaultToolArgumentsJson?: string;
+  defaultMemoryContextEnabled?: boolean;
+  defaultMemoryContextScope?: "WORKFLOW" | "USER";
+  defaultMemoryContextQuery?: string;
+  defaultMemoryContextLimit?: number;
   defaultMemoryWrites?: ExecutionMemoryWriteConfig[];
   templateVariables?: TemplateVariableOption[];
 };
@@ -90,6 +94,10 @@ export const AITextDialog = ({
   defaultToolId = "",
   defaultToolDisplayName = "",
   defaultToolArgumentsJson = "{}",
+  defaultMemoryContextEnabled = false,
+  defaultMemoryContextScope = "WORKFLOW",
+  defaultMemoryContextQuery = "{{input}}",
+  defaultMemoryContextLimit = 3,
   defaultMemoryWrites,
   templateVariables = [],
 }: Props) => {
@@ -120,6 +128,10 @@ export const AITextDialog = ({
       toolId: defaultToolId,
       toolDisplayName: defaultToolDisplayName,
       toolArgumentsJson: defaultToolArgumentsJson,
+      memoryContextEnabled: defaultMemoryContextEnabled,
+      memoryContextScope: defaultMemoryContextScope,
+      memoryContextQuery: defaultMemoryContextQuery,
+      memoryContextLimit: defaultMemoryContextLimit,
       memoryWrites: initialMemoryWrites,
     },
   });
@@ -138,6 +150,21 @@ export const AITextDialog = ({
     control: form.control,
     name: "toolEnabled",
     defaultValue: defaultToolEnabled,
+  });
+  const memoryContextEnabled = useWatch({
+    control: form.control,
+    name: "memoryContextEnabled",
+    defaultValue: defaultMemoryContextEnabled,
+  });
+  const memoryContextScope = useWatch({
+    control: form.control,
+    name: "memoryContextScope",
+    defaultValue: defaultMemoryContextScope,
+  });
+  const watchedMemoryWrites = useWatch({
+    control: form.control,
+    name: "memoryWrites",
+    defaultValue: initialMemoryWrites,
   });
   const toolId = useWatch({
     control: form.control,
@@ -177,6 +204,10 @@ export const AITextDialog = ({
       toolId: defaultToolId,
       toolDisplayName: defaultToolDisplayName,
       toolArgumentsJson: defaultToolArgumentsJson,
+      memoryContextEnabled: defaultMemoryContextEnabled,
+      memoryContextScope: defaultMemoryContextScope,
+      memoryContextQuery: defaultMemoryContextQuery,
+      memoryContextLimit: defaultMemoryContextLimit,
       memoryWrites: initialMemoryWrites,
     });
   }, [
@@ -192,6 +223,10 @@ export const AITextDialog = ({
     defaultToolId,
     defaultToolDisplayName,
     defaultToolArgumentsJson,
+    defaultMemoryContextEnabled,
+    defaultMemoryContextScope,
+    defaultMemoryContextQuery,
+    defaultMemoryContextLimit,
     initialMemoryWrites,
     form,
   ]);
@@ -529,6 +564,120 @@ export const AITextDialog = ({
             ) : null}
           </FieldGroup>
 
+          <FieldGroup className="rounded-2xl border border-border/70 bg-muted/15 p-4">
+            <div className="flex items-start justify-between gap-4">
+              <div className="space-y-1">
+                <div className="flex items-center gap-2">
+                  <SparklesIcon className="size-4 text-primary" />
+                  <FieldLabel>Persistent memory recall</FieldLabel>
+                </div>
+                <FieldDescription>
+                  Pull workflow or user memory back into the prompt with
+                  semantic retrieval. This uses embeddings when available and
+                  falls back to lexical recall otherwise.
+                </FieldDescription>
+              </div>
+              <div className="flex items-center gap-3">
+                <span className="text-xs uppercase tracking-[0.18em] text-muted-foreground">
+                  {memoryContextEnabled ? "Enabled" : "Off"}
+                </span>
+                <Switch
+                  checked={memoryContextEnabled}
+                  onCheckedChange={(checked) =>
+                    form.setValue("memoryContextEnabled", checked, {
+                      shouldDirty: true,
+                      shouldValidate: true,
+                    })
+                  }
+                />
+              </div>
+            </div>
+
+            {memoryContextEnabled ? (
+              <div className="space-y-4">
+                <div className="grid gap-3 md:grid-cols-[1fr_120px]">
+                  <FieldGroup>
+                    <FieldLabel>Recall scope</FieldLabel>
+                    <Select
+                      value={memoryContextScope}
+                      onValueChange={(value: "WORKFLOW" | "USER") =>
+                        form.setValue("memoryContextScope", value, {
+                          shouldDirty: true,
+                          shouldValidate: true,
+                        })
+                      }
+                    >
+                      <SelectTrigger className="w-full">
+                        <SelectValue placeholder="Select scope" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="WORKFLOW">Workflow</SelectItem>
+                        <SelectItem value="USER">User</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </FieldGroup>
+
+                  <FieldGroup>
+                    <FieldLabel htmlFor="memoryContextLimit">Top K</FieldLabel>
+                    <Field>
+                      <Input
+                        id="memoryContextLimit"
+                        type="number"
+                        min={1}
+                        max={8}
+                        {...form.register("memoryContextLimit", {
+                          valueAsNumber: true,
+                        })}
+                      />
+                    </Field>
+                    <FieldError
+                      errors={[form.formState.errors.memoryContextLimit]}
+                    />
+                  </FieldGroup>
+                </div>
+
+                <FieldGroup>
+                  <div className="flex items-center justify-between gap-3">
+                    <FieldLabel htmlFor="memoryContextQuery">Recall query</FieldLabel>
+                    <TemplateVariablePicker
+                      options={templateVariables}
+                      onSelect={(value) => {
+                        const currentValue = form.getValues("memoryContextQuery") ?? "";
+                        const nextValue = currentValue.trim()
+                          ? `${currentValue}\n${value}`
+                          : value;
+
+                        form.setValue("memoryContextQuery", nextValue, {
+                          shouldDirty: true,
+                          shouldValidate: true,
+                        });
+                      }}
+                      label="Insert"
+                    />
+                  </div>
+                  <Field>
+                    <Textarea
+                      id="memoryContextQuery"
+                      rows={3}
+                      className="resize-none"
+                      {...form.register("memoryContextQuery")}
+                      placeholder="{{input}}"
+                    />
+                  </Field>
+                  <FieldDescription>
+                    Query text used to retrieve prior memories. Useful examples:
+                    <code>{" {{input}}"}</code>,{" "}
+                    <code>{"{{memory.shared.problem.task}}"}</code>,{" "}
+                    <code>{"{{trigger.body.message}}"}</code>.
+                  </FieldDescription>
+                  <FieldError
+                    errors={[form.formState.errors.memoryContextQuery]}
+                  />
+                </FieldGroup>
+              </div>
+            ) : null}
+          </FieldGroup>
+
           <FieldGroup className="rounded-xl border border-border/70 bg-muted/20 p-4">
             <div className="flex items-start justify-between gap-3">
               <div className="space-y-1">
@@ -698,6 +847,73 @@ export const AITextDialog = ({
                         </SelectContent>
                       </Select>
                     </FieldGroup>
+
+                    <div className="grid gap-3 md:grid-cols-[1fr_1fr]">
+                      <FieldGroup className="rounded-lg border border-border/70 bg-muted/15 p-3">
+                        <div className="flex items-center justify-between gap-3">
+                          <div>
+                            <FieldLabel>Persist beyond this run</FieldLabel>
+                            <FieldDescription>
+                              Store this memory as long-term context.
+                            </FieldDescription>
+                          </div>
+                          <Switch
+                            checked={Boolean(watchedMemoryWrites?.[index]?.persist)}
+                            onCheckedChange={(checked) =>
+                              form.setValue(`memoryWrites.${index}.persist`, checked, {
+                                shouldDirty: true,
+                                shouldValidate: true,
+                              })
+                            }
+                          />
+                        </div>
+                      </FieldGroup>
+
+                      <FieldGroup className="rounded-lg border border-border/70 bg-muted/15 p-3">
+                        <div className="flex items-center justify-between gap-3">
+                          <div>
+                            <FieldLabel>Semantic index</FieldLabel>
+                            <FieldDescription>
+                              Generate embeddings for later recall.
+                            </FieldDescription>
+                          </div>
+                          <Switch
+                            checked={Boolean(
+                              watchedMemoryWrites?.[index]?.semanticIndex,
+                            )}
+                            onCheckedChange={(checked) =>
+                              form.setValue(`memoryWrites.${index}.semanticIndex`, checked, {
+                                shouldDirty: true,
+                                shouldValidate: true,
+                              })
+                            }
+                          />
+                        </div>
+                      </FieldGroup>
+                    </div>
+
+                    {watchedMemoryWrites?.[index]?.persist ? (
+                      <FieldGroup>
+                        <FieldLabel>Persistent scope</FieldLabel>
+                        <Select
+                          defaultValue={field.persistenceScope}
+                          onValueChange={(value: "WORKFLOW" | "USER") =>
+                            form.setValue(`memoryWrites.${index}.persistenceScope`, value, {
+                              shouldDirty: true,
+                              shouldValidate: true,
+                            })
+                          }
+                        >
+                          <SelectTrigger className="w-full">
+                            <SelectValue placeholder="Select persistent scope" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="WORKFLOW">Workflow</SelectItem>
+                            <SelectItem value="USER">User</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </FieldGroup>
+                    ) : null}
                   </div>
                 ))
               )}

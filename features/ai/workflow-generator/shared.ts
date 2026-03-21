@@ -1,5 +1,6 @@
 import z from "zod";
 import { aiTextProviderSchema, getDefaultAITextModel } from "../text/shared";
+import { executionMemoryWriteConfigListSchema } from "@/features/executions/memory/shared";
 
 export const workflowGeneratorNodeTypeSchema = z.enum([
   "MANUAL_TRIGGER",
@@ -32,12 +33,22 @@ const manualTriggerSpecSchema = z.object({
   id: z.string().trim().min(1).max(40),
   type: z.literal("MANUAL_TRIGGER"),
   ...workflowGeneratorPositionSchema.shape,
+  config: z.object({
+    memoryWrites: executionMemoryWriteConfigListSchema,
+  }).default({
+    memoryWrites: [],
+  }),
 });
 
 const webhookTriggerSpecSchema = z.object({
   id: z.string().trim().min(1).max(40),
   type: z.literal("WEBHOOK_TRIGGER"),
   ...workflowGeneratorPositionSchema.shape,
+  config: z.object({
+    memoryWrites: executionMemoryWriteConfigListSchema,
+  }).default({
+    memoryWrites: [],
+  }),
 });
 
 const aiTextSpecSchema = z.object({
@@ -50,6 +61,7 @@ const aiTextSpecSchema = z.object({
       model: z.string().trim().min(1).optional(),
       prompt: z.string().trim().min(1).max(2_000),
       system: z.string().trim().max(1_000).optional(),
+      memoryWrites: executionMemoryWriteConfigListSchema,
     })
     .merge(namedCredentialSchema),
 });
@@ -65,6 +77,7 @@ const httpRequestSpecSchema = z.object({
       body: z.string().max(4_000).optional(),
       authType: z.enum(["NONE", "BEARER", "HEADER"]).default("NONE"),
       headerName: z.string().trim().max(120).optional(),
+      memoryWrites: executionMemoryWriteConfigListSchema,
     })
     .merge(namedCredentialSchema),
 });
@@ -75,6 +88,7 @@ const loopSpecSchema = z.object({
   ...workflowGeneratorPositionSchema.shape,
   config: z.object({
     maxIterations: z.coerce.number().int().min(1).max(12).default(3),
+    memoryWrites: executionMemoryWriteConfigListSchema,
   }),
 });
 
@@ -87,6 +101,7 @@ const toolSpecSchema = z.object({
     serverId: z.string().trim().max(120).optional(),
     toolId: z.string().trim().min(1).max(160),
     argumentsJson: z.string().trim().min(1).max(6_000),
+    memoryWrites: executionMemoryWriteConfigListSchema,
   }),
 });
 
@@ -97,6 +112,7 @@ const discordSpecSchema = z.object({
   config: z
     .object({
       content: z.string().trim().min(1).max(2_000),
+      memoryWrites: executionMemoryWriteConfigListSchema,
     })
     .merge(namedCredentialSchema),
 });
@@ -108,6 +124,7 @@ const slackSpecSchema = z.object({
   config: z
     .object({
       content: z.string().trim().min(1).max(2_000),
+      memoryWrites: executionMemoryWriteConfigListSchema,
     })
     .merge(namedCredentialSchema),
 });

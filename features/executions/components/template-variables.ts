@@ -239,6 +239,18 @@ export function buildTemplateVariableOptions(params: {
       hint: "The last completed node semantic result.",
     },
     {
+      group: "Persistent memory",
+      label: "Workflow memory",
+      value: "{{memory.persistent.workflow}}",
+      hint: "Workflow-level persistent memory carried across runs.",
+    },
+    {
+      group: "Persistent memory",
+      label: "User memory",
+      value: "{{memory.persistent.user}}",
+      hint: "User-level persistent memory carried across workflows.",
+    },
+    {
       group: "Node memory",
       label: "Current node output",
       value: "{{memory.node.run.output}}",

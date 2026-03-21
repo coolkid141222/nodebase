@@ -7,6 +7,7 @@ export const executionMemoryWriteModeSchema = z.enum([
   "MERGE",
   "APPEND",
 ]);
+export const persistentMemoryScopeSchema = z.enum(["WORKFLOW", "USER"]);
 
 export const executionMemoryWriteConfigSchema = z.object({
   scope: executionMemoryScopeSchema.default("SHARED"),
@@ -15,6 +16,9 @@ export const executionMemoryWriteConfigSchema = z.object({
   value: z.string().trim().min(1),
   mode: executionMemoryWriteModeSchema.default("REPLACE"),
   visibility: executionMemoryVisibilitySchema.default("PUBLIC"),
+  persist: z.boolean().default(false),
+  persistenceScope: persistentMemoryScopeSchema.default("WORKFLOW"),
+  semanticIndex: z.boolean().default(false),
 });
 
 export const executionMemoryWriteConfigListSchema = z
@@ -34,5 +38,8 @@ export function createDefaultExecutionMemoryWriteConfig(): ExecutionMemoryWriteC
     value: "{{current.output}}",
     mode: "REPLACE",
     visibility: "PUBLIC",
+    persist: false,
+    persistenceScope: "WORKFLOW",
+    semanticIndex: false,
   };
 }

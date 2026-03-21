@@ -24,6 +24,10 @@ export type ExecutionTemplateContext = {
   memory: {
     shared: Record<string, Prisma.JsonValue>;
     node: Record<string, Prisma.JsonValue>;
+    persistent: {
+      workflow: Record<string, Prisma.JsonValue>;
+      user: Record<string, Prisma.JsonValue>;
+    };
   };
   upstream: Array<{
     connectionId: string;

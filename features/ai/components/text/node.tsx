@@ -35,7 +35,7 @@ export const AITextNode = memo((props: NodeProps) => {
   });
 
   const description = nodeData?.prompt
-    ? `${providerLabel} · ${model}${nodeData.toolEnabled && nodeData.toolId ? " · browser context" : ""} · ${nodeData.prompt.slice(0, 36)}${nodeData.prompt.length > 36 ? "..." : ""}`
+    ? `${providerLabel} · ${model}${nodeData.toolEnabled && nodeData.toolId ? " · browser context" : ""}${nodeData.memoryContextEnabled ? " · memory recall" : ""} · ${nodeData.prompt.slice(0, 36)}${nodeData.prompt.length > 36 ? "..." : ""}`
     : "Not configured";
 
   const handleSubmit = (values: AITextFormValues) => {
@@ -58,6 +58,10 @@ export const AITextNode = memo((props: NodeProps) => {
                 toolId: values.toolId,
                 toolDisplayName: values.toolDisplayName,
                 toolArgumentsJson: values.toolArgumentsJson,
+                memoryContextEnabled: values.memoryContextEnabled,
+                memoryContextScope: values.memoryContextScope,
+                memoryContextQuery: values.memoryContextQuery,
+                memoryContextLimit: values.memoryContextLimit,
                 memoryWrites: values.memoryWrites,
               },
             }
@@ -86,6 +90,10 @@ export const AITextNode = memo((props: NodeProps) => {
           defaultToolId={nodeData.toolId}
           defaultToolDisplayName={nodeData.toolDisplayName}
           defaultToolArgumentsJson={nodeData.toolArgumentsJson}
+          defaultMemoryContextEnabled={nodeData.memoryContextEnabled}
+          defaultMemoryContextScope={nodeData.memoryContextScope}
+          defaultMemoryContextQuery={nodeData.memoryContextQuery}
+          defaultMemoryContextLimit={nodeData.memoryContextLimit}
           defaultMemoryWrites={nodeData.memoryWrites}
           templateVariables={templateVariables}
         />

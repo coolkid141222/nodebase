@@ -9,6 +9,7 @@ import {
   ExecutionStepStatus,
   ExecutionTriggerType,
   NodeType,
+  PersistentMemoryScope,
   Prisma,
 } from "@/lib/prisma/client";
 import {
@@ -23,6 +24,13 @@ import {
   type RuntimeExecutionMemoryState,
   type RuntimeExecutionMemoryWrite,
 } from "./memory";
+import {
+  buildPersistentMemoryTemplateSnapshot,
+  loadPersistentMemoryState,
+  persistPersistentMemoryWrites,
+  recallPersistentMemoryMatches,
+  type RuntimePersistentMemoryState,
+} from "./persistent-memory";
 import type { ExecutionMemoryWriteConfig } from "../memory/shared";
 import { readCredentialSecret } from "@/features/credentials/server/payload";
 import type {
@@ -99,6 +107,12 @@ type ResolvedAITextInput = {
   credentialId: string;
   credentialField: string;
   toolContext: ResolvedToolInput | null;
+  memoryContext: {
+    enabled: boolean;
+    scope: PersistentMemoryScope;
+    query: string;
+    limit: number;
+  } | null;
 };
 
 type ResolvedDiscordMessageInput = {
@@ -336,6 +350,7 @@ function createExecutionTemplateContext(
   node: WorkflowForExecution["nodes"][number],
   completedSteps: Map<string, CompletedStepResult>,
   memoryState: RuntimeExecutionMemoryState,
+  persistentMemoryState: RuntimePersistentMemoryState,
   current?: {
     attempt?: number | null;
     status?: string | null;
@@ -346,6 +361,8 @@ function createExecutionTemplateContext(
 ): ExecutionTemplateContext {
   const upstream = buildNodeUpstreamContext(execution, node, completedSteps);
   const memory = buildExecutionMemoryTemplateSnapshot(memoryState, node.id);
+  const persistentMemory =
+    buildPersistentMemoryTemplateSnapshot(persistentMemoryState);
 
   return {
     execution: {
@@ -368,7 +385,10 @@ function createExecutionTemplateContext(
       output: current?.output ?? null,
       error: current?.error ?? null,
     },
-    memory,
+    memory: {
+      ...memory,
+      persistent: persistentMemory,
+    },
     upstream: upstream.upstream,
     steps: Object.fromEntries(completedSteps.entries()),
   };
@@ -493,6 +513,9 @@ function buildConfiguredMemoryWrites(
       value: resolveTemplateValue(write.value, context),
       mode: write.mode,
       visibility: write.visibility,
+      persist: write.persist,
+      persistenceScope: write.persistenceScope,
+      semanticIndex: write.semanticIndex,
     }));
 }
 
@@ -1039,6 +1062,9 @@ function normalizeAITextNodeData(
   const credentialId = data.credentialId?.trim();
   const credentialField = data.credentialField?.trim();
   let toolContext: ResolvedToolInput | null = null;
+  const resolvedMemoryQuery = data.memoryContextQuery
+    ? resolveTemplateString(data.memoryContextQuery, context)
+    : context.input;
   const shouldAutoAttachUpstreamInput =
     !containsTemplateExpression(data.prompt) &&
     context.input != null &&
@@ -1098,6 +1124,14 @@ function normalizeAITextNodeData(
     credentialId,
     credentialField,
     toolContext,
+    memoryContext: data.memoryContextEnabled
+      ? {
+          enabled: true,
+          scope: data.memoryContextScope ?? PersistentMemoryScope.WORKFLOW,
+          query: stringifyTemplateText(resolvedMemoryQuery || finalPrompt),
+          limit: data.memoryContextLimit ?? 3,
+        }
+      : null,
   };
 }
 
@@ -1159,6 +1193,32 @@ function stringifyToolContext(toolOutput: Prisma.InputJsonValue | null) {
   }
 
   return lines.join("\n\n").trim();
+}
+
+function stringifyPersistentMemoryMatches(matches: {
+  scope: PersistentMemoryScope;
+  namespace: string;
+  key: string;
+  textValue: string | null;
+  value: Prisma.JsonValue;
+}[]) {
+  if (matches.length === 0) {
+    return "";
+  }
+
+  return matches
+    .map((match, index) => {
+      const value =
+        match.textValue?.trim() ||
+        stringifyTemplateText(match.value) ||
+        "<empty>";
+
+      return [
+        `[${index + 1}] ${match.scope.toLowerCase()}.${match.namespace}.${match.key}`,
+        value,
+      ].join("\n");
+    })
+    .join("\n\n");
 }
 
 async function executeDiscordMessageNode(
@@ -1274,6 +1334,7 @@ async function executeSlackMessageNode(
 async function executeAITextNode(
   execution: ExecutionWithWorkflow,
   input: ResolvedAITextInput,
+  persistentMemoryState: RuntimePersistentMemoryState,
 ): Promise<NodeExecutionResult> {
   let toolOutput: Prisma.InputJsonValue | null = null;
   let prompt = input.prompt;
@@ -1285,6 +1346,34 @@ async function executeAITextNode(
 
     if (toolContextText) {
       prompt = `${input.prompt}\n\nResearch context:\n${toolContextText}`;
+    }
+  }
+
+  let persistentMemoryOutput: Prisma.InputJsonValue | null = null;
+
+  if (input.memoryContext && execution.triggeredByUserId) {
+    const ownerId =
+      input.memoryContext.scope === PersistentMemoryScope.WORKFLOW
+        ? execution.workflowId
+        : execution.triggeredByUserId;
+    const matches = await recallPersistentMemoryMatches({
+      state: persistentMemoryState,
+      scope: input.memoryContext.scope,
+      ownerId,
+      query: input.memoryContext.query || prompt,
+      limit: input.memoryContext.limit,
+    });
+    const memoryContextText = stringifyPersistentMemoryMatches(matches);
+
+    if (memoryContextText) {
+      prompt = `${prompt}\n\nPersistent memory context:\n${memoryContextText}`;
+      persistentMemoryOutput = matches.map((match) => ({
+        scope: match.scope,
+        namespace: match.namespace,
+        key: match.key,
+        score: match.score,
+        value: match.value,
+      })) as Prisma.InputJsonValue;
     }
   }
 
@@ -1386,6 +1475,7 @@ async function executeAITextNode(
       usage: result.usage,
       warnings: result.warnings,
       toolContext: toolOutput,
+      persistentMemoryContext: persistentMemoryOutput,
     },
   };
 }
@@ -1667,6 +1757,7 @@ async function executeNode(
   execution: ExecutionWithWorkflow,
   node: WorkflowForExecution["nodes"][number],
   input: Prisma.InputJsonValue | null,
+  persistentMemoryState: RuntimePersistentMemoryState,
 ): Promise<NodeExecutionResult> {
   switch (node.type) {
     case NodeType.INITIAL:
@@ -1688,7 +1779,11 @@ async function executeNode(
         input as ResolvedHttpRequestInput,
       );
     case NodeType.AI_TEXT:
-      return executeAITextNode(execution, input as ResolvedAITextInput);
+      return executeAITextNode(
+        execution,
+        input as ResolvedAITextInput,
+        persistentMemoryState,
+      );
     case NodeType.LOOP:
       return {
         status: ExecutionStepStatus.SUCCESS,
@@ -1931,6 +2026,10 @@ export async function runExecution(executionId: string) {
     );
     const completedSteps = new Map<string, CompletedStepResult>();
     const memoryState = createExecutionMemoryState(execution.memoryEntries);
+    const persistentMemoryState = await loadPersistentMemoryState({
+      userId: execution.triggeredByUserId,
+      workflowId: execution.workflowId,
+    });
     const nodeAttempts = new Map<string, number>();
 
     await prisma.execution.update({
@@ -1977,6 +2076,7 @@ export async function runExecution(executionId: string) {
         node,
         completedSteps,
         memoryState,
+        persistentMemoryState,
         {
           attempt,
         },
@@ -2000,12 +2100,18 @@ export async function runExecution(executionId: string) {
       });
 
       try {
-        const result = await executeNode(execution, node, input);
+        const result = await executeNode(
+          execution,
+          node,
+          input,
+          persistentMemoryState,
+        );
         const successTemplateContext = createExecutionTemplateContext(
           execution,
           node,
           completedSteps,
           memoryState,
+          persistentMemoryState,
           {
             attempt,
             status: result.status,
@@ -2043,6 +2149,16 @@ export async function runExecution(executionId: string) {
           stepId: step.id,
           nodeId: node.id,
           state: memoryState,
+          writes: successWrites,
+        });
+
+        await persistPersistentMemoryWrites({
+          executionId,
+          workflowId: execution.workflowId,
+          userId: execution.triggeredByUserId,
+          stepId: step.id,
+          nodeId: node.id,
+          state: persistentMemoryState,
           writes: successWrites,
         });
 

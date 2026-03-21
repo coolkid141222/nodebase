@@ -321,9 +321,9 @@ Memory rules:
   - research.context
   - answers.final
 - Good memoryWrites examples:
-  - {"scope":"SHARED","namespace":"problem","key":"task","value":"{{trigger.body.message}}","mode":"REPLACE","visibility":"PUBLIC"}
-  - {"scope":"SHARED","namespace":"research","key":"context","value":"{{current.output.result}}","mode":"REPLACE","visibility":"PUBLIC"}
-  - {"scope":"NODE","namespace":"analysis","key":"draft","value":"{{current.output.text}}","mode":"REPLACE","visibility":"PRIVATE"}
+  - {"scope":"SHARED","namespace":"problem","key":"task","value":"{{trigger.body.message}}","mode":"REPLACE","visibility":"PUBLIC","persist":true,"persistenceScope":"WORKFLOW","semanticIndex":true}
+  - {"scope":"SHARED","namespace":"research","key":"context","value":"{{current.output.result}}","mode":"REPLACE","visibility":"PUBLIC","persist":true,"persistenceScope":"WORKFLOW","semanticIndex":true}
+  - {"scope":"NODE","namespace":"analysis","key":"draft","value":"{{current.output.text}}","mode":"REPLACE","visibility":"PRIVATE","persist":false,"persistenceScope":"WORKFLOW","semanticIndex":false}
 
 Problem-solving rules:
 - When the request needs external information, create a TOOL node before AI reasoning.
@@ -385,7 +385,10 @@ Required JSON shape:
             "key": "task",
             "value": "{{trigger.body.message}}",
             "mode": "REPLACE",
-            "visibility": "PUBLIC"
+            "visibility": "PUBLIC",
+            "persist": true,
+            "persistenceScope": "WORKFLOW",
+            "semanticIndex": true
           }
         ]
       }
@@ -406,7 +409,10 @@ Required JSON shape:
             "key": "context",
             "value": "{{current.output.result}}",
             "mode": "REPLACE",
-            "visibility": "PUBLIC"
+            "visibility": "PUBLIC",
+            "persist": true,
+            "persistenceScope": "WORKFLOW",
+            "semanticIndex": true
           }
         ]
       }
@@ -448,7 +454,10 @@ Required JSON shape:
             "key": "draft",
             "value": "{{current.output.text}}",
             "mode": "REPLACE",
-            "visibility": "PRIVATE"
+            "visibility": "PRIVATE",
+            "persist": false,
+            "persistenceScope": "WORKFLOW",
+            "semanticIndex": false
           },
           {
             "scope": "SHARED",
@@ -456,7 +465,10 @@ Required JSON shape:
             "key": "final",
             "value": "{{current.output.text}}",
             "mode": "REPLACE",
-            "visibility": "PUBLIC"
+            "visibility": "PUBLIC",
+            "persist": true,
+            "persistenceScope": "WORKFLOW",
+            "semanticIndex": true
           }
         ]
       }
@@ -663,6 +675,9 @@ function ensureNodeMemoryWrite(
     value: string;
     mode?: "REPLACE" | "MERGE" | "APPEND";
     visibility?: "PUBLIC" | "PRIVATE";
+    persist?: boolean;
+    persistenceScope?: "WORKFLOW" | "USER";
+    semanticIndex?: boolean;
   },
 ) {
   const nextWrite = {
@@ -672,6 +687,9 @@ function ensureNodeMemoryWrite(
     value: write.value,
     mode: write.mode ?? "REPLACE",
     visibility: write.visibility ?? (write.scope === "NODE" ? "PRIVATE" : "PUBLIC"),
+    persist: write.persist ?? false,
+    persistenceScope: write.persistenceScope ?? "WORKFLOW",
+    semanticIndex: write.semanticIndex ?? false,
   };
 
   switch (node.type) {
@@ -822,6 +840,8 @@ function promoteProblemSolvingDraft(params: {
           ? "{{trigger.body.message}}"
           : "{{trigger.body}}",
       visibility: "PUBLIC",
+      persist: true,
+      semanticIndex: true,
     });
   }
 
@@ -833,6 +853,8 @@ function promoteProblemSolvingDraft(params: {
       key: index === 0 ? "context" : `context_${index + 1}`,
       value: "{{current.output.result}}",
       visibility: "PUBLIC",
+      persist: true,
+      semanticIndex: true,
     });
   }
 
@@ -855,6 +877,8 @@ function promoteProblemSolvingDraft(params: {
       key: "final",
       value: "{{current.output.text}}",
       visibility: "PUBLIC",
+      persist: true,
+      semanticIndex: true,
     });
   }
 

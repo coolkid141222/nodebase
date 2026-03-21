@@ -3,6 +3,7 @@ import {
   ExecutionMemoryScope,
   ExecutionMemoryVisibility,
   ExecutionMemoryWriteMode,
+  PersistentMemoryScope,
   type Prisma,
 } from "@/lib/prisma/client";
 
@@ -25,6 +26,9 @@ export type RuntimeExecutionMemoryWrite = {
   ownerNodeId?: string;
   visibility?: ExecutionMemoryVisibility;
   mode?: ExecutionMemoryWriteMode;
+  persist?: boolean;
+  persistenceScope?: PersistentMemoryScope;
+  semanticIndex?: boolean;
 };
 
 export type ExecutionMemoryTemplateSnapshot = {

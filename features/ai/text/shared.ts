@@ -1,6 +1,7 @@
 import z from "zod";
 import {
   executionMemoryWriteConfigListSchema,
+  persistentMemoryScopeSchema,
   type ExecutionMemoryWriteConfig,
 } from "@/features/executions/memory/shared";
 import { toolProviderSchema } from "@/features/tools/shared";
@@ -40,6 +41,10 @@ export const aiTextNodeSchema = z.object({
   toolId: z.string().trim().default(""),
   toolDisplayName: z.string().trim().default(""),
   toolArgumentsJson: z.string().default("{}"),
+  memoryContextEnabled: z.boolean().default(false),
+  memoryContextScope: persistentMemoryScopeSchema.default("WORKFLOW"),
+  memoryContextQuery: z.string().default("{{input}}"),
+  memoryContextLimit: z.coerce.number().int().min(1).max(8).default(3),
   memoryWrites: executionMemoryWriteConfigListSchema,
 }).superRefine((value, ctx) => {
   if (value.toolEnabled && !value.toolId.trim()) {
@@ -64,5 +69,9 @@ export type AITextNodeData = {
   toolId?: string;
   toolDisplayName?: string;
   toolArgumentsJson?: string;
+  memoryContextEnabled?: boolean;
+  memoryContextScope?: "WORKFLOW" | "USER";
+  memoryContextQuery?: string;
+  memoryContextLimit?: number;
   memoryWrites?: ExecutionMemoryWriteConfig[];
 };
