@@ -13,7 +13,7 @@ import {
     SidebarMenuButton,
     SidebarMenuItem,
 } from "@/components/sidebar"
-import { FolderOpen, HistoryIcon, KeyIcon, StarsIcon, LogOutIcon, CreditCardIcon, BotIcon } from "lucide-react"
+import { FolderOpen, HistoryIcon, KeyIcon, StarsIcon, LogOutIcon, CreditCardIcon } from "lucide-react"
 import Image from "next/image"
 import Link from "next/link"
 import { usePathname, useRouter } from "next/navigation"
@@ -22,8 +22,6 @@ import { WorkflowRunPreviewSidebar } from "@/features/executions/components/work
 import { UpgradeModal } from "@/app/components/upgrade-modal";
 import { useBillingState } from "@/features/billing/hooks/use-billing";
 import { BillingPlan } from "@/lib/prisma/client";
-
-const isProduction = process.env.NODE_ENV === "production";
 
 const menuItems = [
     {
@@ -44,13 +42,6 @@ const menuItems = [
                 icon: HistoryIcon,
                 url: "/executions",
             },
-            ...(!isProduction
-                ? [{
-                title: "AI Test",
-                icon: BotIcon,
-                url: "/ai-test",
-                }]
-                : []),
         ]
     },
 ]
