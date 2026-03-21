@@ -10,6 +10,29 @@ import { randomBytes } from "node:crypto";
 
 const createWebhookSecret = () => randomBytes(32).toString("hex");
 
+const getDefaultConnectionHandle = (
+    nodeType: string | undefined,
+    direction: "source" | "target",
+) => {
+    if (nodeType === "LOOP") {
+        return direction === "source" ? "source-main" : "target-main";
+    }
+
+    return direction === "source" ? "source-1" : "target-1";
+};
+
+const normalizeStoredConnectionHandle = (
+    handle: string,
+    nodeType: string | undefined,
+    direction: "source" | "target",
+) => {
+    if (handle === "main") {
+        return getDefaultConnectionHandle(nodeType, direction);
+    }
+
+    return handle;
+};
+
 export const workflowsRouter = createTRPCRouter({
     create: protectedProcedure.mutation(({ ctx }) => {
         return prisma.workflow.create({
@@ -170,10 +193,10 @@ export const workflowsRouter = createTRPCRouter({
                                 toNodeId: edge.target,
                                 fromOutput:
                                     edge.sourceHandle ||
-                                    (sourceType === "LOOP" ? "source-main" : "main"),
+                                    getDefaultConnectionHandle(sourceType, "source"),
                                 toInput:
                                     edge.targetHandle ||
-                                    (targetType === "LOOP" ? "target-main" : "main"),
+                                    getDefaultConnectionHandle(targetType, "target"),
                             }
                         }),
                     }),
@@ -216,12 +239,24 @@ export const workflowsRouter = createTRPCRouter({
                 data: (node.data as Record<string, unknown>) || {}, 
             }))
 
+            const nodeTypeById = new Map(
+                workflow.nodes.map((node) => [node.id, node.type] as const),
+            )
+
             const edges: Edge[] = workflow.connections.map((connection) => ({
                 id: connection.id,
                 source: connection.fromNodeId,
                 target: connection.toNodeId,
-                sourceHandle: connection.fromOutput,
-                targetHandle: connection.toInput,
+                sourceHandle: normalizeStoredConnectionHandle(
+                    connection.fromOutput,
+                    nodeTypeById.get(connection.fromNodeId),
+                    "source",
+                ),
+                targetHandle: normalizeStoredConnectionHandle(
+                    connection.toInput,
+                    nodeTypeById.get(connection.toNodeId),
+                    "target",
+                ),
             }))
 
             return {
