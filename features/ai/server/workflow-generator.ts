@@ -903,6 +903,18 @@ function normalizeLoopDraft(draft: AIWorkflowDraft) {
 
   for (const loopNode of loopNodes) {
     const loopId = loopNode.id;
+    const loopBodyEdges = workingDraft.edges.filter(
+      (edge) =>
+        edge.role === "LOOP_BODY" &&
+        edge.source === loopId &&
+        nodeTypeById.get(edge.target) !== "LOOP",
+    );
+    const loopBackEdges = workingDraft.edges.filter(
+      (edge) =>
+        edge.role === "LOOP_BACK" &&
+        edge.target === loopId &&
+        nodeTypeById.get(edge.source) !== "LOOP",
+    );
     const incomingDefaults = workingDraft.edges.filter(
       (edge) =>
         edge.role === "DEFAULT" &&
@@ -915,118 +927,103 @@ function normalizeLoopDraft(draft: AIWorkflowDraft) {
         edge.source === loopId &&
         nodeTypeById.get(edge.target) !== "LOOP",
     );
-
-    workingDraft.edges = workingDraft.edges.map((edge) => {
-      if (edge.source === loopId) {
-        return {
-          ...edge,
-          role: "LOOP_BODY",
-        };
-      }
-
-      if (edge.target === loopId) {
-        return {
-          ...edge,
-          role: "LOOP_BACK",
-        };
-      }
-
-      return edge;
-    });
-
-    const bodyEdge = workingDraft.edges.find(
-      (edge) =>
-        edge.role === "LOOP_BODY" &&
-        edge.source === loopId &&
-        nodeTypeById.get(edge.target) !== "LOOP",
+    const adjacentBodyNodeIds = Array.from(
+      new Set(
+        [
+          ...loopBodyEdges.map((edge) => edge.target),
+          ...loopBackEdges.map((edge) => edge.source),
+          ...outgoingDefaults.map((edge) => edge.target),
+          ...incomingDefaults.map((edge) => edge.source),
+        ].filter((nodeId) => nodeTypeById.get(nodeId) !== "LOOP"),
+      ),
     );
-    const backEdge = workingDraft.edges.find(
-      (edge) =>
-        edge.role === "LOOP_BACK" &&
-        edge.target === loopId &&
-        nodeTypeById.get(edge.source) !== "LOOP",
-    );
-    const bodyStartId = bodyEdge?.target;
-    const bodyEndId = backEdge?.source;
+    const singleBodyNodeId =
+      adjacentBodyNodeIds.length === 1 ? adjacentBodyNodeIds[0] : undefined;
+    const bodyStartId =
+      loopBodyEdges[0]?.target ??
+      (outgoingDefaults.length === 1 ? outgoingDefaults[0]?.target : undefined) ??
+      singleBodyNodeId;
+    const bodyEndId =
+      loopBackEdges[0]?.source ??
+      (incomingDefaults.length === 1 ? incomingDefaults[0]?.source : undefined) ??
+      singleBodyNodeId ??
+      bodyStartId;
 
-    for (const edge of incomingDefaults) {
-      if (!bodyStartId || edge.source === bodyStartId) {
-        continue;
-      }
+    if (!bodyStartId || !bodyEndId) {
+      continue;
+    }
 
-      const exists = workingDraft.edges.some(
+    const rewrittenEdges: AIWorkflowDraft["edges"] = [];
+    const pushEdge = (edge: AIWorkflowDraft["edges"][number]) => {
+      const exists = rewrittenEdges.some(
         (candidate) =>
-          candidate.role === "DEFAULT" &&
           candidate.source === edge.source &&
-          candidate.target === bodyStartId,
+          candidate.target === edge.target &&
+          candidate.role === edge.role,
       );
 
       if (!exists) {
-        workingDraft.edges.push({
-          source: edge.source,
-          target: bodyStartId,
-          role: "DEFAULT",
-        });
+        rewrittenEdges.push(edge);
       }
-    }
+    };
 
-    for (const edge of outgoingDefaults) {
-      if (!bodyEndId || edge.target === bodyEndId) {
+    for (const edge of workingDraft.edges) {
+      if (edge.source === loopId) {
+        if (
+          edge.role === "LOOP_BODY" ||
+          edge.role === "DEFAULT"
+        ) {
+          if (edge.target !== bodyStartId) {
+            pushEdge({
+              source: bodyEndId,
+              target: edge.target,
+              role: "DEFAULT",
+            });
+          }
+        }
         continue;
       }
 
-      const exists = workingDraft.edges.some(
-        (candidate) =>
-          candidate.role === "DEFAULT" &&
-          candidate.source === bodyEndId &&
-          candidate.target === edge.target,
-      );
-
-      if (!exists) {
-        workingDraft.edges.push({
-          source: bodyEndId,
-          target: edge.target,
-          role: "DEFAULT",
-        });
+      if (edge.target === loopId) {
+        if (
+          edge.role === "LOOP_BACK" ||
+          edge.role === "DEFAULT"
+        ) {
+          if (edge.source !== bodyEndId) {
+            pushEdge({
+              source: edge.source,
+              target: bodyStartId,
+              role: "DEFAULT",
+            });
+          }
+        }
+        continue;
       }
+
+      pushEdge(edge);
     }
 
-    let seenBodyEdge = false;
-    let seenBackEdge = false;
-
-    workingDraft.edges = workingDraft.edges.filter((edge) => {
-      if (edge.source === loopId) {
-        if (edge.role !== "LOOP_BODY") {
-          return false;
-        }
-
-        if (seenBodyEdge) {
-          return false;
-        }
-
-        seenBodyEdge = true;
-        return true;
-      }
-
-      if (edge.target === loopId) {
-        if (edge.role !== "LOOP_BACK") {
-          return false;
-        }
-
-        if (seenBackEdge) {
-          return false;
-        }
-
-        seenBackEdge = true;
-        return true;
-      }
-
-      return true;
+    pushEdge({
+      source: loopId,
+      target: bodyStartId,
+      role: "LOOP_BODY",
+    });
+    pushEdge({
+      source: bodyEndId,
+      target: loopId,
+      role: "LOOP_BACK",
     });
 
-    if (incomingDefaults.length > 0 || outgoingDefaults.length > 0) {
+    workingDraft.edges = rewrittenEdges;
+
+    if (
+      incomingDefaults.length > 0 ||
+      outgoingDefaults.length > 0 ||
+      loopBodyEdges.length > 1 ||
+      loopBackEdges.length > 1
+    ) {
       workingDraft.notes.push(
-        `Normalized loop "${loopId}" to body/back wiring so saved connections stay stable.`,
+        `Normalized loop "${loopId}" to stable body/back wiring.`,
       );
     }
   }
