@@ -46,7 +46,7 @@ import { TemplateVariablePicker } from "@/features/executions/components/templat
 import type { TemplateVariableOption } from "@/features/executions/components/template-variables";
 import { Switch } from "@/components/switch";
 
-const formSchema = aiTextNodeSchema.extend({
+const formSchema = aiTextNodeSchema.safeExtend({
   system: z.string().optional(),
 });
 
