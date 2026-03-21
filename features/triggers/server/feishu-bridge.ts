@@ -23,6 +23,7 @@ type BridgeCommand =
       type: "run";
       workflowRef: string;
       message: string;
+      fromDefault?: boolean;
     }
   | {
       type: "invalid";
@@ -234,10 +235,31 @@ export function extractFeishuBridgeMessage(value: unknown): FeishuBridgeMessage 
   };
 }
 
-async function findExistingReceipt(eventId: string) {
-  return prisma.feishuBridgeReceipt.findUnique({
+function buildReceiptKeys(message: Pick<FeishuBridgeMessage, "eventId" | "messageId">) {
+  const keys = new Set<string>();
+
+  if (message.messageId?.trim()) {
+    keys.add(`message:${message.messageId.trim()}`);
+  }
+
+  if (message.eventId?.trim()) {
+    keys.add(`event:${message.eventId.trim()}`);
+    keys.add(message.eventId.trim());
+  }
+
+  return Array.from(keys);
+}
+
+async function findExistingReceipt(receiptKeys: string[]) {
+  if (receiptKeys.length === 0) {
+    return null;
+  }
+
+  return prisma.feishuBridgeReceipt.findFirst({
     where: {
-      eventId,
+      eventId: {
+        in: receiptKeys,
+      },
     },
     select: {
       replyText: true,
@@ -250,16 +272,20 @@ async function findExistingReceipt(eventId: string) {
 }
 
 async function persistReceipt(params: {
-  eventId: string;
+  receiptKey: string | null;
   messageId: string | null;
   chatId: string | null;
   commandType: BridgeCommand["type"];
   result: FeishuBridgeResult;
 }) {
+  if (!params.receiptKey) {
+    return;
+  }
+
   try {
     await prisma.feishuBridgeReceipt.create({
       data: {
-        eventId: params.eventId,
+        eventId: params.receiptKey,
         messageId: params.messageId,
         chatId: params.chatId,
         commandType: params.commandType,
@@ -317,6 +343,16 @@ export function parseFeishuBridgeCommand(text: string): BridgeCommand {
     };
   }
 
+  if (normalized === "/run") {
+    return {
+      type: "invalid",
+      message:
+        defaultWorkflowRef
+          ? "Use `/run <message>` to run the default workflow, or `/run <workflow id or exact name> :: <message>`."
+          : "Use `/run <workflow id or exact name> :: <message>`.",
+    };
+  }
+
   if (normalized.startsWith("/run ")) {
     const rest = normalized.slice("/run".length).trim();
 
@@ -346,6 +382,7 @@ export function parseFeishuBridgeCommand(text: string): BridgeCommand {
         type: "run",
         workflowRef,
         message,
+        fromDefault: false,
       };
     }
 
@@ -354,6 +391,7 @@ export function parseFeishuBridgeCommand(text: string): BridgeCommand {
         type: "run",
         workflowRef: defaultWorkflowRef,
         message: rest,
+        fromDefault: true,
       };
     }
 
@@ -369,6 +407,7 @@ export function parseFeishuBridgeCommand(text: string): BridgeCommand {
       type: "run",
       workflowRef: defaultWorkflowRef,
       message: normalized,
+      fromDefault: true,
     };
   }
 
@@ -481,6 +520,59 @@ async function resolveWorkflowReference(workflowRef: string) {
   }
 
   return { workflow: null, ambiguous: false } as const;
+}
+
+async function workflowHasWebhookTrigger(workflowId: string) {
+  const triggerNode = await prisma.node.findFirst({
+    where: {
+      workflowId,
+      type: "WEBHOOK_TRIGGER",
+    },
+    select: {
+      id: true,
+    },
+  });
+
+  return Boolean(triggerNode);
+}
+
+async function findLatestRunnableWorkflow() {
+  const ownerEmail = getBridgeOwnerEmail();
+
+  return prisma.workflow.findFirst({
+    where: ownerEmail
+      ? {
+          user: {
+            email: ownerEmail,
+          },
+          nodes: {
+            some: {
+              type: "WEBHOOK_TRIGGER",
+            },
+          },
+        }
+      : {
+          nodes: {
+            some: {
+              type: "WEBHOOK_TRIGGER",
+            },
+          },
+        },
+    select: {
+      id: true,
+      name: true,
+      webhookSecret: true,
+      updatedAt: true,
+      user: {
+        select: {
+          email: true,
+        },
+      },
+    },
+    orderBy: {
+      updatedAt: "desc",
+    },
+  });
 }
 
 function buildHelpReply() {
@@ -649,19 +741,16 @@ export async function handleFeishuBridgeMessage(params: {
   }
 
   const command = parseFeishuBridgeCommand(message.text);
+  const receiptKeys = buildReceiptKeys(message);
+  const primaryReceiptKey = receiptKeys[0] ?? null;
 
-  if (message.eventId) {
-    const existingReceipt = await findExistingReceipt(message.eventId);
+  if (receiptKeys.length > 0) {
+    const existingReceipt = await findExistingReceipt(receiptKeys);
 
     if (existingReceipt) {
       return {
-        status:
-          existingReceipt.status === "error"
-            ? "error"
-            : existingReceipt.status === "ignored"
-              ? "ignored"
-              : "handled",
-        replyText: existingReceipt.replyText,
+        status: "ignored",
+        replyText: null,
         executionId: existingReceipt.executionId,
         workflowId: existingReceipt.workflowId,
         draftWorkflowId: existingReceipt.draftWorkflowId,
@@ -670,9 +759,9 @@ export async function handleFeishuBridgeMessage(params: {
   }
 
   const finalizeResult = async (result: FeishuBridgeResult) => {
-    if (message.eventId) {
+    if (primaryReceiptKey) {
       await persistReceipt({
-        eventId: message.eventId,
+        receiptKey: primaryReceiptKey,
         messageId: message.messageId,
         chatId: message.chatId,
         commandType: command.type,
@@ -748,9 +837,36 @@ export async function handleFeishuBridgeMessage(params: {
     } satisfies FeishuBridgeResult);
   }
 
+  let workflow = resolved.workflow;
+
+  if (command.fromDefault) {
+    const defaultWorkflowIsRunnable = await workflowHasWebhookTrigger(workflow.id);
+
+    if (!defaultWorkflowIsRunnable) {
+      const latestRunnableWorkflow = await findLatestRunnableWorkflow();
+
+      if (latestRunnableWorkflow) {
+        workflow = latestRunnableWorkflow;
+      }
+    }
+  }
+
+  const isRunnableWorkflow = await workflowHasWebhookTrigger(workflow.id);
+
+  if (!isRunnableWorkflow) {
+    return finalizeResult({
+      status: "error",
+      replyText:
+        command.fromDefault
+          ? "The configured default workflow is not webhook-triggered. Create a Feishu draft first or use `/run <workflow id or exact name> :: <message>` with a webhook workflow."
+          : `Workflow "${workflow.name}" does not have a webhook trigger. Feishu can only run webhook-triggered workflows.`,
+      workflowId: workflow.id,
+    } satisfies FeishuBridgeResult);
+  }
+
   try {
     const queuedExecution = await queueWorkflowExecution({
-      workflow: resolved.workflow,
+      workflow,
       message: command.message,
       chatId: message.chatId,
       chatType: message.chatType,
@@ -762,9 +878,9 @@ export async function handleFeishuBridgeMessage(params: {
     return finalizeResult({
       status: "handled",
       replyText: queuedExecution.queued
-        ? `Queued workflow "${resolved.workflow.name}" (${queuedExecution.executionId}).`
-        : `Started workflow "${resolved.workflow.name}" (${queuedExecution.executionId}).`,
-      workflowId: resolved.workflow.id,
+        ? `Queued workflow "${workflow.name}" (${queuedExecution.executionId}).`
+        : `Started workflow "${workflow.name}" (${queuedExecution.executionId}).`,
+      workflowId: workflow.id,
       executionId: queuedExecution.executionId,
     } satisfies FeishuBridgeResult);
   } catch (error) {
@@ -778,7 +894,7 @@ export async function handleFeishuBridgeMessage(params: {
     return finalizeResult({
       status: "error",
       replyText,
-      workflowId: resolved.workflow.id,
+      workflowId: workflow.id,
     } satisfies FeishuBridgeResult);
   }
 }

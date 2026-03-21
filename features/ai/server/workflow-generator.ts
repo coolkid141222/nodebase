@@ -1608,7 +1608,11 @@ export async function createGeneratedWorkflowDraft(params: {
   input: GenerateWorkflowGraphInput;
   preferredTriggerType?: PreferredTriggerType;
 }): Promise<SavedGeneratedWorkflowResult> {
-  const generatedDraft = await generateWorkflowDraft(params);
+  const generatedDraft = await generateWorkflowDraft({
+    userId: params.userId,
+    input: params.input,
+    preferredTriggerType: params.preferredTriggerType,
+  });
   const workflow = await prisma.workflow.create({
     data: {
       userId: params.userId,
