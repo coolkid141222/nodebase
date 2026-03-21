@@ -18,6 +18,8 @@ interface BaseExcutionProps extends NodeProps {
     contentClassName?: string;
     onSetting?: () => void;
     onDoubleClick?: () => void;
+    hideDefaultHandles?: boolean;
+    handles?: ReactNode;
 }
 
 export const BaseExcutionNode = memo((props: BaseExcutionProps) => {
@@ -33,6 +35,8 @@ export const BaseExcutionNode = memo((props: BaseExcutionProps) => {
         status,
         nodeClassName,
         contentClassName,
+        hideDefaultHandles,
+        handles,
     } = props;
     const handleDelete = () => {
         setNodes((currentNodes) => {
@@ -66,16 +70,22 @@ export const BaseExcutionNode = memo((props: BaseExcutionProps) => {
                     <Icon className="size-4 text-muted-foreground"/>
                 )}
                 {children}
-                <BaseHandle
-                    id="target-1"
-                    type="target"
-                    position={Position.Left}
-                />
-                <BaseHandle
-                    id="source-1"
-                    type="source"
-                    position={Position.Right}
-                />
+                {hideDefaultHandles ? (
+                    handles
+                ) : (
+                    <>
+                        <BaseHandle
+                            id="target-1"
+                            type="target"
+                            position={Position.Left}
+                        />
+                        <BaseHandle
+                            id="source-1"
+                            type="source"
+                            position={Position.Right}
+                        />
+                    </>
+                )}
             </div>
         </WorkflowNode>
     )

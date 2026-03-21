@@ -1,10 +1,11 @@
 "use client";
 
-import type { NodeProps } from "@xyflow/react";
+import { Position, type NodeProps } from "@xyflow/react";
 import { memo, useState } from "react";
 import { useReactFlow } from "@xyflow/react";
 import { RotateCwIcon } from "lucide-react";
 import { BaseExcutionNode } from "@/components/base-execution-node";
+import { BaseHandle } from "@/components/react-flow/base-handle";
 import { useWorkflowNodeStatus } from "@/features/executions/components/workflow-execution-status-context";
 import { buildTemplateVariableOptions } from "@/features/executions/components/template-variables";
 import { LoopDialog, type LoopFormValues } from "./dialog";
@@ -59,6 +60,25 @@ export const LoopNode = memo((props: NodeProps) => {
         status={nodeStatus}
         nodeClassName="h-[56px] min-w-[112px] rounded-xl border-dashed"
         contentClassName="relative px-3"
+        hideDefaultHandles
+        handles={
+          <>
+            <BaseHandle id="target-entry" type="target" position={Position.Left} />
+            <BaseHandle id="source-exit" type="source" position={Position.Right} />
+            <BaseHandle
+              id="source-body"
+              type="source"
+              position={Position.Bottom}
+              style={{ left: "34%" }}
+            />
+            <BaseHandle
+              id="target-body"
+              type="target"
+              position={Position.Bottom}
+              style={{ left: "66%" }}
+            />
+          </>
+        }
         onSetting={() => setDialogOpen(true)}
       >
         <div className="pointer-events-none absolute top-1.5 right-1.5 rounded-full border border-border/70 bg-background px-1.5 py-0.5 text-[9px] font-semibold uppercase tracking-[0.18em] text-muted-foreground">
