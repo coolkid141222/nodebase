@@ -21,7 +21,7 @@ export const LoopNode = memo((props: NodeProps) => {
     edges: getEdges(),
   });
   const maxIterations = nodeData.maxIterations ?? 3;
-  const description = `Repeat the surrounding cycle up to ${maxIterations} iteration${maxIterations === 1 ? "" : "s"}`;
+  const description = `${maxIterations}x max iterations`;
 
   const handleSubmit = (values: LoopFormValues) => {
     setNodes((nodes) =>
@@ -59,8 +59,14 @@ export const LoopNode = memo((props: NodeProps) => {
         name="Loop"
         description={description}
         status={nodeStatus}
+        nodeClassName="h-[56px] min-w-[104px] rounded-xl border-dashed"
+        contentClassName="relative px-3"
         onSetting={() => setDialogOpen(true)}
-      />
+      >
+        <div className="pointer-events-none absolute top-1.5 right-1.5 rounded-full border border-border/70 bg-background px-1.5 py-0.5 text-[9px] font-semibold uppercase tracking-[0.18em] text-muted-foreground">
+          {maxIterations}x
+        </div>
+      </BaseExcutionNode>
     </>
   );
 });

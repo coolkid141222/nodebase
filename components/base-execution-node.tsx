@@ -7,19 +7,33 @@ import { memo, type ReactNode } from "react"
 import { BaseHandle } from "./react-flow/base-handle"
 import { WorkflowNode } from "./workflow-components"
 import { NodeStatus } from "./react-flow/node-status-indicator"
+import { cn } from "@/lib/utils"
 interface BaseExcutionProps extends NodeProps {
     icon: LucideIcon | string;
     name: string;
     description?: string;
     children?: ReactNode;
     status?: NodeStatus
+    nodeClassName?: string;
+    contentClassName?: string;
     onSetting?: () => void;
     onDoubleClick?: () => void;
 }
 
 export const BaseExcutionNode = memo((props: BaseExcutionProps) => {
     const { setNodes, setEdges } = useReactFlow();
-    const { icon: Icon, name, description, children, onSetting, onDoubleClick, id, status } = props;
+    const {
+        icon: Icon,
+        name,
+        description,
+        children,
+        onSetting,
+        onDoubleClick,
+        id,
+        status,
+        nodeClassName,
+        contentClassName,
+    } = props;
     const handleDelete = () => {
         setNodes((currentNodes) => {
             const updatedNodes = currentNodes.filter((node) => node.id !== id)
@@ -40,8 +54,12 @@ export const BaseExcutionNode = memo((props: BaseExcutionProps) => {
             onDelete={handleDelete}
             onSettings={onSetting}
             status={status}
+            nodeClassName={nodeClassName}
         >
-            <div onClick={onDoubleClick} className="w-full h-full flex items-center justify-center">
+            <div
+                onClick={onDoubleClick}
+                className={cn("w-full h-full flex items-center justify-center", contentClassName)}
+            >
                 {typeof Icon === "string" ? (
                     <Image src={Icon} alt={name} width={16} height={16}/>
                 ): (

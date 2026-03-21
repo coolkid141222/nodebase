@@ -4,6 +4,7 @@ import { Button } from "./button"
 import { ReactNode } from "react";
 import { BaseNode } from "./react-flow/base-node";
 import { NodeStatusIndicator, type NodeStatus } from "./react-flow/node-status-indicator";
+import { cn } from "@/lib/utils";
 interface workflowNodeProps {
     children: ReactNode;
     showToolbar?: boolean;
@@ -54,7 +55,12 @@ export function WorkflowNode({
             <div className="flex flex-col items-center">
                 <div className="relative inline-block">
                     <NodeStatusIndicator status={status} variant="border">
-                        <BaseNode className={`relative block mx-auto size-[56px] ${nodeClassName || ''}`}>
+                        <BaseNode
+                            className={cn(
+                                "relative block mx-auto size-[56px]",
+                                nodeClassName,
+                            )}
+                        >
                             {/* Node Content */}
                             {children}
                         </BaseNode>
