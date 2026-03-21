@@ -1,9 +1,10 @@
 import { RegisterForm } from "@/features/auth/components/register-form";
+import { authUiConfig } from "@/lib/auth-config";
 
 const Page = () => {
     return (
         <div>
-            <RegisterForm />
+            <RegisterForm {...authUiConfig} />
         </div>
     )
 }

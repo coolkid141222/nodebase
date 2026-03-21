@@ -7,6 +7,11 @@ import { z } from "zod";
 import { Button } from "@/components/button";
 import { Input } from "@/components/input";
 import {
+  Collapsible,
+  CollapsibleContent,
+  CollapsibleTrigger,
+} from "@/components/collapsible";
+import {
   Card,
   CardContent,
   CardDescription,
@@ -21,7 +26,7 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/form";
-import { ArrowRight, Loader2 } from "lucide-react";
+import { ArrowRight, ChevronDown, Loader2 } from "lucide-react";
 import { authClient } from "@/lib/auth-client";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
@@ -91,9 +96,20 @@ const registerSchema = z.object({
 
 type RegisterFormValues = z.infer<typeof registerSchema>;
 
-export function RegisterForm() { // --- 2. 更改组件名称 ---
+type RegisterFormProps = {
+  googleEnabled: boolean;
+  githubEnabled: boolean;
+  ownerEmailSignupEnabled: boolean;
+};
+
+export function RegisterForm({
+  googleEnabled,
+  githubEnabled,
+  ownerEmailSignupEnabled,
+}: RegisterFormProps) { // --- 2. 更改组件名称 ---
   const router = useRouter();
   const [error, setError] = useState<string>("");
+  const [socialPending, setSocialPending] = useState<"google" | "github" | null>(null);
   const form = useForm<RegisterFormValues>({
     resolver: zodResolver(registerSchema),
     defaultValues: {
@@ -134,7 +150,28 @@ export function RegisterForm() { // --- 2. 更改组件名称 ---
     }
   };
 
+  const handleSocialSignIn = async (provider: "google" | "github") => {
+    setError("");
+    setSocialPending(provider);
+
+    try {
+      const result = await authClient.signIn.social({
+        provider,
+        callbackURL: "/",
+      });
+
+      if (result?.error) {
+        setError(getAuthErrorMessage(result.error) || "Social sign in failed.");
+      }
+    } catch (err) {
+      setError(getAuthErrorMessage(err) || "Social sign in failed.");
+    } finally {
+      setSocialPending(null);
+    }
+  };
+
   const isPending = form.formState.isSubmitting;
+  const isBusy = isPending || socialPending !== null;
 
   return (
     <div className="font-sans relative flex min-h-screen items-center justify-center bg-linear-to-br from-orange-100 via-amber-50 to-blue-100 px-4 py-12 overflow-hidden">
@@ -151,7 +188,7 @@ export function RegisterForm() { // --- 2. 更改组件名称 ---
             Create your account
           </CardTitle>
           <CardDescription className="text-base text-slate-600">
-            Get started by creating a new account
+            Register with Google or GitHub. Owner email sign-up stays allowlisted.
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-6 px-8 pb-8">
@@ -160,141 +197,157 @@ export function RegisterForm() { // --- 2. 更改组件名称 ---
               variant="outline"
               className="group flex w-full items-center justify-center gap-2 rounded-xl border-slate-200 bg-white h-11 text-sm font-medium text-slate-700 transition hover:border-orange-300 hover:bg-orange-50 hover:text-orange-700"
               type="button"
-              disabled={isPending}
+              disabled={isBusy || !googleEnabled}
+              onClick={() => handleSocialSignIn("google")}
             >
               <img src="/google.svg" alt="Google" className="h-5 w-5" />
-              Continue with Google
+              {socialPending === "google" ? "Redirecting..." : "Google"}
             </Button>
 
             <Button
               variant="outline"
               className="group flex w-full items-center justify-center gap-2 rounded-xl border-slate-200 bg-white h-11 text-sm font-medium text-slate-700 transition hover:border-slate-300 hover:bg-slate-50 hover:text-slate-900"
               type="button"
-              disabled={isPending}
+              disabled={isBusy || !githubEnabled}
+              onClick={() => handleSocialSignIn("github")}
             >
               <img src="/github.svg" alt="GitHub" className="h-5 w-5" />
-              Continue with GitHub
+              {socialPending === "github" ? "Redirecting..." : "GitHub"}
             </Button>
           </div>
 
-          <div className="relative">
-            <div className="absolute inset-0 flex items-center">
-              <div className="w-full border-t border-slate-200" />
-            </div>
-            <div className="relative flex justify-center text-sm">
-              <span className="bg-white px-3 text-slate-500">
-                or continue with email
-              </span>
-            </div>
+          <div className="rounded-xl border border-slate-200 bg-slate-50/80 px-4 py-3 text-sm text-slate-600">
+            <p>Public sign-up uses social auth only.</p>
+            <p className="mt-1 text-slate-500">
+              {googleEnabled || githubEnabled
+                ? "Use a configured provider to create your account."
+                : "Google/GitHub auth is not configured yet in environment variables."}
+            </p>
           </div>
+
+          {ownerEmailSignupEnabled ? (
+            <Collapsible className="rounded-xl border border-slate-200 bg-white">
+              <CollapsibleTrigger className="flex w-full items-center justify-between px-4 py-3 text-left">
+                <div>
+                  <p className="text-sm font-medium text-slate-900">
+                    Owner email sign-up
+                  </p>
+                  <p className="text-xs text-slate-500">
+                    Allowed only for explicitly allowlisted emails.
+                  </p>
+                </div>
+                <ChevronDown className="h-4 w-4 text-slate-500 transition-transform data-[state=open]:rotate-180" />
+              </CollapsibleTrigger>
+              <CollapsibleContent className="border-t border-slate-200 px-4 py-4">
+                <Form {...form}>
+                  <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+                    <FormField
+                      control={form.control}
+                      name="name"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel className="text-sm font-medium text-slate-700">Full Name</FormLabel>
+                          <FormControl>
+                            <Input
+                              placeholder="John Doe"
+                              autoComplete="name"
+                              className="h-11 rounded-lg border-slate-200 bg-white px-4 text-sm transition focus:border-orange-400 focus:bg-white focus-visible:ring-2 focus-visible:ring-orange-400/20"
+                              {...field}
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+
+                    <FormField
+                      control={form.control}
+                      name="email"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel className="text-sm font-medium text-slate-700">Email</FormLabel>
+                          <FormControl>
+                            <Input
+                              type="email"
+                              placeholder="name@example.com"
+                              autoComplete="email"
+                              className="h-11 rounded-lg border-slate-200 bg-white px-4 text-sm transition focus:border-orange-400 focus:bg-white focus-visible:ring-2 focus-visible:ring-orange-400/20"
+                              {...field}
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+
+                    <FormField
+                      control={form.control}
+                      name="password"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel className="text-sm font-medium text-slate-700">Password</FormLabel>
+                          <FormControl>
+                            <Input
+                              type="password"
+                              placeholder="••••••••"
+                              autoComplete="new-password"
+                              className="h-11 rounded-lg border-slate-200 bg-white px-4 text-sm transition focus:border-orange-400 focus:bg-white focus-visible:ring-2 focus-visible:ring-orange-400/20"
+                              {...field}
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+
+                    <FormField
+                      control={form.control}
+                      name="confirmPassword"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel className="text-sm font-medium text-slate-700">Confirm Password</FormLabel>
+                          <FormControl>
+                            <Input
+                              type="password"
+                              placeholder="••••••••"
+                              autoComplete="new-password"
+                              className="h-11 rounded-lg border-slate-200 bg-white px-4 text-sm transition focus:border-orange-400 focus:bg-white focus-visible:ring-2 focus-visible:ring-orange-400/20"
+                              {...field}
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+
+                    <Button
+                      type="submit"
+                      className="w-full h-11 rounded-lg bg-slate-900 text-sm font-medium text-white transition hover:bg-slate-800 disabled:opacity-80"
+                      disabled={isBusy}
+                    >
+                      {isPending ? (
+                        <span className="flex items-center justify-center">
+                          <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                          Creating account...
+                        </span>
+                      ) : (
+                        <span className="flex items-center justify-center">
+                          Create owner account
+                          <ArrowRight className="ml-2 h-4 w-4" />
+                        </span>
+                      )}
+                    </Button>
+                  </form>
+                </Form>
+              </CollapsibleContent>
+            </Collapsible>
+          ) : null}
 
           {error ? (
             <div className="rounded-lg bg-red-50 px-4 py-3 text-sm text-red-700">
               {error}
             </div>
           ) : null}
-
-          <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-
-              <FormField
-                control={form.control}
-                name="name"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel className="text-sm font-medium text-slate-700">Full Name</FormLabel>
-                    <FormControl>
-                      <Input
-                        placeholder="John Doe"
-                        autoComplete="name"
-                        className="h-11 rounded-lg border-slate-200 bg-white px-4 text-sm transition focus:border-orange-400 focus:bg-white focus-visible:ring-2 focus-visible:ring-orange-400/20"
-                        {...field}
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
-              <FormField
-                control={form.control}
-                name="email"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel className="text-sm font-medium text-slate-700">Email</FormLabel>
-                    <FormControl>
-                      <Input
-                        type="email"
-                        placeholder="name@example.com"
-                        autoComplete="email"
-                        className="h-11 rounded-lg border-slate-200 bg-white px-4 text-sm transition focus:border-orange-400 focus:bg-white focus-visible:ring-2 focus-visible:ring-orange-400/20"
-                        {...field}
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
-              <FormField
-                control={form.control}
-                name="password"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel className="text-sm font-medium text-slate-700">Password</FormLabel>
-                    <FormControl>
-                      <Input
-                        type="password"
-                        placeholder="••••••••"
-                        autoComplete="new-password"
-                        className="h-11 rounded-lg border-slate-200 bg-white px-4 text-sm transition focus:border-orange-400 focus:bg-white focus-visible:ring-2 focus-visible:ring-orange-400/20"
-                        {...field}
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
-              <FormField
-                control={form.control}
-                name="confirmPassword"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel className="text-sm font-medium text-slate-700">Confirm Password</FormLabel>
-                    <FormControl>
-                      <Input
-                        type="password"
-                        placeholder="••••••••"
-                        autoComplete="new-password"
-                        className="h-11 rounded-lg border-slate-200 bg-white px-4 text-sm transition focus:border-orange-400 focus:bg-white focus-visible:ring-2 focus-visible:ring-orange-400/20"
-                        {...field}
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
-              <Button
-                type="submit"
-                className="w-full h-11 rounded-lg bg-slate-900 text-sm font-medium text-white transition hover:bg-slate-800 disabled:opacity-80"
-                disabled={isPending}
-              >
-                {isPending ? (
-                  <span className="flex items-center justify-center">
-                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                    Creating account...
-                  </span>
-                ) : (
-                  <span className="flex items-center justify-center">
-                    Create account
-                    <ArrowRight className="ml-2 h-4 w-4" />
-                  </span>
-                )}
-              </Button>
-            </form>
-          </Form>
 
           <div className="text-center text-sm text-slate-600">
             Already have an account?{" "}

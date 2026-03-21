@@ -26,6 +26,10 @@ import { ArrowRight, Loader2 } from "lucide-react";
 import { signIn } from "@/lib/auth-client";
 import { useState } from "react";
 
+type LoginFormProps = {
+  googleEnabled: boolean;
+  githubEnabled: boolean;
+};
 
 const loginSchema = z.object({
   email: z.string().email("Please enter a valid email"),
@@ -34,9 +38,10 @@ const loginSchema = z.object({
 
 type LoginFormValues = z.infer<typeof loginSchema>;
 
-export function LoginForm() {
+export function LoginForm({ googleEnabled, githubEnabled }: LoginFormProps) {
   const router = useRouter();
   const [error, setError] = useState<string>("");
+  const [socialPending, setSocialPending] = useState<"google" | "github" | null>(null);
 
   const form = useForm<LoginFormValues>({
     resolver: zodResolver(loginSchema),
@@ -67,7 +72,28 @@ export function LoginForm() {
     }
   };
 
+  const handleSocialSignIn = async (provider: "google" | "github") => {
+    setError("");
+    setSocialPending(provider);
+
+    try {
+      const result = await signIn.social({
+        provider,
+        callbackURL: "/",
+      });
+
+      if (result?.error) {
+        setError(result.error.message || "Social sign in failed");
+      }
+    } catch {
+      setError("Social sign in failed");
+    } finally {
+      setSocialPending(null);
+    }
+  };
+
   const isPending = form.formState.isSubmitting;
+  const isBusy = isPending || socialPending !== null;
 
   return (
     <div className="font-sans relative flex min-h-screen items-center justify-center bg-linear-to-br from-orange-100 via-amber-50 to-blue-100 px-4 py-12 overflow-hidden">
@@ -93,22 +119,30 @@ export function LoginForm() {
               variant="outline"
               className="group flex w-full items-center justify-center gap-2 rounded-xl border-slate-200 bg-white h-11 text-sm font-medium text-slate-700 transition hover:border-orange-300 hover:bg-orange-50 hover:text-orange-700"
               type="button"
-              disabled={isPending}
+              disabled={isBusy || !googleEnabled}
+              onClick={() => handleSocialSignIn("google")}
             >
               <img src="/google.svg" alt="Google" className="h-5 w-5" />
-              Continue with Google
+              {socialPending === "google" ? "Redirecting..." : "Google"}
             </Button>
 
             <Button
               variant="outline"
               className="group flex w-full items-center justify-center gap-2 rounded-xl border-slate-200 bg-white h-11 text-sm font-medium text-slate-700 transition hover:border-slate-300 hover:bg-slate-50 hover:text-slate-900"
               type="button"
-              disabled={isPending}
+              disabled={isBusy || !githubEnabled}
+              onClick={() => handleSocialSignIn("github")}
             >
               <img src="/github.svg" alt="GitHub" className="h-5 w-5" />
-              Continue with GitHub
+              {socialPending === "github" ? "Redirecting..." : "GitHub"}
             </Button>
           </div>
+
+          {!googleEnabled && !githubEnabled ? (
+            <div className="rounded-lg bg-amber-50 px-4 py-3 text-sm text-amber-800">
+              Google/GitHub auth is not configured yet. Email login remains available for existing accounts.
+            </div>
+          ) : null}
 
           <div className="relative">
             <div className="absolute inset-0 flex items-center">
@@ -191,7 +225,7 @@ export function LoginForm() {
               <Button
                 type="submit"
                 className="w-full h-11 rounded-lg bg-slate-900 text-sm font-medium text-white transition hover:bg-slate-800 disabled:opacity-80"
-                disabled={isPending}
+                disabled={isBusy}
               >
                 {isPending ? (
                   <span className="flex items-center justify-center">
