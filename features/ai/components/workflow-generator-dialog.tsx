@@ -55,6 +55,7 @@ const EXAMPLE_PROMPTS = [
   "Build a manual workflow that takes a raw text input, rewrites it with DeepSeek, then posts the result to Slack.",
   "Create a webhook workflow that summarizes the incoming payload with Gemini and sends the short summary to Discord.",
   "Design a local loop that retries an AI rewrite up to 3 times before sending the final result to Slack.",
+  "Create a problem-solving workflow that researches a public page with a tool, reasons over the result with AI, then posts the answer to Slack.",
 ] as const;
 
 const AI_CREDENTIAL_PROVIDERS = new Set([
@@ -223,6 +224,9 @@ export const WorkflowGeneratorDialog = ({
               </span>
               <span className="rounded-full border border-border/70 bg-muted/30 px-2.5 py-1 text-[11px] uppercase tracking-[0.16em] text-muted-foreground">
                 Loop
+              </span>
+              <span className="rounded-full border border-border/70 bg-muted/30 px-2.5 py-1 text-[11px] uppercase tracking-[0.16em] text-muted-foreground">
+                Tool
               </span>
             </div>
 

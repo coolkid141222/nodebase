@@ -7,6 +7,7 @@ export const workflowGeneratorNodeTypeSchema = z.enum([
   "AI_TEXT",
   "HTTP_REQUEST",
   "LOOP",
+  "TOOL",
   "DISCORD_MESSAGE",
   "SLACK_MESSAGE",
 ]);
@@ -77,6 +78,18 @@ const loopSpecSchema = z.object({
   }),
 });
 
+const toolSpecSchema = z.object({
+  id: z.string().trim().min(1).max(40),
+  type: z.literal("TOOL"),
+  ...workflowGeneratorPositionSchema.shape,
+  config: z.object({
+    provider: z.enum(["INTERNAL", "MCP", "OPENCLAW"]).default("INTERNAL"),
+    serverId: z.string().trim().max(120).optional(),
+    toolId: z.string().trim().min(1).max(160),
+    argumentsJson: z.string().trim().min(1).max(6_000),
+  }),
+});
+
 const discordSpecSchema = z.object({
   id: z.string().trim().min(1).max(40),
   type: z.literal("DISCORD_MESSAGE"),
@@ -105,6 +118,7 @@ export const aiWorkflowDraftNodeSchema = z.discriminatedUnion("type", [
   aiTextSpecSchema,
   httpRequestSpecSchema,
   loopSpecSchema,
+  toolSpecSchema,
   discordSpecSchema,
   slackSpecSchema,
 ]);

@@ -11,6 +11,7 @@ import {
   createOpenAIProvider,
 } from "@/lib/ai/proxy";
 import { readCredentialSecret } from "@/features/credentials/server/payload";
+import { getToolRegistrySnapshot } from "@/features/tools/server/registry";
 import { getDefaultAITextModel } from "../text/shared";
 import {
   aiWorkflowDraftSchema,
@@ -209,6 +210,19 @@ function formatCredentialInventory(credentials: UserCredentialSummary[]) {
     .join("\n");
 }
 
+function formatToolInventory() {
+  const registry = getToolRegistrySnapshot();
+  const internalTools = registry.tools.filter((tool) => tool.provider === "INTERNAL");
+
+  if (internalTools.length === 0) {
+    return "No runtime tools are available.";
+  }
+
+  return internalTools
+    .map((tool) => `- INTERNAL: ${tool.id} (${tool.description})`)
+    .join("\n");
+}
+
 function buildWorkflowGeneratorPrompt(params: {
   userPrompt: string;
   credentials: UserCredentialSummary[];
@@ -222,6 +236,7 @@ Supported node types:
 - AI_TEXT: generate text. Config keys: provider, model, prompt, system, credentialName, credentialField.
 - HTTP_REQUEST: make an HTTP request. Config keys: endpoint, method, body, authType, credentialName, credentialField, headerName.
 - LOOP: controls a local repeated cycle. Config keys: maxIterations.
+- TOOL: call a runtime tool. Config keys: provider, serverId, toolId, argumentsJson.
 - DISCORD_MESSAGE: send content to Discord. Config keys: content, credentialName, credentialField.
 - SLACK_MESSAGE: send content to Slack. Config keys: content, credentialName, credentialField.
 
@@ -230,6 +245,12 @@ Template rules:
 - Use {{inputRaw}} for raw output.
 - Use {{current.attempt}} inside loop bodies.
 - Use {{memory.shared.run.trigger.body.<field>}} when you need trigger payload values.
+
+Problem-solving rules:
+- When the request needs external information, create a TOOL node before AI reasoning.
+- Prefer INTERNAL tool id "internal.browser_page" for public web research.
+- After a TOOL node, feed the extracted result into an AI_TEXT node with {{input}}.
+- Use LOOP only when iterative refinement is part of the strategy.
 
 Loop rules:
 - A local loop uses exactly one LOOP node.
@@ -247,6 +268,14 @@ Layout rules:
 
 Credential inventory you may reference by credentialName:
 ${formatCredentialInventory(params.credentials)}
+
+Available tools:
+${formatToolInventory()}
+
+Preferred tool usage:
+- internal.browser_page
+  - Use for public web pages.
+  - argumentsJson example: {"url":"https://example.com","maxChars":4000,"includeLinks":true}
 
 Important constraints:
 - Use exactly one trigger node.
@@ -268,16 +297,27 @@ Required JSON shape:
       "row": 1
     },
     {
+      "id": "research",
+      "type": "TOOL",
+      "column": 1,
+      "row": 1,
+      "config": {
+        "provider": "INTERNAL",
+        "toolId": "internal.browser_page",
+        "argumentsJson": "{\"url\":\"https://example.com\",\"maxChars\":4000,\"includeLinks\":true}"
+      }
+    },
+    {
       "id": "loop",
       "type": "LOOP",
-      "column": 1,
+      "column": 2,
       "row": 0,
       "config": { "maxIterations": 3 }
     },
     {
       "id": "writer",
       "type": "AI_TEXT",
-      "column": 2,
+      "column": 3,
       "row": 1,
       "config": {
         "provider": "DEEPSEEK",
@@ -286,10 +326,22 @@ Required JSON shape:
         "credentialField": "apiKey",
         "prompt": "Rewrite this result for iteration {{current.attempt}}: {{input}}"
       }
+    },
+    {
+      "id": "notify",
+      "type": "SLACK_MESSAGE",
+      "column": 4,
+      "row": 1,
+      "config": {
+        "credentialName": "Slack webhook",
+        "credentialField": "webhookUrl",
+        "content": "{{input}}"
+      }
     }
   ],
   "edges": [
-    { "source": "trigger", "target": "writer", "role": "DEFAULT" },
+    { "source": "trigger", "target": "research", "role": "DEFAULT" },
+    { "source": "research", "target": "writer", "role": "DEFAULT" },
     { "source": "loop", "target": "writer", "role": "LOOP_BODY" },
     { "source": "writer", "target": "loop", "role": "LOOP_BACK" },
     { "source": "writer", "target": "notify", "role": "DEFAULT" }
@@ -469,6 +521,20 @@ function mapGeneratedDraftToCanvas(params: {
           ...baseNode,
           data: {
             maxIterations: node.config.maxIterations,
+            memoryWrites: [],
+          },
+        });
+        break;
+      case "TOOL":
+        generatedNodes.push({
+          ...baseNode,
+          data: {
+            provider: node.config.provider,
+            serverId: node.config.serverId ?? "",
+            serverDisplayName: "",
+            toolId: node.config.toolId,
+            toolDisplayName: "",
+            argumentsJson: node.config.argumentsJson,
             memoryWrites: [],
           },
         });
