@@ -8,6 +8,7 @@ type LoopScope = {
   width: number;
   height: number;
   maxIterations: number;
+  bodyNodeCount: number;
 };
 
 type MeasuredNode = Node & {
@@ -171,6 +172,8 @@ export function buildLoopScopes(params: {
         width: maxX - minX + SCOPE_PADDING_X * 2,
         height: maxY - minY + SCOPE_PADDING_TOP + SCOPE_PADDING_BOTTOM,
         maxIterations: primaryLoopNode.data?.maxIterations ?? 3,
+        bodyNodeCount: component.filter((nodeId) => nodeId !== primaryLoopNode.id)
+          .length,
       },
     ];
   });

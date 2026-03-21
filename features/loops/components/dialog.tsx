@@ -114,9 +114,9 @@ export function LoopDialog({
             <div>
               <DialogTitle>Configure Loop</DialogTitle>
               <DialogDescription className="pt-2">
-                Repeat the cyclic section that this node belongs to. The
-                executor will replay the local cycle up to the configured
-                limit, while downstream nodes continue only after the loop
+                One loop node controls the entire enclosed scope. Everything
+                inside that cyclic region repeats up to the configured limit,
+                and downstream nodes continue only after the loop scope
                 finishes.
               </DialogDescription>
             </div>
