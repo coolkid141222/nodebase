@@ -127,15 +127,15 @@ export function LoopDialog({
           className="space-y-4"
         >
           <div className="rounded-xl border border-border/70 bg-muted/20 p-4">
-            <div className="text-sm font-medium text-foreground">
-              How to use this loop
+              <div className="text-sm font-medium text-foreground">
+                How to use this loop
+              </div>
+              <ol className="mt-2 space-y-1.5 text-sm leading-6 text-muted-foreground">
+                <li>1. Put exactly one Loop node inside the section you want to repeat.</li>
+                <li>2. Connect the Loop node to the first repeated node, then connect the last repeated node back into Loop.</li>
+                <li>3. Keep upstream and downstream flow on the body nodes. They stay on normal edges and run only once outside the repeated cycle.</li>
+              </ol>
             </div>
-            <ol className="mt-2 space-y-1.5 text-sm leading-6 text-muted-foreground">
-              <li>1. Put exactly one Loop node inside the section you want to repeat.</li>
-              <li>2. Connect a closed cycle through that section, for example <code>{"Loop -> AI Text -> Loop"}</code>.</li>
-              <li>3. Keep downstream nodes outside the cycle. They run only after the last iteration.</li>
-            </ol>
-          </div>
 
           <FieldGroup>
             <FieldLabel htmlFor="maxIterations">Scope iteration limit</FieldLabel>

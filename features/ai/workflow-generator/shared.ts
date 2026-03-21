@@ -13,10 +13,8 @@ export const workflowGeneratorNodeTypeSchema = z.enum([
 
 export const workflowGeneratorEdgeRoleSchema = z.enum([
   "DEFAULT",
-  "LOOP_ENTRY",
   "LOOP_BODY",
   "LOOP_BACK",
-  "LOOP_EXIT",
 ]);
 
 const workflowGeneratorPositionSchema = z.object({

@@ -233,12 +233,12 @@ Template rules:
 
 Loop rules:
 - A local loop uses exactly one LOOP node.
-- Edges touching LOOP must use one of these roles:
-  - LOOP_ENTRY: enter the loop controller from outside.
+- Upstream nodes connect directly to the first body node with DEFAULT edges.
+- Downstream nodes connect directly from the last body node with DEFAULT edges.
+- Use exactly two loop-specific edges:
   - LOOP_BODY: go from LOOP to the first node inside the repeated body.
   - LOOP_BACK: go from the last repeated body node back into LOOP.
-  - LOOP_EXIT: go from LOOP to the node that should run after the loop finishes.
-- Non-loop edges should use DEFAULT.
+- All other edges should use DEFAULT.
 
 Layout rules:
 - Return column and row for each node.
@@ -289,9 +289,10 @@ Required JSON shape:
     }
   ],
   "edges": [
-    { "source": "trigger", "target": "loop", "role": "LOOP_ENTRY" },
+    { "source": "trigger", "target": "writer", "role": "DEFAULT" },
     { "source": "loop", "target": "writer", "role": "LOOP_BODY" },
-    { "source": "writer", "target": "loop", "role": "LOOP_BACK" }
+    { "source": "writer", "target": "loop", "role": "LOOP_BACK" },
+    { "source": "writer", "target": "notify", "role": "DEFAULT" }
   ]
 }
 
@@ -412,27 +413,17 @@ function buildEdgeHandles(params: {
   targetType: AIWorkflowDraft["nodes"][number]["type"];
   role: AIWorkflowDraft["edges"][number]["role"];
 }) {
-    switch (params.role) {
-      case "LOOP_ENTRY":
-        return {
-          sourceHandle: null,
-          targetHandle: params.targetType === "LOOP" ? "target-main" : null,
-        };
-      case "LOOP_BODY":
-        return {
-          sourceHandle: params.sourceType === "LOOP" ? "source-main" : null,
-          targetHandle: null,
-        };
-      case "LOOP_BACK":
-        return {
-          sourceHandle: null,
-          targetHandle: params.targetType === "LOOP" ? "target-main" : null,
-        };
-      case "LOOP_EXIT":
-        return {
-          sourceHandle: params.sourceType === "LOOP" ? "source-main" : null,
-          targetHandle: null,
-        };
+  switch (params.role) {
+    case "LOOP_BODY":
+      return {
+        sourceHandle: params.sourceType === "LOOP" ? "source-main" : null,
+        targetHandle: null,
+      };
+    case "LOOP_BACK":
+      return {
+        sourceHandle: null,
+        targetHandle: params.targetType === "LOOP" ? "target-main" : null,
+      };
     default:
       return {
         sourceHandle: null,
@@ -660,20 +651,12 @@ function validateGeneratedDraft(draft: AIWorkflowDraft) {
     const sourceType = nodeTypeById.get(edge.source);
     const targetType = nodeTypeById.get(edge.target);
 
-    if (edge.role === "LOOP_ENTRY" && targetType !== "LOOP") {
-      throw new Error("LOOP_ENTRY edges must target a LOOP node.");
-    }
-
     if (edge.role === "LOOP_BODY" && sourceType !== "LOOP") {
       throw new Error("LOOP_BODY edges must start from a LOOP node.");
     }
 
     if (edge.role === "LOOP_BACK" && targetType !== "LOOP") {
       throw new Error("LOOP_BACK edges must return into a LOOP node.");
-    }
-
-    if (edge.role === "LOOP_EXIT" && sourceType !== "LOOP") {
-      throw new Error("LOOP_EXIT edges must start from a LOOP node.");
     }
   }
 }
