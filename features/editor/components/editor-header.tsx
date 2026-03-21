@@ -1,7 +1,7 @@
 "use client";
 import { Button } from "@/components/button";
 import { SidebarTrigger } from "@/components/sidebar";
-import { SaveIcon } from "lucide-react";
+import { SaveIcon, SparklesIcon } from "lucide-react";
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -14,6 +14,13 @@ import { useEffect, useRef, useState } from "react";
 import Link from "next/link"
 import { useSuspenseWorkflow, useUpdateWorkflowName } from "@/features/workflows/hooks/user-workflows";
 import { useExecuteWorkflow } from "@/features/executions/hooks/use-execute-workflow";
+import { useAtomValue } from "jotai";
+import { editorAtom } from "../store/atoms";
+import {
+    WorkflowGeneratorDialog,
+    type WorkflowDraftPreview,
+} from "@/features/ai/components/workflow-generator-dialog";
+import { toast } from "sonner";
 
 export const EditorNameInput = ({ workflowId }: { workflowId: string }) => {
     const { data: workflow } = useSuspenseWorkflow(workflowId);
@@ -108,13 +115,48 @@ export const EditorBreadcrumbs = ({ workflowId }: { workflowId: string }) => {
 
 export const EditorHeader = ({ workflowId }: { workflowId: string }) => {
     const workflowExecution = useExecuteWorkflow(workflowId);
+    const editor = useAtomValue(editorAtom);
+    const [generatorOpen, setGeneratorOpen] = useState(false);
+
+    const handleApplyGeneratedDraft = (draft: WorkflowDraftPreview) => {
+        if (!editor) {
+            toast.error("Editor is not ready yet.");
+            return;
+        }
+
+        editor.setNodes(draft.nodes);
+        editor.setEdges(draft.edges);
+        setGeneratorOpen(false);
+        requestAnimationFrame(() => {
+            editor.fitView({
+                duration: 300,
+                padding: 0.18,
+            });
+        });
+        toast.success(`Applied AI workflow draft: ${draft.title}`);
+    };
 
     return (
+        <>
+        <WorkflowGeneratorDialog
+            open={generatorOpen}
+            onOpenChange={setGeneratorOpen}
+            onApply={handleApplyGeneratedDraft}
+            editorReady={Boolean(editor)}
+        />
         <header className="flex h-14 shrink-0 items-center gap-2 border-b px-4 bg-background">
             <SidebarTrigger />
             <div className="flex flex-row items-center justify-between gap-x-4 w-full">
                 <EditorBreadcrumbs workflowId={workflowId} />
                 <div className="flex items-center gap-2">
+                    <Button
+                        size="sm"
+                        variant="outline"
+                        onClick={() => setGeneratorOpen(true)}
+                    >
+                        <SparklesIcon />
+                        Generate with AI
+                    </Button>
                     <Button
                         size="sm"
                         onClick={() => void workflowExecution.saveWorkflow()}
@@ -126,5 +168,6 @@ export const EditorHeader = ({ workflowId }: { workflowId: string }) => {
                 </div>
             </div>
         </header>
+        </>
     )
 }
