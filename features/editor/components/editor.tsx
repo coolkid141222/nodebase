@@ -94,7 +94,14 @@ export const Editor = ({ workflowId }: { workflowId: string }) => {
     const loopScopeState = useMemo(() => {
         const loopScopes = buildLoopScopes({ nodes, edges });
         const scopesById = Object.fromEntries(
-            loopScopes.map((scope) => [scope.id, { id: scope.id, nodeIds: scope.nodeIds }]),
+            loopScopes.map((scope) => [
+                scope.id,
+                {
+                    id: scope.id,
+                    nodeIds: scope.nodeIds,
+                    maxIterations: scope.maxIterations,
+                },
+            ]),
         );
         const scopeIdByNodeId = Object.fromEntries(
             loopScopes.flatMap((scope) =>

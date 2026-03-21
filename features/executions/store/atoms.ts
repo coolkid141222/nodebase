@@ -6,6 +6,7 @@ import { ExecutionStatus, ExecutionStepStatus } from "@/lib/prisma/client";
 export type WorkflowLoopScopeSnapshot = {
   id: string;
   nodeIds: string[];
+  maxIterations: number;
 };
 
 export type WorkflowLoopScopeState = {
@@ -119,6 +120,18 @@ function getLatestStepForNode(
   return latestStep;
 }
 
+function getActiveRunningStep(execution: WorkflowExecutionSnapshot) {
+  let activeRunningStep: WorkflowExecutionStepSnapshot | null = null;
+
+  for (const step of execution.steps) {
+    if (step.status === ExecutionStepStatus.RUNNING) {
+      activeRunningStep = step;
+    }
+  }
+
+  return activeRunningStep;
+}
+
 function buildNodeStatusMap(execution: WorkflowExecutionSnapshot) {
   const nodeStatuses = execution.steps.reduce<Record<string, NodeStatus>>(
     (accumulator, step) => {
@@ -170,16 +183,22 @@ export function deriveWorkflowNodeStatus(params: {
   const baseStatus = latestStep
     ? mapExecutionStepStatus(latestStep.status)
     : undefined;
+  const scope = loopScopeState.scopesById[nodeId];
+  const activeRunningStep = getActiveRunningStep(execution);
 
   if (!isExecutionPendingOrRunning(execution.status)) {
     return baseStatus;
   }
 
-  let activeRunningStep: WorkflowExecutionStepSnapshot | null = null;
+  if (scope && latestStep) {
+    const activeScopeId = activeRunningStep?.nodeId
+      ? loopScopeState.scopeIdByNodeId[activeRunningStep.nodeId]
+      : undefined;
+    const loopIsStillActive =
+      latestStep.attempt < scope.maxIterations || activeScopeId === scope.id;
 
-  for (const step of execution.steps) {
-    if (step.status === ExecutionStepStatus.RUNNING) {
-      activeRunningStep = step;
+    if (loopIsStillActive) {
+      return "loading";
     }
   }
 
