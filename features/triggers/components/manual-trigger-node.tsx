@@ -20,17 +20,19 @@ const ManualTriggerNodeComponent = (props: NodeProps) => {
     const handleTrigger = async () => {
         return workflowExecution.executeWorkflow();
     };
-
+    const dialogClose = false;
     return (
         <>
-            <ManualTriggerDialog 
-                open={dialogOpen}
-                onOpenChange={setDialogOpen}
-                onTrigger={handleTrigger}
-                disabled={workflowExecution.isPending || !workflowExecution.editorReady}
-                isPending={workflowExecution.isPending}
-                pendingLabel={workflowExecution.isSaving ? "Saving..." : "Running..."}
-            />
+            {dialogClose && (
+                <ManualTriggerDialog 
+                    open={dialogOpen}
+                    onOpenChange={setDialogOpen}
+                    onTrigger={handleTrigger}
+                    disabled={workflowExecution.isPending || !workflowExecution.editorReady}
+                    isPending={workflowExecution.isPending}
+                    pendingLabel={workflowExecution.isSaving ? "Saving..." : "Running..."}
+                />
+            )}
             <BaseTriggerNode
                 {...props}
                 icon={MousePointerIcon}
