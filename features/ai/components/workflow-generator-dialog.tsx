@@ -53,10 +53,10 @@ const formSchema = generateWorkflowGraphInputSchema.safeExtend({
 });
 
 const EXAMPLE_PROMPTS = [
-  "Build a manual workflow that drafts a short test message with AI, then sends the final result to Feishu using the native tool node.",
-  "Create a webhook workflow that summarizes the incoming payload with Gemini and sends the short summary to Discord.",
-  "Design a local loop that retries an AI rewrite up to 3 times before sending the final result to Slack.",
-  "Create a problem-solving workflow that researches a public page with a tool, reasons over the result with AI, then posts the answer to Slack.",
+  "Create a webhook workflow that receives a user question, analyzes it with AI, rewrites the final answer into a Feishu task dispatch message, and sends it with the native Feishu tool node.",
+  "Build a problem-solving workflow that researches a public page with a browser tool, analyzes the findings with AI, drafts a final answer, and posts it to Feishu.",
+  "Design a workflow that refines a draft in a local loop up to 3 iterations, then sends the polished final result to Slack.",
+  "Create a research workflow that gathers context from a URL, extracts the key findings, and sends a concise executive summary to Discord.",
 ] as const;
 
 const AI_CREDENTIAL_PROVIDERS = new Set([
@@ -240,7 +240,7 @@ export const WorkflowGeneratorDialog = ({
                     rows={10}
                     className="resize-none"
                     {...form.register("prompt")}
-                    placeholder="Create a manual workflow that rewrites incoming text twice in a loop, then sends the final answer to Slack."
+                    placeholder="Create a webhook workflow that receives a user question, analyzes it with AI, optionally refines the response in a loop, and sends the final answer to Feishu."
                   />
                 </Field>
                 <FieldDescription>

@@ -46,6 +46,10 @@ const PROBLEM_SOLVING_PROMPT_PATTERN =
   /\b(solve|answer|analy[sz]e|debug|investigate|research|compare|plan|reason|question|issue|problem)\b|问题|分析|研究|排查|解决|比较|推理|调查/i;
 const RESEARCH_PROMPT_PATTERN =
   /\b(research|browse|browser|website|web page|page|url|link|docs?|documentation|source)\b|网页|页面|网址|链接|官网|文档|资料|来源/i;
+const REFINEMENT_PROMPT_PATTERN =
+  /\b(rewrite|refine|polish|iterate|iteration|retry|improve|revise|tighten)\b|润色|改写|重写|迭代|循环|优化|重试|完善/i;
+const TASK_DISPATCH_PROMPT_PATTERN =
+  /\b(task|dispatch|assign|owner|deadline|priority|brief|briefing|announcement|notify|notification)\b|任务|分派|派发|负责人|截止|优先级|任务消息|通知|公告/i;
 const URL_PATTERN = /https?:\/\/[^\s)]+/i;
 const FEISHU_PROMPT_PATTERN = /\b(feishu|lark|larksuite)\b|飞书/i;
 const FEISHU_WEBHOOK_PATTERN = /open\.feishu\.cn\/open-apis\/bot\/v2\/hook/i;
@@ -347,6 +351,8 @@ Problem-solving rules:
 - Use LOOP only when iterative refinement is part of the strategy.
 - For non-trivial problem-solving prompts, use at least two processing nodes.
 - Prefer a structure like: gather context -> analyze -> final answer.
+- For task dispatch, messaging, or Feishu delivery prompts, prefer a structure like: trigger -> analyze -> optional refinement loop -> final formatted message -> delivery.
+- When a request sounds complex, multi-stage, or user-facing, target at least 4 nodes instead of collapsing everything into one AI node.
 - Do not collapse a research or investigation workflow into a single AI_TEXT node unless the user explicitly asks for the smallest possible flow.
 
 Loop rules:
@@ -658,12 +664,43 @@ function wantsResearchTool(prompt: string) {
   return RESEARCH_PROMPT_PATTERN.test(prompt) || URL_PATTERN.test(prompt);
 }
 
+function wantsIterativeRefinement(prompt: string) {
+  return REFINEMENT_PROMPT_PATTERN.test(prompt);
+}
+
+function wantsTaskDispatch(prompt: string) {
+  return TASK_DISPATCH_PROMPT_PATTERN.test(prompt);
+}
+
 function wantsFeishuDelivery(prompt: string) {
   return FEISHU_PROMPT_PATTERN.test(prompt);
 }
 
+function wantsComplexScaffold(prompt: string) {
+  return (
+    isProblemSolvingPrompt(prompt) ||
+    wantsResearchTool(prompt) ||
+    wantsIterativeRefinement(prompt) ||
+    wantsTaskDispatch(prompt) ||
+    wantsFeishuDelivery(prompt)
+  );
+}
+
 function extractFirstUrl(prompt: string) {
   return prompt.match(URL_PATTERN)?.[0] ?? null;
+}
+
+function extractLoopIterationLimit(prompt: string) {
+  const explicitCountMatch = prompt.match(/(?:up to|for|repeat|retry)?\s*(\d+)\s*(?:times|iterations|rounds|轮|次)/i);
+  const parsed = explicitCountMatch?.[1]
+    ? Number.parseInt(explicitCountMatch[1], 10)
+    : NaN;
+
+  if (Number.isFinite(parsed) && parsed >= 2) {
+    return Math.min(parsed, 12);
+  }
+
+  return 3;
 }
 
 function createDraftNodeId(existingIds: Set<string>, base: string) {
@@ -685,6 +722,38 @@ function createAnalysisPrompt(userPrompt: string) {
     "Keep the output concise and actionable so a downstream node can turn it into the final answer.",
     "",
     "User task:",
+    userPrompt,
+  ].join("\n");
+}
+
+function createFeishuDispatchPrompt(userPrompt: string) {
+  return [
+    "Turn the upstream context into a Feishu-ready task dispatch message.",
+    "Output plain text only with the following sections:",
+    "Title",
+    "Summary",
+    "Owner suggestion",
+    "Priority",
+    "Deadline suggestion",
+    "Next action",
+    "",
+    "Upstream context:",
+    "{{input}}",
+    "",
+    "Original user request:",
+    userPrompt,
+  ].join("\n");
+}
+
+function createFinalAnswerPrompt(userPrompt: string) {
+  return [
+    "Produce the final user-facing answer from the upstream context.",
+    "Keep the answer concise, practical, and ready to send.",
+    "",
+    "Upstream context:",
+    "{{input}}",
+    "",
+    "Original user request:",
     userPrompt,
   ].join("\n");
 }
@@ -724,6 +793,28 @@ function extractMessageTextTemplateFromJsonString(value?: string | null) {
   }
 
   return "{{input}}";
+}
+
+function updateToolArgumentsJson(
+  toolNode: Extract<AIWorkflowDraft["nodes"][number], { type: "TOOL" }>,
+  nextArgs: Record<string, unknown>,
+) {
+  toolNode.config.argumentsJson = JSON.stringify(nextArgs, null, 2);
+}
+
+function getToolArgumentsJson(
+  toolNode: Extract<AIWorkflowDraft["nodes"][number], { type: "TOOL" }>,
+) {
+  try {
+    const parsed = JSON.parse(toolNode.config.argumentsJson) as unknown;
+    if (parsed && typeof parsed === "object" && !Array.isArray(parsed)) {
+      return parsed as Record<string, unknown>;
+    }
+  } catch {
+    return null;
+  }
+
+  return null;
 }
 
 function createFeishuToolNodeFromTemplate(params: {
@@ -825,7 +916,10 @@ function promoteProblemSolvingDraft(params: {
 
   let firstProcessingNodeId = primaryAi.id;
 
-  if (isProblemSolvingPrompt(params.userPrompt) && aiNodes.length === 1) {
+  if (
+    wantsComplexScaffold(params.userPrompt) &&
+    aiNodes.length === 1
+  ) {
     const analyzerId = createDraftNodeId(existingIds, "analyze_problem");
     const analyzerNode: AIWorkflowDraft["nodes"][number] = {
       id: analyzerId,
@@ -984,6 +1078,207 @@ function promoteProblemSolvingDraft(params: {
       node.config.content = "{{memory.shared.answers.final}}";
     }
   }
+
+  return workingDraft;
+}
+
+function promoteComplexWorkflowDraft(params: {
+  draft: AIWorkflowDraft;
+  userPrompt: string;
+}) {
+  const workingDraft: AIWorkflowDraft = structuredClone(params.draft);
+
+  if (!wantsComplexScaffold(params.userPrompt)) {
+    return workingDraft;
+  }
+
+  const existingIds = new Set(workingDraft.nodes.map((node) => node.id));
+  const deliveryNodes = workingDraft.nodes.filter(
+    (node) =>
+      node.type === "SLACK_MESSAGE" ||
+      node.type === "DISCORD_MESSAGE" ||
+      (node.type === "TOOL" &&
+        node.config.provider === "FEISHU" &&
+        node.config.toolId === "feishu.message.send"),
+  );
+  const aiNodes = [...workingDraft.nodes]
+    .filter((node) => node.type === "AI_TEXT")
+    .sort((left, right) => {
+      if (left.column !== right.column) {
+        return left.column - right.column;
+      }
+
+      return left.row - right.row;
+    });
+  const loopNodes = workingDraft.nodes.filter((node) => node.type === "LOOP");
+  const hasDeliveryNode = deliveryNodes.length > 0;
+  const firstAiNode = aiNodes[0];
+  const lastAiNode = aiNodes[aiNodes.length - 1];
+
+  if (!firstAiNode || !lastAiNode) {
+    return workingDraft;
+  }
+
+  if (wantsIterativeRefinement(params.userPrompt) && loopNodes.length === 0) {
+    const loopNodeId = createDraftNodeId(existingIds, "loop_refine");
+    workingDraft.nodes.push({
+      id: loopNodeId,
+      type: "LOOP",
+      column: lastAiNode.column,
+      row: Math.max(lastAiNode.row - 1, 0),
+      config: {
+        maxIterations: extractLoopIterationLimit(params.userPrompt),
+        memoryWrites: [],
+      },
+    });
+    workingDraft.edges.push({
+      source: loopNodeId,
+      target: lastAiNode.id,
+      role: "LOOP_BODY",
+    });
+    workingDraft.edges.push({
+      source: lastAiNode.id,
+      target: loopNodeId,
+      role: "LOOP_BACK",
+    });
+    workingDraft.notes.push(
+      "Added a local loop so the workflow iteratively refines the result before delivery.",
+    );
+  }
+
+  if (!hasDeliveryNode) {
+    return workingDraft;
+  }
+
+  const primaryDelivery = [...deliveryNodes].sort((left, right) => {
+    if (left.column !== right.column) {
+      return right.column - left.column;
+    }
+
+    return right.row - left.row;
+  })[0];
+
+  if (!primaryDelivery) {
+    return workingDraft;
+  }
+
+  const incomingDeliveryEdges = workingDraft.edges.filter(
+    (edge) => edge.role === "DEFAULT" && edge.target === primaryDelivery.id,
+  );
+  const needsFormatter =
+    aiNodes.length < 2 ||
+    incomingDeliveryEdges.length !== 1 ||
+    incomingDeliveryEdges[0]?.source !== lastAiNode.id ||
+    lastAiNode.config.prompt.includes("{{input}}") === false;
+
+  if (needsFormatter) {
+    const formatterNodeId = createDraftNodeId(existingIds, "final_message");
+    const deliveryColumn = primaryDelivery.column;
+    primaryDelivery.column = deliveryColumn + 1;
+
+    const formatterNode: AIWorkflowDraft["nodes"][number] = {
+      id: formatterNodeId,
+      type: "AI_TEXT",
+      column: deliveryColumn,
+      row: primaryDelivery.row,
+      config: {
+        provider: lastAiNode.config.provider,
+        model: lastAiNode.config.model,
+        credentialName: lastAiNode.config.credentialName,
+        credentialField: lastAiNode.config.credentialField,
+        system: wantsFeishuDelivery(params.userPrompt)
+          ? "Return plain text only. No markdown tables, no code fences, no bullets unless they improve clarity."
+          : "Return a polished final answer. No code fences unless the user explicitly asks for them.",
+        prompt: wantsFeishuDelivery(params.userPrompt) || wantsTaskDispatch(params.userPrompt)
+          ? createFeishuDispatchPrompt(params.userPrompt)
+          : createFinalAnswerPrompt(params.userPrompt),
+        memoryWrites: [],
+      },
+    };
+
+    ensureNodeMemoryWrite(formatterNode, {
+      scope: "SHARED",
+      namespace: "answers",
+      key: "final",
+      value: "{{current.output.text}}",
+      visibility: "PUBLIC",
+      persist: true,
+      semanticIndex: false,
+    });
+
+    workingDraft.nodes.push(formatterNode);
+    workingDraft.edges = workingDraft.edges.map((edge) => {
+      if (edge.role === "DEFAULT" && edge.target === primaryDelivery.id) {
+        return {
+          ...edge,
+          target: formatterNodeId,
+        };
+      }
+
+      return edge;
+    });
+    workingDraft.edges.push({
+      source: formatterNodeId,
+      target: primaryDelivery.id,
+      role: "DEFAULT",
+    });
+    workingDraft.notes.push(
+      wantsFeishuDelivery(params.userPrompt)
+        ? "Added a final Feishu-ready formatting step before delivery."
+        : "Added a dedicated final-answer step before delivery.",
+    );
+  }
+
+  const refreshedFinalAi = [...workingDraft.nodes]
+    .filter((node) => node.type === "AI_TEXT")
+    .sort((left, right) => {
+      if (left.column !== right.column) {
+        return left.column - right.column;
+      }
+
+      return left.row - right.row;
+    })
+    .at(-1);
+
+  if (!refreshedFinalAi) {
+    return workingDraft;
+  }
+
+  for (const node of workingDraft.nodes) {
+    if (node.type === "SLACK_MESSAGE" || node.type === "DISCORD_MESSAGE") {
+      if (!node.config.content.trim() || node.config.content.trim() === "{{input}}") {
+        node.config.content = "{{memory.shared.answers.final}}";
+      }
+      continue;
+    }
+
+    if (
+      node.type === "TOOL" &&
+      node.config.provider === "FEISHU" &&
+      node.config.toolId === "feishu.message.send"
+    ) {
+      const currentArgs = getToolArgumentsJson(node) ?? {};
+      const currentText =
+        typeof currentArgs.text === "string" ? currentArgs.text.trim() : "";
+
+      if (!currentText || currentText === "{{input}}") {
+        updateToolArgumentsJson(node, {
+          ...currentArgs,
+          text: "{{memory.shared.answers.final}}",
+        });
+      }
+    }
+  }
+
+  ensureNodeMemoryWrite(refreshedFinalAi, {
+    scope: "SHARED",
+    namespace: "answers",
+    key: "final",
+    value: "{{current.output.text}}",
+    visibility: "PUBLIC",
+    persist: true,
+    semanticIndex: false,
+  });
 
   return workingDraft;
 }
@@ -1590,8 +1885,12 @@ export async function generateWorkflowDraft(params: {
     draft: promotedDraft,
     userPrompt: params.input.prompt,
   });
-  const triggerNormalizedDraft = normalizePreferredTriggerType({
+  const complexPromotedDraft = promoteComplexWorkflowDraft({
     draft: feishuNormalizedDraft,
+    userPrompt: params.input.prompt,
+  });
+  const triggerNormalizedDraft = normalizePreferredTriggerType({
+    draft: complexPromotedDraft,
     preferredTriggerType: params.preferredTriggerType,
   });
   const normalizedDraft = normalizeLoopDraft(triggerNormalizedDraft);
