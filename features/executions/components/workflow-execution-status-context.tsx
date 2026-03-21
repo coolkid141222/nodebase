@@ -8,7 +8,9 @@ import { usePathname } from "next/navigation";
 import { useTRPC } from "@/trpc/client";
 import {
   buildWorkflowExecutionState,
+  deriveWorkflowNodeStatus,
   emptyWorkflowExecutionState,
+  workflowLoopScopeStateAtom,
   isExecutionPendingOrRunning,
   isExecutionTerminal,
   workflowExecutionActiveIdAtom,
@@ -156,7 +158,14 @@ export function useWorkflowExecutionStatus() {
 
 export function useWorkflowNodeStatus(nodeId: string) {
   const nodeStatusAtom = useMemo(
-    () => atom((get) => get(workflowNodeStatusesAtom)[nodeId]),
+    () =>
+      atom((get) =>
+        deriveWorkflowNodeStatus({
+          execution: get(workflowExecutionSnapshotAtom),
+          nodeId,
+          loopScopeState: get(workflowLoopScopeStateAtom),
+        }) ?? get(workflowNodeStatusesAtom)[nodeId],
+      ),
     [nodeId],
   );
 

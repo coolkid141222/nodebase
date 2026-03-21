@@ -3,6 +3,16 @@ import { atom } from "jotai";
 import type { NodeStatus } from "@/components/react-flow/node-status-indicator";
 import { ExecutionStatus, ExecutionStepStatus } from "@/lib/prisma/client";
 
+export type WorkflowLoopScopeSnapshot = {
+  id: string;
+  nodeIds: string[];
+};
+
+export type WorkflowLoopScopeState = {
+  scopesById: Record<string, WorkflowLoopScopeSnapshot>;
+  scopeIdByNodeId: Record<string, string>;
+};
+
 export type WorkflowExecutionStepSnapshot = {
   id: string;
   nodeId: string | null;
@@ -10,6 +20,7 @@ export type WorkflowExecutionStepSnapshot = {
   nodeType: string;
   status: ExecutionStepStatus;
   position: number;
+  attempt: number;
   input: unknown;
   output: unknown;
   error: unknown;
@@ -43,6 +54,15 @@ export const workflowExecutionStateAtom = atom<WorkflowExecutionState>(
 
 export const workflowExecutionSnapshotAtom = atom(
   (get) => get(workflowExecutionStateAtom).execution,
+);
+
+export const emptyWorkflowLoopScopeState: WorkflowLoopScopeState = {
+  scopesById: {},
+  scopeIdByNodeId: {},
+};
+
+export const workflowLoopScopeStateAtom = atom<WorkflowLoopScopeState>(
+  emptyWorkflowLoopScopeState,
 );
 
 export const workflowNodeStatusesAtom = atom(
@@ -82,6 +102,23 @@ function mapExecutionStepStatus(
   }
 }
 
+function getLatestStepForNode(
+  execution: WorkflowExecutionSnapshot,
+  nodeId: string,
+) {
+  let latestStep: WorkflowExecutionStepSnapshot | null = null;
+
+  for (const step of execution.steps) {
+    if (step.nodeId !== nodeId) {
+      continue;
+    }
+
+    latestStep = step;
+  }
+
+  return latestStep;
+}
+
 function buildNodeStatusMap(execution: WorkflowExecutionSnapshot) {
   const nodeStatuses = execution.steps.reduce<Record<string, NodeStatus>>(
     (accumulator, step) => {
@@ -116,6 +153,65 @@ function buildNodeStatusMap(execution: WorkflowExecutionSnapshot) {
   }
 
   return nodeStatuses;
+}
+
+export function deriveWorkflowNodeStatus(params: {
+  execution: WorkflowExecutionSnapshot | null;
+  nodeId: string;
+  loopScopeState: WorkflowLoopScopeState;
+}) {
+  const { execution, nodeId, loopScopeState } = params;
+
+  if (!execution) {
+    return undefined;
+  }
+
+  const latestStep = getLatestStepForNode(execution, nodeId);
+  const baseStatus = latestStep
+    ? mapExecutionStepStatus(latestStep.status)
+    : undefined;
+
+  if (!isExecutionPendingOrRunning(execution.status)) {
+    return baseStatus;
+  }
+
+  let activeRunningStep: WorkflowExecutionStepSnapshot | null = null;
+
+  for (const step of execution.steps) {
+    if (step.status === ExecutionStepStatus.RUNNING) {
+      activeRunningStep = step;
+    }
+  }
+
+  if (!activeRunningStep?.nodeId) {
+    return baseStatus;
+  }
+
+  const activeScopeId = loopScopeState.scopeIdByNodeId[activeRunningStep.nodeId];
+
+  if (!activeScopeId) {
+    return baseStatus;
+  }
+
+  const activeScope = loopScopeState.scopesById[activeScopeId];
+
+  if (!activeScope || !activeScope.nodeIds.includes(nodeId)) {
+    return baseStatus;
+  }
+
+  if (nodeId === activeScope.id) {
+    return "loading";
+  }
+
+  if (!latestStep) {
+    return undefined;
+  }
+
+  if (latestStep.attempt < activeRunningStep.attempt) {
+    return undefined;
+  }
+
+  return baseStatus;
 }
 
 export function buildWorkflowExecutionState(

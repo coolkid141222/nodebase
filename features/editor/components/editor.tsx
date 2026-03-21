@@ -2,7 +2,7 @@
 
 import { useSuspenseWorkflow } from "@/features/workflows/hooks/user-workflows"
 import { LoadingView, ErrorView } from "@/app/components/entity-compoents"
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useMemo, useEffect } from 'react';
 import {
     ReactFlow,
     applyNodeChanges,
@@ -26,7 +26,12 @@ import { AddNodeButton } from "./add-node-button";
 import { useSetAtom } from "jotai";
 import { editorAtom } from "../store/atoms";
 import { LoopScopeOverlays } from "@/features/loops/components/scope-overlays";
+import { buildLoopScopes } from "@/features/loops/lib/build-loop-scopes";
 import { WorkflowEdge } from "@/components/react-flow/workflow-edge";
+import {
+    emptyWorkflowLoopScopeState,
+    workflowLoopScopeStateAtom,
+} from "@/features/executions/store/atoms";
 
 const edgeTypes = {
     workflow: WorkflowEdge,
@@ -48,6 +53,7 @@ export const Editor = ({ workflowId }: { workflowId: string }) => {
     const { data: workflow } = useSuspenseWorkflow(workflowId);
 
     const setEditor = useSetAtom(editorAtom);
+    const setLoopScopeState = useSetAtom(workflowLoopScopeStateAtom);
 
     const [nodes, setNodes] = useState<Node[]>(workflow.nodes ?? []);
     const [edges, setEdges] = useState<Edge[]>(
@@ -85,6 +91,30 @@ export const Editor = ({ workflowId }: { workflowId: string }) => {
             ),
         [],
     );
+    const loopScopeState = useMemo(() => {
+        const loopScopes = buildLoopScopes({ nodes, edges });
+        const scopesById = Object.fromEntries(
+            loopScopes.map((scope) => [scope.id, { id: scope.id, nodeIds: scope.nodeIds }]),
+        );
+        const scopeIdByNodeId = Object.fromEntries(
+            loopScopes.flatMap((scope) =>
+                scope.nodeIds.map((nodeId) => [nodeId, scope.id] as const),
+            ),
+        );
+
+        return {
+            scopesById,
+            scopeIdByNodeId,
+        };
+    }, [nodes, edges]);
+
+    useEffect(() => {
+        setLoopScopeState(loopScopeState);
+
+        return () => {
+            setLoopScopeState(emptyWorkflowLoopScopeState);
+        };
+    }, [loopScopeState, setLoopScopeState]);
 
     return (
         <div className="w-full h-full overflow-hidden">
