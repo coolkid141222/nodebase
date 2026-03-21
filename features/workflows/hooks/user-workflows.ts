@@ -1,15 +1,12 @@
 import { toast } from 'sonner';
-import { trpc } from '@/trpc/server';
 import { useTRPC } from "@/trpc/client"
 import { useMutation, useQueryClient, useSuspenseQuery } from "@tanstack/react-query";
-import { useRouter } from "next/navigation";
 import { useWorkflowsParams } from './use-workflows-params';
 import * as Sentry from "@sentry/nextjs";
-import { id } from 'date-fns/locale';
 
 export const useSuspenseWorkflows = () => {
     const trpc = useTRPC();
-    const [params, setParams] = useWorkflowsParams();
+    const [params] = useWorkflowsParams();
     return useSuspenseQuery(trpc.workflows.getMany.queryOptions(params))
 }
 
@@ -56,6 +53,20 @@ export const useSuspenseWorkflow = (id: string) => {
     return useSuspenseQuery(
         trpc.workflows.getOne.queryOptions({ id })
     )
+}
+
+export const usePrefetchWorkflow = () => {
+    const trpc = useTRPC();
+    const queryClient = useQueryClient();
+
+    return (id: string) => {
+        void queryClient.prefetchQuery(
+            trpc.workflows.getOne.queryOptions({ id }),
+        );
+        void queryClient.prefetchQuery(
+            trpc.executions.getLatestForWorkflow.queryOptions({ workflowId: id }),
+        );
+    };
 }
 
 export const useUpdateWorkflowName = () => {

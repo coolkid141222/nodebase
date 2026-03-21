@@ -293,6 +293,7 @@ interface EntityItemProps {
     image?: React.ReactNode;
     actions?: React.ReactNode;
     onRemove?: () => void | Promise<void>;
+    onPrefetch?: () => void;
     isRemoving?: boolean;
     className?: string;
 }
@@ -304,6 +305,7 @@ export const EntityItem = ({
     image,
     actions,
     onRemove,
+    onPrefetch,
     isRemoving,
     className,
 }: EntityItemProps) => {
@@ -316,7 +318,13 @@ export const EntityItem = ({
         await onRemove?.();
     }
     return (
-        <Link href={href} prefetch>
+        <Link
+            href={href}
+            prefetch
+            onMouseEnter={onPrefetch}
+            onFocus={onPrefetch}
+            onTouchStart={onPrefetch}
+        >
             <Card className={cn(
                 "p-4 shadow-none hover:shadow-md cursor-pointer",
                 isRemoving && "opacity-50 cursor-not-allowed",

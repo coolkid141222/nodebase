@@ -1,6 +1,6 @@
 "use client"
 import { ReactNode } from "react";
-import { useCreateWorkflow, useSuspenseWorkflows, useDeleteWorkflow } from "../hooks/user-workflows"
+import { useCreateWorkflow, useSuspenseWorkflows, useDeleteWorkflow, usePrefetchWorkflow } from "../hooks/user-workflows"
 import { EntityContainer, EntityHeader, EntityPagination, EntitySearch, LoadingView, ErrorView, EmptyView, EntityList, EntityItem } from "@/app/components/entity-compoents";
 import { useRouter } from "next/navigation";
 import { useWorkflowsParams } from "../hooks/use-workflows-params";
@@ -138,6 +138,7 @@ export const WorkflowsItem = ({
     data: Workflow;
 }) => {
     const deleteWorkflow = useDeleteWorkflow();
+    const prefetchWorkflow = usePrefetchWorkflow();
 
     const handleRemove = () => {
         deleteWorkflow.mutate({ id: data.id });
@@ -159,6 +160,7 @@ export const WorkflowsItem = ({
                     <WorkflowIcon className="size-5 text-muted-foreground" />
                 </div>
             }
+            onPrefetch={() => prefetchWorkflow(data.id)}
             onRemove={handleRemove}
             isRemoving={deleteWorkflow.isPending}
         />
