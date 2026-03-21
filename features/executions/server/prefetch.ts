@@ -7,3 +7,9 @@ export const prefetchExecutions = () => {
 export const prefetchExecution = (id: string) => {
   return prefetch(trpc.executions.getOne.queryOptions({ id }));
 };
+
+export const prefetchLatestWorkflowExecution = (workflowId: string) => {
+  return prefetch(
+    trpc.executions.getLatestForWorkflow.queryOptions({ workflowId }),
+  );
+};

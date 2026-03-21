@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, type ReactNode } from "react";
+import { useEffect, useLayoutEffect, useMemo, type ReactNode } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { atom, useAtomValue, useSetAtom } from "jotai";
 import { usePathname } from "next/navigation";
@@ -60,7 +60,7 @@ export function WorkflowExecutionStatusProvider({
     refetchOnReconnect: true,
   });
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     if (activeExecutionId) {
       const activeExecution =
         (activeExecutionQuery.data as WorkflowExecutionSnapshot | undefined) ??
