@@ -22,31 +22,11 @@ import { WorkflowRunPreviewSidebar } from "@/features/executions/components/work
 import { UpgradeModal } from "@/app/components/upgrade-modal";
 import { useBillingState } from "@/features/billing/hooks/use-billing";
 import { BillingPlan } from "@/lib/prisma/client";
-
-const menuItems = [
-    {
-        title: "Main",
-        items: [
-            {
-                title: "workflows",
-                icon: FolderOpen,
-                url: "/workflows",
-            },
-            {
-                title: "Credentials",
-                icon: KeyIcon,
-                url: "/credentials",
-            },
-            {
-                title: "executions",
-                icon: HistoryIcon,
-                url: "/executions",
-            },
-        ]
-    },
-]
+import { LanguageToggle } from "@/features/i18n/components/language-toggle";
+import { useI18n } from "@/features/i18n/provider";
 
 export const AppSidebar = () => {
+    const { t } = useI18n();
     const pathname = usePathname()
     const router = useRouter();
     const [isUpgradeOpen, setIsUpgradeOpen] = useState(false);
@@ -56,7 +36,31 @@ export const AppSidebar = () => {
     const showWorkflowPreview = Boolean(workflowId && workflowId !== "new");
     const activePlan = billingState.data?.plan ?? BillingPlan.FREE;
     const upgradeLabel =
-        activePlan === BillingPlan.PRO ? "Manage Pro plan" : "Upgrade to Pro";
+        activePlan === BillingPlan.PRO
+            ? t("sidebar.manageProPlan")
+            : t("sidebar.upgradeToPro");
+    const menuItems = [
+        {
+            title: "main",
+            items: [
+                {
+                    title: t("sidebar.workflows"),
+                    icon: FolderOpen,
+                    url: "/workflows",
+                },
+                {
+                    title: t("sidebar.credentials"),
+                    icon: KeyIcon,
+                    url: "/credentials",
+                },
+                {
+                    title: t("sidebar.executions"),
+                    icon: HistoryIcon,
+                    url: "/executions",
+                },
+            ]
+        },
+    ];
     return (
         <Sidebar collapsible="icon">
             <SidebarHeader>
@@ -64,7 +68,7 @@ export const AppSidebar = () => {
                     <SidebarMenuButton asChild className="gap-x-4 h-10">
                         <Link href={"/"} prefetch>
                             <Image src={"/logo.svg"} alt="nodebase" width={30} height={30} />
-                            <span className="font-semibold text-md">Nodebase</span>
+                            <span className="font-semibold text-md">{t("sidebar.brand")}</span>
                         </Link>
                     </SidebarMenuButton>
                 </SidebarMenuItem>
@@ -108,9 +112,12 @@ export const AppSidebar = () => {
             </SidebarContent>
             <SidebarFooter>
                 <SidebarMenu>
+                    <SidebarMenuItem className="group-data-[collapsible=icon]:hidden px-2 pb-1">
+                        <LanguageToggle compact />
+                    </SidebarMenuItem>
                     <SidebarMenuItem>
                         <SidebarMenuButton
-                            tooltip="Upgrade to Pro"
+                            tooltip={t("sidebar.upgradeToPro")}
                             className="gap-x-4 h-10 px-4"
                             onClick={() => setIsUpgradeOpen(true)}
                         >
@@ -120,19 +127,19 @@ export const AppSidebar = () => {
                     </SidebarMenuItem>
                     <SidebarMenuItem>
                         <SidebarMenuButton
-                            tooltip="Billing Portal"
+                            tooltip={t("sidebar.billingPortal")}
                             className="gap-x-4 h-10 px-4"
                             asChild
                         >
                             <Link href="/billing" prefetch>
                                 <CreditCardIcon className="h-4 w-4" />
-                                <span>Billing Portal</span>
+                                <span>{t("sidebar.billingPortal")}</span>
                             </Link>
                         </SidebarMenuButton>
                     </SidebarMenuItem>
                     <SidebarMenuItem>
                         <SidebarMenuButton
-                            tooltip="Sign out"
+                            tooltip={t("common.signOut")}
                             className="gap-x-4 h-10 px-4"
                             onClick={() => authClient.signOut({
                                 fetchOptions: {
@@ -143,7 +150,7 @@ export const AppSidebar = () => {
                             })}
                         >
                             <LogOutIcon className="h-4 w-4" />
-                            <span>Sign out</span>
+                            <span>{t("common.signOut")}</span>
                         </SidebarMenuButton>
                     </SidebarMenuItem>
                 </SidebarMenu>

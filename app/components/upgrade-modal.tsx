@@ -14,16 +14,15 @@ import {
   DialogTitle,
 } from "@/components/dialog";
 import {
-  FREE_PLAN_FEATURES,
   PADDLE_SUPPORTED_COUNTRIES_URL,
   PADDLE_WEBHOOK_ENDPOINT_PATH,
-  PRO_PLAN_FEATURES,
 } from "@/features/billing/shared";
 import {
   useBillingState,
   useUpgradeToPro,
 } from "@/features/billing/hooks/use-billing";
 import { usePaddleCheckout } from "@/features/billing/hooks/use-paddle-checkout";
+import { useI18n } from "@/features/i18n/provider";
 
 interface UpgradeModalProps {
   open: boolean;
@@ -34,6 +33,7 @@ export const UpgradeModal = ({
   open,
   onOpenChange,
 }: UpgradeModalProps) => {
+  const { t } = useI18n();
   const router = useRouter();
   const billing = useBillingState();
   const upgradeToPro = useUpgradeToPro();
@@ -42,6 +42,16 @@ export const UpgradeModal = ({
   const activePlan = billing.data?.plan ?? BillingPlan.FREE;
   const isPro = activePlan === BillingPlan.PRO;
   const paddleEnabled = Boolean(billing.data?.paddle.enabled);
+  const freePlanFeatures = [
+    t("billing.feature.free.1"),
+    t("billing.feature.free.2"),
+    t("billing.feature.free.3"),
+  ];
+  const proPlanFeatures = [
+    t("billing.feature.pro.1"),
+    t("billing.feature.pro.2"),
+    t("billing.feature.pro.3"),
+  ];
 
   const handleUpgrade = async () => {
     if (isPro) {
@@ -61,31 +71,29 @@ export const UpgradeModal = ({
         <DialogHeader className="gap-3">
           <div className="flex items-center gap-2">
             <Badge className="rounded-full px-3 py-1">
-              {isPro ? "Pro active" : "Local upgrade"}
+              {isPro ? t("upgrade.badgeProActive") : t("upgrade.badgeLocalUpgrade")}
             </Badge>
             <Badge variant="outline" className="rounded-full px-3 py-1">
-              No real charge
+              {t("upgrade.badgeNoCharge")}
             </Badge>
           </div>
-          <DialogTitle className="text-2xl">Upgrade to Pro</DialogTitle>
+          <DialogTitle className="text-2xl">{t("upgrade.title")}</DialogTitle>
           <DialogDescription className="max-w-xl leading-6">
-            This project is using a local billing mode right now. Upgrading marks
-            your account as Pro inside the app, keeps the flow testable, and leaves
-            the real payment provider for later.
+            {t("upgrade.description")}
           </DialogDescription>
         </DialogHeader>
 
         <div className="grid gap-4 md:grid-cols-2">
           <PlanPanel
             title="Free"
-            description="Your current baseline for development and testing."
-            features={FREE_PLAN_FEATURES}
+            description={t("billing.freeDescription")}
+            features={freePlanFeatures}
             muted
           />
           <PlanPanel
             title="Pro"
-            description="Use this if you want the app to behave like a paid product."
-            features={PRO_PLAN_FEATURES}
+            description={t("billing.proDescription")}
+            features={proPlanFeatures}
             accent
           />
         </div>
@@ -93,34 +101,32 @@ export const UpgradeModal = ({
         <div className="rounded-2xl border border-emerald-200 bg-emerald-50/70 p-4 text-sm text-emerald-950">
           <div className="flex items-center gap-2 font-medium">
             <SparklesIcon className="size-4" />
-            Best real provider later: Paddle
+            {t("upgrade.bestProvider")}
           </div>
           <p className="mt-2 leading-6 text-emerald-950/80">
-            For a China-based side project, keep mock billing for now. When you
-            want to collect real payments, move to Paddle rather than starting with
-            Stripe.
+            {t("upgrade.bestProviderBody")}
           </p>
         </div>
 
         {billing.data?.paddle && (
           <div className="rounded-2xl border bg-muted/25 p-4 text-sm text-muted-foreground">
-            <p className="font-medium text-foreground">Paddle setup</p>
+            <p className="font-medium text-foreground">{t("upgrade.paddleSetup")}</p>
             <div className="mt-3 flex flex-wrap gap-2">
               <Badge variant="outline">
-                API key {billing.data.paddle.hasApiKey ? "ready" : "missing"}
+                {t("upgrade.apiKey")} {billing.data.paddle.hasApiKey ? t("common.ready") : t("common.missing")}
               </Badge>
               <Badge variant="outline">
-                Client token {billing.data.paddle.hasClientToken ? "ready" : "missing"}
+                {t("upgrade.clientToken")} {billing.data.paddle.hasClientToken ? t("common.ready") : t("common.missing")}
               </Badge>
               <Badge variant="outline">
-                Price ID {billing.data.paddle.hasPriceId ? "ready" : "missing"}
+                {t("upgrade.priceId")} {billing.data.paddle.hasPriceId ? t("common.ready") : t("common.missing")}
               </Badge>
               <Badge variant="outline">
-                Webhook {billing.data.paddle.hasWebhookSecret ? "ready" : "missing"}
+                {t("upgrade.webhook")} {billing.data.paddle.hasWebhookSecret ? t("common.ready") : t("common.missing")}
               </Badge>
             </div>
             <p className="mt-3 text-xs text-foreground">
-              Endpoint: {PADDLE_WEBHOOK_ENDPOINT_PATH}
+              {t("upgrade.endpoint")}: {PADDLE_WEBHOOK_ENDPOINT_PATH}
             </p>
           </div>
         )}
@@ -128,22 +134,22 @@ export const UpgradeModal = ({
         <DialogFooter className="sm:justify-between">
           <Button variant="ghost" asChild className="justify-start px-0">
             <a href={PADDLE_SUPPORTED_COUNTRIES_URL} target="_blank" rel="noreferrer">
-              Why Paddle later
+              {t("upgrade.whyPaddle")}
             </a>
           </Button>
           <div className="flex flex-col-reverse gap-2 sm:flex-row">
             {paddleEnabled && (
               <Button variant="outline" onClick={() => void paddleCheckout.openCheckout()}>
                 <CreditCardIcon />
-                Checkout with Paddle
+                {t("upgrade.checkoutWithPaddle")}
               </Button>
             )}
             <Button variant="outline" onClick={() => onOpenChange(false)}>
-              Not now
+              {t("common.notNow")}
             </Button>
             <Button onClick={handleUpgrade} disabled={upgradeToPro.isPending}>
               <CrownIcon />
-              {isPro ? "Open billing portal" : "Enable Pro"}
+              {isPro ? t("upgrade.openBillingPortal") : t("upgrade.enablePro")}
             </Button>
           </div>
         </DialogFooter>

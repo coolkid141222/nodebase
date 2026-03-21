@@ -1,7 +1,7 @@
 "use client";
 
 import { ReactNode } from "react";
-import { formatDistanceToNow } from "date-fns";
+import { formatDistanceToNow, type Locale } from "date-fns";
 import {
   AlertTriangleIcon,
   CheckCircle2Icon,
@@ -21,6 +21,7 @@ import {
 } from "@/app/components/entity-compoents";
 import { Badge } from "@/components/badge";
 import { useSuspenseExecutions } from "../hooks/use-executions";
+import { useI18n } from "@/features/i18n/provider";
 
 const executionStatusVariant = {
   PENDING: "secondary",
@@ -60,11 +61,12 @@ type ExecutionListItem = {
 };
 
 export const ExecutionsHeader = () => {
+  const { t } = useI18n();
   return (
     <EntityHeader
-      title="Executions"
-      description="Inspect workflow runs, node-by-node progress, and captured errors"
-      newButtonLabel="Back to Workflows"
+      title={t("executions.title")}
+      description={t("executions.description")}
+      newButtonLabel={t("executions.backToWorkflows")}
       newButtonHref="/workflows"
     />
   );
@@ -83,18 +85,24 @@ export const ExecutionsContainer = ({
 };
 
 export const ExecutionsLoading = () => {
-  return <LoadingView message="Loading executions..." />;
+  const { t } = useI18n();
+  return <LoadingView message={t("executions.loading")} />;
 };
 
 export const ExecutionsError = () => {
-  return <ErrorView message="Failed to load executions." />;
+  const { t } = useI18n();
+  return <ErrorView message={t("executions.error")} />;
 };
 
 export const ExecutionsEmpty = () => {
   return <EmptyView />;
 };
 
-function buildExecutionSubtitle(execution: ExecutionListItem) {
+function buildExecutionSubtitle(
+  execution: ExecutionListItem,
+  t: (key: string, values?: Record<string, string | number>) => string,
+  dateLocale: Locale,
+) {
   const totalSteps = execution.steps.length;
   const failedSteps = execution.steps.filter(
     (step) => step.status === ExecutionStepStatus.FAILED,
@@ -107,26 +115,31 @@ function buildExecutionSubtitle(execution: ExecutionListItem) {
       </Badge>
       <Badge variant="outline">{execution.triggerType}</Badge>
       <span>{execution.workflow.name}</span>
+      <span>{t("common.updatedAgo", {
+        value: formatDistanceToNow(new Date(execution.createdAt), {
+          addSuffix: true,
+          locale: dateLocale,
+        }),
+      })}</span>
       <span>
-        Updated{" "}
-        {formatDistanceToNow(new Date(execution.createdAt), { addSuffix: true })}
-      </span>
-      <span>
-        {totalSteps} step{totalSteps === 1 ? "" : "s"}
+        {totalSteps === 1
+          ? t("executions.steps", { count: totalSteps })
+          : t("executions.stepsPlural", { count: totalSteps })}
       </span>
       {failedSteps > 0 && (
-        <span>{failedSteps} failed</span>
+        <span>{t("executions.failedCount", { count: failedSteps })}</span>
       )}
     </span>
   );
 }
 
 const ExecutionItem = ({ execution }: { execution: ExecutionListItem }) => {
+  const { t, dateLocale } = useI18n();
   return (
     <EntityItem
       href={`/executions/${execution.id}`}
       title={execution.id}
-      subtitle={buildExecutionSubtitle(execution)}
+      subtitle={buildExecutionSubtitle(execution, t, dateLocale)}
       image={
         <div className="flex size-8 items-center justify-center">
           {getExecutionIcon(execution.status)}

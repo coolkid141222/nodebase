@@ -30,6 +30,8 @@ import { ArrowRight, ChevronDown, Loader2 } from "lucide-react";
 import { authClient } from "@/lib/auth-client";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
+import { LanguageToggle } from "@/features/i18n/components/language-toggle";
+import { useI18n } from "@/features/i18n/provider";
 
 function getAuthErrorMessage(error: unknown) {
   if (!error || typeof error !== "object") return "";
@@ -83,18 +85,20 @@ function getAuthErrorMessage(error: unknown) {
 }
 
 // --- 1. 更新 Zod 验证 ---
-const registerSchema = z.object({
-  name: z.string().min(2, "Name must be at least 2 characters"),
-  email: z.string().email("Please enter a valid email"),
-  password: z.string().min(6, "Password must be at least 6 characters"),
-  confirmPassword: z.string()
-}).refine(data => data.password === data.confirmPassword, {
-  message: "Passwords don't match",
-  path: ["confirmPassword"], // 在“确认密码”字段下显示错误
-});
+const createRegisterSchema = (t: (key: string) => string) =>
+  z
+    .object({
+      name: z.string().min(2, t("auth.register.nameTooShort")),
+      email: z.string().email(t("auth.login.emailInvalid")),
+      password: z.string().min(6, t("auth.register.passwordTooShort")),
+      confirmPassword: z.string(),
+    })
+    .refine((data) => data.password === data.confirmPassword, {
+      message: t("auth.register.passwordMismatch"),
+      path: ["confirmPassword"],
+    });
 
-
-type RegisterFormValues = z.infer<typeof registerSchema>;
+type RegisterFormValues = z.infer<ReturnType<typeof createRegisterSchema>>;
 
 type RegisterFormProps = {
   googleEnabled: boolean;
@@ -107,9 +111,11 @@ export function RegisterForm({
   githubEnabled,
   ownerEmailSignupEnabled,
 }: RegisterFormProps) { // --- 2. 更改组件名称 ---
+  const { t } = useI18n();
   const router = useRouter();
   const [error, setError] = useState<string>("");
   const [socialPending, setSocialPending] = useState<"google" | "github" | null>(null);
+  const registerSchema = createRegisterSchema(t);
   const form = useForm<RegisterFormValues>({
     resolver: zodResolver(registerSchema),
     defaultValues: {
@@ -134,8 +140,8 @@ export function RegisterForm({
         setError(
           getAuthErrorMessage(result.error) ||
             (result.error.status === 422
-              ? "This email is already registered or the account could not be created."
-              : "Sign up failed. Please try again.")
+              ? t("auth.register.emailExists")
+              : t("auth.register.signUpFailed"))
         );
         return;
       }
@@ -145,7 +151,7 @@ export function RegisterForm({
     } catch (err) {
       setError(
         getAuthErrorMessage(err) ||
-          "Sign up failed. Please try again."
+          t("auth.register.signUpFailed")
       );
     }
   };
@@ -161,10 +167,10 @@ export function RegisterForm({
       });
 
       if (result?.error) {
-        setError(getAuthErrorMessage(result.error) || "Social sign in failed.");
+        setError(getAuthErrorMessage(result.error) || t("auth.login.socialFailed"));
       }
     } catch (err) {
-      setError(getAuthErrorMessage(err) || "Social sign in failed.");
+      setError(getAuthErrorMessage(err) || t("auth.login.socialFailed"));
     } finally {
       setSocialPending(null);
     }
@@ -182,13 +188,16 @@ export function RegisterForm({
 
       <Card className="relative w-full max-w-md overflow-hidden rounded-2xl border-0 bg-white/80 backdrop-blur-xl shadow-2xl">
         <div className="absolute inset-x-0 top-0 h-1 bg-linear-to-r from-orange-400 via-amber-400 to-blue-400" />
+        <div className="absolute right-6 top-6">
+          <LanguageToggle compact />
+        </div>
         <CardHeader className="flex flex-col items-center justify-center space-y-3 text-center pt-10 pb-6 px-8">
 
           <CardTitle className="text-3xl font-bold text-slate-900">
-            Create your account
+            {t("auth.register.title")}
           </CardTitle>
           <CardDescription className="text-base text-slate-600">
-            Register with Google or GitHub. Owner email sign-up stays allowlisted.
+            {t("auth.register.subtitle")}
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-6 px-8 pb-8">
@@ -201,7 +210,7 @@ export function RegisterForm({
               onClick={() => handleSocialSignIn("google")}
             >
               <img src="/google.svg" alt="Google" className="h-5 w-5" />
-              {socialPending === "google" ? "Redirecting..." : "Google"}
+              {socialPending === "google" ? t("auth.login.redirecting") : "Google"}
             </Button>
 
             <Button
@@ -212,16 +221,16 @@ export function RegisterForm({
               onClick={() => handleSocialSignIn("github")}
             >
               <img src="/github.svg" alt="GitHub" className="h-5 w-5" />
-              {socialPending === "github" ? "Redirecting..." : "GitHub"}
+              {socialPending === "github" ? t("auth.login.redirecting") : "GitHub"}
             </Button>
           </div>
 
           <div className="rounded-xl border border-slate-200 bg-slate-50/80 px-4 py-3 text-sm text-slate-600">
-            <p>Public sign-up uses social auth only.</p>
+            <p>{t("auth.register.publicSocialOnly")}</p>
             <p className="mt-1 text-slate-500">
               {googleEnabled || githubEnabled
-                ? "Use a configured provider to create your account."
-                : "Google/GitHub auth is not configured yet in environment variables."}
+                ? t("auth.register.useConfiguredProvider")
+                : t("auth.register.socialUnavailable")}
             </p>
           </div>
 
@@ -230,10 +239,10 @@ export function RegisterForm({
               <CollapsibleTrigger className="flex w-full items-center justify-between px-4 py-3 text-left">
                 <div>
                   <p className="text-sm font-medium text-slate-900">
-                    Owner email sign-up
+                    {t("auth.register.ownerSignup")}
                   </p>
                   <p className="text-xs text-slate-500">
-                    Allowed only for explicitly allowlisted emails.
+                    {t("auth.register.ownerSignupHint")}
                   </p>
                 </div>
                 <ChevronDown className="h-4 w-4 text-slate-500 transition-transform data-[state=open]:rotate-180" />
@@ -246,7 +255,7 @@ export function RegisterForm({
                       name="name"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel className="text-sm font-medium text-slate-700">Full Name</FormLabel>
+                          <FormLabel className="text-sm font-medium text-slate-700">{t("auth.register.fullName")}</FormLabel>
                           <FormControl>
                             <Input
                               placeholder="John Doe"
@@ -265,7 +274,7 @@ export function RegisterForm({
                       name="email"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel className="text-sm font-medium text-slate-700">Email</FormLabel>
+                          <FormLabel className="text-sm font-medium text-slate-700">{t("auth.login.email")}</FormLabel>
                           <FormControl>
                             <Input
                               type="email"
@@ -285,7 +294,7 @@ export function RegisterForm({
                       name="password"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel className="text-sm font-medium text-slate-700">Password</FormLabel>
+                          <FormLabel className="text-sm font-medium text-slate-700">{t("auth.login.password")}</FormLabel>
                           <FormControl>
                             <Input
                               type="password"
@@ -305,7 +314,7 @@ export function RegisterForm({
                       name="confirmPassword"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel className="text-sm font-medium text-slate-700">Confirm Password</FormLabel>
+                          <FormLabel className="text-sm font-medium text-slate-700">{t("auth.register.confirmPassword")}</FormLabel>
                           <FormControl>
                             <Input
                               type="password"
@@ -328,11 +337,11 @@ export function RegisterForm({
                       {isPending ? (
                         <span className="flex items-center justify-center">
                           <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                          Creating account...
+                          {t("auth.register.creatingAccount")}
                         </span>
                       ) : (
                         <span className="flex items-center justify-center">
-                          Create owner account
+                          {t("auth.register.createAccount")}
                           <ArrowRight className="ml-2 h-4 w-4" />
                         </span>
                       )}
@@ -350,29 +359,29 @@ export function RegisterForm({
           ) : null}
 
           <div className="text-center text-sm text-slate-600">
-            Already have an account?{" "}
+            {t("auth.register.haveAccount")}{" "}
             <Link
               href="/login"
               className="font-medium text-slate-900 hover:text-orange-600"
             >
-              Sign in
+              {t("auth.register.signIn")}
             </Link>
           </div>
 
           <p className="text-center text-xs text-slate-500">
-            By creating an account, you agree to our{" "}
+            {t("auth.register.termsPrefix")}{" "}
             <Link
               href="/terms"
               className="font-medium text-slate-700 hover:text-orange-600"
             >
-              Terms
+              {t("auth.register.terms")}
             </Link>{" "}
-            and{" "}
+            {t("common.and")}{" "}
             <Link
               href="/privacy"
               className="font-medium text-slate-700 hover:text-orange-600"
             >
-              Privacy Policy
+              {t("auth.register.privacy")}
             </Link>
           </p>
         </CardContent>

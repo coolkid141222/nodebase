@@ -10,8 +10,10 @@ import { toast } from "sonner";
 import type { Workflow } from "@/lib/prisma/client";
 import { WorkflowIcon } from "lucide-react";
 import { formatDistanceToNow } from "date-fns"
+import { useI18n } from "@/features/i18n/provider";
 
 export const WorkflowsSearch = () => {
+    const { t } = useI18n();
     const [params, setParams] = useWorkflowsParams();
     const { searchValue: localSearch, setSearchValue } = useEntitySearch({
         params,
@@ -22,7 +24,7 @@ export const WorkflowsSearch = () => {
         <EntitySearch
             value={localSearch ?? ''}
             onChange={setSearchValue}
-            placeholder="Search workflows"
+            placeholder={t("workflows.search")}
         />
     )
 }
@@ -40,6 +42,7 @@ export const WorkflowsList = () => {
 }
 
 export const WorkflowsHearder = ({ disabled }: { disabled?: boolean }) => {
+    const { t } = useI18n();
     const createWorkflow = useCreateWorkflow();
     const router = useRouter();
     const handleCreate = () => {
@@ -48,7 +51,7 @@ export const WorkflowsHearder = ({ disabled }: { disabled?: boolean }) => {
                 router.push(`/workflows/${data.id}`)
             },
             onError: (error) => {
-                toast.error(`Failed to create workflow: ${error.message}`);
+                toast.error(t("workflows.createFailed", { message: error.message }));
                 Sentry.captureException(error);
             }
         })
@@ -56,10 +59,10 @@ export const WorkflowsHearder = ({ disabled }: { disabled?: boolean }) => {
     return (
         <>
             <EntityHeader
-                title="Workflows"
-                description="Create and manage your workflows"
+                title={t("workflows.title")}
+                description={t("workflows.description")}
                 onNew={handleCreate}
-                newButtonLabel="New Workflows"
+                newButtonLabel={t("workflows.new")}
                 disabled={disabled}
                 isCreating={createWorkflow.isPending}
             />
@@ -97,24 +100,27 @@ export const WorkflowsContainer = ({
 }
 
 export const WorkflowsLoading = () => {
+    const { t } = useI18n();
     return (
-        <LoadingView message="Loading workflows.." />
+        <LoadingView message={t("workflows.loading")} />
     )
 }
 
 export const WorkflowsError = () => {
+    const { t } = useI18n();
     return (
-        <ErrorView message="Loading workflows Error" />
+        <ErrorView message={t("workflows.error")} />
     )
 }
 
 export const WorkflowsEmpty = () => {
+    const { t } = useI18n();
     const router = useRouter();
     const createWorkflow = useCreateWorkflow();
     const handleCreate = () => {
         createWorkflow.mutate(undefined, {
             onError: (error) => {
-               toast.error(`Failed to create workflow: ${error.message}`);
+               toast.error(t("workflows.createFailed", { message: error.message }));
                Sentry.captureException(error);
             },
             onSuccess: (data) => {
@@ -137,6 +143,7 @@ export const WorkflowsItem = ({
 }: {
     data: Workflow;
 }) => {
+    const { t, dateLocale } = useI18n();
     const deleteWorkflow = useDeleteWorkflow();
     const prefetchWorkflow = usePrefetchWorkflow();
 
@@ -150,9 +157,13 @@ export const WorkflowsItem = ({
             title={data.name}
             subtitle={
                 <>
-                    updated {formatDistanceToNow(new Date(data.updatedAt), { addSuffix: true })}{" "}
-                    &bull; Created{" "}
-                    {formatDistanceToNow(new Date(data.createdAt), { addSuffix: true })}
+                    {t("common.updatedAgo", {
+                        value: formatDistanceToNow(new Date(data.updatedAt), { addSuffix: true, locale: dateLocale }),
+                    })}{" "}
+                    &bull;{" "}
+                    {t("common.createdAgo", {
+                        value: formatDistanceToNow(new Date(data.createdAt), { addSuffix: true, locale: dateLocale }),
+                    })}
                 </>
             }
             image={

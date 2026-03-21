@@ -17,14 +17,10 @@ import { Badge } from "@/components/badge";
 import { Button } from "@/components/button";
 import { cn } from "@/lib/utils";
 import {
-  FREE_PLAN_FEATURES,
-  getBillingProviderLabel,
-  getBillingStatusLabel,
   isProPlanActive,
   PADDLE_BILLING_WORKFLOWS_URL,
   PADDLE_SUPPORTED_COUNTRIES_URL,
   PADDLE_WEBHOOK_ENDPOINT_PATH,
-  PRO_PLAN_FEATURES,
 } from "../shared";
 import {
   useDowngradeToFree,
@@ -32,12 +28,15 @@ import {
   useUpgradeToPro,
 } from "../hooks/use-billing";
 import { usePaddleCheckout } from "../hooks/use-paddle-checkout";
+import { useI18n } from "@/features/i18n/provider";
 
 export const BillingLoading = () => {
-  return <LoadingView message="Loading billing..." />;
+  const { t } = useI18n();
+  return <LoadingView message={t("billing.loading")} />;
 };
 
 export const BillingPortalView = () => {
+  const { t } = useI18n();
   const billing = useSuspenseBillingState();
   const upgradeToPro = useUpgradeToPro();
   const downgradeToFree = useDowngradeToFree();
@@ -45,6 +44,28 @@ export const BillingPortalView = () => {
   const state = billing.data;
   const isPro = isProPlanActive(state);
   const paddleCheckout = usePaddleCheckout();
+  const freePlanFeatures = [
+    t("billing.feature.free.1"),
+    t("billing.feature.free.2"),
+    t("billing.feature.free.3"),
+  ];
+  const proPlanFeatures = [
+    t("billing.feature.pro.1"),
+    t("billing.feature.pro.2"),
+    t("billing.feature.pro.3"),
+  ];
+  const providerLabel =
+    state.billingProvider === "MOCK"
+      ? t("billing.mockProvider")
+      : state.billingProvider === "PADDLE"
+        ? "Paddle"
+        : t("billing.notConnected");
+  const billingStatusLabel =
+    state.billingStatus === "ACTIVE"
+      ? t("common.active")
+      : state.billingStatus === "CANCELED"
+        ? t("billing.statusCanceled")
+        : t("billing.statusInactive");
 
   const primaryAction = isPro ? (
     <Button
@@ -52,12 +73,12 @@ export const BillingPortalView = () => {
       onClick={() => downgradeToFree.mutate()}
       disabled={downgradeToFree.isPending}
     >
-      Return to Free
+      {t("billing.returnFree")}
     </Button>
   ) : (
     <Button onClick={() => upgradeToPro.mutate()} disabled={upgradeToPro.isPending}>
       <CrownIcon />
-      Enable Pro locally
+      {t("billing.enableProLocally")}
     </Button>
   );
 
@@ -68,24 +89,22 @@ export const BillingPortalView = () => {
           <div className="grid gap-8 p-6 md:p-8 lg:grid-cols-[1.25fr_0.75fr]">
             <div className="flex flex-col gap-6">
               <div className="inline-flex w-fit items-center rounded-full border border-border/70 bg-background/80 px-3 py-1 text-xs font-medium uppercase tracking-[0.26em] text-muted-foreground">
-                Billing
+                {t("billing.heroEyebrow")}
               </div>
 
               <div className="space-y-4">
                 <h1 className="max-w-3xl font-serif text-4xl leading-tight tracking-tight text-foreground md:text-5xl">
-                  A quieter billing layer for your workflow lab.
+                  {t("billing.heroTitle")}
                 </h1>
                 <p className="max-w-2xl text-base leading-7 text-muted-foreground">
-                  This page now behaves more like a real pricing surface: local Pro
-                  for instant testing, Paddle kept ready for the day you actually
-                  want to charge money.
+                  {t("billing.heroDescription")}
                 </p>
               </div>
 
               <div className="flex flex-wrap gap-2">
-                <StatusPill label={state.plan === BillingPlan.PRO ? "Pro plan" : "Free plan"} />
-                <StatusPill label={getBillingStatusLabel(state.billingStatus)} />
-                <StatusPill label={getBillingProviderLabel(state.billingProvider)} />
+                <StatusPill label={state.plan === BillingPlan.PRO ? t("billing.planPro") : t("billing.planFree")} />
+                <StatusPill label={billingStatusLabel} />
+                <StatusPill label={providerLabel} />
               </div>
 
               <div className="flex flex-wrap gap-3">
@@ -96,7 +115,7 @@ export const BillingPortalView = () => {
                     onClick={() => void paddleCheckout.openCheckout()}
                   >
                     <CreditCardIcon />
-                    Checkout with Paddle
+                    {t("billing.checkoutWithPaddle")}
                   </Button>
                 )}
                 {state.paddle.enabled && (
@@ -106,15 +125,13 @@ export const BillingPortalView = () => {
                     disabled={paddleCheckout.isOpeningPortal}
                   >
                     <ExternalLinkIcon />
-                    Open Paddle portal
+                    {t("billing.openPaddlePortal")}
                   </Button>
                 )}
               </div>
 
               <p className="max-w-2xl text-sm leading-6 text-muted-foreground">
-                The practical path for this project is still the same: keep local
-                billing on by default, then switch to Paddle when you want a real
-                checkout that works better for a China-based side project.
+                {t("billing.heroFootnote")}
               </p>
             </div>
 
@@ -122,48 +139,48 @@ export const BillingPortalView = () => {
               <div className="flex items-center justify-between gap-3">
                 <div>
                   <p className="text-xs font-medium uppercase tracking-[0.26em] text-muted-foreground">
-                    Current plan
+                    {t("billing.currentPlan")}
                   </p>
                   <p className="mt-2 font-serif text-3xl text-foreground">
                     {state.plan === BillingPlan.PRO ? "Pro" : "Free"}
                   </p>
                 </div>
                 <Badge className="rounded-full px-3 py-1">
-                  {state.plan === BillingPlan.PRO ? "Active" : "Default"}
+                  {state.plan === BillingPlan.PRO ? t("common.active") : t("billing.default")}
                 </Badge>
               </div>
 
               <div className="mt-6 grid gap-3">
                 <HeroRow
-                  label="Provider"
-                  value={getBillingProviderLabel(state.billingProvider)}
+                  label={t("billing.provider")}
+                  value={providerLabel}
                 />
                 <HeroRow
-                  label="Renewal"
+                  label={t("billing.renewal")}
                   value={
                     state.billingCurrentPeriodEnd
                       ? format(new Date(state.billingCurrentPeriodEnd), "PPP")
-                      : "No renewal scheduled"
+                      : t("billing.noRenewal")
                   }
                 />
                 <HeroRow
-                  label="Webhook sync"
+                  label={t("billing.webhookSync")}
                   value={
                     state.billingLastEventAt
                       ? `Updated ${format(new Date(state.billingLastEventAt), "PPP p")}`
-                      : "No Paddle event received yet"
+                      : t("billing.noWebhook")
                   }
                 />
               </div>
 
               <div className="mt-6 rounded-2xl border border-border/70 bg-muted/30 p-4">
                 <p className="text-xs font-medium uppercase tracking-[0.26em] text-muted-foreground">
-                  Readiness
+                  {t("billing.readiness")}
                 </p>
                 <p className="mt-2 text-sm leading-6 text-muted-foreground">
                   {state.paddle.enabled
-                    ? "Checkout can open right now. Add the webhook secret to finish the full lifecycle sync."
-                    : "Paddle is still optional. Until those credentials exist, the page stays safely in local mode."}
+                    ? t("billing.readinessReady")
+                    : t("billing.readinessLocal")}
                 </p>
               </div>
             </div>
@@ -174,11 +191,10 @@ export const BillingPortalView = () => {
           <Panel className="bg-background">
             <div className="flex items-start justify-between gap-4">
               <div className="space-y-2">
-                <Eyebrow>System State</Eyebrow>
-                <h2 className="font-serif text-2xl text-foreground">Plan details</h2>
+                <Eyebrow>{t("billing.systemState")}</Eyebrow>
+                <h2 className="font-serif text-2xl text-foreground">{t("billing.planDetails")}</h2>
                 <p className="text-sm leading-6 text-muted-foreground">
-                  The essential bits only: account state, renewal state, and what
-                  this billing layer is currently doing.
+                  {t("billing.planDetailsDescription")}
                 </p>
               </div>
               <Badge variant="outline" className="rounded-full px-3 py-1">
@@ -188,46 +204,42 @@ export const BillingPortalView = () => {
 
             <div className="mt-6 grid gap-4 sm:grid-cols-2">
               <MetricCard
-                label="Billing status"
-                value={getBillingStatusLabel(state.billingStatus)}
+                label={t("billing.billingStatus")}
+                value={billingStatusLabel}
                 detail={
                   isPro
-                    ? "This account currently resolves to Pro."
-                    : "This account currently resolves to Free."
+                    ? t("billing.proResolved")
+                    : t("billing.freeResolved")
                 }
               />
               <MetricCard
-                label="Paddle environment"
+                label={t("billing.paddleEnvironment")}
                 value={state.paddle.environment}
-                detail="Sandbox by default until you switch the public environment variable."
+                detail={t("billing.sandboxDefault")}
               />
               <MetricCard
-                label="Customer record"
-                value={state.billingCustomerId ? "Linked" : "Not linked yet"}
-                detail={state.billingCustomerId ?? "Created automatically once you use Paddle."}
+                label={t("billing.customerRecord")}
+                value={state.billingCustomerId ? t("billing.customerLinked") : t("billing.customerMissing")}
+                detail={state.billingCustomerId ?? t("billing.customerMissingDetail")}
               />
               <MetricCard
-                label="Subscription record"
-                value={state.billingSubscriptionId ? "Tracked" : "Not tracked yet"}
-                detail={state.billingSubscriptionId ?? "Will populate after Paddle returns a subscription."}
+                label={t("billing.subscriptionRecord")}
+                value={state.billingSubscriptionId ? t("billing.subscriptionTracked") : t("billing.subscriptionMissing")}
+                detail={state.billingSubscriptionId ?? t("billing.subscriptionMissingDetail")}
               />
             </div>
 
             <div className="mt-6 rounded-[24px] border border-border/70 bg-[linear-gradient(180deg,rgba(248,244,239,0.7),rgba(255,255,255,1))] p-5">
-              <Eyebrow>Why this path</Eyebrow>
+              <Eyebrow>{t("billing.whyPath")}</Eyebrow>
               <div className="mt-3 flex items-start gap-3">
                 <div className="mt-0.5 rounded-full bg-primary/10 p-2 text-primary">
                   <SparklesIcon className="size-4" />
                 </div>
                 <div className="space-y-2 text-sm leading-6 text-muted-foreground">
                   <p className="font-medium text-foreground">
-                    Paddle is still the better long-term provider here.
+                    {t("billing.paddleBetter")}
                   </p>
-                  <p>
-                    Stripe does not list mainland China as a supported seller
-                    region. Paddle does list China, which makes it the saner path
-                    once you leave local-only mode.
-                  </p>
+                  <p>{t("billing.paddleBetterBody")}</p>
                 </div>
               </div>
             </div>
@@ -235,46 +247,45 @@ export const BillingPortalView = () => {
 
           <Panel className="bg-background">
             <div className="flex flex-col gap-2">
-              <Eyebrow>Paddle Readiness</Eyebrow>
+              <Eyebrow>{t("billing.paddleReadiness")}</Eyebrow>
               <h2 className="font-serif text-2xl text-foreground">
-                What is configured right now
+                {t("billing.paddleConfigured")}
               </h2>
               <p className="max-w-2xl text-sm leading-6 text-muted-foreground">
-                This is the operational checklist, not marketing copy. If all five
-                rows are green, checkout plus webhook sync are both wired.
+                {t("billing.paddleConfiguredDescription")}
               </p>
             </div>
 
             <div className="mt-6 grid gap-3">
               <ReadinessRow
-                label="Paddle API key"
+                label={t("upgrade.apiKey")}
                 ready={state.paddle.hasApiKey}
                 detail="Used by the server to create portal links and customer records."
               />
               <ReadinessRow
-                label="Client-side token"
+                label={t("upgrade.clientToken")}
                 ready={state.paddle.hasClientToken}
                 detail="Loads Paddle.js and opens overlay checkout in the browser."
               />
               <ReadinessRow
-                label="Pro price ID"
+                label={t("upgrade.priceId")}
                 ready={state.paddle.hasPriceId}
                 detail="The price entity used for the Pro checkout."
               />
               <ReadinessRow
-                label="Webhook secret"
+                label={t("upgrade.webhook")}
                 ready={state.paddle.hasWebhookSecret}
                 detail="Required for signature verification and automatic subscription sync."
               />
               <ReadinessRow
-                label="Checkout script"
+                label={t("billing.checkoutScript")}
                 ready={paddleCheckout.readiness === "ready"}
                 detail={
                   state.paddle.enabled
                     ? paddleCheckout.readiness === "loading-script"
-                      ? "Paddle.js is loading in the browser."
-                      : "The browser checkout runtime is ready."
-                    : "The script stays unloaded until a client token exists."
+                      ? t("billing.checkoutScriptLoading")
+                      : t("billing.checkoutScriptReady")
+                    : t("billing.checkoutScriptIdle")
                 }
               />
             </div>
@@ -282,7 +293,7 @@ export const BillingPortalView = () => {
             <div className="mt-6 grid gap-4 md:grid-cols-[1fr_auto]">
               <div className="rounded-[24px] border border-border/70 bg-muted/25 p-4">
                 <p className="text-xs font-medium uppercase tracking-[0.26em] text-muted-foreground">
-                  Webhook endpoint
+                  {t("billing.webhookEndpoint")}
                 </p>
                 <p className="mt-3 break-all rounded-xl bg-background px-3 py-2 font-mono text-xs text-foreground">
                   {PADDLE_WEBHOOK_ENDPOINT_PATH}
@@ -291,13 +302,13 @@ export const BillingPortalView = () => {
               <div className="flex flex-col gap-2">
                 <Button variant="outline" asChild>
                   <Link href={PADDLE_SUPPORTED_COUNTRIES_URL} target="_blank">
-                    Supported countries
+                    {t("billing.supportedCountries")}
                     <ArrowUpRightIcon />
                   </Link>
                 </Button>
                 <Button variant="outline" asChild>
                   <Link href={PADDLE_BILLING_WORKFLOWS_URL} target="_blank">
-                    Billing workflows
+                    {t("billing.workflows")}
                     <ArrowUpRightIcon />
                   </Link>
                 </Button>
@@ -309,12 +320,11 @@ export const BillingPortalView = () => {
         <section className="space-y-4">
           <div className="flex flex-col gap-2 md:flex-row md:items-end md:justify-between">
             <div className="space-y-2">
-              <Eyebrow>Plans</Eyebrow>
-              <h2 className="font-serif text-2xl text-foreground">Choose your mode</h2>
+              <Eyebrow>{t("billing.plans")}</Eyebrow>
+              <h2 className="font-serif text-2xl text-foreground">{t("billing.chooseMode")}</h2>
             </div>
             <p className="max-w-xl text-sm leading-6 text-muted-foreground">
-              This section follows the Claude pricing rhythm more closely: two
-              clear cards, one strong choice, minimal noise.
+              {t("billing.chooseModeDescription")}
             </p>
           </div>
 
@@ -322,9 +332,9 @@ export const BillingPortalView = () => {
             <PlanCard
               title="Free"
               price="$0"
-              description="Stay here if you just want the editor, triggers, nodes, and execution history."
-              badgeLabel="Current baseline"
-              features={FREE_PLAN_FEATURES}
+              description={t("billing.freeDescription")}
+              badgeLabel={t("billing.currentBaseline")}
+              features={freePlanFeatures}
               muted
               footer={
                 isPro ? (
@@ -333,11 +343,11 @@ export const BillingPortalView = () => {
                     onClick={() => downgradeToFree.mutate()}
                     disabled={downgradeToFree.isPending}
                   >
-                    Switch to Free
+                    {t("billing.switchToFree")}
                   </Button>
                 ) : (
                   <Button variant="outline" disabled>
-                    Already active
+                    {t("billing.alreadyActive")}
                   </Button>
                 )
               }
@@ -345,16 +355,16 @@ export const BillingPortalView = () => {
             <PlanCard
               title="Pro"
               price={state.paddle.enabled ? "Paddle" : "Local"}
-              description="Use local Pro for instant testing now, or hand off to Paddle once you configure real checkout."
-              badgeLabel={state.paddle.enabled ? "Ready to charge" : "Local mode"}
-              features={PRO_PLAN_FEATURES}
+              description={t("billing.proDescription")}
+              badgeLabel={state.paddle.enabled ? t("billing.readyToCharge") : t("billing.localMode")}
+              features={proPlanFeatures}
               accent
               footer={
                 isPro ? (
                   <div className="flex flex-col gap-2 sm:flex-row">
                     <Button disabled>
                       <CrownIcon />
-                      Pro enabled
+                      {t("billing.proEnabled")}
                     </Button>
                     {state.paddle.enabled && (
                       <Button
@@ -362,7 +372,7 @@ export const BillingPortalView = () => {
                         onClick={() => void paddleCheckout.openCheckout()}
                       >
                         <CreditCardIcon />
-                        Open checkout
+                        {t("billing.openCheckout")}
                       </Button>
                     )}
                   </div>
@@ -373,7 +383,7 @@ export const BillingPortalView = () => {
                       disabled={upgradeToPro.isPending}
                     >
                       <CreditCardIcon />
-                      Enable Pro locally
+                      {t("billing.enableProLocally")}
                     </Button>
                     {state.paddle.enabled && (
                       <Button
@@ -381,7 +391,7 @@ export const BillingPortalView = () => {
                         onClick={() => void paddleCheckout.openCheckout()}
                       >
                         <CreditCardIcon />
-                        Checkout with Paddle
+                        {t("billing.checkoutWithPaddle")}
                       </Button>
                     )}
                   </div>

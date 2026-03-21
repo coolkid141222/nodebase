@@ -46,6 +46,7 @@ import {
   generateWorkflowGraphInputSchema,
   getDefaultWorkflowGeneratorModel,
 } from "../workflow-generator/shared";
+import { useI18n } from "@/features/i18n/provider";
 
 const formSchema = generateWorkflowGraphInputSchema.safeExtend({
   model: z.string().trim().min(1),
@@ -87,6 +88,7 @@ export const WorkflowGeneratorDialog = ({
   onApply,
   editorReady,
 }: Props) => {
+  const { t } = useI18n();
   const trpc = useTRPC();
   const credentialsQuery = useQuery(trpc.credentials.getMany.queryOptions());
   const mutation = useMutation(trpc.ai.generateWorkflowGraph.mutationOptions());
@@ -198,10 +200,9 @@ export const WorkflowGeneratorDialog = ({
               <SparklesIcon className="h-4 w-4 text-primary" />
             </div>
             <div className="space-y-1">
-              <DialogTitle>Generate with AI</DialogTitle>
+              <DialogTitle>{t("workflowGenerator.title")}</DialogTitle>
               <DialogDescription>
-                Describe the workflow. Nodebase will draft nodes, edges, and
-                loop wiring before anything touches the canvas.
+                {t("workflowGenerator.description")}
               </DialogDescription>
             </div>
           </div>
@@ -211,28 +212,28 @@ export const WorkflowGeneratorDialog = ({
           <form onSubmit={handleGenerate} className="space-y-4">
             <div className="flex flex-wrap gap-2">
               <span className="rounded-full border border-border/70 bg-muted/30 px-2.5 py-1 text-[11px] uppercase tracking-[0.16em] text-muted-foreground">
-                Trigger
+                {t("workflowGenerator.capabilityTrigger")}
               </span>
               <span className="rounded-full border border-border/70 bg-muted/30 px-2.5 py-1 text-[11px] uppercase tracking-[0.16em] text-muted-foreground">
-                AI
+                {t("workflowGenerator.capabilityAi")}
               </span>
               <span className="rounded-full border border-border/70 bg-muted/30 px-2.5 py-1 text-[11px] uppercase tracking-[0.16em] text-muted-foreground">
-                HTTP
+                {t("workflowGenerator.capabilityHttp")}
               </span>
               <span className="rounded-full border border-border/70 bg-muted/30 px-2.5 py-1 text-[11px] uppercase tracking-[0.16em] text-muted-foreground">
-                Messaging
+                {t("workflowGenerator.capabilityMessaging")}
               </span>
               <span className="rounded-full border border-border/70 bg-muted/30 px-2.5 py-1 text-[11px] uppercase tracking-[0.16em] text-muted-foreground">
-                Loop
+                {t("workflowGenerator.capabilityLoop")}
               </span>
               <span className="rounded-full border border-border/70 bg-muted/30 px-2.5 py-1 text-[11px] uppercase tracking-[0.16em] text-muted-foreground">
-                Tool
+                {t("workflowGenerator.capabilityTool")}
               </span>
             </div>
 
             <FieldGroup className="gap-4 rounded-2xl border border-border/70 bg-background/60 p-4">
               <FieldGroup className="gap-3">
-                <FieldLabel htmlFor="prompt">Workflow prompt</FieldLabel>
+                <FieldLabel htmlFor="prompt">{t("workflowGenerator.workflowPrompt")}</FieldLabel>
                 <Field>
                   <Textarea
                     id="prompt"
@@ -243,14 +244,13 @@ export const WorkflowGeneratorDialog = ({
                   />
                 </Field>
                 <FieldDescription>
-                  Mention the trigger, the main steps, and whether part of the
-                  flow should loop.
+                  {t("workflowGenerator.promptDescription")}
                 </FieldDescription>
                 <FieldError errors={[form.formState.errors.prompt]} />
               </FieldGroup>
 
               <FieldGroup className="gap-3">
-                <FieldLabel>Examples</FieldLabel>
+                <FieldLabel>{t("workflowGenerator.examples")}</FieldLabel>
                 <div className="grid gap-2">
                 {EXAMPLE_PROMPTS.map((examplePrompt) => (
                   <Button
@@ -278,13 +278,13 @@ export const WorkflowGeneratorDialog = ({
               <div className="flex items-center gap-2">
                 <BotIcon className="size-4 text-primary" />
                 <div className="text-sm font-medium text-foreground">
-                  Generator settings
+                  {t("workflowGenerator.settings")}
                 </div>
               </div>
 
               <div className="grid gap-4 md:grid-cols-2">
                 <FieldGroup className="gap-2">
-                  <FieldLabel htmlFor="provider">Provider</FieldLabel>
+                  <FieldLabel htmlFor="provider">{t("workflowGenerator.provider")}</FieldLabel>
                   <Select
                     value={selectedProvider}
                     onValueChange={(
@@ -314,7 +314,7 @@ export const WorkflowGeneratorDialog = ({
                 </FieldGroup>
 
                 <FieldGroup className="gap-2">
-                  <FieldLabel htmlFor="model">Model</FieldLabel>
+                  <FieldLabel htmlFor="model">{t("workflowGenerator.model")}</FieldLabel>
                   <Field>
                     <Input
                       id="model"
@@ -327,7 +327,7 @@ export const WorkflowGeneratorDialog = ({
 
               <div className="grid gap-4 md:grid-cols-[1fr_140px]">
                 <FieldGroup className="gap-2">
-                  <FieldLabel htmlFor="credentialId">Credential</FieldLabel>
+                  <FieldLabel htmlFor="credentialId">{t("workflowGenerator.credential")}</FieldLabel>
                   <Select
                     value={credentialId}
                     onValueChange={(value) =>
@@ -352,7 +352,7 @@ export const WorkflowGeneratorDialog = ({
                 </FieldGroup>
 
                 <FieldGroup className="gap-2">
-                  <FieldLabel htmlFor="credentialField">Field</FieldLabel>
+                  <FieldLabel htmlFor="credentialField">{t("workflowGenerator.field")}</FieldLabel>
                   <Field>
                     <Input
                       id="credentialField"
@@ -364,14 +364,14 @@ export const WorkflowGeneratorDialog = ({
               </div>
 
               <FieldDescription>
-                Suggested default:{" "}
+                {t("workflowGenerator.suggestedDefault")}{" "}
                 <code>{getDefaultWorkflowGeneratorModel(selectedProvider)}</code>
               </FieldDescription>
             </FieldGroup>
 
             <DialogFooter className="gap-2 sm:justify-between">
               <div className="text-xs text-muted-foreground">
-                Applying a draft replaces the current unsaved canvas.
+                {t("workflowGenerator.applyWarning")}
               </div>
               <Button
                 type="submit"
@@ -381,7 +381,7 @@ export const WorkflowGeneratorDialog = ({
                   providerCredentials.length === 0
                 }
               >
-                {mutation.isPending ? "Generating..." : "Generate draft"}
+                {mutation.isPending ? t("workflowGenerator.generating") : t("workflowGenerator.generateDraft")}
               </Button>
             </DialogFooter>
           </form>
@@ -389,12 +389,12 @@ export const WorkflowGeneratorDialog = ({
           <div className="space-y-4 rounded-2xl border border-border/70 bg-muted/10 p-4">
             <div className="space-y-1">
               <div className="text-xs uppercase tracking-[0.22em] text-muted-foreground">
-                Preview
+                {t("workflowGenerator.preview")}
               </div>
               <div className="text-sm text-muted-foreground">
                 {draft
-                  ? "Review the generated structure before applying it."
-                  : "The draft summary, graph mix, and notes will appear here."}
+                  ? t("workflowGenerator.previewReady")
+                  : t("workflowGenerator.previewEmpty")}
               </div>
             </div>
 
@@ -411,8 +411,8 @@ export const WorkflowGeneratorDialog = ({
                       </p>
                     </div>
                     <div className="grid shrink-0 gap-1 text-right text-xs uppercase tracking-[0.16em] text-muted-foreground">
-                      <span>{draft.nodes.length} nodes</span>
-                      <span>{draft.edges.length} edges</span>
+                      <span>{t("workflowGenerator.nodesCount", { count: draft.nodes.length })}</span>
+                      <span>{t("workflowGenerator.edgesCount", { count: draft.edges.length })}</span>
                     </div>
                   </div>
                 </div>
@@ -420,7 +420,7 @@ export const WorkflowGeneratorDialog = ({
                 <div className="rounded-xl border border-border/70 bg-background p-4">
                   <div className="flex items-center gap-2 text-sm font-medium text-foreground">
                     <GitBranchIcon className="size-4 text-primary" />
-                    Graph mix
+                    {t("workflowGenerator.graphMix")}
                   </div>
                   <div className="flex flex-wrap gap-2 pt-3">
                     {generatedNodeCounts.map(([type, count]) => (
@@ -437,18 +437,18 @@ export const WorkflowGeneratorDialog = ({
                 <div className="rounded-xl border border-border/70 bg-background p-4">
                   <div className="flex items-center gap-2 text-sm font-medium text-foreground">
                     <RotateCwIcon className="size-4 text-primary" />
-                    Loop
+                    {t("workflowGenerator.loop")}
                   </div>
                   <p className="pt-3 text-sm text-muted-foreground">
                     {draft.nodes.some((node) => node.type === "LOOP")
-                      ? "Includes a loop controller and scoped loop wiring."
-                      : "No loop controller in this draft."}
+                      ? t("workflowGenerator.loopPresent")
+                      : t("workflowGenerator.loopMissing")}
                   </p>
                 </div>
 
                 <div className="space-y-2">
                   <div className="text-sm font-medium text-foreground">
-                    Notes
+                    {t("workflowGenerator.notes")}
                   </div>
                   <div className="space-y-2">
                     {draft.notes.length > 0 ? (
@@ -462,7 +462,7 @@ export const WorkflowGeneratorDialog = ({
                       ))
                     ) : (
                       <div className="rounded-lg border border-dashed border-border/70 px-3 py-2 text-sm text-muted-foreground">
-                        No extra notes. The draft is ready to apply.
+                        {t("workflowGenerator.noNotes")}
                       </div>
                     )}
                   </div>
@@ -474,14 +474,13 @@ export const WorkflowGeneratorDialog = ({
                     onClick={() => onApply(draft)}
                     disabled={!editorReady}
                   >
-                    Apply to canvas
+                    {t("workflowGenerator.applyToCanvas")}
                   </Button>
                 </div>
               </div>
             ) : (
               <div className="rounded-xl border border-dashed border-border/70 bg-background px-4 py-6 text-sm text-muted-foreground">
-                Describe a workflow on the left. The generated draft will stay
-                editable here before it replaces the current canvas.
+                {t("workflowGenerator.describeWorkflow")}
               </div>
             )}
 
@@ -492,7 +491,7 @@ export const WorkflowGeneratorDialog = ({
             ) : null}
             {providerCredentials.length === 0 ? (
               <div className="rounded-xl border border-amber-500/30 bg-amber-500/10 px-4 py-3 text-sm text-amber-700">
-                Add a {selectedProvider} credential first to use AI workflow generation.
+                {t("workflowGenerator.addCredential", { provider: selectedProvider })}
               </div>
             ) : null}
           </div>

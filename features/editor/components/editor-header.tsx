@@ -21,6 +21,7 @@ import {
     type WorkflowDraftPreview,
 } from "@/features/ai/components/workflow-generator-dialog";
 import { toast } from "sonner";
+import { useI18n } from "@/features/i18n/provider";
 
 export const EditorNameInput = ({ workflowId }: { workflowId: string }) => {
     const { data: workflow } = useSuspenseWorkflow(workflowId);
@@ -98,12 +99,13 @@ export const EditorNameInput = ({ workflowId }: { workflowId: string }) => {
 }
 
 export const EditorBreadcrumbs = ({ workflowId }: { workflowId: string }) => {
+    const { t } = useI18n();
     return (
         <Breadcrumb>
             <BreadcrumbList>
                 <BreadcrumbItem>
                     <BreadcrumbLink asChild>
-                        <Link href="/workflows">Workflows</Link>
+                        <Link href="/workflows">{t("editor.breadcrumb.workflows")}</Link>
                     </BreadcrumbLink>
                 </BreadcrumbItem>
                 <BreadcrumbSeparator />
@@ -117,10 +119,11 @@ export const EditorHeader = ({ workflowId }: { workflowId: string }) => {
     const workflowExecution = useExecuteWorkflow(workflowId);
     const editor = useAtomValue(editorAtom);
     const [generatorOpen, setGeneratorOpen] = useState(false);
+    const { t } = useI18n();
 
     const handleApplyGeneratedDraft = (draft: WorkflowDraftPreview) => {
         if (!editor) {
-            toast.error("Editor is not ready yet.");
+            toast.error(t("editor.editorNotReady"));
             return;
         }
 
@@ -133,7 +136,7 @@ export const EditorHeader = ({ workflowId }: { workflowId: string }) => {
                 padding: 0.18,
             });
         });
-        toast.success(`Applied AI workflow draft: ${draft.title}`);
+        toast.success(t("editor.appliedDraft", { title: draft.title }));
     };
 
     return (
@@ -155,7 +158,7 @@ export const EditorHeader = ({ workflowId }: { workflowId: string }) => {
                         onClick={() => setGeneratorOpen(true)}
                     >
                         <SparklesIcon />
-                        Generate with AI
+                        {t("editor.generateWithAi")}
                     </Button>
                     <Button
                         size="sm"
@@ -163,7 +166,7 @@ export const EditorHeader = ({ workflowId }: { workflowId: string }) => {
                         disabled={workflowExecution.isPending || !workflowExecution.editorReady}
                     >
                         <SaveIcon />
-                        Save
+                        {t("common.save")}
                     </Button>
                 </div>
             </div>

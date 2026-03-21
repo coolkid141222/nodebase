@@ -18,14 +18,16 @@ import {
   useSuspenseCredentials,
 } from "../hooks/use-credentials";
 import { Badge } from "@/components/badge";
+import { useI18n } from "@/features/i18n/provider";
 
 export const CredentialsHeader = ({ disabled }: { disabled?: boolean }) => {
+  const { t } = useI18n();
   return (
     <EntityHeader
-      title="Credentials"
-      description="Manage API keys and integration secrets for your workflow nodes"
+      title={t("credentials.title")}
+      description={t("credentials.description")}
       newButtonHref="/credentials/new"
-      newButtonLabel="New Credential"
+      newButtonLabel={t("credentials.new")}
       disabled={disabled}
     />
   );
@@ -44,11 +46,13 @@ export const CredentialsContainer = ({
 };
 
 export const CredentialsLoading = () => {
-  return <LoadingView message="Loading credentials..." />;
+  const { t } = useI18n();
+  return <LoadingView message={t("credentials.loading")} />;
 };
 
 export const CredentialsError = () => {
-  return <ErrorView message="Failed to load credentials." />;
+  const { t } = useI18n();
+  return <ErrorView message={t("credentials.error")} />;
 };
 
 export const CredentialsEmpty = () => {
@@ -69,6 +73,7 @@ export const CredentialsList = () => {
 };
 
 const CredentialItem = ({ data }: { data: Credential }) => {
+  const { t, dateLocale } = useI18n();
   const removeCredential = useDeleteCredential();
 
   return (
@@ -79,8 +84,12 @@ const CredentialItem = ({ data }: { data: Credential }) => {
         <span className="inline-flex items-center gap-2">
           <Badge variant="outline">{data.provider}</Badge>
           <span>
-            Updated{" "}
-            {formatDistanceToNow(new Date(data.updatedAt), { addSuffix: true })}
+            {t("common.updatedAgo", {
+              value: formatDistanceToNow(new Date(data.updatedAt), {
+                addSuffix: true,
+                locale: dateLocale,
+              }),
+            })}
           </span>
         </span>
       }

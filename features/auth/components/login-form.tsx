@@ -25,23 +25,28 @@ import {
 import { ArrowRight, Loader2 } from "lucide-react";
 import { signIn } from "@/lib/auth-client";
 import { useState } from "react";
+import { LanguageToggle } from "@/features/i18n/components/language-toggle";
+import { useI18n } from "@/features/i18n/provider";
 
 type LoginFormProps = {
   googleEnabled: boolean;
   githubEnabled: boolean;
 };
 
-const loginSchema = z.object({
-  email: z.string().email("Please enter a valid email"),
-  password: z.string().min(1, "Password is required"),
-});
+const createLoginSchema = (t: (key: string) => string) =>
+  z.object({
+    email: z.string().email(t("auth.login.emailInvalid")),
+    password: z.string().min(1, t("auth.login.passwordRequired")),
+  });
 
-type LoginFormValues = z.infer<typeof loginSchema>;
+type LoginFormValues = z.infer<ReturnType<typeof createLoginSchema>>;
 
 export function LoginForm({ googleEnabled, githubEnabled }: LoginFormProps) {
+  const { t } = useI18n();
   const router = useRouter();
   const [error, setError] = useState<string>("");
   const [socialPending, setSocialPending] = useState<"google" | "github" | null>(null);
+  const loginSchema = createLoginSchema(t);
 
   const form = useForm<LoginFormValues>({
     resolver: zodResolver(loginSchema),
@@ -60,14 +65,14 @@ export function LoginForm({ googleEnabled, githubEnabled }: LoginFormProps) {
       });
 
       if (result.error) {
-        setError(result.error.message || "Login Failed");
+        setError(result.error.message || t("auth.login.loginFailed"));
         return;
       }
 
       router.push("/");
       router.refresh();
     } catch (err) {
-      setError("An unexpected error occurred. Please try it later");
+      setError(t("auth.login.unexpectedError"));
       console.log("Login error", err);
     }
   };
@@ -83,10 +88,10 @@ export function LoginForm({ googleEnabled, githubEnabled }: LoginFormProps) {
       });
 
       if (result?.error) {
-        setError(result.error.message || "Social sign in failed");
+        setError(result.error.message || t("auth.login.socialFailed"));
       }
     } catch {
-      setError("Social sign in failed");
+      setError(t("auth.login.socialFailed"));
     } finally {
       setSocialPending(null);
     }
@@ -104,13 +109,16 @@ export function LoginForm({ googleEnabled, githubEnabled }: LoginFormProps) {
 
       <Card className="relative w-full max-w-md overflow-hidden rounded-2xl border-0 bg-white/80 backdrop-blur-xl shadow-2xl">
         <div className="absolute inset-x-0 top-0 h-1 bg-linear-to-r from-orange-400 via-amber-400 to-blue-400" />
+        <div className="absolute right-6 top-6">
+          <LanguageToggle compact />
+        </div>
         <CardHeader className="flex flex-col items-center justify-center space-y-3 text-center pt-10 pb-6 px-8">
 
           <CardTitle className="text-3xl font-bold text-slate-900">
-            Welcome back
+            {t("auth.login.title")}
           </CardTitle>
           <CardDescription className="text-base text-slate-600">
-            Sign in to keep building your workspace
+            {t("auth.login.subtitle")}
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-6 px-8 pb-8">
@@ -123,7 +131,7 @@ export function LoginForm({ googleEnabled, githubEnabled }: LoginFormProps) {
               onClick={() => handleSocialSignIn("google")}
             >
               <img src="/google.svg" alt="Google" className="h-5 w-5" />
-              {socialPending === "google" ? "Redirecting..." : "Google"}
+              {socialPending === "google" ? t("auth.login.redirecting") : "Google"}
             </Button>
 
             <Button
@@ -134,13 +142,13 @@ export function LoginForm({ googleEnabled, githubEnabled }: LoginFormProps) {
               onClick={() => handleSocialSignIn("github")}
             >
               <img src="/github.svg" alt="GitHub" className="h-5 w-5" />
-              {socialPending === "github" ? "Redirecting..." : "GitHub"}
+              {socialPending === "github" ? t("auth.login.redirecting") : "GitHub"}
             </Button>
           </div>
 
           {!googleEnabled && !githubEnabled ? (
             <div className="rounded-lg bg-amber-50 px-4 py-3 text-sm text-amber-800">
-              Google/GitHub auth is not configured yet. Email login remains available for existing accounts.
+              {t("auth.login.socialUnavailable")}
             </div>
           ) : null}
 
@@ -150,7 +158,7 @@ export function LoginForm({ googleEnabled, githubEnabled }: LoginFormProps) {
             </div>
             <div className="relative flex justify-center text-sm">
               <span className="bg-white px-3 text-slate-500">
-                or continue with email
+                {t("auth.login.orEmail")}
               </span>
             </div>
           </div>
@@ -168,7 +176,7 @@ export function LoginForm({ googleEnabled, githubEnabled }: LoginFormProps) {
                 name="email"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel className="text-sm font-medium text-slate-700">Email</FormLabel>
+                    <FormLabel className="text-sm font-medium text-slate-700">{t("auth.login.email")}</FormLabel>
                     <FormControl>
                       <Input
                         type="email"
@@ -189,7 +197,7 @@ export function LoginForm({ googleEnabled, githubEnabled }: LoginFormProps) {
                 name="password"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel className="text-sm font-medium text-slate-700">Password</FormLabel>
+                    <FormLabel className="text-sm font-medium text-slate-700">{t("auth.login.password")}</FormLabel>
                     <FormControl>
                       <Input
                         type="password"
@@ -211,14 +219,14 @@ export function LoginForm({ googleEnabled, githubEnabled }: LoginFormProps) {
                     type="checkbox"
                     className="h-4 w-4 rounded border-slate-300 text-orange-500 focus:ring-orange-500"
                   />
-                  Remember me
+                  {t("auth.login.rememberMe")}
                 </label>
 
                 <Link
                   href="/forgot-password"
                   className="font-medium text-slate-700 hover:text-orange-600"
                 >
-                  Forgot password?
+                  {t("auth.login.forgotPassword")}
                 </Link>
               </div>
 
@@ -230,11 +238,11 @@ export function LoginForm({ googleEnabled, githubEnabled }: LoginFormProps) {
                 {isPending ? (
                   <span className="flex items-center justify-center">
                     <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                    Signing in...
+                    {t("auth.login.signingIn")}
                   </span>
                 ) : (
                   <span className="flex items-center justify-center">
-                    Sign in
+                    {t("auth.login.signIn")}
                     <ArrowRight className="ml-2 h-4 w-4" />
                   </span>
                 )}
@@ -243,29 +251,29 @@ export function LoginForm({ googleEnabled, githubEnabled }: LoginFormProps) {
           </Form>
 
           <div className="text-center text-sm text-slate-600">
-            Don&apos;t have an account?{" "}
+            {t("auth.login.noAccount")}{" "}
             <Link
               href="/register"
               className="font-medium text-slate-900 hover:text-orange-600"
             >
-              Sign up
+              {t("auth.login.signUp")}
             </Link>
           </div>
 
           <p className="text-center text-xs text-slate-500">
-            By continuing, you agree to our{" "}
+            {t("auth.login.termsPrefix")}{" "}
             <Link
               href="/terms"
               className="font-medium text-slate-700 hover:text-orange-600"
             >
-              Terms
+              {t("auth.login.terms")}
             </Link>{" "}
-            and{" "}
+            {t("common.and")}{" "}
             <Link
               href="/privacy"
               className="font-medium text-slate-700 hover:text-orange-600"
             >
-              Privacy Policy
+              {t("auth.login.privacy")}
             </Link>
           </p>
         </CardContent>

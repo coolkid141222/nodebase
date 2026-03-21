@@ -12,6 +12,7 @@ import {
 } from "@/components/card";
 import { ExecutionStatus, ExecutionStepStatus } from "@/lib/prisma/client";
 import { useWorkflowExecutionStatus } from "./workflow-execution-status-context";
+import { useI18n } from "@/features/i18n/provider";
 
 type StatusValue = ExecutionStatus | ExecutionStepStatus;
 type PreviewExecution = {
@@ -87,39 +88,41 @@ function StatusChip({
 function getResultLabel(
   executionStatus: ExecutionStatus,
   stepStatus?: ExecutionStepStatus,
+  t?: (key: string) => string,
 ) {
   if (stepStatus === "FAILED" || executionStatus === "FAILED") {
-    return "Error";
+    return t ? t("preview.resultError") : "Error";
   }
 
   if (stepStatus === "RUNNING") {
-    return "Current output";
+    return t ? t("preview.currentOutput") : "Current output";
   }
 
   if (executionStatus === ExecutionStatus.RUNNING || executionStatus === ExecutionStatus.PENDING) {
-    return "Latest output";
+    return t ? t("preview.latestOutput") : "Latest output";
   }
 
-  return "Result";
+  return t ? t("preview.result") : "Result";
 }
 
 function getStepSummaryNote(
   executionStatus: ExecutionStatus,
   stepStatus?: ExecutionStepStatus,
+  t?: (key: string) => string,
 ) {
   if (!stepStatus) {
-    return "No step has produced output yet.";
+    return t ? t("preview.noStepOutput") : "No step has produced output yet.";
   }
 
   if (stepStatus === "RUNNING") {
-    return "This step is still processing.";
+    return t ? t("preview.stepRunning") : "This step is still processing.";
   }
 
   if (executionStatus === ExecutionStatus.RUNNING || executionStatus === ExecutionStatus.PENDING) {
-    return "Latest finished step while the workflow continues.";
+    return t ? t("preview.latestFinished") : "Latest finished step while the workflow continues.";
   }
 
-  return "Final step output for this run.";
+  return t ? t("preview.finalOutput") : "Final step output for this run.";
 }
 
 function pickFocusedStep(
@@ -273,6 +276,7 @@ function pickLatestAITextStep(execution: PreviewExecution) {
 }
 
 const ExecutionPreviewCard = memo(function ExecutionPreviewCard() {
+  const { t, dateLocale } = useI18n();
   const execution = useWorkflowExecutionStatus();
   const {
     executionStatus,
@@ -321,16 +325,16 @@ const ExecutionPreviewCard = memo(function ExecutionPreviewCard() {
           <div className="flex items-start justify-between gap-3">
             <div className="min-w-0 space-y-1">
               <CardDescription className="text-[11px] uppercase tracking-[0.18em]">
-                Run preview
+                {t("preview.run")}
               </CardDescription>
               <p className="text-sm font-medium text-foreground">
-                No execution yet
+                {t("preview.noExecution")}
               </p>
             </div>
           </div>
         </CardHeader>
         <CardContent className="space-y-3 text-sm text-muted-foreground">
-          <p>Run the workflow to inspect the latest result here.</p>
+          <p>{t("preview.runToInspect")}</p>
         </CardContent>
       </Card>
     );
@@ -344,13 +348,14 @@ const ExecutionPreviewCard = memo(function ExecutionPreviewCard() {
           <div className="flex items-start justify-between gap-3 min-w-0">
             <div className="min-w-0 space-y-1">
               <CardDescription className="text-[11px] uppercase tracking-[0.18em]">
-                Run preview
+                {t("preview.run")}
               </CardDescription>
               <div className="flex flex-wrap items-center gap-2">
                 <StatusChip status={executionStatus ?? execution.status} />
                 <span className="text-xs text-muted-foreground break-all">
                   {formatDistanceToNow(new Date(execution.createdAt), {
                     addSuffix: true,
+                    locale: dateLocale,
                   })}
                 </span>
               </div>
@@ -359,7 +364,7 @@ const ExecutionPreviewCard = memo(function ExecutionPreviewCard() {
               href={`/executions/${execution.id}`}
               className="shrink-0 text-[11px] font-medium text-muted-foreground transition-colors hover:text-foreground"
             >
-              Open
+              {t("preview.open")}
             </Link>
           </div>
 
@@ -368,14 +373,14 @@ const ExecutionPreviewCard = memo(function ExecutionPreviewCard() {
               <div className="text-[11px] uppercase tracking-[0.16em] text-muted-foreground">
                 {(executionStatus ?? execution.status) === ExecutionStatus.RUNNING ||
                 (executionStatus ?? execution.status) === ExecutionStatus.PENDING
-                  ? "Focused step"
-                  : "Final step"}
+                  ? t("preview.focusedStep")
+                  : t("preview.finalStep")}
               </div>
               <div className="mt-1 truncate text-sm font-medium text-foreground">
                 {focusedStep.nodeName}
               </div>
               <div className="mt-1 text-xs leading-5 text-muted-foreground">
-                {getStepSummaryNote(executionStatus ?? execution.status, focusedStep.status)}
+                {getStepSummaryNote(executionStatus ?? execution.status, focusedStep.status, t)}
               </div>
             </div>
           )}
@@ -384,7 +389,7 @@ const ExecutionPreviewCard = memo(function ExecutionPreviewCard() {
           {aiTextPreview && (
             <div className="space-y-1">
               <div className="text-xs font-medium text-muted-foreground">
-                LLM output
+                {t("preview.llmOutput")}
               </div>
               <div className="rounded-xl border border-emerald-200 bg-emerald-50/60 p-3">
                 {(aiTextPreview.provider || aiTextPreview.model) && (
@@ -402,10 +407,10 @@ const ExecutionPreviewCard = memo(function ExecutionPreviewCard() {
           )}
           <div className="space-y-1">
             <div className="text-xs font-medium text-muted-foreground">
-              {getResultLabel(executionStatus ?? execution.status, resultStep?.status)}
+              {getResultLabel(executionStatus ?? execution.status, resultStep?.status, t)}
             </div>
             <div className="max-h-28 overflow-y-auto overflow-x-hidden break-words rounded-xl border border-border/70 bg-background p-3 text-sm leading-5">
-              {previewResult || "No extractable result yet."}
+              {previewResult || t("preview.noExtractableResult")}
             </div>
           </div>
         </CardContent>

@@ -1,3 +1,5 @@
+"use client"
+
 import { Button } from "@/components/button"
 import { Input } from "@/components/input"
 import { AlertTriangleIcon, BellIcon, Loader2Icon, MoreVerticalIcon, PlusIcon, SearchIcon, TrashIcon } from "lucide-react";
@@ -14,22 +16,17 @@ import { cn } from "@/lib/utils"
 import React from "react";
 import {
   Card,
-  CardAction,
   CardContent,
   CardDescription,
-  CardFooter,
-  CardHeader,
   CardTitle,
 } from "@/components/card"
 import {
   DropdownMenu,
   DropdownMenuContent,
-  DropdownMenuGroup,
   DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/dropdown-menu"
+import { useI18n } from "@/features/i18n/provider";
 
 type EntityHeaderProps = {
     title: string;
@@ -122,13 +119,14 @@ export const EntitySearch = ({
     onChange,
     placeholder,
 }: EntitySearchProps) => {
+    const { t } = useI18n();
     return (
         <div className="relative ml-auto">
             <SearchIcon className="size-3.5 absolute top-1/3 left-3  text-muted-foreground" />
             <Input 
                 className="block max-w-[200px] bg-background shadow-none
                 border-border pl-8"
-                placeholder={placeholder || "Search..."}
+                placeholder={placeholder || t("common.search")}
                 value={value}
                 onChange={(e) => onChange(e.target.value)}
             />
@@ -149,10 +147,11 @@ export const EntityPagination = ({
     onPageChange,
     disabled,
 }: EntityPaginationProps) => {
+    const { t } = useI18n();
     return (
         <div className="flex items-center justify-between gap-x-2">
             <div className="flex-1 text-sm text-muted-foreground">
-                Page {page} of {totalPages || 1}
+                {t("common.pageOf", { page, total: totalPages || 1 })}
             </div>
             <div className="flex items-center justify-end space-x-2 py-4">
                 <Button 
@@ -161,7 +160,7 @@ export const EntityPagination = ({
                     size="sm"
                     onClick={() => onPageChange(Math.max(1, page - 1))}
                 >
-                    Previous
+                    {t("common.previous")}
                 </Button>
                 <Button
                     disabled={disabled || page === totalPages || totalPages === 0}
@@ -169,7 +168,7 @@ export const EntityPagination = ({
                     size="sm"
                     onClick={() => onPageChange(Math.min(totalPages, page + 1))}
                 >
-                    Next
+                    {t("common.next")}
                 </Button>
             </div>
         </div>
@@ -187,12 +186,13 @@ export const LoadingView = ({
     entity = "items",
     message,
 }: LoadingViewProps) => {
+    const { t } = useI18n();
     return (
         <div className="flex justify-center items-center h-full flex-1 flex-col gap-y-4">
             <Loader2Icon className="size-6 animate-spin text-muted-foreground"/>
             {!!message && 
                 <p className="text-sm text-muted-foreground">
-                    {message || `Loading ${entity}...`}
+                    {message || t("common.loadingEntity", { entity })}
                 </p>
             }
         </div>
@@ -203,12 +203,13 @@ export const ErrorView = ({
     entity = "items",
     message,
 }: LoadingViewProps) => {
+    const { t } = useI18n();
     return (
         <div className="flex justify-center items-center h-full flex-1 flex-col gap-y-4">
             <AlertTriangleIcon className="size-6 text-muted-foreground"/>
             {!!message && 
                 <p className="text-sm text-muted-foreground">
-                    {message || `Loading ${entity}...`}
+                    {message || t("common.errorEntity", { entity })}
                 </p>
             }
         </div>
@@ -224,22 +225,23 @@ export const EmptyView = ({
     onNew,
     isPending,
 }: EmptyViewProps) => {
+    const { t } = useI18n();
     return (
         <Empty className="bg-muted/30 h-full">
             <EmptyHeader>
                 <EmptyMedia variant="icon">
                     <BellIcon />
                 </EmptyMedia>
-                <EmptyTitle>No Items</EmptyTitle>
+                <EmptyTitle>{t("common.noItems")}</EmptyTitle>
                 <EmptyDescription className="max-w-xs text-pretty">
-                    You&apos;re all caught up. New items will appear here.
+                    {t("common.caughtUp")}
                 </EmptyDescription>
             </EmptyHeader>
             {onNew && (
                 <EmptyContent>
                     <Button variant="outline" onClick={onNew} disabled={isPending}>
                         <PlusIcon />
-                        Create
+                        {t("common.create")}
                     </Button>
                 </EmptyContent>
             )}
@@ -273,7 +275,8 @@ export function EntityList<T>({
     }
     return (
         <div className={cn(
-            "flex flex-col gap-y-4"
+            "flex flex-col gap-y-4",
+            className
         )}>
             {
                 items.map((item, index) => (
@@ -309,6 +312,7 @@ export const EntityItem = ({
     isRemoving,
     className,
 }: EntityItemProps) => {
+    const { t } = useI18n();
 
     const handleRemove = async (e: React.MouseEvent) => {
         e.stopPropagation();
@@ -360,7 +364,7 @@ export const EntityItem = ({
                             {onRemove && (
                                 <DropdownMenuItem onClick={handleRemove}>
                                     <TrashIcon className="size-4 mr-2" />
-                                    Remove
+                                    {t("common.remove")}
                                 </DropdownMenuItem>
                             )}
                         </DropdownMenuContent>
