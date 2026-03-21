@@ -5,6 +5,7 @@ import z from "zod";
 import { PAGINATION } from "@/config/constants";
 import type { Node, Edge } from "@xyflow/react"
 import { NodeType } from "@/types/workflow"
+import { Prisma } from "@/lib/prisma/client";
 import { randomBytes } from "node:crypto";
 
 const createWebhookSecret = () => randomBytes(32).toString("hex");
@@ -105,50 +106,57 @@ export const workflowsRouter = createTRPCRouter({
             const removedNodeIds = workflow.nodes
                 .filter((node) => !nextNodeIds.has(node.id))
                 .map((node) => node.id)
-
-            return prisma.$transaction(async (tx) => {
-                await tx.connection.deleteMany({
+            const operations: Prisma.PrismaPromise<unknown>[] = [
+                prisma.connection.deleteMany({
                     where: { workflowId: id },
-                })
+                }),
+            ]
 
-                if (removedNodeIds.length > 0) {
-                    await tx.node.deleteMany({
+            if (removedNodeIds.length > 0) {
+                operations.push(
+                    prisma.node.deleteMany({
                         where: {
                             workflowId: id,
                             id: {
                                 in: removedNodeIds,
                             },
                         },
-                    })
+                    }),
+                )
+            }
+
+            for (const node of nextNodes) {
+                const nodeData = {
+                    name: node.type!,
+                    type: node.type! as NodeType,
+                    position: node.position,
+                    data: node.data || {},
                 }
 
-                for (const node of nextNodes) {
-                    const nodeData = {
-                        name: node.type!,
-                        type: node.type! as NodeType,
-                        position: node.position,
-                        data: node.data || {},
-                    }
-
-                    if (existingNodeIds.has(node.id)) {
-                        await tx.node.update({
+                if (existingNodeIds.has(node.id)) {
+                    operations.push(
+                        prisma.node.update({
                             where: { id: node.id },
                             data: nodeData,
-                        })
-                        continue
-                    }
+                        }),
+                    )
+                    continue
+                }
 
-                    await tx.node.create({
+                operations.push(
+                    prisma.node.create({
                         data: {
                             id: node.id,
                             workflowId: id,
                             ...nodeData,
                         },
-                    })
-                }
+                    }),
+                )
+            }
 
-                if (edges.length > 0) {
-                    await tx.connection.createMany({
+            if (edges.length > 0) {
+                operations.push(
+                    prisma.connection.createMany({
                         data: edges.map((edge) => ({
                             workflowId: id,
                             fromNodeId: edge.source,
@@ -156,17 +164,23 @@ export const workflowsRouter = createTRPCRouter({
                             fromOutput: edge.sourceHandle || "main",
                             toInput: edge.targetHandle || "main",
                         })),
-                    })
-                }
+                    }),
+                )
+            }
 
-                return tx.workflow.update({
+            operations.push(
+                prisma.workflow.update({
                     where: { id },
                     data: {
                         updatedAt: new Date(),
                     },
-                })
-            }, {
-                timeout: 15_000,
+                }),
+            )
+
+            await prisma.$transaction(operations)
+
+            return prisma.workflow.findUnique({
+                where: { id },
             })
         }),
     getOne: protectedProcedure
