@@ -67,6 +67,19 @@ export const executionsRouter = createTRPCRouter({
               position: "asc",
             },
           },
+          memoryEntries: {
+            orderBy: [
+              { scope: "asc" },
+              { namespace: "asc" },
+              { key: "asc" },
+            ],
+          },
+          memoryEvents: {
+            orderBy: {
+              createdAt: "asc",
+            },
+            take: 200,
+          },
         },
       });
 

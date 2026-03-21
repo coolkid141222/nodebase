@@ -2,6 +2,9 @@ import prisma from "@/lib/db";
 import { generateText } from "ai";
 import {
   CredentialProvider,
+  ExecutionMemoryScope,
+  ExecutionMemoryVisibility,
+  ExecutionMemoryWriteMode,
   ExecutionStatus,
   ExecutionStepStatus,
   ExecutionTriggerType,
@@ -13,6 +16,13 @@ import {
   resolveTemplateString,
   resolveTemplateValue,
 } from "./template";
+import {
+  buildExecutionMemoryTemplateSnapshot,
+  createExecutionMemoryState,
+  persistExecutionMemoryWrites,
+  type RuntimeExecutionMemoryState,
+  type RuntimeExecutionMemoryWrite,
+} from "./memory";
 import { readCredentialSecret } from "@/features/credentials/server/payload";
 import type {
   HttpRequestAuthType,
@@ -43,6 +53,7 @@ type WorkflowForExecution = Prisma.WorkflowGetPayload<{
 
 type ExecutionWithWorkflow = Prisma.ExecutionGetPayload<{
   include: {
+    memoryEntries: true;
     workflow: {
       include: {
         nodes: true;
@@ -62,6 +73,7 @@ type NodeExecutionResult = {
   status: ExecutionStepStatus;
   input?: Prisma.InputJsonValue;
   output?: Prisma.InputJsonValue;
+  memoryWrites?: RuntimeExecutionMemoryWrite[];
 };
 
 type ResolvedHttpRequestInput = {
@@ -200,8 +212,10 @@ function createExecutionTemplateContext(
   execution: ExecutionWithWorkflow,
   node: WorkflowForExecution["nodes"][number],
   completedSteps: Map<string, CompletedStepResult>,
+  memoryState: RuntimeExecutionMemoryState,
 ): ExecutionTemplateContext {
   const upstream = buildNodeUpstreamContext(execution, node, completedSteps);
+  const memory = buildExecutionMemoryTemplateSnapshot(memoryState, node.id);
 
   return {
     execution: {
@@ -215,9 +229,96 @@ function createExecutionTemplateContext(
     trigger: execution.triggerPayload as Prisma.JsonValue,
     input: upstream.input,
     inputs: upstream.inputs,
+    memory,
     upstream: upstream.upstream,
     steps: Object.fromEntries(completedSteps.entries()),
   };
+}
+
+function normalizeMemoryKey(value: string) {
+  return value
+    .trim()
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "_")
+    .replace(/^_+|_+$/g, "");
+}
+
+function buildNodeMemoryWrites(params: {
+  execution: ExecutionWithWorkflow;
+  node: WorkflowForExecution["nodes"][number];
+  input: Prisma.InputJsonValue | null;
+  status: ExecutionStepStatus;
+  output?: Prisma.InputJsonValue;
+  error?: Prisma.InputJsonValue;
+}) {
+  const nodeNameKey = normalizeMemoryKey(params.node.name) || params.node.id;
+  const writes: RuntimeExecutionMemoryWrite[] = [];
+
+  if (params.input != null) {
+    writes.push({
+      scope: ExecutionMemoryScope.NODE,
+      namespace: "run",
+      key: "input",
+      value: params.input,
+      visibility: ExecutionMemoryVisibility.PRIVATE,
+    });
+  }
+
+  if (params.output != null) {
+    writes.push({
+      scope: ExecutionMemoryScope.NODE,
+      namespace: "run",
+      key: "output",
+      value: params.output,
+      visibility: ExecutionMemoryVisibility.PRIVATE,
+    });
+  }
+
+  if (params.error != null) {
+    writes.push({
+      scope: ExecutionMemoryScope.NODE,
+      namespace: "run",
+      key: "error",
+      value: params.error,
+      visibility: ExecutionMemoryVisibility.PRIVATE,
+    });
+  }
+
+  const sharedNodeValue: Prisma.InputJsonValue = {
+    nodeId: params.node.id,
+    nodeName: params.node.name,
+    nodeType: params.node.type,
+    status: params.status,
+    input: params.input,
+    output: params.output ?? null,
+    error: params.error ?? null,
+  };
+
+  writes.push(
+    {
+      scope: ExecutionMemoryScope.SHARED,
+      namespace: "nodesById",
+      key: params.node.id,
+      value: sharedNodeValue,
+      mode: ExecutionMemoryWriteMode.REPLACE,
+    },
+    {
+      scope: ExecutionMemoryScope.SHARED,
+      namespace: "nodesByName",
+      key: nodeNameKey,
+      value: sharedNodeValue,
+      mode: ExecutionMemoryWriteMode.REPLACE,
+    },
+    {
+      scope: ExecutionMemoryScope.SHARED,
+      namespace: "run",
+      key: "lastNode",
+      value: sharedNodeValue,
+      mode: ExecutionMemoryWriteMode.REPLACE,
+    },
+  );
+
+  return writes;
 }
 
 function buildNodeUpstreamContext(
@@ -1210,6 +1311,7 @@ export async function runExecution(executionId: string) {
       id: executionId,
     },
     include: {
+      memoryEntries: true,
       workflow: {
         include: {
           nodes: true,
@@ -1234,6 +1336,7 @@ export async function runExecution(executionId: string) {
         : "MANUAL_TRIGGER_NOT_FOUND",
     );
     const completedSteps = new Map<string, CompletedStepResult>();
+    const memoryState = createExecutionMemoryState(execution.memoryEntries);
 
     await prisma.execution.update({
       where: {
@@ -1247,11 +1350,36 @@ export async function runExecution(executionId: string) {
       },
     });
 
+    await persistExecutionMemoryWrites({
+      executionId,
+      state: memoryState,
+      writes: [
+        {
+          scope: ExecutionMemoryScope.SHARED,
+          namespace: "run",
+          key: "trigger",
+          value: execution.triggerPayload as Prisma.InputJsonValue,
+        },
+        {
+          scope: ExecutionMemoryScope.SHARED,
+          namespace: "run",
+          key: "metadata",
+          value: {
+            executionId: execution.id,
+            workflowId: execution.workflowId,
+            workflowName: execution.workflow.name,
+            triggerType: execution.triggerType,
+          },
+        },
+      ],
+    });
+
     for (const [index, node] of plan.orderedNodes.entries()) {
       const templateContext = createExecutionTemplateContext(
         execution,
         node,
         completedSteps,
+        memoryState,
       );
       const input = resolveNodeInput(execution, node, templateContext);
       const stepStartedAt = Date.now();
@@ -1272,6 +1400,17 @@ export async function runExecution(executionId: string) {
 
       try {
         const result = await executeNode(execution, node, input);
+        const successWrites = [
+          ...buildNodeMemoryWrites({
+            execution,
+            node,
+            input,
+            status: result.status,
+            output: result.output,
+          }),
+          ...(result.memoryWrites ?? []),
+        ];
+
         await prisma.executionStep.update({
           where: {
             id: step.id,
@@ -1282,6 +1421,14 @@ export async function runExecution(executionId: string) {
             completedAt: new Date(),
             durationMs: Date.now() - stepStartedAt,
           },
+        });
+
+        await persistExecutionMemoryWrites({
+          executionId,
+          stepId: step.id,
+          nodeId: node.id,
+          state: memoryState,
+          writes: successWrites,
         });
 
         completedSteps.set(node.id, {
@@ -1295,16 +1442,32 @@ export async function runExecution(executionId: string) {
           error: null,
         });
       } catch (error) {
+        const serializedStepError = serializeError(error);
+
         await prisma.executionStep.update({
           where: {
             id: step.id,
           },
           data: {
             status: ExecutionStepStatus.FAILED,
-            error: serializeError(error),
+            error: serializedStepError,
             completedAt: new Date(),
             durationMs: Date.now() - stepStartedAt,
           },
+        });
+
+        await persistExecutionMemoryWrites({
+          executionId,
+          stepId: step.id,
+          nodeId: node.id,
+          state: memoryState,
+          writes: buildNodeMemoryWrites({
+            execution,
+            node,
+            input,
+            status: ExecutionStepStatus.FAILED,
+            error: serializedStepError,
+          }),
         });
 
         completedSteps.set(node.id, {
@@ -1315,7 +1478,7 @@ export async function runExecution(executionId: string) {
           status: ExecutionStepStatus.FAILED,
           input: (input ?? null) as Prisma.JsonValue | null,
           output: null,
-          error: serializeError(error) as Prisma.JsonValue,
+          error: serializedStepError as Prisma.JsonValue,
         });
 
         await prisma.execution.update({
@@ -1324,7 +1487,7 @@ export async function runExecution(executionId: string) {
           },
           data: {
             status: ExecutionStatus.FAILED,
-            error: serializeError(error),
+            error: serializedStepError,
             completedAt: new Date(),
             state: {
               phase: "failed",
