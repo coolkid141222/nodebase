@@ -25,6 +25,8 @@ import {
 } from "vercel-minimax-ai-provider";
 import { ProxyAgent } from "undici";
 
+const DEFAULT_MINIMAX_BASE_URL = "https://api.minimaxi.com/anthropic/v1";
+
 function isHostedRuntime() {
   return process.env.VERCEL === "1" || Boolean(process.env.VERCEL_ENV);
 }
@@ -140,7 +142,15 @@ export const createMinimaxProvider = (
     createMinimax,
     "MINIMAX_USE_PROXY",
     "http://127.0.0.1:7897",
-    options,
+    {
+      ...options,
+      // Default to the CN-compatible endpoint for this project while still
+      // allowing an explicit override through provider options or env.
+      baseURL:
+        options?.baseURL?.trim() ||
+        process.env.MINIMAX_BASE_URL?.trim() ||
+        DEFAULT_MINIMAX_BASE_URL,
+    },
   );
 
 export const google = createGoogleProvider();

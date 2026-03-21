@@ -18,7 +18,7 @@ export const aiTextDefaultModels = {
   OPENAI: "gpt-4o-mini",
   ANTHROPIC: "claude-3-5-haiku-latest",
   DEEPSEEK: "deepseek-chat",
-  MINIMAX: "MiniMax-M2.1",
+  MINIMAX: "MiniMax-M2.5",
 } as const;
 
 export function getDefaultAITextModel(

@@ -34,6 +34,7 @@ For this repo, the least-friction production path is:
 - `DEEPSEEK_API_KEY`
 - `OPENAI_API_KEY`
 - `ANTHROPIC_API_KEY`
+- `MINIMAX_BASE_URL` (optional override; this repo defaults MiniMax to the CN-compatible endpoint)
 - `MCP_SERVERS_JSON`
 - `NEXT_PUBLIC_PADDLE_ENV`
 - `PADDLE_API_KEY`
@@ -56,6 +57,7 @@ Your local `.env` currently contains these active names:
 - `DEEPSEEK_API_KEY`
 - `GOOGLE_USE_PROXY`
 - `GOOGLE_PROXY_URL`
+- `MINIMAX_BASE_URL`
 - `SENTRY_AUTH_TOKEN`
 
 These are the ones that map directly to the deployed app. Do not paste raw values into source control; add them in Vercel's dashboard or with `vercel env`.
