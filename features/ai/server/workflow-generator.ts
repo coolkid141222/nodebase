@@ -62,6 +62,67 @@ function extractJsonObject(text: string) {
   return text.slice(firstBrace, lastBrace + 1);
 }
 
+function unwrapGeneratedDraftPayload(input: unknown) {
+  let current = input;
+
+  for (let attempt = 0; attempt < 4; attempt += 1) {
+    if (typeof current === "string") {
+      const trimmed = current.trim();
+
+      if (!trimmed) {
+        return current;
+      }
+
+      try {
+        current = JSON.parse(trimmed);
+        continue;
+      } catch {
+        return current;
+      }
+    }
+
+    if (
+      current &&
+      typeof current === "object" &&
+      !Array.isArray(current)
+    ) {
+      if ("draft" in current && current.draft !== undefined) {
+        current = current.draft;
+        continue;
+      }
+
+      if ("workflow" in current && current.workflow !== undefined) {
+        current = current.workflow;
+        continue;
+      }
+    }
+
+    return current;
+  }
+
+  return current;
+}
+
+function parseGeneratedWorkflowDraft(text: string) {
+  const extractedJson = extractJsonObject(text);
+  const parsedJson = JSON.parse(extractedJson);
+  const normalizedPayload = unwrapGeneratedDraftPayload(parsedJson);
+  const validatedDraft = aiWorkflowDraftSchema.safeParse(normalizedPayload);
+
+  if (validatedDraft.success) {
+    return validatedDraft.data;
+  }
+
+  const firstIssue = validatedDraft.error.issues[0];
+  const issuePath = firstIssue?.path?.length
+    ? firstIssue.path.join(".")
+    : "root";
+
+  throw new Error(
+    `Generated draft has an invalid shape at "${issuePath}": ${firstIssue?.message ?? "unknown validation error"}.`,
+  );
+}
+
 function parseCredentialFields(metadata: unknown) {
   if (!metadata || typeof metadata !== "object" || Array.isArray(metadata)) {
     return [];
@@ -237,20 +298,32 @@ function buildWorkflowGeneratorPrompt(params: {
 You are generating a Nodebase workflow draft for a visual low-code editor.
 
 Supported node types:
-- MANUAL_TRIGGER: starts the workflow manually.
-- WEBHOOK_TRIGGER: starts the workflow from an inbound webhook.
-- AI_TEXT: generate text. Config keys: provider, model, prompt, system, credentialName, credentialField.
-- HTTP_REQUEST: make an HTTP request. Config keys: endpoint, method, body, authType, credentialName, credentialField, headerName.
-- LOOP: controls a local repeated cycle. Config keys: maxIterations.
-- TOOL: call a runtime tool. Config keys: provider, serverId, toolId, argumentsJson.
-- DISCORD_MESSAGE: send content to Discord. Config keys: content, credentialName, credentialField.
-- SLACK_MESSAGE: send content to Slack. Config keys: content, credentialName, credentialField.
+- MANUAL_TRIGGER: starts the workflow manually. Config keys: memoryWrites.
+- WEBHOOK_TRIGGER: starts the workflow from an inbound webhook. Config keys: memoryWrites.
+- AI_TEXT: generate text. Config keys: provider, model, prompt, system, credentialName, credentialField, memoryWrites.
+- HTTP_REQUEST: make an HTTP request. Config keys: endpoint, method, body, authType, credentialName, credentialField, headerName, memoryWrites.
+- LOOP: controls a local repeated cycle. Config keys: maxIterations, memoryWrites.
+- TOOL: call a runtime tool. Config keys: provider, serverId, toolId, argumentsJson, memoryWrites.
+- DISCORD_MESSAGE: send content to Discord. Config keys: content, credentialName, credentialField, memoryWrites.
+- SLACK_MESSAGE: send content to Slack. Config keys: content, credentialName, credentialField, memoryWrites.
 
 Template rules:
 - Use {{input}} for the previous node's semantic output.
 - Use {{inputRaw}} for raw output.
 - Use {{current.attempt}} inside loop bodies.
 - Use {{memory.shared.run.trigger.body.<field>}} when you need trigger payload values.
+
+Memory rules:
+- Use shared memory for values that later nodes must read again.
+- Use node private memory for scratch output, intermediate reasoning, or drafts that should not become the workflow-wide source of truth.
+- Prefer a small number of stable shared keys such as:
+  - problem.task
+  - research.context
+  - answers.final
+- Good memoryWrites examples:
+  - {"scope":"SHARED","namespace":"problem","key":"task","value":"{{trigger.body.message}}","mode":"REPLACE","visibility":"PUBLIC"}
+  - {"scope":"SHARED","namespace":"research","key":"context","value":"{{current.output.result}}","mode":"REPLACE","visibility":"PUBLIC"}
+  - {"scope":"NODE","namespace":"analysis","key":"draft","value":"{{current.output.text}}","mode":"REPLACE","visibility":"PRIVATE"}
 
 Problem-solving rules:
 - When the request needs external information, create a TOOL node before AI reasoning.
@@ -303,7 +376,19 @@ Required JSON shape:
       "id": "trigger",
       "type": "MANUAL_TRIGGER",
       "column": 0,
-      "row": 1
+      "row": 1,
+      "config": {
+        "memoryWrites": [
+          {
+            "scope": "SHARED",
+            "namespace": "problem",
+            "key": "task",
+            "value": "{{trigger.body.message}}",
+            "mode": "REPLACE",
+            "visibility": "PUBLIC"
+          }
+        ]
+      }
     },
     {
       "id": "research",
@@ -313,7 +398,17 @@ Required JSON shape:
       "config": {
         "provider": "INTERNAL",
         "toolId": "internal.browser_page",
-        "argumentsJson": "{\"url\":\"https://example.com\",\"maxChars\":4000,\"includeLinks\":true}"
+        "argumentsJson": "{\"url\":\"https://example.com\",\"maxChars\":4000,\"includeLinks\":true}",
+        "memoryWrites": [
+          {
+            "scope": "SHARED",
+            "namespace": "research",
+            "key": "context",
+            "value": "{{current.output.result}}",
+            "mode": "REPLACE",
+            "visibility": "PUBLIC"
+          }
+        ]
       }
     },
     {
@@ -321,7 +416,19 @@ Required JSON shape:
       "type": "LOOP",
       "column": 2,
       "row": 0,
-      "config": { "maxIterations": 3 }
+      "config": {
+        "maxIterations": 3,
+        "memoryWrites": [
+          {
+            "scope": "SHARED",
+            "namespace": "loop",
+            "key": "attempt",
+            "value": "{{current.output.attempt}}",
+            "mode": "REPLACE",
+            "visibility": "PUBLIC"
+          }
+        ]
+      }
     },
     {
       "id": "writer",
@@ -333,7 +440,25 @@ Required JSON shape:
         "model": "deepseek-chat",
         "credentialName": "DeepSeek API",
         "credentialField": "apiKey",
-        "prompt": "Rewrite this result for iteration {{current.attempt}}: {{input}}"
+        "prompt": "Rewrite this result for iteration {{current.attempt}}: {{input}}",
+        "memoryWrites": [
+          {
+            "scope": "NODE",
+            "namespace": "analysis",
+            "key": "draft",
+            "value": "{{current.output.text}}",
+            "mode": "REPLACE",
+            "visibility": "PRIVATE"
+          },
+          {
+            "scope": "SHARED",
+            "namespace": "answers",
+            "key": "final",
+            "value": "{{current.output.text}}",
+            "mode": "REPLACE",
+            "visibility": "PUBLIC"
+          }
+        ]
       }
     },
     {
@@ -344,7 +469,8 @@ Required JSON shape:
       "config": {
         "credentialName": "Slack webhook",
         "credentialField": "webhookUrl",
-        "content": "{{input}}"
+        "content": "{{memory.shared.answers.final}}",
+        "memoryWrites": []
       }
     }
   ],
@@ -528,6 +654,53 @@ function createAnalysisPrompt(userPrompt: string) {
   ].join("\n");
 }
 
+function ensureNodeMemoryWrite(
+  node: AIWorkflowDraft["nodes"][number],
+  write: {
+    scope: "SHARED" | "NODE";
+    namespace: string;
+    key: string;
+    value: string;
+    mode?: "REPLACE" | "MERGE" | "APPEND";
+    visibility?: "PUBLIC" | "PRIVATE";
+  },
+) {
+  const nextWrite = {
+    scope: write.scope,
+    namespace: write.namespace,
+    key: write.key,
+    value: write.value,
+    mode: write.mode ?? "REPLACE",
+    visibility: write.visibility ?? (write.scope === "NODE" ? "PRIVATE" : "PUBLIC"),
+  };
+
+  switch (node.type) {
+    case "MANUAL_TRIGGER":
+    case "WEBHOOK_TRIGGER":
+    case "AI_TEXT":
+    case "HTTP_REQUEST":
+    case "LOOP":
+    case "TOOL":
+    case "DISCORD_MESSAGE":
+    case "SLACK_MESSAGE": {
+      const memoryWrites = node.config.memoryWrites ?? [];
+      const exists = memoryWrites.some(
+        (item) =>
+          item.scope === nextWrite.scope &&
+          item.namespace === nextWrite.namespace &&
+          item.key === nextWrite.key,
+      );
+
+      if (!exists) {
+        memoryWrites.push(nextWrite);
+      }
+
+      node.config.memoryWrites = memoryWrites;
+      return;
+    }
+  }
+}
+
 function promoteProblemSolvingDraft(params: {
   draft: AIWorkflowDraft;
   userPrompt: string;
@@ -559,6 +732,7 @@ function promoteProblemSolvingDraft(params: {
         credentialField: primaryAi.config.credentialField,
         system: "Return a concise analysis for the next node. No markdown bullets unless necessary.",
         prompt: createAnalysisPrompt(params.userPrompt),
+        memoryWrites: [],
       },
     };
 
@@ -609,6 +783,7 @@ function promoteProblemSolvingDraft(params: {
             null,
             2,
           ),
+          memoryWrites: [],
         },
       };
 
@@ -631,6 +806,64 @@ function promoteProblemSolvingDraft(params: {
       workingDraft.notes.push(
         `Added a browser research tool for ${url} before the reasoning steps.`,
       );
+    }
+  }
+
+  const triggerNode = workingDraft.nodes.find(
+    (node) => node.type === "MANUAL_TRIGGER" || node.type === "WEBHOOK_TRIGGER",
+  );
+  if (triggerNode) {
+    ensureNodeMemoryWrite(triggerNode, {
+      scope: "SHARED",
+      namespace: "problem",
+      key: "task",
+      value:
+        triggerNode.type === "MANUAL_TRIGGER"
+          ? "{{trigger.body.message}}"
+          : "{{trigger.body}}",
+      visibility: "PUBLIC",
+    });
+  }
+
+  const updatedToolNodes = workingDraft.nodes.filter((node) => node.type === "TOOL");
+  for (const [index, toolNode] of updatedToolNodes.entries()) {
+    ensureNodeMemoryWrite(toolNode, {
+      scope: "SHARED",
+      namespace: "research",
+      key: index === 0 ? "context" : `context_${index + 1}`,
+      value: "{{current.output.result}}",
+      visibility: "PUBLIC",
+    });
+  }
+
+  const updatedAiNodes = workingDraft.nodes.filter((node) => node.type === "AI_TEXT");
+  if (updatedAiNodes.length > 0) {
+    const firstAiNode = updatedAiNodes[0];
+    const lastAiNode = updatedAiNodes[updatedAiNodes.length - 1];
+
+    ensureNodeMemoryWrite(firstAiNode, {
+      scope: "NODE",
+      namespace: "analysis",
+      key: "draft",
+      value: "{{current.output.text}}",
+      visibility: "PRIVATE",
+    });
+
+    ensureNodeMemoryWrite(lastAiNode, {
+      scope: "SHARED",
+      namespace: "answers",
+      key: "final",
+      value: "{{current.output.text}}",
+      visibility: "PUBLIC",
+    });
+  }
+
+  for (const node of workingDraft.nodes) {
+    if (
+      (node.type === "SLACK_MESSAGE" || node.type === "DISCORD_MESSAGE") &&
+      (node.config.content.trim() === "{{input}}" || node.config.content.trim() === "")
+    ) {
+      node.config.content = "{{memory.shared.answers.final}}";
     }
   }
 
@@ -665,7 +898,7 @@ function mapGeneratedDraftToCanvas(params: {
         generatedNodes.push({
           ...baseNode,
           data: {
-            memoryWrites: [],
+            memoryWrites: node.config.memoryWrites,
           },
         });
         break;
@@ -674,7 +907,7 @@ function mapGeneratedDraftToCanvas(params: {
           ...baseNode,
           data: {
             maxIterations: node.config.maxIterations,
-            memoryWrites: [],
+            memoryWrites: node.config.memoryWrites,
           },
         });
         break;
@@ -688,7 +921,7 @@ function mapGeneratedDraftToCanvas(params: {
             toolId: node.config.toolId,
             toolDisplayName: "",
             argumentsJson: node.config.argumentsJson,
-            memoryWrites: [],
+            memoryWrites: node.config.memoryWrites,
           },
         });
         break;
@@ -717,7 +950,7 @@ function mapGeneratedDraftToCanvas(params: {
             toolId: "",
             toolDisplayName: "",
             toolArgumentsJson: "{}",
-            memoryWrites: [],
+            memoryWrites: node.config.memoryWrites,
           },
         });
         break;
@@ -747,7 +980,7 @@ function mapGeneratedDraftToCanvas(params: {
             credentialId: credential.credentialId,
             credentialField: credential.credentialField,
             headerName: node.config.headerName || "",
-            memoryWrites: [],
+            memoryWrites: node.config.memoryWrites,
           },
         });
         break;
@@ -767,7 +1000,7 @@ function mapGeneratedDraftToCanvas(params: {
             content: node.config.content,
             credentialId: credential.credentialId,
             credentialField: credential.credentialField,
-            memoryWrites: [],
+            memoryWrites: node.config.memoryWrites,
           },
         });
         break;
@@ -787,7 +1020,7 @@ function mapGeneratedDraftToCanvas(params: {
             content: node.config.content,
             credentialId: credential.credentialId,
             credentialField: credential.credentialField,
-            memoryWrites: [],
+            memoryWrites: node.config.memoryWrites,
           },
         });
         break;
@@ -927,8 +1160,7 @@ export async function generateWorkflowDraft(params: {
     providerOptions: model.providerOptions,
   });
 
-  const parsedJson = extractJsonObject(result.text);
-  const draft = aiWorkflowDraftSchema.parse(JSON.parse(parsedJson));
+  const draft = parseGeneratedWorkflowDraft(result.text);
   const promotedDraft = promoteProblemSolvingDraft({
     draft,
     userPrompt: params.input.prompt,
