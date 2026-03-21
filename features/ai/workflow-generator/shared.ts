@@ -156,7 +156,7 @@ export const aiWorkflowDraftSchema = z.object({
 
 export const generateWorkflowGraphInputSchema = z.object({
   prompt: z.string().trim().min(8).max(4_000),
-  provider: aiTextProviderSchema.default("GOOGLE"),
+  provider: aiTextProviderSchema.default("MINIMAX"),
   model: z.string().trim().min(1).optional(),
   credentialId: z.string().trim().min(1),
   credentialField: z.string().trim().min(1).default("apiKey"),

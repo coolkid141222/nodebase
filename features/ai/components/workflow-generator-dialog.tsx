@@ -106,8 +106,8 @@ export const WorkflowGeneratorDialog = ({
     resolver: zodResolver(formSchema),
     defaultValues: {
       prompt: "",
-      provider: "GOOGLE",
-      model: getDefaultWorkflowGeneratorModel("GOOGLE"),
+      provider: "MINIMAX",
+      model: getDefaultWorkflowGeneratorModel("MINIMAX"),
       credentialId: "",
       credentialField: "apiKey",
     },
@@ -116,9 +116,9 @@ export const WorkflowGeneratorDialog = ({
   const provider = useWatch({
     control: form.control,
     name: "provider",
-    defaultValue: "GOOGLE",
+    defaultValue: "MINIMAX",
   });
-  const selectedProvider = provider ?? "GOOGLE";
+  const selectedProvider = provider ?? "MINIMAX";
   const credentialId = useWatch({
     control: form.control,
     name: "credentialId",
@@ -304,11 +304,11 @@ export const WorkflowGeneratorDialog = ({
                       <SelectValue placeholder="Select provider" />
                     </SelectTrigger>
                     <SelectContent>
+                      <SelectItem value="MINIMAX">MiniMax</SelectItem>
                       <SelectItem value="GOOGLE">Google Gemini</SelectItem>
                       <SelectItem value="OPENAI">OpenAI</SelectItem>
                       <SelectItem value="ANTHROPIC">Anthropic</SelectItem>
                       <SelectItem value="DEEPSEEK">DeepSeek</SelectItem>
-                      <SelectItem value="MINIMAX">MiniMax</SelectItem>
                     </SelectContent>
                   </Select>
                 </FieldGroup>
