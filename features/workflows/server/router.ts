@@ -73,46 +73,100 @@ export const workflowsRouter = createTRPCRouter({
             }))
         .mutation(async ({ ctx, input }) => {
             const { id, nodes, edges } = input
-            
-            const workflow = await prisma.workflow.findUnique({
-                where: { id, userId: ctx.user.id }
+
+            const workflow = await prisma.workflow.findFirst({
+                where: {
+                    id,
+                    userId: ctx.user.id,
+                },
+                select: {
+                    id: true,
+                    name: true,
+                    webhookSecret: true,
+                    createdAt: true,
+                    updatedAt: true,
+                    nodes: {
+                        select: {
+                            id: true,
+                        },
+                    },
+                },
             })
 
-            return await prisma.$transaction(async (tx) => {
-                await tx.node.deleteMany({
+            if (!workflow) {
+                return null
+            }
+
+            const nextNodes = nodes.filter(
+                (node) => node.type !== null && node.type !== undefined,
+            )
+            const nextNodeIds = new Set(nextNodes.map((node) => node.id))
+            const existingNodeIds = new Set(workflow.nodes.map((node) => node.id))
+            const removedNodeIds = workflow.nodes
+                .filter((node) => !nextNodeIds.has(node.id))
+                .map((node) => node.id)
+
+            return prisma.$transaction(async (tx) => {
+                await tx.connection.deleteMany({
                     where: { workflowId: id },
                 })
 
-                await tx.node.createMany({
-                    data: nodes
-                        .filter((node) => node.type !== null && node.type !== undefined)
-                        .map((node) => ({
-                        id: node.id,
-                        workflowId: id,
+                if (removedNodeIds.length > 0) {
+                    await tx.node.deleteMany({
+                        where: {
+                            workflowId: id,
+                            id: {
+                                in: removedNodeIds,
+                            },
+                        },
+                    })
+                }
+
+                for (const node of nextNodes) {
+                    const nodeData = {
                         name: node.type!,
                         type: node.type! as NodeType,
                         position: node.position,
-                        data: node.data || {}
-                    }))
-                })
+                        data: node.data || {},
+                    }
 
-                await tx.connection.createMany({
-                    data: edges.map((edge) => ({
-                        workflowId: id,
-                        fromNodeId: edge.source,
-                        toNodeId: edge.target,
-                        fromOutput: edge.sourceHandle || "main",
-                        toInput: edge.targetHandle || "main"
-                    }))
-                })
+                    if (existingNodeIds.has(node.id)) {
+                        await tx.node.update({
+                            where: { id: node.id },
+                            data: nodeData,
+                        })
+                        continue
+                    }
 
-                await tx.workflow.update({
+                    await tx.node.create({
+                        data: {
+                            id: node.id,
+                            workflowId: id,
+                            ...nodeData,
+                        },
+                    })
+                }
+
+                if (edges.length > 0) {
+                    await tx.connection.createMany({
+                        data: edges.map((edge) => ({
+                            workflowId: id,
+                            fromNodeId: edge.source,
+                            toNodeId: edge.target,
+                            fromOutput: edge.sourceHandle || "main",
+                            toInput: edge.targetHandle || "main",
+                        })),
+                    })
+                }
+
+                return tx.workflow.update({
                     where: { id },
                     data: {
-                        updatedAt: new Date()
-                    }
+                        updatedAt: new Date(),
+                    },
                 })
-                return workflow
+            }, {
+                timeout: 15_000,
             })
         }),
     getOne: protectedProcedure
