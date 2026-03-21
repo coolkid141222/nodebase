@@ -110,6 +110,32 @@ function appendJsonValue(
   return [current, incoming] as Prisma.InputJsonValue;
 }
 
+function serializeJsonValue(
+  value: Prisma.JsonValue | Prisma.InputJsonValue | null,
+): string {
+  if (value === null) {
+    return "null";
+  }
+
+  if (Array.isArray(value)) {
+    return `[${value.map((item) => serializeJsonValue(item)).join(",")}]`;
+  }
+
+  if (typeof value === "object") {
+    const record = value as Record<
+      string,
+      Prisma.JsonValue | Prisma.InputJsonValue | null
+    >;
+
+    return `{${Object.keys(value)
+      .sort()
+      .map((key) => `${JSON.stringify(key)}:${serializeJsonValue(record[key])}`)
+      .join(",")}}`;
+  }
+
+  return JSON.stringify(value);
+}
+
 function applyMemoryWriteMode(
   current: Prisma.JsonValue | null,
   incoming: Prisma.InputJsonValue,
@@ -252,6 +278,14 @@ export async function persistExecutionMemoryWrites({
       write.value,
       mode,
     );
+
+    if (
+      existingEntry &&
+      existingEntry.visibility === visibility &&
+      serializeJsonValue(existingEntry.value) === serializeJsonValue(nextValue)
+    ) {
+      continue;
+    }
 
     await prisma.executionMemoryEntry.upsert({
       where: {
