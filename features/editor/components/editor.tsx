@@ -17,7 +17,8 @@ import {
     BackgroundVariant,
     Controls,
     MiniMap,
-    Panel
+    Panel,
+    type EdgeMouseHandler,
 } from '@xyflow/react';
 
 import { nodeComponents } from "@/config/node-components";
@@ -25,6 +26,11 @@ import { AddNodeButton } from "./add-node-button";
 import { useSetAtom } from "jotai";
 import { editorAtom } from "../store/atoms";
 import { LoopScopeOverlays } from "@/features/loops/components/scope-overlays";
+import { WorkflowEdge } from "@/components/react-flow/workflow-edge";
+
+const edgeTypes = {
+    workflow: WorkflowEdge,
+} as const;
 
 export const EditorLoading = () => {
     return (
@@ -44,7 +50,12 @@ export const Editor = ({ workflowId }: { workflowId: string }) => {
     const setEditor = useSetAtom(editorAtom);
 
     const [nodes, setNodes] = useState<Node[]>(workflow.nodes ?? []);
-    const [edges, setEdges] = useState<Edge[]>(workflow.edges ?? []);
+    const [edges, setEdges] = useState<Edge[]>(
+        (workflow.edges ?? []).map((edge) => ({
+            ...edge,
+            type: "workflow",
+        })),
+    );
 
     const onNodesChange = useCallback(
         (changes: NodeChange[]) => setNodes((eds) => applyNodeChanges(changes, eds)),
@@ -55,7 +66,23 @@ export const Editor = ({ workflowId }: { workflowId: string }) => {
         [],
     );
     const onConnect = useCallback(
-        (params: Connection) => setEdges((eds) => addEdge(params, eds)),
+        (params: Connection) =>
+            setEdges((eds) =>
+                addEdge(
+                    {
+                        ...params,
+                        type: "workflow",
+                    },
+                    eds,
+                ),
+            ),
+        [],
+    );
+    const onEdgeDoubleClick = useCallback<EdgeMouseHandler>(
+        (_, edge) =>
+            setEdges((currentEdges) =>
+                currentEdges.filter((currentEdge) => currentEdge.id !== edge.id),
+            ),
         [],
     );
 
@@ -67,7 +94,12 @@ export const Editor = ({ workflowId }: { workflowId: string }) => {
                 onNodesChange={onNodesChange}
                 onEdgesChange={onEdgesChange}
                 onConnect={onConnect}
+                onEdgeDoubleClick={onEdgeDoubleClick}
                 nodeTypes={nodeComponents}
+                edgeTypes={edgeTypes}
+                defaultEdgeOptions={{
+                    type: "workflow",
+                }}
                 onInit={setEditor}
                 fitView
                 snapGrid={[10, 10]}
@@ -75,6 +107,7 @@ export const Editor = ({ workflowId }: { workflowId: string }) => {
                 panOnScroll
                 panOnDrag={false}
                 selectionOnDrag
+                elevateEdgesOnSelect
                 proOptions={{
                     hideAttribution: true
                 }}
