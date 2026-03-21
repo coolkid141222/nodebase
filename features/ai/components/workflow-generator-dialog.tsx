@@ -53,7 +53,7 @@ const formSchema = generateWorkflowGraphInputSchema.safeExtend({
 });
 
 const EXAMPLE_PROMPTS = [
-  "Build a manual workflow that takes a raw text input, rewrites it with DeepSeek, then posts the result to Slack.",
+  "Build a manual workflow that drafts a short test message with AI, then sends the final result to Feishu using the native tool node.",
   "Create a webhook workflow that summarizes the incoming payload with Gemini and sends the short summary to Discord.",
   "Design a local loop that retries an AI rewrite up to 3 times before sending the final result to Slack.",
   "Create a problem-solving workflow that researches a public page with a tool, reasons over the result with AI, then posts the answer to Slack.",
