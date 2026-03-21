@@ -6,8 +6,13 @@ import prisma from "@/lib/db";
 import { ExecutionStatus } from "@/lib/prisma/client";
 import {
   createManualExecution,
+  runExecution,
   WorkflowExecutionError,
 } from "./execution-runner";
+
+function canUseInngestQueue() {
+  return Boolean(process.env.INNGEST_EVENT_KEY?.trim());
+}
 
 export const executionsRouter = createTRPCRouter({
   getMany: protectedProcedure.query(async ({ ctx }) => {
@@ -130,18 +135,31 @@ export const executionsRouter = createTRPCRouter({
 
         executionId = execution.id;
 
-        await inngest.send({
-          name: "workflow/manual.triggered",
-          data: {
-            executionId: execution.id,
-            workflowId: execution.workflowId,
-            triggeredByUserId: ctx.user.id,
-          },
-        });
+        const queued = canUseInngestQueue();
+
+        if (queued) {
+          await inngest.send({
+            name: "workflow/manual.triggered",
+            data: {
+              executionId: execution.id,
+              workflowId: execution.workflowId,
+              triggeredByUserId: ctx.user.id,
+            },
+          });
+        } else {
+          const completedExecution = await runExecution(execution.id);
+
+          return {
+            id: execution.id,
+            status: completedExecution?.status ?? execution.status,
+            queued: false,
+          };
+        }
 
         return {
           id: execution.id,
           status: execution.status,
+          queued: true,
         };
       } catch (error) {
         if (error instanceof WorkflowExecutionError) {

@@ -15,6 +15,38 @@ import {
 } from "@ai-sdk/openai";
 import { ProxyAgent } from "undici";
 
+function isHostedRuntime() {
+  return process.env.VERCEL === "1" || Boolean(process.env.VERCEL_ENV);
+}
+
+function isLoopbackHost(hostname: string) {
+  const normalized = hostname.trim().toLowerCase();
+  return (
+    normalized === "localhost" ||
+    normalized === "127.0.0.1" ||
+    normalized === "::1"
+  );
+}
+
+function resolveProxyUrl(useProxyEnv: string, defaultProxyUrl: string) {
+  const proxyUrlEnv = useProxyEnv.replace("_USE_PROXY", "_PROXY_URL");
+  const explicitProxyUrl = process.env[proxyUrlEnv]?.trim();
+  const proxyUrl = explicitProxyUrl || defaultProxyUrl;
+
+  try {
+    const parsed = new URL(proxyUrl);
+
+    // Hosted runtimes cannot reach a loopback proxy running on a developer machine.
+    if (isHostedRuntime() && isLoopbackHost(parsed.hostname)) {
+      return null;
+    }
+
+    return proxyUrl;
+  } catch {
+    return null;
+  }
+}
+
 function createProviderWithProxy<
   TOptions extends { fetch?: typeof fetch },
   TProvider,
@@ -30,9 +62,12 @@ function createProviderWithProxy<
     return providerFactory(options);
   }
 
-  const proxyUrl =
-    process.env[useProxyEnv.replace("_USE_PROXY", "_PROXY_URL")] ||
-    defaultProxyUrl;
+  const proxyUrl = resolveProxyUrl(useProxyEnv, defaultProxyUrl);
+
+  if (!proxyUrl) {
+    return providerFactory(options);
+  }
+
   const dispatcher = new ProxyAgent(proxyUrl);
   const baseFetch = options?.fetch ?? fetch;
 

@@ -23,6 +23,8 @@ import { UpgradeModal } from "@/app/components/upgrade-modal";
 import { useBillingState } from "@/features/billing/hooks/use-billing";
 import { BillingPlan } from "@/lib/prisma/client";
 
+const isProduction = process.env.NODE_ENV === "production";
+
 const menuItems = [
     {
         title: "Main",
@@ -42,11 +44,13 @@ const menuItems = [
                 icon: HistoryIcon,
                 url: "/executions",
             },
-            {
+            ...(!isProduction
+                ? [{
                 title: "AI Test",
                 icon: BotIcon,
                 url: "/ai-test",
-            }
+                }]
+                : []),
         ]
     },
 ]

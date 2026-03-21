@@ -24,6 +24,58 @@ import {
 import { ArrowRight, Loader2 } from "lucide-react";
 import { authClient } from "@/lib/auth-client";
 import { useRouter } from "next/navigation";
+import { useState } from "react";
+
+function getAuthErrorMessage(error: unknown) {
+  if (!error || typeof error !== "object") return "";
+
+  const typedError = error as {
+    message?: unknown;
+    statusText?: unknown;
+    error?: unknown;
+    code?: unknown;
+  };
+
+  if (typedError.error && typeof typedError.error === "object") {
+    const nestedError = typedError.error as {
+      message?: unknown;
+      code?: unknown;
+    };
+
+    if (
+      typeof nestedError.message === "string" &&
+      nestedError.message.trim().length > 0
+    ) {
+      return nestedError.message;
+    }
+
+    if (
+      typeof nestedError.code === "string" &&
+      nestedError.code.trim().length > 0
+    ) {
+      return nestedError.code === "USER_ALREADY_EXISTS_USE_ANOTHER_EMAIL"
+        ? "User already exists. Use another email."
+        : nestedError.code;
+    }
+  }
+
+  if (typeof typedError.message === "string" && typedError.message.trim().length > 0) {
+    return typedError.message;
+  }
+
+  if (
+    typeof typedError.statusText === "string" &&
+    typedError.statusText.trim().length > 0
+  ) {
+    return typedError.statusText;
+  }
+
+  if (typeof typedError.code === "string" && typedError.code.trim().length > 0) {
+    return typedError.code;
+  }
+
+  return "";
+}
 
 // --- 1. 更新 Zod 验证 ---
 const registerSchema = z.object({
@@ -41,6 +93,7 @@ type RegisterFormValues = z.infer<typeof registerSchema>;
 
 export function RegisterForm() { // --- 2. 更改组件名称 ---
   const router = useRouter();
+  const [error, setError] = useState<string>("");
   const form = useForm<RegisterFormValues>({
     resolver: zodResolver(registerSchema),
     defaultValues: {
@@ -52,22 +105,33 @@ export function RegisterForm() { // --- 2. 更改组件名称 ---
   });
 
   const onSubmit = async (values: RegisterFormValues) => {
-    await authClient.signUp.email(
-      {
+    setError("");
+    try {
+      const result = await authClient.signUp.email({
         name: values.name,
         email: values.email,
         password: values.password,
         callbackURL: "/",
-      },
-      {
-        onSuccess: () => {
-          router.push("/");
-        },
-        onError: () => {
-          console.log("error")
-        }
+      });
+
+      if (result.error) {
+        setError(
+          getAuthErrorMessage(result.error) ||
+            (result.error.status === 422
+              ? "This email is already registered or the account could not be created."
+              : "Sign up failed. Please try again.")
+        );
+        return;
       }
-    )
+
+      router.push("/");
+      router.refresh();
+    } catch (err) {
+      setError(
+        getAuthErrorMessage(err) ||
+          "Sign up failed. Please try again."
+      );
+    }
   };
 
   const isPending = form.formState.isSubmitting;
@@ -123,6 +187,12 @@ export function RegisterForm() { // --- 2. 更改组件名称 ---
               </span>
             </div>
           </div>
+
+          {error ? (
+            <div className="rounded-lg bg-red-50 px-4 py-3 text-sm text-red-700">
+              {error}
+            </div>
+          ) : null}
 
           <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">

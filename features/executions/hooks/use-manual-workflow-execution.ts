@@ -20,9 +20,15 @@ export const useManualWorkflowExecution = () => {
   return useMutation(
     trpc.executions.triggerManual.mutationOptions({
       onSuccess: (data, variables) => {
-        toast.success(`Execution ${data.id} queued`);
+        toast.success(
+          data.queued
+            ? `Execution ${data.id} queued`
+            : `Execution ${data.id} completed`,
+        );
         setActiveExecutionId(data.id);
-        setWorkflowExecutionState(createQueuedWorkflowExecutionState(data.id));
+        if (data.queued) {
+          setWorkflowExecutionState(createQueuedWorkflowExecutionState(data.id));
+        }
         const executionsListQuery = trpc.executions.getMany.queryOptions();
         queryClient.invalidateQueries({
           queryKey: executionsListQuery.queryKey,

@@ -2,10 +2,15 @@ import { NextResponse } from "next/server";
 import { inngest } from "@/inngest/client";
 import {
   createWebhookExecution,
+  runExecution,
   WorkflowExecutionError,
 } from "@/features/executions/server/execution-runner";
 import { ExecutionStatus } from "@/lib/prisma/client";
 import prisma from "@/lib/db";
+
+function canUseInngestQueue() {
+  return Boolean(process.env.INNGEST_EVENT_KEY?.trim());
+}
 
 function parseWebhookPayload(text: string) {
   const trimmed = text.trim();
@@ -65,18 +70,36 @@ export async function POST(
 
     executionId = execution.id;
 
-    await inngest.send({
-      name: "workflow/webhook.triggered",
-      data: {
-        executionId: execution.id,
-        workflowId: execution.workflowId,
-      },
-    });
+    const queued = canUseInngestQueue();
+
+    if (queued) {
+      await inngest.send({
+        name: "workflow/webhook.triggered",
+        data: {
+          executionId: execution.id,
+          workflowId: execution.workflowId,
+        },
+      });
+    } else {
+      const completedExecution = await runExecution(execution.id);
+
+      return NextResponse.json(
+        {
+          id: execution.id,
+          status: completedExecution?.status ?? execution.status,
+          queued: false,
+        },
+        {
+          status: 200,
+        },
+      );
+    }
 
     return NextResponse.json(
       {
         id: execution.id,
         status: execution.status,
+        queued: true,
       },
       {
         status: 202,
