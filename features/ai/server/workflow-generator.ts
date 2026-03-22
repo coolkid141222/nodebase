@@ -1,3 +1,4 @@
+import z from "zod";
 import { createId } from "@paralleldrive/cuid2";
 import { generateText } from "ai";
 import type { Edge, Node } from "@xyflow/react";
@@ -12,7 +13,10 @@ import {
 } from "@/lib/ai/proxy";
 import { readCredentialSecret } from "@/features/credentials/server/payload";
 import { getToolRegistrySnapshot } from "@/features/tools/server/registry";
-import { getDefaultAITextModel } from "../text/shared";
+import {
+  aiTextProviderSchema,
+  getDefaultAITextModel,
+} from "../text/shared";
 import {
   aiWorkflowDraftSchema,
   type AIWorkflowDraft,
@@ -1750,6 +1754,198 @@ function normalizePreferredTriggerType(params: {
   return workingDraft;
 }
 
+// ---------------------------------------------------------------------------
+// Node data builders — one function per type, pure and independently testable
+// ---------------------------------------------------------------------------
+
+type NodeBuildContext = {
+  credentials: UserCredentialSummary[];
+  notes: string[];
+};
+
+function buildTriggerNodeData(
+  _node: { type: "MANUAL_TRIGGER" | "WEBHOOK_TRIGGER"; config: { memoryWrites: unknown[] } },
+) {
+  return { memoryWrites: _node.config.memoryWrites };
+}
+
+function buildLoopNodeData(_node: {
+  type: "LOOP";
+  config: { maxIterations: number; memoryWrites: unknown[] };
+}) {
+  return {
+    maxIterations: _node.config.maxIterations,
+    memoryWrites: _node.config.memoryWrites,
+  };
+}
+
+function buildToolNodeData(_node: {
+  type: "TOOL";
+  config: {
+    provider: unknown;
+    serverId?: string;
+    toolId: string;
+    argumentsJson: string;
+    memoryWrites: unknown[];
+  };
+}) {
+  return {
+    provider: _node.config.provider,
+    serverId: _node.config.serverId ?? "",
+    serverDisplayName: "",
+    toolId: _node.config.toolId,
+    toolDisplayName: "",
+    argumentsJson: _node.config.argumentsJson,
+    memoryWrites: _node.config.memoryWrites,
+  };
+}
+
+function buildAiTextNodeData(
+  _node: {
+    type: "AI_TEXT";
+    id: string;
+    config: {
+      provider: z.infer<typeof aiTextProviderSchema>;
+      model?: string;
+      prompt: string;
+      system?: string;
+      credentialName?: string;
+      credentialField?: string;
+      memoryWrites: unknown[];
+    };
+  },
+  ctx: NodeBuildContext,
+) {
+  const provider = _node.config.provider;
+  const credential = resolveCredential({
+    provider,
+    credentialName: _node.config.credentialName,
+    credentialField: _node.config.credentialField,
+    credentials: ctx.credentials,
+    notes: ctx.notes,
+    nodeDescription: `AI node "${_node.id}"`,
+  });
+  return {
+    provider,
+    model: _node.config.model || getDefaultAITextModel(provider),
+    prompt: _node.config.prompt,
+    system: _node.config.system || "",
+    credentialId: credential.credentialId,
+    credentialField: credential.credentialField,
+    toolEnabled: false,
+    toolProvider: "INTERNAL",
+    toolServerId: "",
+    toolId: "",
+    toolDisplayName: "",
+    toolArgumentsJson: "{}",
+    memoryWrites: _node.config.memoryWrites,
+  };
+}
+
+function buildHttpRequestNodeData(
+  _node: {
+    type: "HTTP_REQUEST";
+    id: string;
+    config: {
+      endpoint: string;
+      method: string;
+      body?: string;
+      authType: string;
+      credentialName?: string;
+      credentialField?: string;
+      headerName?: string;
+      memoryWrites: unknown[];
+    };
+  },
+  ctx: NodeBuildContext,
+) {
+  const credential =
+    _node.config.authType !== "NONE"
+      ? resolveCredential({
+          credentialName: _node.config.credentialName,
+          credentialField: _node.config.credentialField,
+          credentials: ctx.credentials,
+          notes: ctx.notes,
+          nodeDescription: `HTTP node "${_node.id}"`,
+        })
+      : {
+          credentialId: undefined,
+          credentialField: _node.config.credentialField ?? "apiKey",
+        };
+  return {
+    endpoint: _node.config.endpoint,
+    method: _node.config.method,
+    body: _node.config.body || "",
+    authType: _node.config.authType,
+    credentialId: credential.credentialId,
+    credentialField: credential.credentialField,
+    headerName: _node.config.headerName || "",
+    memoryWrites: _node.config.memoryWrites,
+  };
+}
+
+function buildDiscordNodeData(
+  _node: {
+    type: "DISCORD_MESSAGE";
+    id: string;
+    config: {
+      content: string;
+      credentialName?: string;
+      credentialField?: string;
+      memoryWrites: unknown[];
+    };
+  },
+  ctx: NodeBuildContext,
+) {
+  const credential = resolveCredential({
+    provider: CredentialProvider.DISCORD,
+    credentialName: _node.config.credentialName,
+    credentialField: _node.config.credentialField ?? "webhookUrl",
+    credentials: ctx.credentials,
+    notes: ctx.notes,
+    nodeDescription: `Discord node "${_node.id}"`,
+  });
+  return {
+    content: _node.config.content,
+    credentialId: credential.credentialId,
+    credentialField: credential.credentialField,
+    memoryWrites: _node.config.memoryWrites,
+  };
+}
+
+function buildSlackNodeData(
+  _node: {
+    type: "SLACK_MESSAGE";
+    id: string;
+    config: {
+      content: string;
+      credentialName?: string;
+      credentialField?: string;
+      memoryWrites: unknown[];
+    };
+  },
+  ctx: NodeBuildContext,
+) {
+  const credential = resolveCredential({
+    provider: CredentialProvider.SLACK,
+    credentialName: _node.config.credentialName,
+    credentialField: _node.config.credentialField ?? "webhookUrl",
+    credentials: ctx.credentials,
+    notes: ctx.notes,
+    nodeDescription: `Slack node "${_node.id}"`,
+  });
+  return {
+    content: _node.config.content,
+    credentialId: credential.credentialId,
+    credentialField: credential.credentialField,
+    memoryWrites: _node.config.memoryWrites,
+  };
+}
+
+// ---------------------------------------------------------------------------
+// Main mapper
+// ---------------------------------------------------------------------------
+
 function mapGeneratedDraftToCanvas(params: {
   draft: AIWorkflowDraft;
   credentials: UserCredentialSummary[];
@@ -1757,6 +1953,7 @@ function mapGeneratedDraftToCanvas(params: {
   const notes = [...params.draft.notes];
   const nodeIdMap = new Map<string, string>();
   const generatedNodes: Node[] = [];
+  const ctx: NodeBuildContext = { credentials: params.credentials, notes };
 
   for (const node of params.draft.nodes) {
     const actualId = createId();
@@ -1772,140 +1969,36 @@ function mapGeneratedDraftToCanvas(params: {
       data: {} as Record<string, unknown>,
     } satisfies Node;
 
+    let nodeData: Record<string, unknown>;
+
     switch (node.type) {
       case "MANUAL_TRIGGER":
       case "WEBHOOK_TRIGGER":
-        generatedNodes.push({
-          ...baseNode,
-          data: {
-            memoryWrites: node.config.memoryWrites,
-          },
-        });
+        nodeData = buildTriggerNodeData(node);
         break;
       case "LOOP":
-        generatedNodes.push({
-          ...baseNode,
-          data: {
-            maxIterations: node.config.maxIterations,
-            memoryWrites: node.config.memoryWrites,
-          },
-        });
+        nodeData = buildLoopNodeData(node);
         break;
       case "TOOL":
-        generatedNodes.push({
-          ...baseNode,
-          data: {
-            provider: node.config.provider,
-            serverId: node.config.serverId ?? "",
-            serverDisplayName: "",
-            toolId: node.config.toolId,
-            toolDisplayName: "",
-            argumentsJson: node.config.argumentsJson,
-            memoryWrites: node.config.memoryWrites,
-          },
-        });
+        nodeData = buildToolNodeData(node);
         break;
-      case "AI_TEXT": {
-        const provider = node.config.provider;
-        const credential = resolveCredential({
-          provider,
-          credentialName: node.config.credentialName,
-          credentialField: node.config.credentialField,
-          credentials: params.credentials,
-          notes,
-          nodeDescription: `AI node "${node.id}"`,
-        });
-        generatedNodes.push({
-          ...baseNode,
-          data: {
-            provider,
-            model: node.config.model || getDefaultAITextModel(provider),
-            prompt: node.config.prompt,
-            system: node.config.system || "",
-            credentialId: credential.credentialId,
-            credentialField: credential.credentialField,
-            toolEnabled: false,
-            toolProvider: "INTERNAL",
-            toolServerId: "",
-            toolId: "",
-            toolDisplayName: "",
-            toolArgumentsJson: "{}",
-            memoryWrites: node.config.memoryWrites,
-          },
-        });
+      case "AI_TEXT":
+        nodeData = buildAiTextNodeData(node, ctx);
         break;
-      }
-      case "HTTP_REQUEST": {
-        const credential =
-          node.config.authType !== "NONE"
-            ? resolveCredential({
-                credentialName: node.config.credentialName,
-                credentialField: node.config.credentialField,
-                credentials: params.credentials,
-                notes,
-                nodeDescription: `HTTP node "${node.id}"`,
-              })
-            : {
-                credentialId: undefined,
-                credentialField: node.config.credentialField ?? "apiKey",
-              };
-
-        generatedNodes.push({
-          ...baseNode,
-          data: {
-            endpoint: node.config.endpoint,
-            method: node.config.method,
-            body: node.config.body || "",
-            authType: node.config.authType,
-            credentialId: credential.credentialId,
-            credentialField: credential.credentialField,
-            headerName: node.config.headerName || "",
-            memoryWrites: node.config.memoryWrites,
-          },
-        });
+      case "HTTP_REQUEST":
+        nodeData = buildHttpRequestNodeData(node, ctx);
         break;
-      }
-      case "DISCORD_MESSAGE": {
-        const credential = resolveCredential({
-          provider: CredentialProvider.DISCORD,
-          credentialName: node.config.credentialName,
-          credentialField: node.config.credentialField ?? "webhookUrl",
-          credentials: params.credentials,
-          notes,
-          nodeDescription: `Discord node "${node.id}"`,
-        });
-        generatedNodes.push({
-          ...baseNode,
-          data: {
-            content: node.config.content,
-            credentialId: credential.credentialId,
-            credentialField: credential.credentialField,
-            memoryWrites: node.config.memoryWrites,
-          },
-        });
+      case "DISCORD_MESSAGE":
+        nodeData = buildDiscordNodeData(node, ctx);
         break;
-      }
-      case "SLACK_MESSAGE": {
-        const credential = resolveCredential({
-          provider: CredentialProvider.SLACK,
-          credentialName: node.config.credentialName,
-          credentialField: node.config.credentialField ?? "webhookUrl",
-          credentials: params.credentials,
-          notes,
-          nodeDescription: `Slack node "${node.id}"`,
-        });
-        generatedNodes.push({
-          ...baseNode,
-          data: {
-            content: node.config.content,
-            credentialId: credential.credentialId,
-            credentialField: credential.credentialField,
-            memoryWrites: node.config.memoryWrites,
-          },
-        });
+      case "SLACK_MESSAGE":
+        nodeData = buildSlackNodeData(node, ctx);
         break;
-      }
+      default:
+        nodeData = {};
     }
+
+    generatedNodes.push({ ...baseNode, data: nodeData });
   }
 
   const generatedNodeTypeMap = new Map(
