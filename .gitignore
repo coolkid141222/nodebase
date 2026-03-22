@@ -53,6 +53,7 @@ scripts/test.ts
 # Sentry Config File
 .env.sentry-build-plugin
 
-.claude
-.npm-cache
-.claude
+.claude/*
+.npm-cache/*
+.claude/*
+.cursor/*
