@@ -53,7 +53,15 @@ scripts/test.ts
 # Sentry Config File
 .env.sentry-build-plugin
 
-.claude/*
-.npm-cache/*
-.claude/*
-.cursor/*
+.claude/
+.npm-cache/
+.cursor/
+
+# Prisma
+lib/prisma/client/query_engine-*.dll.node.tmp*
+lib/prisma/client/query_engine_bg.js
+lib/prisma/client/query_engine_bg.wasm
+
+# Logs
+mcp-debug.log
+*.log
