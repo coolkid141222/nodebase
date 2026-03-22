@@ -423,19 +423,18 @@ function buildEdgeHandles(params: {
 }) {
   switch (params.role) {
     case "LOOP_BODY":
-      // Use bottom handle (source-loop) for edge from loop to body
+      // Left bottom handle (source-main) sends to body
       return {
-        sourceHandle: params.sourceType === "LOOP" ? "source-loop" : null,
+        sourceHandle: params.sourceType === "LOOP" ? "source-main" : null,
         targetHandle: null,
       };
     case "LOOP_BACK":
-      // Use bottom handle (target-loop) for edge from body back to loop
+      // Right bottom handle (target-main) receives from body
       return {
         sourceHandle: null,
-        targetHandle: params.targetType === "LOOP" ? "target-loop" : null,
+        targetHandle: params.targetType === "LOOP" ? "target-main" : null,
       };
     default:
-      // Use left/right handles for linear flow
       return {
         sourceHandle: null,
         targetHandle: null,
