@@ -14,6 +14,7 @@ import {
 } from "@/components/card";
 import { ExecutionStatus, ExecutionStepStatus } from "@/lib/prisma/client";
 import { useSuspenseExecution } from "../hooks/use-executions";
+import { MemoryInspector } from "./memory-inspector";
 
 const executionStatusVariant = {
   PENDING: "secondary",
@@ -107,43 +108,16 @@ export const ExecutionDetails = ({ id }: { id: string }) => {
         </CardContent>
       </Card>
 
-      <Card className="shadow-none">
-        <CardHeader>
-          <CardTitle className="text-base">Execution Memory</CardTitle>
-          <CardDescription>
-            Shared memory is visible across the current run. Node memory is private to the owner node.
-          </CardDescription>
-        </CardHeader>
-        <CardContent className="grid gap-4 lg:grid-cols-2">
-          <JsonBlock
-            title="Memory Entries"
-            value={data.memoryEntries.map((entry) => ({
-              scope: entry.scope,
-              visibility: entry.visibility,
-              ownerNodeId: entry.ownerNodeId || null,
-              namespace: entry.namespace,
-              key: entry.key,
-              sourceStepId: entry.sourceStepId,
-              value: entry.value,
-            }))}
-          />
-          <JsonBlock
-            title="Memory Events"
-            value={data.memoryEvents.map((event) => ({
-              stepId: event.stepId,
-              nodeId: event.nodeId || null,
-              scope: event.scope,
-              visibility: event.visibility,
-              ownerNodeId: event.ownerNodeId || null,
-              namespace: event.namespace,
-              key: event.key,
-              mode: event.mode,
-              value: event.value,
-              createdAt: event.createdAt,
-            }))}
-          />
-        </CardContent>
-      </Card>
+      <MemoryInspector
+        entries={data.memoryEntries}
+        events={data.memoryEvents}
+        steps={data.steps.map((s) => ({
+          id: s.id,
+          nodeName: s.nodeName,
+          nodeType: s.nodeType,
+          position: s.position,
+        }))}
+      />
 
       <div className="grid gap-4">
         {data.steps.map((step) => (
