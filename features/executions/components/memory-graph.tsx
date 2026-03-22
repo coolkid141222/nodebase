@@ -16,7 +16,7 @@ import "@xyflow/react/dist/style.css";
 
 type MemoryEntry = {
   id: string;
-  scope: "SHARED" | "NODE";
+  scope: "SHARED" | "NODE" | "WORKFLOW" | "USER";
   namespace: string;
   key: string;
   value: unknown;
@@ -28,9 +28,11 @@ interface MemoryGraphProps {
   onNodeClick?: (entry: MemoryEntry) => void;
 }
 
-const nodeColors = {
+const nodeColors: Record<string, { bg: string; border: string }> = {
   SHARED: { bg: "#dbeafe", border: "#3b82f6" },
   NODE: { bg: "#fce7f3", border: "#ec4899" },
+  WORKFLOW: { bg: "#d1fae5", border: "#10b981" },
+  USER: { bg: "#fef3c7", border: "#f59e0b" },
 };
 
 function MemoryNode({ data }: { data: MemoryEntry }) {
