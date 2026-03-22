@@ -42,6 +42,12 @@ type SavedGeneratedWorkflowResult = GeneratedWorkflowResult & {
 
 type PreferredTriggerType = "MANUAL_TRIGGER" | "WEBHOOK_TRIGGER";
 type WorkflowGenerationMode = GenerateWorkflowGraphInput["mode"];
+type DefaultAiBlueprint = {
+  provider: GenerateWorkflowGraphInput["provider"];
+  model: string;
+  credentialName?: string;
+  credentialField: string;
+};
 
 const PROBLEM_SOLVING_PROMPT_PATTERN =
   /\b(solve|answer|analy[sz]e|debug|investigate|research|compare|plan|reason|question|issue|problem)\b|问题|分析|研究|排查|解决|比较|推理|调查/i;
@@ -117,24 +123,63 @@ function unwrapGeneratedDraftPayload(input: unknown) {
   return current;
 }
 
+function sanitizeDraftIds(draft: AIWorkflowDraft): AIWorkflowDraft {
+  const idSuffixMap = new Map<string, number>();
+
+  const sanitizeId = (id: string): string => {
+    // Truncate to 40 chars (schema max), replace invalid chars with underscore
+    const cleaned = id.slice(0, 40).replace(/[^a-zA-Z0-9_]/g, "_");
+    if (!cleaned) return "node";
+
+    // Ensure uniqueness within draft
+    const count = idSuffixMap.get(cleaned) ?? 0;
+    if (count === 0 && !idSuffixMap.has(cleaned)) {
+      idSuffixMap.set(cleaned, 1);
+      return cleaned;
+    }
+    idSuffixMap.set(cleaned, count + 1);
+    return `${cleaned}_${count + 1}`;
+  };
+
+  const idRemap = new Map<string, string>();
+
+  // First pass: remap all node IDs
+  const sanitizedNodes = draft.nodes.map((node) => {
+    const newId = sanitizeId(node.id);
+    idRemap.set(node.id, newId);
+    return { ...node, id: newId };
+  });
+
+  // Second pass: remap edge references
+  const sanitizedEdges = draft.edges
+    .map((edge) => ({
+      ...edge,
+      source: idRemap.get(edge.source) ?? edge.source,
+      target: idRemap.get(edge.target) ?? edge.target,
+    }))
+    .filter((edge) => edge.source !== edge.target);
+
+  return { ...draft, nodes: sanitizedNodes, edges: sanitizedEdges };
+}
+
 function parseGeneratedWorkflowDraft(text: string) {
   const extractedJson = extractJsonObject(text);
   const parsedJson = JSON.parse(extractedJson);
   const normalizedPayload = unwrapGeneratedDraftPayload(parsedJson);
   const validatedDraft = aiWorkflowDraftSchema.safeParse(normalizedPayload);
 
-  if (validatedDraft.success) {
-    return validatedDraft.data;
+  if (!validatedDraft.success) {
+    const firstIssue = validatedDraft.error.issues[0];
+    const issuePath = firstIssue?.path?.length
+      ? firstIssue.path.join(".")
+      : "root";
+
+    throw new Error(
+      `Generated draft has an invalid shape at "${issuePath}": ${firstIssue?.message ?? "unknown validation error"}.`,
+    );
   }
 
-  const firstIssue = validatedDraft.error.issues[0];
-  const issuePath = firstIssue?.path?.length
-    ? firstIssue.path.join(".")
-    : "root";
-
-  throw new Error(
-    `Generated draft has an invalid shape at "${issuePath}": ${firstIssue?.message ?? "unknown validation error"}.`,
-  );
+  return sanitizeDraftIds(validatedDraft.data);
 }
 
 function parseCredentialFields(metadata: unknown) {
@@ -332,9 +377,10 @@ function buildWorkflowGeneratorPrompt(params: {
       case "RESEARCH_DELIVERY":
         return [
           "Generation mode: RESEARCH_DELIVERY",
-          "- Prefer a graph like gather context -> analyze -> final message -> delivery.",
-          "- Use a tool step whenever external context or a URL is available.",
-          "- End with a user-facing delivery node when possible.",
+          "- Generate a fixed browser -> analyze -> loop -> final answer -> Feishu skeleton where the LOOP node controls the refinement body.",
+          "- Use one browser tool first, one analysis node, one local refinement loop, one final answer node, and one native Feishu delivery node.",
+          "- Stabilize memory around problem.task, problem.raw, problem.url, research.context, analysis.summary, refinement.draft, and answers.final.",
+          "- Assume the trigger payload carries the task text and research URL for the browser step.",
         ].join("\n");
       case "AUTO":
       default:
@@ -386,6 +432,7 @@ Problem-solving rules:
 - Use LOOP only when iterative refinement is part of the strategy.
 - For non-trivial problem-solving prompts, use at least two processing nodes.
 - Prefer a structure like: gather context -> analyze -> final answer.
+- For research and delivery prompts, prefer a structure like: browser -> analyze -> loop -> final -> Feishu.
 - For task dispatch, messaging, or Feishu delivery prompts, prefer a structure like: trigger -> analyze -> optional refinement loop -> final formatted message -> delivery.
 - When a request sounds complex, multi-stage, or user-facing, target at least 4 nodes instead of collapsing everything into one AI node.
 - Do not collapse a research or investigation workflow into a single AI_TEXT node unless the user explicitly asks for the smallest possible flow.
@@ -436,7 +483,7 @@ Required JSON shape:
   "nodes": [
     {
       "id": "trigger",
-      "type": "MANUAL_TRIGGER",
+      "type": "WEBHOOK_TRIGGER",
       "column": 0,
       "row": 1,
       "config": {
@@ -446,6 +493,28 @@ Required JSON shape:
             "namespace": "problem",
             "key": "task",
             "value": "{{trigger.body.message}}",
+            "mode": "REPLACE",
+            "visibility": "PUBLIC",
+            "persist": true,
+            "persistenceScope": "WORKFLOW",
+            "semanticIndex": false
+          },
+          {
+            "scope": "SHARED",
+            "namespace": "problem",
+            "key": "raw",
+            "value": "{{trigger.body}}",
+            "mode": "REPLACE",
+            "visibility": "PUBLIC",
+            "persist": true,
+            "persistenceScope": "WORKFLOW",
+            "semanticIndex": false
+          },
+          {
+            "scope": "SHARED",
+            "namespace": "problem",
+            "key": "url",
+            "value": "{{trigger.body.url}}",
             "mode": "REPLACE",
             "visibility": "PUBLIC",
             "persist": true,
@@ -463,7 +532,7 @@ Required JSON shape:
       "config": {
         "provider": "INTERNAL",
         "toolId": "internal.browser_page",
-        "argumentsJson": "{\"url\":\"https://example.com\",\"maxChars\":4000,\"includeLinks\":true}",
+        "argumentsJson": "{\"url\":\"{{trigger.body.url}}\",\"maxChars\":4000,\"includeLinks\":true}",
         "memoryWrites": [
           {
             "scope": "SHARED",
@@ -475,40 +544,43 @@ Required JSON shape:
             "persist": true,
             "persistenceScope": "WORKFLOW",
             "semanticIndex": false
-          }
-        ]
-      }
-    },
-    {
-      "id": "loop",
-      "type": "LOOP",
-      "column": 2,
-      "row": 0,
-      "config": {
-        "maxIterations": 3,
-        "memoryWrites": [
+          },
           {
             "scope": "SHARED",
-            "namespace": "loop",
-            "key": "attempt",
-            "value": "{{current.output.attempt}}",
+            "namespace": "research",
+            "key": "url",
+            "value": "{{current.output.finalUrl}}",
             "mode": "REPLACE",
-            "visibility": "PUBLIC"
+            "visibility": "PUBLIC",
+            "persist": true,
+            "persistenceScope": "WORKFLOW",
+            "semanticIndex": false
+          },
+          {
+            "scope": "SHARED",
+            "namespace": "research",
+            "key": "summary",
+            "value": "{{current.output.excerpt}}",
+            "mode": "REPLACE",
+            "visibility": "PUBLIC",
+            "persist": true,
+            "persistenceScope": "WORKFLOW",
+            "semanticIndex": false
           }
         ]
       }
     },
     {
-      "id": "writer",
+      "id": "analyze",
       "type": "AI_TEXT",
-      "column": 3,
+      "column": 2,
       "row": 1,
       "config": {
         "provider": "DEEPSEEK",
         "model": "deepseek-chat",
         "credentialName": "DeepSeek API",
         "credentialField": "apiKey",
-        "prompt": "Rewrite this result for iteration {{current.attempt}}: {{input}}",
+        "prompt": "Analyze the browser output into a concise research brief.\n\nShared task:\n{{memory.shared.problem.task}}\n\nShared URL:\n{{memory.shared.problem.url}}\n\nBrowser context:\n{{input}}",
         "memoryWrites": [
           {
             "scope": "NODE",
@@ -523,8 +595,89 @@ Required JSON shape:
           },
           {
             "scope": "SHARED",
-            "namespace": "answers",
-            "key": "final",
+            "namespace": "analysis",
+            "key": "summary",
+            "value": "{{current.output.text}}",
+            "mode": "REPLACE",
+            "visibility": "PUBLIC",
+            "persist": true,
+            "persistenceScope": "WORKFLOW",
+            "semanticIndex": false
+          }
+        ]
+      }
+    },
+    {
+      "id": "loop",
+      "type": "LOOP",
+      "column": 3,
+      "row": 0,
+      "config": {
+        "maxIterations": 3,
+        "memoryWrites": [
+          {
+            "scope": "SHARED",
+            "namespace": "loop",
+            "key": "attempt",
+            "value": "{{current.output.attempt}}",
+            "mode": "REPLACE",
+            "visibility": "PUBLIC",
+            "persist": false,
+            "persistenceScope": "WORKFLOW",
+            "semanticIndex": false
+          },
+          {
+            "scope": "SHARED",
+            "namespace": "loop",
+            "key": "isFinalAttempt",
+            "value": "{{current.output.isFinalAttempt}}",
+            "mode": "REPLACE",
+            "visibility": "PUBLIC",
+            "persist": false,
+            "persistenceScope": "WORKFLOW",
+            "semanticIndex": false
+          },
+          {
+            "scope": "SHARED",
+            "namespace": "loop",
+            "key": "maxIterations",
+            "value": "{{current.output.maxIterations}}",
+            "mode": "REPLACE",
+            "visibility": "PUBLIC",
+            "persist": false,
+            "persistenceScope": "WORKFLOW",
+            "semanticIndex": false
+          }
+        ]
+      }
+    },
+    {
+      "id": "refine",
+      "type": "AI_TEXT",
+      "column": 4,
+      "row": 1,
+      "config": {
+        "provider": "MINIMAX",
+        "model": "MiniMax-M2.5",
+        "credentialName": "MiniMax API",
+        "credentialField": "apiKey",
+        "prompt": "Refine the current draft for loop attempt {{current.attempt}}.\n\nShared task:\n{{memory.shared.problem.task}}\n\nAnalysis summary:\n{{memory.shared.analysis.summary}}\n\nPrevious draft:\n{{memory.node.refinement.draft}}\n\nUpstream draft:\n{{input}}",
+        "memoryWrites": [
+          {
+            "scope": "NODE",
+            "namespace": "refinement",
+            "key": "draft",
+            "value": "{{current.output.text}}",
+            "mode": "REPLACE",
+            "visibility": "PRIVATE",
+            "persist": false,
+            "persistenceScope": "WORKFLOW",
+            "semanticIndex": false
+          },
+          {
+            "scope": "SHARED",
+            "namespace": "analysis",
+            "key": "refined",
             "value": "{{current.output.text}}",
             "mode": "REPLACE",
             "visibility": "PUBLIC",
@@ -538,14 +691,14 @@ Required JSON shape:
     {
       "id": "final_message",
       "type": "AI_TEXT",
-      "column": 4,
+      "column": 5,
       "row": 1,
       "config": {
         "provider": "MINIMAX",
         "model": "MiniMax-M2.5",
         "credentialName": "MiniMax API",
         "credentialField": "apiKey",
-        "prompt": "Turn the upstream result into a Feishu-ready task dispatch message. Output plain text only.\\n\\nUpstream context:\\n{{input}}",
+        "prompt": "Turn the refined draft into the final Feishu-ready answer.\n\nShared task:\n{{memory.shared.problem.task}}\n\nAnalysis summary:\n{{memory.shared.analysis.summary}}\n\nRefined draft:\n{{input}}",
         "memoryWrites": [
           {
             "scope": "SHARED",
@@ -564,7 +717,7 @@ Required JSON shape:
     {
       "id": "deliver_feishu",
       "type": "TOOL",
-      "column": 5,
+      "column": 6,
       "row": 1,
       "config": {
         "provider": "FEISHU",
@@ -576,10 +729,11 @@ Required JSON shape:
   ],
   "edges": [
     { "source": "trigger", "target": "research", "role": "DEFAULT" },
-    { "source": "research", "target": "writer", "role": "DEFAULT" },
-    { "source": "loop", "target": "writer", "role": "LOOP_BODY" },
-    { "source": "writer", "target": "loop", "role": "LOOP_BACK" },
-    { "source": "writer", "target": "final_message", "role": "DEFAULT" },
+    { "source": "research", "target": "analyze", "role": "DEFAULT" },
+    { "source": "analyze", "target": "refine", "role": "DEFAULT" },
+    { "source": "loop", "target": "refine", "role": "LOOP_BODY" },
+    { "source": "refine", "target": "loop", "role": "LOOP_BACK" },
+    { "source": "refine", "target": "final_message", "role": "DEFAULT" },
     { "source": "final_message", "target": "deliver_feishu", "role": "DEFAULT" }
   ]
 }
@@ -812,6 +966,73 @@ function createAnalysisPrompt(userPrompt: string) {
   ].join("\n");
 }
 
+function createResearchAnalyzePrompt(userPrompt: string) {
+  return [
+    "Analyze the browser research output and extract the key facts, risks, and the next action.",
+    "Use the shared task and URL as context for the analysis.",
+    "Keep the output concise, structured, and suitable for a downstream refinement step.",
+    "Write as a working analysis, not as a final answer.",
+    "",
+    "Shared task:",
+    "{{memory.shared.problem.task}}",
+    "",
+    "Shared URL:",
+    "{{memory.shared.problem.url}}",
+    "",
+    "Browser context:",
+    "{{input}}",
+    "",
+    "Original user request:",
+    userPrompt,
+  ].join("\n");
+}
+
+function createResearchRefinePrompt(userPrompt: string) {
+  return [
+    "Refine the current draft into a cleaner answer for this iteration.",
+    "Use the task, analysis summary, and the previous draft. Do not add new research claims.",
+    "This is the iterative draft inside a local loop.",
+    "",
+    "Shared task:",
+    "{{memory.shared.problem.task}}",
+    "",
+    "Analysis summary:",
+    "{{memory.shared.analysis.summary}}",
+    "",
+    "Previous draft:",
+    "{{memory.node.refinement.draft}}",
+    "",
+    "Current attempt:",
+    "{{current.attempt}}",
+    "",
+    "Upstream draft:",
+    "{{input}}",
+    "",
+    "Original user request:",
+    userPrompt,
+  ].join("\n");
+}
+
+function createResearchFinalPrompt(userPrompt: string) {
+  return [
+    "Turn the refined draft into the final answer that will be sent to Feishu.",
+    "Use plain text, keep it actionable, and do not include markdown unless it materially improves clarity.",
+    "Make the output ready to send as a task-style message.",
+    "",
+    "Shared task:",
+    "{{memory.shared.problem.task}}",
+    "",
+    "Analysis summary:",
+    "{{memory.shared.analysis.summary}}",
+    "",
+    "Refined draft:",
+    "{{input}}",
+    "",
+    "Original user request:",
+    userPrompt,
+  ].join("\n");
+}
+
 function createFeishuDispatchPrompt(userPrompt: string) {
   return [
     "Turn the upstream context into a Feishu-ready task dispatch message.",
@@ -901,6 +1122,297 @@ function getToolArgumentsJson(
   }
 
   return null;
+}
+
+function createFixedResearchDeliverySkeleton(params: {
+  draft: AIWorkflowDraft;
+  userPrompt: string;
+  defaultAi: DefaultAiBlueprint;
+}) {
+  const workingDraft: AIWorkflowDraft = structuredClone(params.draft);
+  const existingIds = new Set(workingDraft.nodes.map((node) => node.id));
+  const triggerNode = workingDraft.nodes.find(
+    (node) => node.type === "MANUAL_TRIGGER" || node.type === "WEBHOOK_TRIGGER",
+  ) ?? {
+    id: createDraftNodeId(existingIds, "trigger"),
+    type: "WEBHOOK_TRIGGER",
+    column: 0,
+    row: 1,
+    config: {
+      memoryWrites: [],
+    },
+  };
+
+  const browserNodeId = createDraftNodeId(existingIds, "research_page");
+  const analyzeNodeId = createDraftNodeId(existingIds, "analyze_research");
+  const loopNodeId = createDraftNodeId(existingIds, "loop_refine");
+  const refineNodeId = createDraftNodeId(existingIds, "refine_research");
+  const finalNodeId = createDraftNodeId(existingIds, "final_message");
+  const deliveryNodeId = createDraftNodeId(existingIds, "deliver_feishu");
+
+  const browserNode: AIWorkflowDraft["nodes"][number] = {
+    id: browserNodeId,
+    type: "TOOL",
+    column: 1,
+    row: 1,
+    config: {
+      provider: "INTERNAL",
+      toolId: "internal.browser_page",
+      argumentsJson: JSON.stringify(
+        {
+          url: "{{trigger.body.url}}",
+          maxChars: 4000,
+          includeLinks: true,
+        },
+        null,
+        2,
+      ),
+      memoryWrites: [],
+    },
+  };
+
+  const analyzeNode: AIWorkflowDraft["nodes"][number] = {
+    id: analyzeNodeId,
+    type: "AI_TEXT",
+    column: 2,
+    row: 1,
+    config: {
+      provider: params.defaultAi.provider,
+      model: params.defaultAi.model,
+      credentialName: params.defaultAi.credentialName,
+      credentialField: params.defaultAi.credentialField,
+      system:
+        "Summarize the browser output into a concise research analysis. Focus on facts, context, and implications.",
+      prompt: createResearchAnalyzePrompt(params.userPrompt),
+      memoryWrites: [],
+    },
+  };
+
+  const loopNode: AIWorkflowDraft["nodes"][number] = {
+    id: loopNodeId,
+    type: "LOOP",
+    column: 3,
+    row: 0,
+    config: {
+      maxIterations: extractLoopIterationLimit(params.userPrompt),
+      memoryWrites: [],
+    },
+  };
+
+  const refineNode: AIWorkflowDraft["nodes"][number] = {
+    id: refineNodeId,
+    type: "AI_TEXT",
+    column: 4,
+    row: 1,
+    config: {
+      provider: params.defaultAi.provider,
+      model: params.defaultAi.model,
+      credentialName: params.defaultAi.credentialName,
+      credentialField: params.defaultAi.credentialField,
+      system:
+        "Refine the draft for the current loop attempt. Keep it concise and improve usefulness without adding unsupported claims.",
+      prompt: createResearchRefinePrompt(params.userPrompt),
+      memoryWrites: [],
+    },
+  };
+
+  const finalNode: AIWorkflowDraft["nodes"][number] = {
+    id: finalNodeId,
+    type: "AI_TEXT",
+    column: 5,
+    row: 1,
+    config: {
+      provider: params.defaultAi.provider,
+      model: params.defaultAi.model,
+      credentialName: params.defaultAi.credentialName,
+      credentialField: params.defaultAi.credentialField,
+      system:
+        "Return plain text only. Make the output ready for delivery to Feishu as a task-style message.",
+      prompt: createResearchFinalPrompt(params.userPrompt),
+      memoryWrites: [],
+    },
+  };
+
+  const deliveryNode: AIWorkflowDraft["nodes"][number] = {
+    id: deliveryNodeId,
+    type: "TOOL",
+    column: 6,
+    row: 1,
+    config: {
+      provider: "FEISHU",
+      toolId: "feishu.message.send",
+      argumentsJson: JSON.stringify(
+        {
+          text: "{{memory.shared.answers.final}}",
+        },
+        null,
+        2,
+      ),
+      memoryWrites: [],
+    },
+  };
+
+  workingDraft.nodes = [
+    triggerNode,
+    browserNode,
+    analyzeNode,
+    loopNode,
+    refineNode,
+    finalNode,
+    deliveryNode,
+  ];
+
+  workingDraft.edges = [
+    { source: triggerNode.id, target: browserNodeId, role: "DEFAULT" },
+    { source: browserNodeId, target: analyzeNodeId, role: "DEFAULT" },
+    { source: analyzeNodeId, target: refineNodeId, role: "DEFAULT" },
+    { source: loopNodeId, target: refineNodeId, role: "LOOP_BODY" },
+    { source: refineNodeId, target: loopNodeId, role: "LOOP_BACK" },
+    { source: refineNodeId, target: finalNodeId, role: "DEFAULT" },
+    { source: finalNodeId, target: deliveryNodeId, role: "DEFAULT" },
+  ];
+
+  ensureNodeMemoryWrite(triggerNode, {
+    scope: "SHARED",
+    namespace: "problem",
+    key: "task",
+    value: "{{trigger.body.message}}",
+    visibility: "PUBLIC",
+    persist: true,
+    semanticIndex: false,
+  });
+
+  ensureNodeMemoryWrite(triggerNode, {
+    scope: "SHARED",
+    namespace: "problem",
+    key: "raw",
+    value: "{{trigger.body}}",
+    visibility: "PUBLIC",
+    persist: true,
+    semanticIndex: false,
+  });
+
+  ensureNodeMemoryWrite(triggerNode, {
+    scope: "SHARED",
+    namespace: "problem",
+    key: "url",
+    value: "{{trigger.body.url}}",
+    visibility: "PUBLIC",
+    persist: true,
+    semanticIndex: false,
+  });
+
+  ensureNodeMemoryWrite(browserNode, {
+    scope: "SHARED",
+    namespace: "research",
+    key: "context",
+    value: "{{current.output.result}}",
+    visibility: "PUBLIC",
+    persist: true,
+    semanticIndex: false,
+  });
+
+  ensureNodeMemoryWrite(browserNode, {
+    scope: "SHARED",
+    namespace: "research",
+    key: "url",
+    value: "{{current.output.finalUrl}}",
+    visibility: "PUBLIC",
+    persist: true,
+    semanticIndex: false,
+  });
+
+  ensureNodeMemoryWrite(browserNode, {
+    scope: "SHARED",
+    namespace: "research",
+    key: "summary",
+    value: "{{current.output.excerpt}}",
+    visibility: "PUBLIC",
+    persist: true,
+    semanticIndex: false,
+  });
+
+  ensureNodeMemoryWrite(analyzeNode, {
+    scope: "SHARED",
+    namespace: "analysis",
+    key: "summary",
+    value: "{{current.output.text}}",
+    visibility: "PUBLIC",
+    persist: false,
+    semanticIndex: false,
+  });
+
+  ensureNodeMemoryWrite(analyzeNode, {
+    scope: "NODE",
+    namespace: "analysis",
+    key: "draft",
+    value: "{{current.output.text}}",
+    visibility: "PRIVATE",
+  });
+
+  ensureNodeMemoryWrite(refineNode, {
+    scope: "NODE",
+    namespace: "refinement",
+    key: "draft",
+    value: "{{current.output.text}}",
+    visibility: "PRIVATE",
+  });
+
+  ensureNodeMemoryWrite(refineNode, {
+    scope: "SHARED",
+    namespace: "analysis",
+    key: "refined",
+    value: "{{current.output.text}}",
+    visibility: "PUBLIC",
+    persist: true,
+    semanticIndex: false,
+  });
+
+  ensureNodeMemoryWrite(finalNode, {
+    scope: "SHARED",
+    namespace: "answers",
+    key: "final",
+    value: "{{current.output.text}}",
+    visibility: "PUBLIC",
+    persist: true,
+    semanticIndex: false,
+  });
+
+  ensureNodeMemoryWrite(loopNode, {
+    scope: "SHARED",
+    namespace: "loop",
+    key: "attempt",
+    value: "{{current.output.attempt}}",
+    visibility: "PUBLIC",
+    persist: false,
+    semanticIndex: false,
+  });
+
+  ensureNodeMemoryWrite(loopNode, {
+    scope: "SHARED",
+    namespace: "loop",
+    key: "isFinalAttempt",
+    value: "{{current.output.isFinalAttempt}}",
+    visibility: "PUBLIC",
+    persist: false,
+    semanticIndex: false,
+  });
+
+  ensureNodeMemoryWrite(loopNode, {
+    scope: "SHARED",
+    namespace: "loop",
+    key: "maxIterations",
+    value: "{{current.output.maxIterations}}",
+    visibility: "PUBLIC",
+    persist: false,
+    semanticIndex: false,
+  });
+
+  workingDraft.notes.push(
+    "Expanded the draft into a fixed browser -> analyze -> loop -> final -> Feishu research workflow with stable shared and private memory keys. The workflow expects trigger.body.url for research input and keeps problem, research, analysis, loop, and answers memory namespaces distinct.",
+  );
+
+  return workingDraft;
 }
 
 function createFeishuToolNodeFromTemplate(params: {
@@ -1945,6 +2457,10 @@ export async function generateWorkflowDraft(params: {
     fields: parseCredentialFields(credential.metadata),
   }));
 
+  const selectedCredential = userCredentials.find(
+    (credential) => credential.id === params.input.credentialId,
+  );
+
   const model = await createGeneratorModel({
     userId: params.userId,
     provider: params.input.provider,
@@ -1966,25 +2482,44 @@ export async function generateWorkflowDraft(params: {
   });
 
   const draft = parseGeneratedWorkflowDraft(result.text);
-  const promotedDraft = promoteProblemSolvingDraft({
-    draft,
-    userPrompt: params.input.prompt,
-    mode: params.input.mode,
-  });
-  const feishuNormalizedDraft = normalizeFeishuDeliveryDraft({
-    draft: promotedDraft,
-    userPrompt: params.input.prompt,
-  });
-  const complexPromotedDraft = promoteComplexWorkflowDraft({
-    draft: feishuNormalizedDraft,
-    userPrompt: params.input.prompt,
-    mode: params.input.mode,
-  });
-  const triggerNormalizedDraft = normalizePreferredTriggerType({
-    draft: complexPromotedDraft,
-    preferredTriggerType: params.preferredTriggerType,
-  });
-  const normalizedDraft = normalizeLoopDraft(triggerNormalizedDraft);
+
+  const defaultAiBlueprint: DefaultAiBlueprint = {
+    provider: params.input.provider,
+    model: model.modelId,
+    credentialName: selectedCredential?.name,
+    credentialField: params.input.credentialField,
+  };
+
+  const normalizedDraft =
+    params.input.mode === "RESEARCH_DELIVERY"
+      ? normalizeLoopDraft(
+          normalizePreferredTriggerType({
+            draft: createFixedResearchDeliverySkeleton({
+              draft,
+              userPrompt: params.input.prompt,
+              defaultAi: defaultAiBlueprint,
+            }),
+            preferredTriggerType: "WEBHOOK_TRIGGER",
+          }),
+        )
+      : normalizeLoopDraft(
+          normalizePreferredTriggerType({
+            draft: promoteComplexWorkflowDraft({
+              draft: normalizeFeishuDeliveryDraft({
+                draft: promoteProblemSolvingDraft({
+                  draft,
+                  userPrompt: params.input.prompt,
+                  mode: params.input.mode,
+                }),
+                userPrompt: params.input.prompt,
+              }),
+              userPrompt: params.input.prompt,
+              mode: params.input.mode,
+            }),
+            preferredTriggerType: params.preferredTriggerType,
+          }),
+        );
+
   validateGeneratedDraft(normalizedDraft);
 
   return mapGeneratedDraftToCanvas({
