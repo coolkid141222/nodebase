@@ -54,7 +54,7 @@ const EXAMPLE_PROMPTS = [
   "Build a problem-solving workflow that researches a public page with a browser tool, analyzes the findings with AI, drafts a final answer, and posts it to Feishu.",
   "Design a workflow that refines a draft in a local loop up to 3 iterations, rewrites the final result into a Feishu-friendly task update, and sends it with the native Feishu tool node.",
   "Create a research workflow that gathers context from a URL, extracts the key findings, drafts an executive summary with AI, and sends the result to Discord.",
-  "Search China University of Geosciences Wuhan official website (cug.edu.cn) for latest news, fetch each news article from the same domain (max 10 articles), summarize each, merge into a final report, and send to Feishu.",
+  "Search the web for latest news about a topic, analyze with AI, and send results to Feishu.",
 ] as const;
 
 const AI_CREDENTIAL_PROVIDERS = new Set([

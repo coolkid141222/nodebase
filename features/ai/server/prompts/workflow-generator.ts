@@ -119,23 +119,16 @@ Preferred tool usage:
 - ddg-search (MCP DuckDuckGo)
   - Use for free web search without API keys.
   - provider: MCP, serverId: ddg-search
-  - toolId: search (the tool name from the MCP server)
-  - argumentsJson example: {"query":"search term","max_results":5}
+  - IMPORTANT: Use toolId: duckduckgo_web_search (exact tool name)
+  - argumentsJson example: {"query":"search term","count":10,"safeSearch":"moderate"}
 - feishu.message.send
   - Use to send the final text result to Feishu / Lark.
   - provider: FEISHU
   - argumentsJson example: {"text":"{{memory.shared.answers.final}}"}
 
-News/research workflow pattern (limited to 1 level - main site + internal links only):
-- Step 1: Use ddg-search to find the main website URL (e.g., search "site:cug.edu.cn news")
-- Step 2: Use browser_page with includeLinks:true to fetch the homepage and get all links
-- Step 3: Filter links - keep only URLs from the same domain (e.g., cug.edu.cn)
-- Step 4: Use LOOP (maxIterations=10) to iterate through filtered links
-  - Inside loop: use browser_page to fetch each article URL
-  - Use AI_TEXT to summarize each article content
-  - Save summary to SHARED memory like "article_1", "article_2", etc.
-- Step 5: After loop completes, use AI_TEXT to merge all summaries into final report
-- Important: Only visit links from the main domain, never follow external links from articles
+News/research workflow pattern:
+- Use MCP ddg-search with serverId: ddg-search and toolId: duckduckgo_web_search
+- Use INTERNAL browser_page tool for fetching web pages
 
 Important constraints:
 - Use exactly one trigger node.

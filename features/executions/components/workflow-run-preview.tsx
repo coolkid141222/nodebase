@@ -3,7 +3,7 @@
 import { memo, useMemo, useState } from "react";
 import Link from "next/link";
 import { formatDistanceToNow } from "date-fns";
-import { Check, Clock3, X, Copy, Loader2 } from "lucide-react";
+import { Check, Clock3, X, Copy } from "lucide-react";
 import {
   Card,
   CardContent,
@@ -100,7 +100,6 @@ function StatusChip({ status }: { status: StatusValue }) {
       {status === "PENDING" && <Clock3 className="size-3" />}
       {status === "CANCELED" && <Clock3 className="size-3" />}
       {status === "SKIPPED" && <Clock3 className="size-3" />}
-      {status === "RUNNING" && <Loader2 className="size-3 animate-spin" />}
       <span className="uppercase tracking-wide">{status}</span>
     </div>
   );
