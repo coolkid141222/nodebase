@@ -65,12 +65,12 @@ export const LoopNode = memo((props: NodeProps) => {
             <BaseHandle
               id="target-main"
               type="target"
-              position={Position.Top}
+              position={Position.Left}
             />
             <BaseHandle
               id="source-main"
               type="source"
-              position={Position.Bottom}
+              position={Position.Right}
             />
           </>
         }
