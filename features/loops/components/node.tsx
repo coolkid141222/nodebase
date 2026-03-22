@@ -62,18 +62,16 @@ export const LoopNode = memo((props: NodeProps) => {
         hideDefaultHandles
         handles={
           <>
-            {/* Left = source (to body), Right = target (from body) */}
+            {/* Left = source (发出), Right = target (接收) */}
             <BaseHandle
               id="source-main"
               type="source"
-              position={Position.Bottom}
-              style={{ left: "30%" }}
+              position={Position.Left}
             />
             <BaseHandle
               id="target-main"
               type="target"
-              position={Position.Bottom}
-              style={{ left: "70%" }}
+              position={Position.Right}
             />
           </>
         }
