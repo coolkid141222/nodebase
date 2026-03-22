@@ -1558,6 +1558,19 @@ function normalizeFeishuDeliveryDraft(params: {
   return workingDraft;
 }
 
+function deduplicateEdges(
+  edges: AIWorkflowDraft["edges"],
+): AIWorkflowDraft["edges"] {
+  const seen = new Map<string, AIWorkflowDraft["edges"][number]>();
+  for (const edge of edges) {
+    const key = `${edge.source}:${edge.target}:${edge.role}`;
+    if (!seen.has(key)) {
+      seen.set(key, edge);
+    }
+  }
+  return Array.from(seen.values());
+}
+
 function normalizeLoopDraft(draft: AIWorkflowDraft) {
   const workingDraft: AIWorkflowDraft = structuredClone(draft);
   const nodeTypeById = new Map(
@@ -1692,15 +1705,7 @@ function normalizeLoopDraft(draft: AIWorkflowDraft) {
     }
   }
 
-  const dedupedEdges = new Map<string, AIWorkflowDraft["edges"][number]>();
-  for (const edge of workingDraft.edges) {
-    const key = `${edge.source}:${edge.target}:${edge.role}`;
-    if (!dedupedEdges.has(key)) {
-      dedupedEdges.set(key, edge);
-    }
-  }
-
-  workingDraft.edges = Array.from(dedupedEdges.values());
+  workingDraft.edges = deduplicateEdges(workingDraft.edges);
 
   return workingDraft;
 }
