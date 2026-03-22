@@ -154,6 +154,11 @@ export const AITextDialog = ({
     name: "toolEnabled",
     defaultValue: defaultToolEnabled,
   });
+  const toolProvider = useWatch({
+    control: form.control,
+    name: "toolProvider",
+    defaultValue: defaultToolProvider,
+  });
   const memoryContextEnabled = useWatch({
     control: form.control,
     name: "memoryContextEnabled",
@@ -174,16 +179,19 @@ export const AITextDialog = ({
     name: "toolId",
     defaultValue: defaultToolId,
   });
+  const toolServerId = useWatch({
+    control: form.control,
+    name: "toolServerId",
+    defaultValue: defaultToolServerId,
+  });
   const credentials = (credentialsQuery.data ?? []).filter(
     (credential) => credential.provider === selectedProvider,
   );
-  const browserTools = (registryQuery.data?.tools ?? []).filter(
-    (tool) =>
-      tool.provider === "INTERNAL" &&
-      tool.capabilities.includes("BROWSER") &&
-      tool.lifecycle === "READY",
+  const mcpServers = registryQuery.data?.mcpServers ?? [];
+  const availableTools = (registryQuery.data?.tools ?? []).filter(
+    (tool) => tool.lifecycle === "READY",
   );
-  const selectedBrowserTool = browserTools.find((tool) => tool.id === toolId);
+  const selectedTool = availableTools.find((tool) => tool.id === toolId);
   const {
     fields: memoryWriteFields,
     append: appendMemoryWrite,
@@ -235,11 +243,11 @@ export const AITextDialog = ({
   ]);
 
   useEffect(() => {
-    if (!toolEnabled || toolId || browserTools.length === 0) {
+    if (!toolEnabled || toolId || availableTools.length === 0) {
       return;
     }
 
-    const defaultTool = browserTools[0];
+    const defaultTool = availableTools[0];
     form.setValue("toolProvider", "INTERNAL", {
       shouldDirty: true,
     });
@@ -253,7 +261,7 @@ export const AITextDialog = ({
     form.setValue("toolDisplayName", defaultTool.displayName, {
       shouldDirty: true,
     });
-  }, [browserTools, form, toolEnabled, toolId]);
+  }, [availableTools, form, toolEnabled, toolId]);
 
   const insertIntoField = (
     field: "system" | "prompt",
@@ -491,7 +499,7 @@ export const AITextDialog = ({
                     value={toolId || "none"}
                     onValueChange={(value) => {
                       const nextToolId = value === "none" ? "" : value;
-                      const nextTool = browserTools.find(
+                      const nextTool = availableTools.find(
                         (tool) => tool.id === nextToolId,
                       );
                       form.setValue("toolProvider", "INTERNAL", {
@@ -514,7 +522,7 @@ export const AITextDialog = ({
                     </SelectTrigger>
                     <SelectContent>
                       <SelectItem value="none">{t("common.chooseLater")}</SelectItem>
-                      {browserTools.map((tool) => (
+                      {availableTools.map((tool) => (
                         <SelectItem key={tool.id} value={tool.id}>
                           {tool.displayName}
                         </SelectItem>
@@ -522,9 +530,9 @@ export const AITextDialog = ({
                     </SelectContent>
                   </Select>
                   <FieldDescription>
-                    {browserTools.length === 0
+                    {availableTools.length === 0
                       ? t("dialog.ai.noBrowserTools")
-                      : selectedBrowserTool?.description ??
+                      : selectedTool?.description ??
                         t("dialog.ai.chooseBrowserTool")}
                   </FieldDescription>
                   <FieldError errors={[form.formState.errors.toolId]} />
@@ -548,7 +556,7 @@ export const AITextDialog = ({
                       className="resize-none font-mono text-sm"
                       {...form.register("toolArgumentsJson")}
                       placeholder={getToolArgumentsPlaceholder(
-                        selectedBrowserTool?.id ?? toolId,
+                        selectedTool?.id ?? toolId,
                       )}
                     />
                   </Field>

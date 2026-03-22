@@ -1,23 +1,29 @@
 "use client";
 
-import { memo, useMemo } from "react";
+import { memo, useMemo, useState } from "react";
 import Link from "next/link";
 import { formatDistanceToNow } from "date-fns";
-import { Check, Clock3, X } from "lucide-react";
+import { Check, Clock3, X, Copy, Loader2 } from "lucide-react";
 import {
   Card,
   CardContent,
   CardDescription,
   CardHeader,
 } from "@/components/card";
+import { Button } from "@/components/button";
 import { ExecutionStatus, ExecutionStepStatus } from "@/lib/prisma/client";
 import { useWorkflowExecutionStatus } from "./workflow-execution-status-context";
 import { useI18n } from "@/features/i18n/provider";
+import { toast } from "sonner";
+import { cn } from "@/lib/utils";
 
 type StatusValue = ExecutionStatus | ExecutionStepStatus;
 type PreviewExecution = {
+  id: string;
   status: ExecutionStatus;
+  createdAt: Date;
   steps: Array<{
+    id: string;
     nodeType: string;
     nodeName: string;
     status: ExecutionStepStatus;
@@ -32,17 +38,32 @@ type AITextPreview = {
   model?: string;
 };
 
+// Fields to filter out from output display
+const FILTERED_FIELDS = [
+  '_raw',
+  '_metadata',
+  'timestamp',
+  'requestId',
+  'traceId',
+  'spanId',
+  'duration',
+  'createdAt',
+  'updatedAt',
+  '__typename',
+  '__schema',
+];
+
 function getExecutionStatusClasses(status: StatusValue) {
   switch (status) {
     case "RUNNING":
     case "PENDING":
-      return "bg-blue-600 text-white shadow-[0_0_0_4px_rgba(37,99,235,0.12)]";
+      return "bg-blue-600 text-white";
     case "SUCCESS":
-      return "bg-emerald-600 text-white shadow-[0_0_0_4px_rgba(5,150,105,0.12)]";
+      return "bg-emerald-600 text-white";
     case "FAILED":
-      return "bg-red-600 text-white shadow-[0_0_0_4px_rgba(220,38,38,0.12)]";
+      return "bg-red-600 text-white";
     case "CANCELED":
-      return "bg-zinc-500 text-white shadow-[0_0_0_4px_rgba(113,113,122,0.12)]";
+      return "bg-zinc-500 text-white";
     default:
       return "bg-gray-500 text-white";
   }
@@ -64,176 +85,97 @@ function getExecutionAccentClass(status: ExecutionStatus) {
   }
 }
 
-function StatusChip({
-  status,
-}: {
-  status: StatusValue;
-}) {
+function StatusChip({ status }: { status: StatusValue }) {
   const classes = getExecutionStatusClasses(status);
 
   return (
     <div
-      className={`inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-[11px] font-medium ${classes}`}
+      className={cn(
+        "inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-[11px] font-medium",
+        classes
+      )}
     >
       {status === "SUCCESS" && <Check className="size-3" />}
       {status === "FAILED" && <X className="size-3" />}
       {status === "PENDING" && <Clock3 className="size-3" />}
       {status === "CANCELED" && <Clock3 className="size-3" />}
       {status === "SKIPPED" && <Clock3 className="size-3" />}
+      {status === "RUNNING" && <Loader2 className="size-3 animate-spin" />}
       <span className="uppercase tracking-wide">{status}</span>
     </div>
   );
 }
 
-function getResultLabel(
-  executionStatus: ExecutionStatus,
-  stepStatus?: ExecutionStepStatus,
-  t?: (key: string) => string,
-) {
-  if (stepStatus === "FAILED" || executionStatus === "FAILED") {
-    return t ? t("preview.resultError") : "Error";
+function filterOutputData(value: unknown): unknown {
+  if (value === null || value === undefined) {
+    return value;
   }
 
-  if (stepStatus === "RUNNING") {
-    return t ? t("preview.currentOutput") : "Current output";
+  if (typeof value !== 'object') {
+    return value;
   }
 
-  if (executionStatus === ExecutionStatus.RUNNING || executionStatus === ExecutionStatus.PENDING) {
-    return t ? t("preview.latestOutput") : "Latest output";
+  if (Array.isArray(value)) {
+    return value.map(filterOutputData).filter(v => v !== null && v !== undefined && v !== '');
   }
 
-  return t ? t("preview.result") : "Result";
+  const obj = value as Record<string, unknown>;
+  const filtered: Record<string, unknown> = {};
+
+  for (const [key, val] of Object.entries(obj)) {
+    if (FILTERED_FIELDS.includes(key)) continue;
+    if (key.startsWith('_')) continue;
+    if (val === null || val === undefined) continue;
+    if (typeof val === 'string' && val.trim() === '') continue;
+
+    filtered[key] = filterOutputData(val);
+  }
+
+  return filtered;
 }
 
-function getStepSummaryNote(
-  executionStatus: ExecutionStatus,
-  stepStatus?: ExecutionStepStatus,
-  t?: (key: string) => string,
-) {
-  if (!stepStatus) {
-    return t ? t("preview.noStepOutput") : "No step has produced output yet.";
+function formatOutputValue(value: unknown, maxDepth = 3, currentDepth = 0): string {
+  if (currentDepth >= maxDepth) {
+    return typeof value === 'string' ? value : JSON.stringify(value);
   }
 
-  if (stepStatus === "RUNNING") {
-    return t ? t("preview.stepRunning") : "This step is still processing.";
+  if (value === null) return 'null';
+  if (value === undefined) return 'undefined';
+
+  if (typeof value === 'string') {
+    return value.trim() || '';
   }
 
-  if (executionStatus === ExecutionStatus.RUNNING || executionStatus === ExecutionStatus.PENDING) {
-    return t ? t("preview.latestFinished") : "Latest finished step while the workflow continues.";
+  if (typeof value === 'number' || typeof value === 'boolean') {
+    return String(value);
   }
 
-  return t ? t("preview.finalOutput") : "Final step output for this run.";
-}
-
-function pickFocusedStep(
-  execution: PreviewExecution,
-  executionStatus: ExecutionStatus,
-) {
-  const steps = execution.steps;
-  const terminalSteps = [...steps].reverse();
-
-  if (
-    executionStatus === ExecutionStatus.RUNNING ||
-    executionStatus === ExecutionStatus.PENDING
-  ) {
-    return (
-      steps.find((step) => step.status === ExecutionStepStatus.RUNNING) ??
-      terminalSteps.find(
-        (step) =>
-          step.status === "SUCCESS" &&
-          step.nodeType !== "MANUAL_TRIGGER" &&
-          step.nodeType !== "WEBHOOK_TRIGGER",
-      ) ??
-      terminalSteps.find((step) => step.status === "FAILED") ??
-      steps.find((step) => step.status === "FAILED") ??
-      steps.at(-1)
-    );
+  if (Array.isArray(value)) {
+    if (value.length === 0) return '[]';
+    const items = value.map(v => formatOutputValue(v, maxDepth, currentDepth + 1)).filter(Boolean);
+    return items.length > 0 ? items.join('\n') : '[]';
   }
 
-  return (
-    terminalSteps.find(
-      (step) =>
-        step.status === "SUCCESS" &&
-        step.nodeType !== "MANUAL_TRIGGER" &&
-        step.nodeType !== "WEBHOOK_TRIGGER",
-    ) ??
-    terminalSteps.find((step) => step.status === "FAILED") ??
-    terminalSteps.find((step) => step.output != null) ??
-    steps.at(-1)
-  );
-}
-
-function pickResultStep(
-  execution: PreviewExecution,
-  executionStatus: ExecutionStatus,
-  focusedStep:
-    | PreviewExecution["steps"][number]
-    | undefined,
-) {
-  const terminalSteps = [...execution.steps].reverse();
-
-  if (
-    executionStatus === ExecutionStatus.RUNNING ||
-    executionStatus === ExecutionStatus.PENDING
-  ) {
-    return (
-      terminalSteps.find(
-        (step) =>
-          step.output != null &&
-          step.nodeType !== "MANUAL_TRIGGER" &&
-          step.nodeType !== "WEBHOOK_TRIGGER",
-      ) ??
-      terminalSteps.find((step) => step.error != null) ??
-      terminalSteps.find((step) => step.output != null) ??
-      focusedStep
-    );
-  }
-
-  return focusedStep;
-}
-
-function extractPreviewResult(value: unknown) {
-  if (value == null) {
-    return "";
-  }
-
-  if (typeof value === "string") {
-    return value.trim();
-  }
-
-  if (
-    typeof value === "object" &&
-    value !== null &&
-    !Array.isArray(value) &&
-    "text" in value &&
-    typeof (value as { text?: unknown }).text === "string"
-  ) {
-    return ((value as { text: string }).text || "").trim();
-  }
-
-  const sourceText =
-    JSON.stringify(value, null, 2);
-
-  try {
-    const regex = /"text"\s*:\s*"([^"]+)"/g;
-    const matches = Array.from(sourceText.matchAll(regex));
-
-    if (matches.length > 0) {
-      return matches
-        .map((match) => match[1] ?? match[0] ?? "")
-        .filter(Boolean)
-        .join("\n");
+  if (typeof value === 'object') {
+    const filtered = filterOutputData(value);
+    if (typeof filtered !== 'object' || filtered === null) {
+      return String(filtered);
     }
 
-    const textMatch = sourceText.match(/^\s*([^{}\[\]]{8,})\s*$/m);
-    if (textMatch?.[1]) {
-      return textMatch[1].trim();
+    // Try to extract text field for AI outputs
+    if ('text' in filtered && typeof (filtered as { text?: unknown }).text === 'string') {
+      return ((filtered as { text: string }).text || '').trim();
     }
 
-    return sourceText.slice(0, 240).trim();
-  } catch {
-    return sourceText.slice(0, 240).trim();
+    // For other objects, show as formatted JSON (truncated)
+    const str = JSON.stringify(filtered, null, 2);
+    if (str.length > 500) {
+      return str.slice(0, 500) + '...';
+    }
+    return str;
   }
+
+  return String(value);
 }
 
 function extractAITextPreview(value: unknown): AITextPreview | null {
@@ -266,56 +208,43 @@ function extractAITextPreview(value: unknown): AITextPreview | null {
   };
 }
 
-function pickLatestAITextStep(execution: PreviewExecution) {
-  return [...execution.steps].reverse().find(
-    (step) =>
-      step.nodeType === "AI_TEXT" &&
-      step.status === ExecutionStepStatus.SUCCESS &&
-      extractAITextPreview(step.output) !== null,
-  );
-}
-
 const ExecutionPreviewCard = memo(function ExecutionPreviewCard() {
   const { t, dateLocale } = useI18n();
   const execution = useWorkflowExecutionStatus();
-  const {
-    executionStatus,
-    focusedStep,
-    resultStep,
-    aiTextPreview,
-    previewResult,
-  } = useMemo(() => {
-    if (!execution) {
-      return {
-        executionStatus: undefined,
-        focusedStep: undefined,
-        resultStep: undefined,
-        aiTextPreview: null,
-        previewResult: "",
-      };
+  const [selectedStepId, setSelectedStepId] = useState<string | null>(null);
+  const [copied, setCopied] = useState(false);
+
+  // Get steps that have output or error
+  const stepList = useMemo(() => {
+    if (!execution?.steps) return [];
+    return execution.steps.filter(
+      step => step.output != null || step.error != null || step.status === 'RUNNING'
+    );
+  }, [execution?.steps]);
+
+  // Determine which step to show
+  const activeStep = useMemo(() => {
+    if (!execution) return null;
+
+    if (selectedStepId) {
+      return execution.steps.find(s => s.id === selectedStepId) || null;
     }
 
-    const nextExecutionStatus = execution.status;
-    const nextFocusedStep = pickFocusedStep(execution, nextExecutionStatus);
-    const nextResultStep = pickResultStep(
-      execution,
-      nextExecutionStatus,
-      nextFocusedStep,
-    );
-    const aiTextStep = pickLatestAITextStep(execution);
+    // Find latest step with output
+    const stepsWithOutput = [...execution.steps].reverse();
+    return stepsWithOutput.find(s => s.output != null || s.error) || execution.steps[0] || null;
+  }, [execution, selectedStepId]);
 
-    return {
-      executionStatus: nextExecutionStatus,
-      focusedStep: nextFocusedStep,
-      resultStep: nextResultStep,
-      aiTextPreview: aiTextStep
-        ? extractAITextPreview(aiTextStep.output)
-        : null,
-      previewResult: extractPreviewResult(
-        nextResultStep?.output ?? nextResultStep?.error,
-      ),
-    };
-  }, [execution]);
+  const aiTextPreview = activeStep ? extractAITextPreview(activeStep.output) : null;
+  const outputText = activeStep ? formatOutputValue(activeStep.output ?? activeStep.error) : '';
+
+  const handleCopy = async () => {
+    if (!outputText) return;
+    await navigator.clipboard.writeText(outputText);
+    setCopied(true);
+    toast.success(t("preview.copied") || "Copied to clipboard");
+    setTimeout(() => setCopied(false), 2000);
+  };
 
   if (!execution) {
     return (
@@ -342,16 +271,16 @@ const ExecutionPreviewCard = memo(function ExecutionPreviewCard() {
 
   return (
     <Card className="flex h-full min-h-0 w-full min-w-0 flex-col overflow-hidden border-border/60 bg-background/95 shadow-sm">
-      <div className={`h-1 w-full ${getExecutionAccentClass(executionStatus ?? execution.status)}`} />
+      <div className={cn("h-1 w-full", getExecutionAccentClass(execution.status))} />
       <div className="flex min-h-0 w-full min-w-0 flex-col overflow-y-auto overflow-x-hidden">
-        <CardHeader className="space-y-3 pb-3">
+        <CardHeader className="space-y-3 pb-2">
           <div className="flex items-start justify-between gap-3 min-w-0">
             <div className="min-w-0 space-y-1">
               <CardDescription className="text-[11px] uppercase tracking-[0.18em]">
                 {t("preview.run")}
               </CardDescription>
               <div className="flex flex-wrap items-center gap-2">
-                <StatusChip status={executionStatus ?? execution.status} />
+                <StatusChip status={execution.status} />
                 <span className="text-xs text-muted-foreground break-all">
                   {formatDistanceToNow(new Date(execution.createdAt), {
                     addSuffix: true,
@@ -367,50 +296,63 @@ const ExecutionPreviewCard = memo(function ExecutionPreviewCard() {
               {t("preview.open")}
             </Link>
           </div>
+        </CardHeader>
 
-          {focusedStep && (
-            <div className="rounded-xl border border-border/70 bg-muted/25 p-3">
-              <div className="text-[11px] uppercase tracking-[0.16em] text-muted-foreground">
-                {(executionStatus ?? execution.status) === ExecutionStatus.RUNNING ||
-                (executionStatus ?? execution.status) === ExecutionStatus.PENDING
-                  ? t("preview.focusedStep")
-                  : t("preview.finalStep")}
-              </div>
-              <div className="mt-1 truncate text-sm font-medium text-foreground">
-                {focusedStep.nodeName}
-              </div>
-              <div className="mt-1 text-xs leading-5 text-muted-foreground">
-                {getStepSummaryNote(executionStatus ?? execution.status, focusedStep.status, t)}
-              </div>
+        <CardContent className="space-y-3 pb-4">
+          {/* Active Step Info */}
+          {activeStep && (
+            <div className="rounded-lg border bg-muted/30 p-3">
+              <span className="text-sm font-medium">{activeStep.nodeName}</span>
             </div>
           )}
-        </CardHeader>
-        <CardContent className="space-y-2 pb-4">
+
+          {/* AI Text Preview */}
           {aiTextPreview && (
             <div className="space-y-1">
-              <div className="text-xs font-medium text-muted-foreground">
-                {t("preview.llmOutput")}
-              </div>
-              <div className="rounded-xl border border-emerald-200 bg-emerald-50/60 p-3">
+              <div className="flex items-center justify-between">
+                <div className="text-xs font-medium text-muted-foreground">
+                  {t("preview.llmOutput")}
+                </div>
                 {(aiTextPreview.provider || aiTextPreview.model) && (
-                  <div className="mb-2 text-[11px] uppercase tracking-[0.16em] text-emerald-700/80">
-                    {[aiTextPreview.provider, aiTextPreview.model]
-                      .filter(Boolean)
-                      .join(" · ")}
+                  <div className="text-[10px] uppercase tracking-wider text-violet-600">
+                    {[aiTextPreview.provider, aiTextPreview.model].filter(Boolean).join(' · ')}
                   </div>
                 )}
-                <div className="max-h-28 overflow-y-auto overflow-x-hidden break-words text-sm leading-5 text-foreground">
+              </div>
+              <div className="rounded-xl border border-violet-200 bg-violet-50/60 p-3">
+                <div className="max-h-32 overflow-y-auto whitespace-pre-wrap text-sm leading-5 text-foreground">
                   {aiTextPreview.text}
                 </div>
               </div>
             </div>
           )}
+
+          {/* Output Result */}
           <div className="space-y-1">
-            <div className="text-xs font-medium text-muted-foreground">
-              {getResultLabel(executionStatus ?? execution.status, resultStep?.status, t)}
+            <div className="flex items-center justify-between">
+              <div className="text-xs font-medium text-muted-foreground">
+                {activeStep?.error ? t("preview.resultError") : t("preview.result")}
+              </div>
+              {outputText && (
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className="h-6 px-2 text-xs"
+                  onClick={handleCopy}
+                >
+                  {copied ? (
+                    <Check className="size-3 mr-1" />
+                  ) : (
+                    <Copy className="size-3 mr-1" />
+                  )}
+                  {copied ? t("preview.copied") : t("preview.copy")}
+                </Button>
+              )}
             </div>
-            <div className="max-h-28 overflow-y-auto overflow-x-hidden break-words rounded-xl border border-border/70 bg-background p-3 text-sm leading-5">
-              {previewResult || t("preview.noExtractableResult")}
+            <div className="relative rounded-xl border border-border/70 bg-background p-3">
+              <pre className="max-h-40 overflow-y-auto whitespace-pre-wrap text-xs leading-5 text-foreground font-mono">
+                {outputText || t("preview.noExtractableResult")}
+              </pre>
             </div>
           </div>
         </CardContent>

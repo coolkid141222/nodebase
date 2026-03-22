@@ -10,6 +10,29 @@ const browserPageArgumentsSchema = z.object({
 
 export type BrowserPageArguments = z.infer<typeof browserPageArgumentsSchema>;
 
+function normalizeBrowserPageArgumentsInput(input: unknown) {
+  if (typeof input !== "string") {
+    return input;
+  }
+
+  const trimmed = input.trim();
+  if (!trimmed) {
+    return input;
+  }
+
+  if (trimmed.startsWith("{")) {
+    try {
+      return JSON.parse(trimmed);
+    } catch {
+      return input;
+    }
+  }
+
+  return {
+    url: trimmed,
+  };
+}
+
 function decodeHtmlEntities(value: string) {
   return value
     .replace(/&nbsp;/gi, " ")
@@ -113,7 +136,16 @@ function truncate(value: string, maxChars: number) {
 }
 
 export function parseBrowserPageArguments(input: unknown) {
-  return browserPageArgumentsSchema.parse(input);
+  const normalizedInput = normalizeBrowserPageArgumentsInput(input);
+  const parsed = browserPageArgumentsSchema.safeParse(normalizedInput);
+
+  if (parsed.success) {
+    return parsed.data;
+  }
+
+  throw new Error(
+    'Browser Page tool expects either a URL string or a JSON object like {"url":"https://example.com","maxChars":4000,"includeLinks":true}.',
+  );
 }
 
 export async function executeBrowserPageTool(input: BrowserPageArguments) {
