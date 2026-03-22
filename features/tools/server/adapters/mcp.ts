@@ -2,8 +2,10 @@ import type {
   MCPServerConfig,
   MCPServerSummary,
   ToolProviderSummary,
+  RegisteredTool,
 } from "../../shared";
 import { mcpServerConfigSchema } from "../../shared";
+import { getOrCreateMCPServer, callMCPTool } from "./mcp-client";
 
 const DEFAULT_PROVIDER_SUMMARY: ToolProviderSummary = {
   id: "MCP",
@@ -91,6 +93,7 @@ export function getConfiguredMcpServers(): MCPServerSummary[] {
         urlEnv: config.urlEnv,
         headersEnv: config.headersEnv,
         workingDirectory: config.workingDirectory,
+        env: config.env,
       };
     });
   } catch {
@@ -124,4 +127,59 @@ export function getMcpProviderSummary(): ToolProviderSummary {
   }
 
   return DEFAULT_PROVIDER_SUMMARY;
+}
+
+/**
+ * Discover and return all available MCP tools
+ */
+export async function discoverMCPTools(): Promise<RegisteredTool[]> {
+  const servers = getConfiguredMcpServers().filter((s) => s.enabled && s.lifecycle === "DISCOVERY");
+
+  const allTools: RegisteredTool[] = [];
+
+  for (const server of servers) {
+    try {
+      const { tools } = await getOrCreateMCPServer(server);
+      allTools.push(...tools);
+    } catch (error) {
+      console.error(`Failed to initialize MCP server ${server.id}:`, error);
+    }
+  }
+
+  return allTools;
+}
+
+/**
+ * Execute an MCP tool
+ */
+export async function executeMCPTool(params: {
+  serverId: string;
+  toolId: string;
+  arguments: Record<string, unknown>;
+}): Promise<{ ok: boolean; status: number; body: unknown; text: string }> {
+  const { serverId, toolId, arguments: args } = params;
+
+  try {
+    const result = await callMCPTool(serverId, toolId, args);
+
+    // Extract text content from MCP result
+    const textContent = result.content
+      ?.filter((c) => c.type === "text")
+      .map((c) => c.text)
+      .join("\n") || "";
+
+    return {
+      ok: true,
+      status: 200,
+      body: result,
+      text: textContent,
+    };
+  } catch (error) {
+    return {
+      ok: false,
+      status: 500,
+      body: null,
+      text: error instanceof Error ? error.message : String(error),
+    };
+  }
 }

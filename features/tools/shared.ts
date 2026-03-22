@@ -75,10 +75,11 @@ export const mcpServerConfigSchema = z.object({
   toolPrefix: z.string().min(1).optional(),
   command: z.string().min(1).optional(),
   args: z.array(z.string()).default([]),
-  url: z.string().url().optional(),
+  url: z.string().optional(),
   urlEnv: z.string().min(1).optional(),
   headersEnv: z.array(z.string().min(1)).default([]),
   workingDirectory: z.string().min(1).optional(),
+  env: z.record(z.string(), z.string()).optional(),
 });
 export type MCPServerConfig = z.infer<typeof mcpServerConfigSchema>;
 
@@ -93,10 +94,11 @@ export const mcpServerSummarySchema = z.object({
   toolPrefix: z.string().min(1),
   command: z.string().min(1).optional(),
   args: z.array(z.string()).default([]),
-  url: z.string().url().optional(),
+  url: z.string().optional(),
   urlEnv: z.string().min(1).optional(),
   headersEnv: z.array(z.string().min(1)).default([]),
   workingDirectory: z.string().min(1).optional(),
+  env: z.record(z.string(), z.string()).optional(),
 });
 export type MCPServerSummary = z.infer<typeof mcpServerSummarySchema>;
 
