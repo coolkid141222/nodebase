@@ -190,16 +190,11 @@ export function deriveWorkflowNodeStatus(params: {
     return baseStatus;
   }
 
+  // During active loop execution, suppress intermediate SUCCESS states.
+  // If this node's latest step is from an incomplete iteration, keep showing
+  // "loading" so users don't see flashing SUCCESS between loop iterations.
   if (scope && latestStep) {
-    const activeScopeId = activeRunningStep?.nodeId
-      ? loopScopeState.scopeIdByNodeId[activeRunningStep.nodeId]
-      : undefined;
-    const loopIsStillActive =
-      latestStep.attempt < scope.maxIterations || activeScopeId === scope.id;
-
-    if (loopIsStillActive) {
-      return "loading";
-    }
+    return "loading";
   }
 
   if (!activeRunningStep?.nodeId) {
