@@ -4,10 +4,7 @@ import { useEffect, useMemo, useState } from "react";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
-  BotIcon,
   ChevronRightIcon,
-  GitBranchIcon,
-  RotateCwIcon,
   SparklesIcon,
 } from "lucide-react";
 import { useForm, useWatch } from "react-hook-form";
@@ -57,6 +54,7 @@ const EXAMPLE_PROMPTS = [
   "Build a problem-solving workflow that researches a public page with a browser tool, analyzes the findings with AI, drafts a final answer, and posts it to Feishu.",
   "Design a workflow that refines a draft in a local loop up to 3 iterations, rewrites the final result into a Feishu-friendly task update, and sends it with the native Feishu tool node.",
   "Create a research workflow that gathers context from a URL, extracts the key findings, drafts an executive summary with AI, and sends the result to Discord.",
+  "Search China University of Geosciences Wuhan official website (cug.edu.cn) for latest news, fetch each news article from the same domain (max 10 articles), summarize each, merge into a final report, and send to Feishu.",
 ] as const;
 
 const AI_CREDENTIAL_PROVIDERS = new Set([
@@ -281,11 +279,8 @@ export const WorkflowGeneratorDialog = ({
             </FieldGroup>
 
             <FieldGroup className="gap-4 rounded-2xl border border-border/70 bg-muted/10 p-4">
-              <div className="flex items-center gap-2">
-                <BotIcon className="size-4 text-primary" />
-                <div className="text-sm font-medium text-foreground">
-                  {t("workflowGenerator.settings")}
-                </div>
+              <div className="text-sm font-medium text-foreground">
+                {t("workflowGenerator.settings")}
               </div>
 
               <div className="grid gap-4 md:grid-cols-3">
@@ -456,8 +451,7 @@ export const WorkflowGeneratorDialog = ({
                 </div>
 
                 <div className="rounded-xl border border-border/70 bg-background p-4">
-                  <div className="flex items-center gap-2 text-sm font-medium text-foreground">
-                    <GitBranchIcon className="size-4 text-primary" />
+                  <div className="text-sm font-medium text-foreground">
                     {t("workflowGenerator.graphMix")}
                   </div>
                   <div className="flex flex-wrap gap-2 pt-3">
@@ -473,8 +467,7 @@ export const WorkflowGeneratorDialog = ({
                 </div>
 
                 <div className="rounded-xl border border-border/70 bg-background p-4">
-                  <div className="flex items-center gap-2 text-sm font-medium text-foreground">
-                    <RotateCwIcon className="size-4 text-primary" />
+                  <div className="text-sm font-medium text-foreground">
                     {t("workflowGenerator.loop")}
                   </div>
                   <p className="pt-3 text-sm text-muted-foreground">

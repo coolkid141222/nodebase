@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useMemo } from "react";
-import { SearchIcon, ChevronDownIcon, ChevronRightIcon, ClockIcon } from "lucide-react";
+import { ChevronDownIcon, ChevronRightIcon, ClockIcon } from "lucide-react";
 import { Button } from "@/components/button";
 import {
   Card,
@@ -307,12 +307,10 @@ export function MemoryInspector({
         </div>
         <div className="flex flex-wrap items-center gap-2 pt-2">
           <div className="relative flex-1 min-w-[200px]">
-            <SearchIcon className="absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
             <Input
               placeholder="Search keys or values..."
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              className="pl-9"
             />
           </div>
           <select

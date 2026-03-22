@@ -2,7 +2,6 @@
 
 import { useMemo } from "react";
 import { type Edge, type Node, ViewportPortal } from "@xyflow/react";
-import { RotateCwIcon } from "lucide-react";
 import { buildLoopScopes } from "../lib/build-loop-scopes";
 
 type Props = {
@@ -33,8 +32,7 @@ export function LoopScopeOverlays({ nodes, edges }: Props) {
           >
             <div className="absolute inset-0 rounded-[28px] border border-dashed border-primary/30 bg-primary/[0.04] shadow-[inset_0_0_0_1px_rgba(234,88,12,0.05)]" />
             <div className="absolute bottom-4 left-5 inline-flex max-w-[280px] items-center gap-2 rounded-full border border-primary/15 bg-background/95 px-3 py-1.5 shadow-sm backdrop-blur">
-              <div className="inline-flex items-center gap-2 text-[10px] font-semibold uppercase tracking-[0.18em] text-muted-foreground">
-                <RotateCwIcon className="size-3 text-primary/80" />
+              <div className="text-[10px] font-semibold uppercase tracking-[0.18em] text-muted-foreground">
                 Loop Scope
               </div>
               <div className="h-3 w-px bg-border/80" />
