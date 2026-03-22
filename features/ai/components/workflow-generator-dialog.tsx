@@ -55,8 +55,8 @@ const formSchema = generateWorkflowGraphInputSchema.safeExtend({
 const EXAMPLE_PROMPTS = [
   "Create a webhook workflow that receives a user question, analyzes it with AI, rewrites the final answer into a Feishu task dispatch message, and sends it with the native Feishu tool node.",
   "Build a problem-solving workflow that researches a public page with a browser tool, analyzes the findings with AI, drafts a final answer, and posts it to Feishu.",
-  "Design a workflow that refines a draft in a local loop up to 3 iterations, then sends the polished final result to Slack.",
-  "Create a research workflow that gathers context from a URL, extracts the key findings, and sends a concise executive summary to Discord.",
+  "Design a workflow that refines a draft in a local loop up to 3 iterations, rewrites the final result into a Feishu-friendly task update, and sends it with the native Feishu tool node.",
+  "Create a research workflow that gathers context from a URL, extracts the key findings, drafts an executive summary with AI, and sends the result to Discord.",
 ] as const;
 
 const AI_CREDENTIAL_PROVIDERS = new Set([

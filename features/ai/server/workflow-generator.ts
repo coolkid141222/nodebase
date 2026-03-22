@@ -382,7 +382,7 @@ Preferred tool usage:
 - feishu.message.send
   - Use to send the final text result to Feishu / Lark.
   - provider must be FEISHU.
-  - argumentsJson example: {"text":"{{input}}"}
+  - argumentsJson example: {"text":"{{memory.shared.answers.final}}"}
 
 Important constraints:
 - Use exactly one trigger node.
@@ -499,14 +499,40 @@ Required JSON shape:
       }
     },
     {
-      "id": "notify",
-      "type": "SLACK_MESSAGE",
+      "id": "final_message",
+      "type": "AI_TEXT",
       "column": 4,
       "row": 1,
       "config": {
-        "credentialName": "Slack webhook",
-        "credentialField": "webhookUrl",
-        "content": "{{memory.shared.answers.final}}",
+        "provider": "MINIMAX",
+        "model": "MiniMax-M2.5",
+        "credentialName": "MiniMax API",
+        "credentialField": "apiKey",
+        "prompt": "Turn the upstream result into a Feishu-ready task dispatch message. Output plain text only.\\n\\nUpstream context:\\n{{input}}",
+        "memoryWrites": [
+          {
+            "scope": "SHARED",
+            "namespace": "answers",
+            "key": "final",
+            "value": "{{current.output.text}}",
+            "mode": "REPLACE",
+            "visibility": "PUBLIC",
+            "persist": true,
+            "persistenceScope": "WORKFLOW",
+            "semanticIndex": false
+          }
+        ]
+      }
+    },
+    {
+      "id": "deliver_feishu",
+      "type": "TOOL",
+      "column": 5,
+      "row": 1,
+      "config": {
+        "provider": "FEISHU",
+        "toolId": "feishu.message.send",
+        "argumentsJson": "{\\n  \\"text\\": \\"{{memory.shared.answers.final}}\\"\\n}",
         "memoryWrites": []
       }
     }
@@ -516,7 +542,8 @@ Required JSON shape:
     { "source": "research", "target": "writer", "role": "DEFAULT" },
     { "source": "loop", "target": "writer", "role": "LOOP_BODY" },
     { "source": "writer", "target": "loop", "role": "LOOP_BACK" },
-    { "source": "writer", "target": "notify", "role": "DEFAULT" }
+    { "source": "writer", "target": "final_message", "role": "DEFAULT" },
+    { "source": "final_message", "target": "deliver_feishu", "role": "DEFAULT" }
   ]
 }
 
