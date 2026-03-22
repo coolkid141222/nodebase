@@ -1,7 +1,7 @@
 "use client";
 import { Button } from "@/components/button";
 import { SidebarTrigger } from "@/components/sidebar";
-import { SaveIcon, SparklesIcon } from "lucide-react";
+import { SaveIcon, SparklesIcon, DatabaseIcon } from "lucide-react";
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -14,6 +14,7 @@ import { useEffect, useRef, useState } from "react";
 import Link from "next/link"
 import { useSuspenseWorkflow, useUpdateWorkflowName } from "@/features/workflows/hooks/user-workflows";
 import { useExecuteWorkflow } from "@/features/executions/hooks/use-execute-workflow";
+import { PersistentMemoryDialog } from "@/features/executions/components/persistent-memory-dialog";
 import { useAtomValue } from "jotai";
 import { editorAtom } from "../store/atoms";
 import {
@@ -160,6 +161,12 @@ export const EditorHeader = ({ workflowId }: { workflowId: string }) => {
                         <SparklesIcon />
                         {t("editor.generateWithAi")}
                     </Button>
+                    <PersistentMemoryDialog workflowId={workflowId}>
+                        <Button size="sm" variant="outline">
+                            <DatabaseIcon className="mr-2 size-4" />
+                            {t("persistentMemory.button") || "Memory"}
+                        </Button>
+                    </PersistentMemoryDialog>
                     <Button
                         size="sm"
                         onClick={() => void workflowExecution.saveWorkflow()}

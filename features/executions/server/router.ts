@@ -3,7 +3,7 @@ import { z } from "zod";
 import { createTRPCRouter, protectedProcedure } from "@/trpc/init";
 import { inngest } from "@/inngest/client";
 import prisma from "@/lib/db";
-import { ExecutionStatus } from "@/lib/prisma/client";
+import { ExecutionStatus, PersistentMemoryScope } from "@/lib/prisma/client";
 import {
   createManualExecution,
   runExecution,
@@ -207,5 +207,57 @@ export const executionsRouter = createTRPCRouter({
 
         throw error;
       }
+    }),
+  getPersistentMemory: protectedProcedure
+    .input(
+      z.object({
+        workflowId: z.string(),
+      }),
+    )
+    .query(async ({ ctx, input }) => {
+      const entries = await prisma.persistentMemoryEntry.findMany({
+        where: {
+          scope: PersistentMemoryScope.WORKFLOW,
+          ownerId: input.workflowId,
+          workflow: {
+            userId: ctx.user.id,
+          },
+        },
+        orderBy: {
+          updatedAt: "desc",
+        },
+        take: 100,
+      });
+
+      return { entries };
+    }),
+  deletePersistentMemory: protectedProcedure
+    .input(
+      z.object({
+        id: z.string(),
+      }),
+    )
+    .mutation(async ({ ctx, input }) => {
+      const entry = await prisma.persistentMemoryEntry.findFirst({
+        where: {
+          id: input.id,
+          workflow: {
+            userId: ctx.user.id,
+          },
+        },
+      });
+
+      if (!entry) {
+        throw new TRPCError({
+          code: "NOT_FOUND",
+          message: "Memory entry not found.",
+        });
+      }
+
+      await prisma.persistentMemoryEntry.delete({
+        where: { id: input.id },
+      });
+
+      return { success: true };
     }),
 });

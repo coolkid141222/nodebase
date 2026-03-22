@@ -345,3 +345,77 @@ export async function persistExecutionMemoryWrites({
     });
   }
 }
+
+/**
+ * Compress and save all execution memory entries to persistent memory.
+ * Called after workflow execution completes to archive the final memory state.
+ */
+export async function compressExecutionMemoryToPersistent(params: {
+  executionId: string;
+  workflowId: string;
+  userId: string;
+  state: RuntimeExecutionMemoryState;
+}) {
+  const { executionId, workflowId, userId, state } = params;
+
+  // Get all SHARED execution memory entries (these are the ones worth persisting)
+  const sharedEntries = Array.from(state.entries.values()).filter(
+    (entry) =>
+      entry.scope === ExecutionMemoryScope.SHARED &&
+      entry.visibility === ExecutionMemoryVisibility.PUBLIC,
+  );
+
+  if (sharedEntries.length === 0) {
+    return;
+  }
+
+  // Group by namespace.key and keep only the latest value
+  const latestEntries = new Map<string, {
+    namespace: string;
+    key: string;
+    value: Prisma.JsonValue;
+  }>();
+
+  for (const entry of sharedEntries) {
+    const compositeKey = `${entry.namespace}:${entry.key}`;
+    const existing = latestEntries.get(compositeKey);
+
+    // Keep the latest by comparing sourceStepId (higher position = later)
+    if (!existing || (entry.sourceStepId && (!existing as unknown as { sourceStepId?: string }).sourceStepId)) {
+      latestEntries.set(compositeKey, {
+        namespace: entry.namespace,
+        key: entry.key,
+        value: entry.value,
+      });
+    }
+  }
+
+  // Save to persistent memory
+  for (const entry of latestEntries.values()) {
+    await prisma.persistentMemoryEntry.upsert({
+      where: {
+        scope_ownerId_namespace_key: {
+          scope: PersistentMemoryScope.WORKFLOW,
+          ownerId: workflowId,
+          namespace: entry.namespace,
+          key: entry.key,
+        },
+      },
+      create: {
+        scope: PersistentMemoryScope.WORKFLOW,
+        ownerId: workflowId,
+        userId,
+        workflowId,
+        namespace: entry.namespace,
+        key: entry.key,
+        value: entry.value as Prisma.InputJsonValue,
+        sourceExecutionId: executionId,
+      },
+      update: {
+        value: entry.value as Prisma.InputJsonValue,
+        sourceExecutionId: executionId,
+        updatedAt: new Date(),
+      },
+    });
+  }
+}
