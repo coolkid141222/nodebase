@@ -1,4 +1,4 @@
-"use client";
+ "use client";
 
 import { useState, useMemo } from "react";
 import {
@@ -21,7 +21,6 @@ import { DatabaseIcon, Trash2Icon, PencilIcon, Loader2Icon } from "lucide-react"
 import { useI18n } from "@/features/i18n/provider";
 import { toast } from "sonner";
 import type { PersistentMemoryEntry } from "@/lib/prisma/client";
-import { MemoryGraph } from "./memory-graph";
 
 interface MemoryDialogProps {
   workflowId: string;
@@ -48,7 +47,6 @@ function JsonValue({ value }: { value: unknown }) {
 export function PersistentMemoryDialog({ workflowId, children }: MemoryDialogProps) {
   const [open, setOpen] = useState(false);
   const [search, setSearch] = useState("");
-  const [viewMode, setViewMode] = useState<"list" | "graph">("list");
   const [editingEntry, setEditingEntry] = useState<PersistentMemoryEntry | null>(null);
   const [editValue, setEditValue] = useState("");
   const [editError, setEditError] = useState<string | null>(null);
@@ -182,20 +180,6 @@ export function PersistentMemoryDialog({ workflowId, children }: MemoryDialogPro
         </DialogHeader>
 
         <div className="flex items-center gap-2 py-2">
-          <Button
-            variant={viewMode === "list" ? "secondary" : "ghost"}
-            size="sm"
-            onClick={() => setViewMode("list")}
-          >
-            List
-          </Button>
-          <Button
-            variant={viewMode === "graph" ? "secondary" : "ghost"}
-            size="sm"
-            onClick={() => setViewMode("graph")}
-          >
-            Graph
-          </Button>
           <div className="relative flex-1">
             <Input
               placeholder={t("persistentMemory.search") || "Search keys or values..."}
@@ -212,19 +196,6 @@ export function PersistentMemoryDialog({ workflowId, children }: MemoryDialogPro
           {isLoading ? (
             <div className="flex items-center justify-center py-8">
               <div className="h-6 w-6 animate-spin rounded-full border-2 border-primary border-t-transparent" />
-            </div>
-          ) : viewMode === "graph" ? (
-            <div className="p-4">
-              <MemoryGraph
-                entries={filteredMemory.map((e) => ({
-                  id: e.id,
-                  scope: e.scope,
-                  namespace: e.namespace,
-                  key: e.key,
-                  value: e.value,
-                  ownerNodeId: e.sourceNodeId ?? undefined,
-                }))}
-              />
             </div>
           ) : filteredMemory.length === 0 ? (
             <div className="py-8 text-center text-muted-foreground">
