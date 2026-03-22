@@ -1,5 +1,99 @@
 import type { Prisma } from "@/lib/prisma/client";
 
+/**
+ * Template resolution tracking - records each template expression resolution
+ */
+export type TemplateResolution = {
+  expression: string;
+  resolved: unknown;
+  path: string;
+  timestamp: Date;
+};
+
+/**
+ * Create a tracking wrapper for template resolution
+ * This captures all template expressions and their resolved values
+ */
+export function createTrackingResolver(context: ExecutionTemplateContext) {
+  const resolutions: TemplateResolution[] = [];
+
+  const trackResolution = (expression: string, resolved: unknown, path: string) => {
+    resolutions.push({
+      expression,
+      resolved,
+      path,
+      timestamp: new Date(),
+    });
+  };
+
+  const resolveWithTracking = (
+    value: string,
+    path: string,
+  ): unknown => {
+    const matches = Array.from(value.matchAll(TEMPLATE_PATTERN));
+
+    if (matches.length === 0) {
+      return value;
+    }
+
+    if (matches.length === 1 && matches[0][0] === value) {
+      const resolved = getPathValue(context, matches[0][1]);
+      trackResolution(matches[0][1], resolved, path);
+      return resolved;
+    }
+
+    const result = value.replace(TEMPLATE_PATTERN, (_, expression: string) => {
+      const resolved = getPathValue(context, expression.trim());
+      trackResolution(expression.trim(), resolved, `${path}.${expression.trim()}`);
+
+      if (resolved === null || resolved === undefined) {
+        return "";
+      }
+
+      if (typeof resolved === "object") {
+        return JSON.stringify(resolved);
+      }
+
+      return String(resolved);
+    });
+
+    return result;
+  };
+
+  const resolveValueWithTracking = (
+    value: Prisma.JsonValue,
+    path: string,
+  ): Prisma.InputJsonValue => {
+    if (typeof value === "string") {
+      const resolved = resolveWithTracking(value, path);
+      return (resolved ?? null) as Prisma.InputJsonValue;
+    }
+
+    if (Array.isArray(value)) {
+      return value.map((item, index) =>
+        resolveValueWithTracking(item, `${path}[${index}]`),
+      );
+    }
+
+    if (value && typeof value === "object") {
+      return Object.fromEntries(
+        Object.entries(value).map(([key, item]) => [
+          key,
+          resolveValueWithTracking(item as Prisma.JsonValue, `${path}.${key}`),
+        ]),
+      );
+    }
+
+    return value as Prisma.InputJsonValue;
+  };
+
+  return {
+    resolutions,
+    resolveTemplateString: resolveWithTracking,
+    resolveTemplateValue: resolveValueWithTracking,
+  };
+}
+
 export type ExecutionTemplateContext = {
   execution: {
     id: string;

@@ -3,6 +3,7 @@ import { z } from "zod";
 import { createTRPCRouter, protectedProcedure } from "@/trpc/init";
 import { inngest } from "@/inngest/client";
 import prisma from "@/lib/db";
+import type { Prisma } from "@/lib/prisma/client";
 import { ExecutionStatus, PersistentMemoryScope } from "@/lib/prisma/client";
 import {
   createManualExecution,
@@ -256,6 +257,40 @@ export const executionsRouter = createTRPCRouter({
 
       await prisma.persistentMemoryEntry.delete({
         where: { id: input.id },
+      });
+
+      return { success: true };
+    }),
+  updatePersistentMemory: protectedProcedure
+    .input(
+      z.object({
+        id: z.string(),
+        value: z.any(),
+      }),
+    )
+    .mutation(async ({ ctx, input }) => {
+      const entry = await prisma.persistentMemoryEntry.findFirst({
+        where: {
+          id: input.id,
+          workflow: {
+            userId: ctx.user.id,
+          },
+        },
+      });
+
+      if (!entry) {
+        throw new TRPCError({
+          code: "NOT_FOUND",
+          message: "Memory entry not found.",
+        });
+      }
+
+      await prisma.persistentMemoryEntry.update({
+        where: { id: input.id },
+        data: {
+          value: input.value as Prisma.InputJsonValue,
+          updatedAt: new Date(),
+        },
       });
 
       return { success: true };
