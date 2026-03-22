@@ -3,7 +3,7 @@
  * Extracted from `workflow-generator.ts` to reduce file size and improve maintainability.
  */
 
-import type { WorkflowGenerationMode } from "../workflow-generator/shared";
+import type { WorkflowGenerationMode } from "../../workflow-generator/shared";
 
 const MODE_INSTRUCTIONS: Record<WorkflowGenerationMode, string> = {
   SIMPLE: [

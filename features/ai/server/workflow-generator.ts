@@ -1019,7 +1019,7 @@ function ensureNodeMemoryWrite(
     persistenceScope?: "WORKFLOW" | "USER";
     semanticIndex?: boolean;
   },
-) {
+): AIWorkflowDraft["nodes"][number] {
   const nextWrite = {
     scope: write.scope,
     namespace: write.namespace,
@@ -1041,7 +1041,7 @@ function ensureNodeMemoryWrite(
     case "TOOL":
     case "DISCORD_MESSAGE":
     case "SLACK_MESSAGE": {
-      const memoryWrites = node.config.memoryWrites ?? [];
+      const memoryWrites = [...(node.config.memoryWrites ?? [])];
       const exists = memoryWrites.some(
         (item) =>
           item.scope === nextWrite.scope &&
@@ -1053,9 +1053,10 @@ function ensureNodeMemoryWrite(
         memoryWrites.push(nextWrite);
       }
 
-      node.config.memoryWrites = memoryWrites;
-      return;
+      return { ...node, config: { ...node.config, memoryWrites } } as AIWorkflowDraft["nodes"][number];
     }
+    default:
+      return node;
   }
 }
 

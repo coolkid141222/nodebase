@@ -9,6 +9,8 @@ export const workflowGenerationModeSchema = z.enum([
   "RESEARCH_DELIVERY",
 ]);
 
+export type WorkflowGenerationMode = z.infer<typeof workflowGenerationModeSchema>;
+
 export const workflowGeneratorNodeTypeSchema = z.enum([
   "MANUAL_TRIGGER",
   "WEBHOOK_TRIGGER",
