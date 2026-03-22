@@ -107,29 +107,21 @@ function getLatestStepForNode(
   execution: WorkflowExecutionSnapshot,
   nodeId: string,
 ) {
-  let latestStep: WorkflowExecutionStepSnapshot | null = null;
+  // Get all steps for this node, sorted by position descending (most recent first)
+  const nodeSteps = execution.steps
+    .filter((step) => step.nodeId === nodeId)
+    .sort((a, b) => (b.position ?? 0) - (a.position ?? 0));
 
-  for (const step of execution.steps) {
-    if (step.nodeId !== nodeId) {
-      continue;
-    }
-
-    latestStep = step;
-  }
-
-  return latestStep;
+  return nodeSteps[0] ?? null;
 }
 
 function getActiveRunningStep(execution: WorkflowExecutionSnapshot) {
-  let activeRunningStep: WorkflowExecutionStepSnapshot | null = null;
+  // Get the most recent RUNNING step (highest position)
+  const runningSteps = execution.steps
+    .filter((step) => step.status === ExecutionStepStatus.RUNNING)
+    .sort((a, b) => (b.position ?? 0) - (a.position ?? 0));
 
-  for (const step of execution.steps) {
-    if (step.status === ExecutionStepStatus.RUNNING) {
-      activeRunningStep = step;
-    }
-  }
-
-  return activeRunningStep;
+  return runningSteps[0] ?? null;
 }
 
 function buildNodeStatusMap(execution: WorkflowExecutionSnapshot) {
