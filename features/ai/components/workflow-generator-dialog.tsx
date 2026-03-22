@@ -106,6 +106,7 @@ export const WorkflowGeneratorDialog = ({
     resolver: zodResolver(formSchema),
     defaultValues: {
       prompt: "",
+      mode: "PROBLEM_SOLVER",
       provider: "MINIMAX",
       model: getDefaultWorkflowGeneratorModel("MINIMAX"),
       credentialId: "",
@@ -113,6 +114,11 @@ export const WorkflowGeneratorDialog = ({
     },
   });
 
+  const generationMode = useWatch({
+    control: form.control,
+    name: "mode",
+    defaultValue: "PROBLEM_SOLVER",
+  });
   const provider = useWatch({
     control: form.control,
     name: "provider",
@@ -282,7 +288,39 @@ export const WorkflowGeneratorDialog = ({
                 </div>
               </div>
 
-              <div className="grid gap-4 md:grid-cols-2">
+              <div className="grid gap-4 md:grid-cols-3">
+                <FieldGroup className="gap-2">
+                  <FieldLabel htmlFor="mode">{t("workflowGenerator.mode")}</FieldLabel>
+                  <Select
+                    value={generationMode}
+                    onValueChange={(
+                      value: z.output<typeof generateWorkflowGraphInputSchema>["mode"],
+                    ) =>
+                      form.setValue("mode", value, {
+                        shouldDirty: true,
+                        shouldValidate: true,
+                      })
+                    }
+                  >
+                    <SelectTrigger className="w-full">
+                      <SelectValue placeholder={t("workflowGenerator.mode")} />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="AUTO">{t("workflowGenerator.modeAuto")}</SelectItem>
+                      <SelectItem value="SIMPLE">{t("workflowGenerator.modeSimple")}</SelectItem>
+                      <SelectItem value="PROBLEM_SOLVER">
+                        {t("workflowGenerator.modeProblemSolver")}
+                      </SelectItem>
+                      <SelectItem value="RESEARCH_DELIVERY">
+                        {t("workflowGenerator.modeResearchDelivery")}
+                      </SelectItem>
+                    </SelectContent>
+                  </Select>
+                  <FieldDescription>
+                    {t("workflowGenerator.modeDescription")}
+                  </FieldDescription>
+                </FieldGroup>
+
                 <FieldGroup className="gap-2">
                   <FieldLabel htmlFor="provider">{t("workflowGenerator.provider")}</FieldLabel>
                   <Select

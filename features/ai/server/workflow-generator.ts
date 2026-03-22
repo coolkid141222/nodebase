@@ -41,6 +41,7 @@ type SavedGeneratedWorkflowResult = GeneratedWorkflowResult & {
 };
 
 type PreferredTriggerType = "MANUAL_TRIGGER" | "WEBHOOK_TRIGGER";
+type WorkflowGenerationMode = GenerateWorkflowGraphInput["mode"];
 
 const PROBLEM_SOLVING_PROMPT_PATTERN =
   /\b(solve|answer|analy[sz]e|debug|investigate|research|compare|plan|reason|question|issue|problem)\b|问题|分析|研究|排查|解决|比较|推理|调查/i;
@@ -310,7 +311,41 @@ function formatToolInventory() {
 function buildWorkflowGeneratorPrompt(params: {
   userPrompt: string;
   credentials: UserCredentialSummary[];
+  mode: WorkflowGenerationMode;
 }) {
+  const modeInstruction = (() => {
+    switch (params.mode) {
+      case "SIMPLE":
+        return [
+          "Generation mode: SIMPLE",
+          "- Prefer the smallest clear graph.",
+          "- Avoid adding loops, extra AI steps, or tools unless the user explicitly asks for them.",
+          "- Stay close to 2-3 nodes when possible.",
+        ].join("\n");
+      case "PROBLEM_SOLVER":
+        return [
+          "Generation mode: PROBLEM_SOLVER",
+          "- Expand the workflow into a multi-stage problem-solving graph.",
+          "- Prefer analyze -> optional refine -> final answer -> delivery.",
+          "- Use at least two AI processing nodes for non-trivial requests.",
+        ].join("\n");
+      case "RESEARCH_DELIVERY":
+        return [
+          "Generation mode: RESEARCH_DELIVERY",
+          "- Prefer a graph like gather context -> analyze -> final message -> delivery.",
+          "- Use a tool step whenever external context or a URL is available.",
+          "- End with a user-facing delivery node when possible.",
+        ].join("\n");
+      case "AUTO":
+      default:
+        return [
+          "Generation mode: AUTO",
+          "- Pick the smallest workflow that still solves the request correctly.",
+          "- Expand into multiple stages when the request implies analysis, research, refinement, or delivery.",
+        ].join("\n");
+    }
+  })();
+
   return `
 You are generating a Nodebase workflow draft for a visual low-code editor.
 
@@ -390,6 +425,8 @@ Important constraints:
 - Prefer concrete prompts and URLs.
 - If a credential is needed, reference a matching credentialName from the inventory when possible.
 - Return strict JSON only. No markdown, no explanation.
+
+${modeInstruction}
 
 Required JSON shape:
 {
@@ -713,6 +750,28 @@ function wantsComplexScaffold(prompt: string) {
   );
 }
 
+function shouldUseComplexStructure(
+  mode: WorkflowGenerationMode,
+  prompt: string,
+) {
+  if (mode === "SIMPLE") {
+    return false;
+  }
+
+  if (mode === "PROBLEM_SOLVER" || mode === "RESEARCH_DELIVERY") {
+    return true;
+  }
+
+  return wantsComplexScaffold(prompt);
+}
+
+function shouldPreferResearchStep(
+  mode: WorkflowGenerationMode,
+  prompt: string,
+) {
+  return mode === "RESEARCH_DELIVERY" || wantsResearchTool(prompt);
+}
+
 function extractFirstUrl(prompt: string) {
   return prompt.match(URL_PATTERN)?.[0] ?? null;
 }
@@ -929,6 +988,7 @@ function ensureNodeMemoryWrite(
 function promoteProblemSolvingDraft(params: {
   draft: AIWorkflowDraft;
   userPrompt: string;
+  mode: WorkflowGenerationMode;
 }) {
   const existingIds = new Set(params.draft.nodes.map((node) => node.id));
   const workingDraft: AIWorkflowDraft = structuredClone(params.draft);
@@ -944,7 +1004,7 @@ function promoteProblemSolvingDraft(params: {
   let firstProcessingNodeId = primaryAi.id;
 
   if (
-    wantsComplexScaffold(params.userPrompt) &&
+    shouldUseComplexStructure(params.mode, params.userPrompt) &&
     aiNodes.length === 1
   ) {
     const analyzerId = createDraftNodeId(existingIds, "analyze_problem");
@@ -986,7 +1046,7 @@ function promoteProblemSolvingDraft(params: {
     firstProcessingNodeId = analyzerId;
   }
 
-  if (wantsResearchTool(params.userPrompt) && toolNodes.length === 0) {
+  if (shouldPreferResearchStep(params.mode, params.userPrompt) && toolNodes.length === 0) {
     const url = extractFirstUrl(params.userPrompt);
 
     if (url) {
@@ -1112,10 +1172,11 @@ function promoteProblemSolvingDraft(params: {
 function promoteComplexWorkflowDraft(params: {
   draft: AIWorkflowDraft;
   userPrompt: string;
+  mode: WorkflowGenerationMode;
 }) {
   const workingDraft: AIWorkflowDraft = structuredClone(params.draft);
 
-  if (!wantsComplexScaffold(params.userPrompt)) {
+  if (!shouldUseComplexStructure(params.mode, params.userPrompt)) {
     return workingDraft;
   }
 
@@ -1897,6 +1958,7 @@ export async function generateWorkflowDraft(params: {
     prompt: buildWorkflowGeneratorPrompt({
       userPrompt: params.input.prompt,
       credentials: userCredentials,
+      mode: params.input.mode,
     }),
     temperature: 0.2,
     maxOutputTokens: 2_400,
@@ -1907,6 +1969,7 @@ export async function generateWorkflowDraft(params: {
   const promotedDraft = promoteProblemSolvingDraft({
     draft,
     userPrompt: params.input.prompt,
+    mode: params.input.mode,
   });
   const feishuNormalizedDraft = normalizeFeishuDeliveryDraft({
     draft: promotedDraft,
@@ -1915,6 +1978,7 @@ export async function generateWorkflowDraft(params: {
   const complexPromotedDraft = promoteComplexWorkflowDraft({
     draft: feishuNormalizedDraft,
     userPrompt: params.input.prompt,
+    mode: params.input.mode,
   });
   const triggerNormalizedDraft = normalizePreferredTriggerType({
     draft: complexPromotedDraft,

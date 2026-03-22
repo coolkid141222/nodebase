@@ -2,6 +2,13 @@ import z from "zod";
 import { aiTextProviderSchema, getDefaultAITextModel } from "../text/shared";
 import { executionMemoryWriteConfigListSchema } from "@/features/executions/memory/shared";
 
+export const workflowGenerationModeSchema = z.enum([
+  "AUTO",
+  "SIMPLE",
+  "PROBLEM_SOLVER",
+  "RESEARCH_DELIVERY",
+]);
+
 export const workflowGeneratorNodeTypeSchema = z.enum([
   "MANUAL_TRIGGER",
   "WEBHOOK_TRIGGER",
@@ -156,6 +163,7 @@ export const aiWorkflowDraftSchema = z.object({
 
 export const generateWorkflowGraphInputSchema = z.object({
   prompt: z.string().trim().min(8).max(4_000),
+  mode: workflowGenerationModeSchema.default("PROBLEM_SOLVER"),
   provider: aiTextProviderSchema.default("MINIMAX"),
   model: z.string().trim().min(1).optional(),
   credentialId: z.string().trim().min(1),

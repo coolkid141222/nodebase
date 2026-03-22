@@ -715,6 +715,7 @@ async function createWorkflowDraftFromFeishu(prompt: string) {
     userId: owner.id,
     input: {
       prompt,
+      mode: "PROBLEM_SOLVER",
       provider:
         generatorCredential.provider === CredentialProvider.MINIMAX
           ? "MINIMAX"
