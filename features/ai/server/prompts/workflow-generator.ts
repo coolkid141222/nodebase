@@ -77,7 +77,8 @@ Memory rules:
 
 Problem-solving rules:
 - When the request needs external information, create a TOOL node before AI reasoning.
-- Prefer INTERNAL tool id "internal.browser_page" for public web research.
+- Prefer MCP ddg-search for free web search (no API key needed).
+- Prefer INTERNAL tool "internal.browser_page" for fetching specific web pages.
 - If the user mentions Feishu, Lark, or 飞书, prefer a TOOL node with provider "FEISHU" and toolId "feishu.message.send".
 - Do not use HTTP_REQUEST for Feishu webhook delivery when the native Feishu tool is available.
 - After a TOOL node, feed the extracted result into an AI_TEXT node with {{input}}.
@@ -111,12 +112,30 @@ ${params.toolInventory}
 
 Preferred tool usage:
 - internal.browser_page
-  - Use for public web pages.
+  - Use for fetching and reading specific web pages.
+  - provider: INTERNAL
+  - Use includeLinks:true to get all links from a page for further processing
   - argumentsJson example: {"url":"https://example.com","maxChars":4000,"includeLinks":true}
+- ddg-search (MCP DuckDuckGo)
+  - Use for free web search without API keys.
+  - provider: MCP, serverId: ddg-search
+  - toolId: search (the tool name from the MCP server)
+  - argumentsJson example: {"query":"search term","max_results":5}
 - feishu.message.send
   - Use to send the final text result to Feishu / Lark.
-  - provider must be FEISHU.
+  - provider: FEISHU
   - argumentsJson example: {"text":"{{memory.shared.answers.final}}"}
+
+News/research workflow pattern (limited to 1 level - main site + internal links only):
+- Step 1: Use ddg-search to find the main website URL (e.g., search "site:cug.edu.cn news")
+- Step 2: Use browser_page with includeLinks:true to fetch the homepage and get all links
+- Step 3: Filter links - keep only URLs from the same domain (e.g., cug.edu.cn)
+- Step 4: Use LOOP (maxIterations=10) to iterate through filtered links
+  - Inside loop: use browser_page to fetch each article URL
+  - Use AI_TEXT to summarize each article content
+  - Save summary to SHARED memory like "article_1", "article_2", etc.
+- Step 5: After loop completes, use AI_TEXT to merge all summaries into final report
+- Important: Only visit links from the main domain, never follow external links from articles
 
 Important constraints:
 - Use exactly one trigger node.
