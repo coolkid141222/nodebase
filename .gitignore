@@ -54,13 +54,15 @@ scripts/test.ts
 .env.sentry-build-plugin
 
 .claude/
+.claude/settings.local.json
 .npm-cache/
 .cursor/
+.cursorrules
+.vercelignore
+CLAUDE.md
 
 # Prisma
-lib/prisma/client/query_engine-*.dll.node.tmp*
-lib/prisma/client/query_engine_bg.js
-lib/prisma/client/query_engine_bg.wasm
+lib/prisma/client/
 
 # Logs
 mcp-debug.log
