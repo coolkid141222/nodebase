@@ -24,6 +24,7 @@
     "@ai-sdk/openai": "^3.0.41",
     "@hookform/resolvers": "^5.2.2",
     "@larksuiteoapi/node-sdk": "^1.59.0",
+    "@modelcontextprotocol/sdk": "^1.27.1",
     "@paralleldrive/cuid2": "^3.3.0",
     "@prisma/client": "6.19.1",
     "@radix-ui/react-accordion": "^1.2.12",
