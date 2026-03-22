@@ -743,26 +743,26 @@ ${params.userPrompt}
 `.trim();
 }
 
-function resolveCredentialReference(params: {
-  provider: CredentialProvider;
+function resolveCredential(params: {
+  provider?: CredentialProvider;
   credentialName?: string;
   credentialField?: string;
   credentials: UserCredentialSummary[];
   notes: string[];
   nodeDescription: string;
 }) {
-  const candidates = params.credentials.filter(
-    (credential) => credential.provider === params.provider,
-  );
+  const candidates = params.provider
+    ? params.credentials.filter((c) => c.provider === params.provider)
+    : params.credentials;
 
   if (candidates.length === 0) {
+    const providerHint = params.provider
+      ? `a ${params.provider} `
+      : "any ";
     params.notes.push(
-      `${params.nodeDescription} needs a ${params.provider} credential, but none are available in this account yet.`,
+      `${params.nodeDescription} needs ${providerHint}credential, but none are available in this account yet.`,
     );
-    return {
-      credentialId: undefined,
-      credentialField: params.credentialField ?? "apiKey",
-    };
+    return { credentialId: undefined, credentialField: params.credentialField ?? "apiKey" };
   }
 
   if (params.credentialName) {
@@ -783,63 +783,13 @@ function resolveCredentialReference(params: {
       };
     }
 
+    const providerHint = params.provider ? ` ${params.provider}` : "";
     params.notes.push(
-      `${params.nodeDescription} requested credential "${params.credentialName}", so the first available ${params.provider} credential was used instead.`,
+      `${params.nodeDescription} requested credential "${params.credentialName}", so the first available${providerHint} credential was used instead.`,
     );
   }
 
   const fallback = candidates[0];
-  return {
-    credentialId: fallback.id,
-    credentialField:
-      params.credentialField ??
-      (fallback.fields.includes("apiKey")
-        ? "apiKey"
-        : fallback.fields[0] || "apiKey"),
-  };
-}
-
-function resolveCredentialByName(params: {
-  credentialName?: string;
-  credentialField?: string;
-  credentials: UserCredentialSummary[];
-  notes: string[];
-  nodeDescription: string;
-}) {
-  if (params.credentials.length === 0) {
-    params.notes.push(
-      `${params.nodeDescription} referenced a credential, but this account does not have any credentials yet.`,
-    );
-    return {
-      credentialId: undefined,
-      credentialField: params.credentialField ?? "apiKey",
-    };
-  }
-
-  if (params.credentialName) {
-    const match = params.credentials.find(
-      (credential) =>
-        credential.name.localeCompare(params.credentialName ?? "", undefined, {
-          sensitivity: "accent",
-          usage: "search",
-        }) === 0,
-    );
-
-    if (match) {
-      return {
-        credentialId: match.id,
-        credentialField:
-          params.credentialField ??
-          (match.fields.includes("apiKey") ? "apiKey" : match.fields[0] || "apiKey"),
-      };
-    }
-
-    params.notes.push(
-      `${params.nodeDescription} requested credential "${params.credentialName}", but no exact match was found. The first available credential was used instead.`,
-    );
-  }
-
-  const fallback = params.credentials[0];
   return {
     credentialId: fallback.id,
     credentialField:
@@ -2239,7 +2189,7 @@ function mapGeneratedDraftToCanvas(params: {
         break;
       case "AI_TEXT": {
         const provider = node.config.provider;
-        const credential = resolveCredentialReference({
+        const credential = resolveCredential({
           provider,
           credentialName: node.config.credentialName,
           credentialField: node.config.credentialField,
@@ -2270,7 +2220,7 @@ function mapGeneratedDraftToCanvas(params: {
       case "HTTP_REQUEST": {
         const credential =
           node.config.authType !== "NONE"
-            ? resolveCredentialByName({
+            ? resolveCredential({
                 credentialName: node.config.credentialName,
                 credentialField: node.config.credentialField,
                 credentials: params.credentials,
@@ -2298,7 +2248,7 @@ function mapGeneratedDraftToCanvas(params: {
         break;
       }
       case "DISCORD_MESSAGE": {
-        const credential = resolveCredentialReference({
+        const credential = resolveCredential({
           provider: CredentialProvider.DISCORD,
           credentialName: node.config.credentialName,
           credentialField: node.config.credentialField ?? "webhookUrl",
@@ -2318,7 +2268,7 @@ function mapGeneratedDraftToCanvas(params: {
         break;
       }
       case "SLACK_MESSAGE": {
-        const credential = resolveCredentialReference({
+        const credential = resolveCredential({
           provider: CredentialProvider.SLACK,
           credentialName: node.config.credentialName,
           credentialField: node.config.credentialField ?? "webhookUrl",
