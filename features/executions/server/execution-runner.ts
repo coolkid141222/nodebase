@@ -19,6 +19,7 @@ import {
 } from "./template";
 import {
   buildExecutionMemoryTemplateSnapshot,
+  compressExecutionMemoryToPersistent,
   createExecutionMemoryState,
   persistExecutionMemoryWrites,
   type RuntimeExecutionMemoryState,
@@ -55,6 +56,7 @@ import {
 import { loopNodeSchema } from "@/features/loops/shared";
 import { toolNodeSchema } from "@/features/tools/node/shared";
 import type { ToolProvider } from "@/features/tools/shared";
+import { executeMCPTool } from "@/features/tools/server/adapters/mcp";
 import {
   executeBrowserPageTool,
   parseBrowserPageArguments,
@@ -1010,6 +1012,68 @@ async function executeToolNode(
     );
   }
 
+  // MCP provider
+  if (input.provider === "MCP") {
+    const serverId = input.serverId?.trim();
+    const toolId = input.toolId?.trim();
+
+    if (!serverId) {
+      throw new WorkflowExecutionError(
+        "MCP tool requires serverId",
+        "TOOL_EXECUTION_FAILED",
+      );
+    }
+
+    if (!toolId) {
+      throw new WorkflowExecutionError(
+        "MCP tool requires toolId",
+        "TOOL_EXECUTION_FAILED",
+      );
+    }
+
+    try {
+      const args = (input.arguments ?? {}) as Record<string, unknown>;
+      const output = await executeMCPTool({
+        serverId,
+        toolId,
+        arguments: args,
+      });
+
+      if (!output.ok) {
+        throw new WorkflowExecutionError(
+          `MCP tool failed: ${output.text}`,
+          "TOOL_EXECUTION_FAILED",
+        );
+      }
+
+      return {
+        status: ExecutionStepStatus.SUCCESS,
+        output: {
+          provider: input.provider,
+          toolId: input.toolId,
+          toolDisplayName: input.toolDisplayName,
+          serverId: input.serverId,
+          serverDisplayName: input.serverDisplayName,
+          ok: output.ok,
+          status: output.status,
+          body: output.body,
+          text: output.text,
+        } as Prisma.InputJsonValue,
+      };
+    } catch (error) {
+      if (error instanceof WorkflowExecutionError) {
+        throw error;
+      }
+
+      throw new WorkflowExecutionError(
+        error instanceof Error
+          ? error.message
+          : `MCP tool "${input.toolId}" failed.`,
+        "TOOL_EXECUTION_FAILED",
+      );
+    }
+  }
+
   throw new WorkflowExecutionError(
     `Tool provider "${input.provider}" is configured, but its runtime adapter is not wired yet.`,
     "TOOL_ADAPTER_NOT_READY",
@@ -1143,7 +1207,7 @@ function normalizeAITextNodeData(
   if (data.toolEnabled) {
     if (!data.toolId?.trim()) {
       throw new WorkflowExecutionError(
-        `AI Text node "${node.name}" has research context enabled but no browser tool selected.`,
+        `AI Text node "${node.name}" has research context enabled but no tool selected.`,
         "INVALID_AI_NODE_CONFIG",
       );
     }
@@ -2279,6 +2343,16 @@ export async function runExecution(executionId: string) {
 
         throw error;
       }
+    }
+
+    // Compress execution memory to persistent memory
+    if (execution.workflowId && execution.triggeredByUserId) {
+      await compressExecutionMemoryToPersistent({
+        executionId,
+        workflowId: execution.workflowId,
+        userId: execution.triggeredByUserId,
+        state: memoryState,
+      });
     }
 
     return prisma.execution.update({
